@@ -1,0 +1,10 @@
+openapi: 3.0.0
+info:
+  version: 0.0.0
+  title: Dashboard Interface
+  description: Interface for dashboard and backend SDK to communicate with each other
+paths: {}
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/supertokens/DashboardInterface/0.0.0
