@@ -67,6 +67,8 @@ If you want to make changes to the dashboard, edit files in `/src/`. (Hot reload
 
 2. When adding images make sure to import them in `src/images.ts`. This is to make sure webpack will output them when building the bundle
 
+NOTE: All images from the project get added to `/static/media` in the build folder. This means that image names need to be globally unique (`images/logo.png`, `images/images/logo.png` would only result in one image in the build output)
+
 ### Backend Changes
 
 1. Make changes to supertokens-node and build

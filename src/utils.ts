@@ -18,5 +18,5 @@ export function getStaticBasePath(): string {
 }
 
 export function getImageUrl(imageName: string): string {
-    return getStaticBasePath() + "media/" + imageName;
+    return getStaticBasePath() + "/media/" + imageName;
 }
