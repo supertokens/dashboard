@@ -20,3 +20,7 @@ export function getStaticBasePath(): string {
 export function getImageUrl(imageName: string): string {
     return getStaticBasePath() + "/media/" + imageName;
 }
+
+export function getDashboardAppPath(): string {
+    return (window as any).dashboardAppPath;
+}
