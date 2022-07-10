@@ -13,18 +13,31 @@
 * under the License.
 */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import { Navigate } from "react-router-dom";
 
 import { apiKeyLocalStorageKey } from "../../constants";
 import { getValueFromStorage } from "../../storageService";
-import { getDashboardAppPath } from "../../utils";
 
-export function protectedComponent<T> (WrappedComponent: React.ComponentType<T>) {
-  const apiKeyInStorage = getValueFromStorage(apiKeyLocalStorageKey);
+type PropTypes = React.PropsWithChildren;
 
-  if (apiKeyInStorage === null || apiKeyInStorage.length === 0) {
-    window.location.pathname = getDashboardAppPath();
+const ProtectedComponent: React.FC<PropTypes> = (props) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
+  useEffect(() => {
+    const apiKeyInStorage = getValueFromStorage(apiKeyLocalStorageKey);
+  
+    if (apiKeyInStorage === null || apiKeyInStorage.length === 0) {
+      setIsAuthenticated(false);
+    }
+  }, []);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/" />
   }
 
-  return WrappedComponent;
+  return <>{props.children}</>;
 }
+
+export default ProtectedComponent;

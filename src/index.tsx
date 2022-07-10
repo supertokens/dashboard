@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Auth from "./components/pages/Auth/Auth";
 import Home from './components/pages/Home/Home';
 import { getDashboardAppPath } from './utils';
+import ProtectedComponent from './components/utils/ProtectedComponent';
 
 import './index.css';
 
@@ -20,7 +21,11 @@ root.render(
     <BrowserRouter basename={dashboardAppPath}>
       <Routes>
         <Route path="/" element={<Auth />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/home" element={
+          <ProtectedComponent>
+            <Home />
+          </ProtectedComponent>
+        } />
         <Route path="*" element={<Navigate to="/home" />} />
       </Routes>
     </BrowserRouter>

@@ -1,5 +1,4 @@
 import React from "react";
-import { protectedComponent } from "../../utils/protectedComponent";
 
 const Home = () => {
   return (
@@ -7,4 +6,4 @@ const Home = () => {
   );
 };
 
-export default protectedComponent(Home);
+export default Home;

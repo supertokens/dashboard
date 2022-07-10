@@ -13,19 +13,24 @@
 * under the License.
 */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 
 import { clearValueInStorage, setValueToStorage } from "../../../storageService";
 import { apiKeyLocalStorageKey } from "../../../constants";
-import { getDashboardAppPath } from "../../../utils";
 
 const Auth: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const promptForApiKey = useCallback(() => {
     clearValueInStorage(apiKeyLocalStorageKey);
+
     const apiKey = prompt("Please enter your API key");
+
     if (apiKey !== null && apiKey.length !== 0) {
+      // TODO: verify the api key from backend before saving to localstorage
       setValueToStorage(apiKeyLocalStorageKey, apiKey);
-      window.location.pathname = `${getDashboardAppPath()}/home`;
+      setIsAuthenticated(true);
     } else {
       promptForApiKey();
     }
@@ -34,6 +39,10 @@ const Auth: React.FC = () => {
   useEffect(() => {
     promptForApiKey();
   }, [promptForApiKey]);
+
+  if (isAuthenticated) {
+    return <Navigate to="/home" />
+  }
 
   return <></>
 };
