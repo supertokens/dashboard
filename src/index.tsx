@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Auth from "./components/pages/Auth/Auth";
 import ProtectedRoute from './components/ui/ProtectedRoute/ProtectedRoute';
@@ -20,7 +20,7 @@ root.render(
         <Route element={<ProtectedRoute />}>
           <Route path="/home" element={<h1>Dashboard Home</h1>} />
         </Route>
-        <Route element={<p>Not found</p>} />
+        <Route path="*" element={<Navigate to="/home" />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

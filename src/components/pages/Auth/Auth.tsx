@@ -28,7 +28,6 @@ const Auth: React.FC = () => {
 
   const promptForApiKey = () => {
     clearValueInStorage(apiKeyLocalStorageKey);
-    console.log("Prompt called");
     const apiKey = prompt("Please enter your API key");
     if (apiKey !== null && apiKey.length !== 0) {
       setValueToStorage(apiKeyLocalStorageKey, apiKey);
