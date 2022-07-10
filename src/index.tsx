@@ -4,7 +4,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Auth from "./components/pages/Auth/Auth";
-import ProtectedRoute from './components/ui/ProtectedRoute/ProtectedRoute';
+import Home from './components/pages/Home/Home';
 
 import './index.css';
 
@@ -17,9 +17,7 @@ root.render(
     <BrowserRouter basename="/auth/dashboard">
       <Routes>
         <Route path="/" element={<Auth />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/home" element={<h1>Dashboard Home</h1>} />
-        </Route>
+        <Route path="/home" element={<Home />} />
         <Route path="*" element={<Navigate to="/home" />} />
       </Routes>
     </BrowserRouter>

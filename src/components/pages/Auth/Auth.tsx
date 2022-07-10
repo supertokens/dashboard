@@ -13,39 +13,29 @@
 * under the License.
 */
 
-import React, { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import React, { useCallback, useEffect } from "react";
 
 import { clearValueInStorage, setValueToStorage } from "../../../storageService";
 import { apiKeyLocalStorageKey } from "../../../constants";
+import { getDashboardAppPath } from "../../../utils";
 
 const Auth: React.FC = () => {
-  const [apiKey, setApiKey] = useState<string>("");
-
-  useEffect(() => {
-    promptForApiKey();
-  }, []);
-
-  const promptForApiKey = () => {
+  const promptForApiKey = useCallback(() => {
     clearValueInStorage(apiKeyLocalStorageKey);
     const apiKey = prompt("Please enter your API key");
     if (apiKey !== null && apiKey.length !== 0) {
       setValueToStorage(apiKeyLocalStorageKey, apiKey);
-      setApiKey(apiKey);
+      window.location.pathname = `${getDashboardAppPath()}/home`;
+    } else {
+      promptForApiKey();
     }
-  }
+  }, []);
 
-  // return to dashboard home once apiKey is stored in localStorage
-  if (apiKey.length > 0) {
-    return <Navigate to="/home" />
-  }
+  useEffect(() => {
+    promptForApiKey();
+  }, [promptForApiKey]);
 
-  return (
-    <div>
-      <h2>Log in to Dashboard</h2>
-      <button onClick={promptForApiKey}>Insert your API Key</button>
-    </div>
-  )
+  return <></>
 };
 
 export default Auth;

@@ -13,27 +13,18 @@
 * under the License.
 */
 
-import React, { useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import React from "react";
 
-import { apiKeyLocalStorageKey } from "../../../constants";
-import { getValueFromStorage } from "../../../storageService";
+import { apiKeyLocalStorageKey } from "../../constants";
+import { getValueFromStorage } from "../../storageService";
+import { getDashboardAppPath } from "../../utils";
 
-const ProtectedRoute = () => {
-  const [shouldRedirect, setShouldRedirect] = React.useState(false);
+export function protectedComponent<T> (WrappedComponent: React.ComponentType<T>) {
+  const apiKeyInStorage = getValueFromStorage(apiKeyLocalStorageKey);
 
-  useEffect(() => {
-    const apiKey = getValueFromStorage(apiKeyLocalStorageKey);
-    if (apiKey === null || apiKey.length === 0) {
-      setShouldRedirect(true);
-    }
-  }, []);
-
-  if (shouldRedirect) {
-    return <><Navigate to="/" /></>;
+  if (apiKeyInStorage === null || apiKeyInStorage.length === 0) {
+    window.location.pathname = getDashboardAppPath();
   }
 
-  return <Outlet />;
-};
-
-export default ProtectedRoute;
+  return WrappedComponent;
+}
