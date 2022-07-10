@@ -5,8 +5,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Auth from "./components/pages/Auth/Auth";
 import Home from './components/pages/Home/Home';
+import { getDashboardAppPath } from './utils';
 
 import './index.css';
+
+const dashboardAppPath = getDashboardAppPath();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -14,7 +17,7 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter basename="/auth/dashboard">
+    <BrowserRouter basename={dashboardAppPath}>
       <Routes>
         <Route path="/" element={<Auth />} />
         <Route path="/home" element={<Home />} />
