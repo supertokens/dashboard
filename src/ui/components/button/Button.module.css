@@ -1,0 +1,16 @@
+.button {
+  padding: 10px 16px;
+  font-size: 14px;
+  line-height: 17px;
+  background-color: rgb(255, 153, 51);
+  border: 1px solid rgb(255, 128, 0);
+  font-weight: 600;
+  color: white;
+  border-radius: 6px;
+  font-family: 'Rubik';
+  cursor: pointer;
+}
+
+.button[data-full-width="true"] {
+  width: 100%;
+}

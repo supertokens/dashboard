@@ -366,11 +366,10 @@ module.exports = function (webpackEnv) {
             {
               test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
               type: 'asset',
-              parser: {
-                dataUrlCondition: {
-                  maxSize: imageInlineSizeLimit,
-                },
-              },
+              loader: require.resolve('file-loader'),
+              options: {
+                name: 'static/media/[name].[ext]'
+              }
             },
             {
               test: /\.svg$/,

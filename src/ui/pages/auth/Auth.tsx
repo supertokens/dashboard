@@ -17,8 +17,10 @@ import { useNavigate } from "react-router-dom";
 import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { fetchData, getApiUrl } from "../../../utils";
+import Button from "../../components/button/Button";
+import InputField from "../../components/inputField/InputField";
 
-import "./Auth.css";
+import styles from "./Auth.module.css";
 
 const Auth: React.FC<{}> = () => {
     const navigate = useNavigate();
@@ -76,27 +78,28 @@ const Auth: React.FC<{}> = () => {
     }
 
     return (
-        <div className="api-key-form-container">
-            <h1 className="api-key-form-title">Validate your API Key</h1>
-            <form className="api-key-form" onSubmit={handleSubmit}>
-                <div className="api-key-form-field">
-                    <input
-                        type="text"
+        <div className={styles.pageContainer}>
+            <div className={styles.apiKeyFormContainer}>
+                <h1 className={styles.apiKeyFormTitle}>Validate your API Key</h1>
+                <form className={styles.apiKeyForm} onSubmit={handleSubmit}>
+                    <InputField
+                        handleChange={handleApiKeyFieldChange}
                         name="apiKey"
-                        className="input-field"
-                        placeholder="API Key"
-                        onChange={handleApiKeyFieldChange}
+                        type="text"
+                        error={apiKeyFieldError}
+                        label="API Key"
                         value={apiKey}
+                        placeholder="Your API Key"
                     />
-                    <p className="api-key-form-field-error">{apiKeyFieldError}</p>
-                </div>
 
-                <input
-                    type="submit"
-                    value="Submit"
-                    disabled={loading}
-                />
-            </form>
+                    <Button
+                        fullWidth
+                        label="Submit"
+                        disabled={loading}
+                        type="submit"
+                    />
+                </form>
+            </div>
         </div>
     );
 }
