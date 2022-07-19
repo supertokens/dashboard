@@ -79,3 +79,41 @@ export const fetchDataAndRedirectIf401 = async ({
 
     return response;
 }
+
+export const fetchData = async ({
+    url,
+    method,
+    query,
+    config
+}: {
+    url: string,
+    method: HttpMethod,
+    query?: {[key: string]: string},
+    config?: RequestInit,
+}) => {
+    const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
+    
+    let additionalHeaders: {[key: string] : string} = {};
+
+    if (apiKeyInStorage !== undefined) {
+        additionalHeaders = {
+            ...additionalHeaders,
+            authorization: `Bearer ${apiKeyInStorage}`,
+        }
+    }
+
+    const response: Response = await NetworkManager.doRequest({
+        url,
+        method,
+        query,
+        config: {
+            ...config,
+            headers: {
+                ...config?.headers,
+                ...additionalHeaders,
+            },
+        },
+    });
+
+    return response;
+}

@@ -1,0 +1,22 @@
+.api-key-form-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.api-key-form-title {
+  font-family: sans-serif;
+}
+
+.api-key-form {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+
+.api-key-form-field-error {
+  color: red;
+}
