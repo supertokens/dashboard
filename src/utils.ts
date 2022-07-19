@@ -13,10 +13,69 @@
 * under the License.
 */
 
+import { StorageKeys, UNAUTHORISED_STATUS } from "./constants";
+import NetworkManager from "./services/network";
+import { localStorageHandler } from "./services/storage";
+import { HttpMethod } from "./types";
+
 export function getStaticBasePath(): string {
     return (window as any).staticBasePath;
 }
 
+export function getDashboardAppBasePath(): string {
+    return (window as any).dashboardAppPath;
+}
+
 export function getImageUrl(imageName: string): string {
     return getStaticBasePath() + "/media/" + imageName;
+}
+
+export function getApiUrl(path: string): string {
+    if (!path.startsWith("/")) {
+        path = "/" + path;
+    }
+
+    return window.location.origin + getDashboardAppBasePath() + path;
+}
+
+export const fetchDataAndRedirectIf401 = async ({
+    url,
+    method,
+    query,
+    config
+}: {
+    url: string,
+    method: HttpMethod,
+    query?: {[key: string]: string},
+    config?: RequestInit,
+}) => {
+    const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
+    
+    let additionalHeaders: {[key: string] : string} = {};
+
+    if (apiKeyInStorage !== undefined) {
+        additionalHeaders = {
+            ...additionalHeaders,
+            authorization: `Bearer ${apiKeyInStorage}`,
+        }
+    }
+
+    const response: Response = await NetworkManager.doRequest({
+        url,
+        method,
+        query,
+        config: {
+            ...config,
+            headers: {
+                ...config?.headers,
+                ...additionalHeaders,
+            },
+        },
+    });
+
+    if (response.status === UNAUTHORISED_STATUS) {
+        window.location.assign(getDashboardAppBasePath() + "/auth")
+    }
+
+    return response;
 }

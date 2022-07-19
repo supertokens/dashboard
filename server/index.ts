@@ -7,10 +7,12 @@ import {
     errorHandler,
 } from "supertokens-node/framework/express";
 import cors from "cors";
+import morgan from "morgan";
 
 const websiteDomain = "http://localhost:3000";
 
 let app = express();
+app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[content-length]"));
 
 SuperTokens.init({
     framework: "express",
@@ -21,9 +23,11 @@ SuperTokens.init({
         appName: "Dashboard Dev",
         apiDomain: "http://localhost:3001",
         websiteDomain,
+        apiBasePath: "/auth"
     },
     recipeList: [
         Dashboard.init({
+            apiKey: "someapikey",
             override: {
                 functions: (original) => {
                     return {
@@ -53,6 +57,8 @@ app.get("/status", (req, res) => {
 })
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    // Leaving this in because it helps with debugging
+    console.log("Internal error", err);
     res.status(500).send("Internal server error");
 })
 
