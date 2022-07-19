@@ -13,8 +13,9 @@
 * under the License.
 */
 
-import { UNAUTHORISED_STATUS } from "./constants";
+import { StorageKeys, UNAUTHORISED_STATUS } from "./constants";
 import NetworkManager from "./services/network";
+import { localStorageHandler } from "./services/storage";
 import { HttpMethod } from "./types";
 
 export function getStaticBasePath(): string {
@@ -48,11 +49,28 @@ export const fetchDataAndRedirectIf401 = async ({
     query?: {[key: string]: string},
     config?: RequestInit,
 }) => {
+    const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
+    
+    let additionalHeaders: {[key: string] : string} = {};
+
+    if (apiKeyInStorage !== undefined) {
+        additionalHeaders = {
+            ...additionalHeaders,
+            authorization: `Bearer ${apiKeyInStorage}`,
+        }
+    }
+
     const response: Response = await NetworkManager.doRequest({
         url,
         method,
         query,
-        config,
+        config: {
+            ...config,
+            headers: {
+                ...config?.headers,
+                ...additionalHeaders,
+            },
+        },
     });
 
     if (response.status === UNAUTHORISED_STATUS) {
