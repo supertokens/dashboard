@@ -46,9 +46,9 @@ const Auth: React.FC<{}> = () => {
             url: getApiUrl("/api/key/validate"),
             method: "POST",
             config: {
-                body: JSON.stringify({
-                    "key": apikeyFromUser,
-                }),
+                headers: {
+                    authorization: `Bearer ${apikeyFromUser}`,
+                },
             },
         });
 

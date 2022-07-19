@@ -14,8 +14,6 @@ const websiteDomain = "http://localhost:3000";
 let app = express();
 app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[content-length]"));
 
-// TODO NEMI: Debug why it doesnt work with a . in the apiBasePath - Done
-// TODO NEMI: Change isValidApiKey to be names isValidAuth or something similar - Done
 SuperTokens.init({
     framework: "express",
     supertokens: {
@@ -25,7 +23,7 @@ SuperTokens.init({
         appName: "Dashboard Dev",
         apiDomain: "http://localhost:3001",
         websiteDomain,
-        apiBasePath: "/.test"
+        apiBasePath: "/auth"
     },
     recipeList: [
         Dashboard.init({
