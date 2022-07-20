@@ -10,11 +10,10 @@
   color: rgb(110, 106, 101);
   font-weight: 500;
   margin-bottom: 14px;
-  font-family: 'Rubik';
 }
 
 .inputField {
-  font-family: 'Rubik';
+  font-family: inherit;
   display: block;
   font-size: 14px;
   line-height: 17px;
@@ -54,5 +53,4 @@
   font-size: 14px;
   line-height: 17px;
   margin: 0px;
-  font-family: 'Rubik';
 }
