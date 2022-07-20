@@ -17,7 +17,6 @@ import { useNavigate } from "react-router-dom";
 import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { fetchData, getApiUrl } from "../../../utils";
-import Button from "../../components/button/Button";
 import InputField from "../../components/inputField/InputField";
 
 import styles from "./Auth.module.css";
@@ -92,12 +91,11 @@ const Auth: React.FC<{}> = () => {
                         placeholder="Your API Key"
                     />
 
-                    <Button
-                        fullWidth
-                        label="Submit"
-                        disabled={loading}
+                    <button
+                        className="button full-width"
                         type="submit"
-                    />
+                        disabled={loading}
+                    >Submit</button>
                 </form>
             </div>
         </div>
