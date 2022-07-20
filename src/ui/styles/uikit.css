@@ -1,0 +1,16 @@
+.full-width {
+  width: 100%;
+}
+
+.button {
+  padding: 10px 16px;
+  font-size: 14px;
+  line-height: 17px;
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary-darker);
+  font-weight: 600;
+  color: white;
+  border-radius: 6px;
+  font-family: inherit;
+  cursor: pointer;
+}
