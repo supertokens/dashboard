@@ -1,0 +1,25 @@
+.no-users {
+  padding: 60px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+
+.no-users-image {
+  height: 43px;
+  width: 63px;
+  margin-bottom: 24px;
+}
+
+.no-users-title {
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 500;
+  color: var(--color-black);
+  letter-spacing: 0.18px;
+  margin-bottom: 12px;
+}
+
+.no-users-subtitle {
+  color: rgb(110, 106, 101);
+}
