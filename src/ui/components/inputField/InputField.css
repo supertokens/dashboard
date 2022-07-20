@@ -1,10 +1,10 @@
-.inputFieldContainer {
+.input-field-container {
   display: flex;
   flex-flow: column;
   margin-bottom: 24px;
 }
 
-.inputLabel {
+.input-label {
   font-size: 14px;
   line-height: 16px;
   color: rgb(110, 106, 101);
@@ -12,7 +12,7 @@
   margin-bottom: 14px;
 }
 
-.inputField {
+.input-field {
   font-family: inherit;
   display: block;
   font-size: 14px;
@@ -24,32 +24,32 @@
   outline: none;
 }
 
-.inputField:active, .inputField:focus {
+.input-field:active, .input-field:focus {
   border-color: var(--color-primary);
   box-shadow: 0px 0px 0px 2px var(--color-primary-opacity-40);
 }
 
-.inputFieldErrorState,
-.inputFieldErrorState:focus,
-.inputFieldErrorState:active {
+.input-field-error-state,
+.input-field-error-state:focus,
+.input-field-error-state:active {
   border-color: var(--color-error);
   box-shadow: 0px 0px 0px 2px var(--color-error-opacity-40);
 }
 
-.inputFieldError {
+.input-field-error {
   display: flex;
   align-items: center;
   margin-top: 8px;
 }
 
-.inputFieldErrorIcon {
+.input-field-error-icon {
   height: 16px;
   width: 16px;
   margin-right: 4px;
   margin-bottom: 2px;
 }
 
-.inputFieldErrorText {
+.input-field-error-text {
   color: var(--color-error);
   font-size: 14px;
   line-height: 17px;

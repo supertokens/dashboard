@@ -19,7 +19,7 @@ import { localStorageHandler } from "../../../services/storage";
 import { fetchData, getApiUrl } from "../../../utils";
 import InputField from "../../components/inputField/InputField";
 
-import styles from "./Auth.module.css";
+import "./Auth.css";
 
 const Auth: React.FC<{}> = () => {
     const navigate = useNavigate();
@@ -77,10 +77,10 @@ const Auth: React.FC<{}> = () => {
     }
 
     return (
-        <div className={styles.pageContainer}>
-            <div className={styles.apiKeyFormContainer}>
-                <h1 className={styles.apiKeyFormTitle}>Enter your API Key</h1>
-                <form className={styles.apiKeyForm} onSubmit={handleSubmit}>
+        <div className="page-container">
+            <div className="api-key-form-container">
+                <h1 className="api-key-form-title">Enter your API Key</h1>
+                <form className="api-key-form" onSubmit={handleSubmit}>
                     <InputField
                         handleChange={handleApiKeyFieldChange}
                         name="apiKey"

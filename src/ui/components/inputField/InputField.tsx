@@ -15,7 +15,7 @@
 import React from "react";
 import { getImageUrl } from "../../../utils";
 
-import styles from "./InputField.module.css";
+import "./InputField.css";
 
 type InputFieldPropTypes = {
   type: "text" | "email" | "password";
@@ -30,27 +30,27 @@ type InputFieldPropTypes = {
 const InputField: React.FC<InputFieldPropTypes> = (props) => {
 
   return (
-    <div className={styles.inputFieldContainer}>
+    <div className="input-field-container">
       <label
         htmlFor={props.name}
-        className={styles.inputLabel}
+        className="input-label"
       >{props.label}:</label>
       <input
         type={props.type}
         name={props.name}
         onChange={props.handleChange}
         value={props.value}
-        className={props.error ? `${styles.inputField} ${styles.inputFieldErrorState}` : styles.inputField}
+        className={props.error ? "input-field input-field-error-state" : "input-field"}
         placeholder={props.placeholder}
       />
       {props.error && (
-        <div className={styles.inputFieldError}>
+        <div className="input-field-error">
           <img
-            className={styles.inputFieldErrorIcon}
+            className="input-field-error-icon"
             src={getImageUrl("form-field-error-icon.svg")}
             alt="Error in field"
           />
-          <p className={styles.inputFieldErrorText}>{props.error}</p>
+          <p className="input-field-error-text">{props.error}</p>
         </div>
       )}
     </div>
