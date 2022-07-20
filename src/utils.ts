@@ -49,29 +49,7 @@ export const fetchDataAndRedirectIf401 = async ({
     query?: {[key: string]: string},
     config?: RequestInit,
 }) => {
-    const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
-    
-    let additionalHeaders: {[key: string] : string} = {};
-
-    if (apiKeyInStorage !== undefined) {
-        additionalHeaders = {
-            ...additionalHeaders,
-            authorization: `Bearer ${apiKeyInStorage}`,
-        }
-    }
-
-    const response: Response = await NetworkManager.doRequest({
-        url,
-        method,
-        query,
-        config: {
-            ...config,
-            headers: {
-                ...config?.headers,
-                ...additionalHeaders,
-            },
-        },
-    });
+    const response = await fetchData({ url, method, query, config });
 
     if (response.status === UNAUTHORISED_STATUS) {
         window.location.assign(getDashboardAppBasePath() + "/auth")
