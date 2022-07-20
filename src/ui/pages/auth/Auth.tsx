@@ -46,9 +46,9 @@ const Auth: React.FC<{}> = () => {
             localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
             navigate("/");
         } else if (response.status === UNAUTHORISED_STATUS) {
-            setApiKeyFieldError("Please enter a valid API Key.")
+            setApiKeyFieldError("Invalid API Key.")
         } else {
-            setApiKeyFieldError("An error occured while validating API Key.");
+            setApiKeyFieldError("Something went wrong.");
         }
 
         setIsLoading(false);
@@ -79,7 +79,7 @@ const Auth: React.FC<{}> = () => {
     return (
         <div className={styles.pageContainer}>
             <div className={styles.apiKeyFormContainer}>
-                <h1 className={styles.apiKeyFormTitle}>Validate your API Key</h1>
+                <h1 className={styles.apiKeyFormTitle}>Enter your API Key</h1>
                 <form className={styles.apiKeyForm} onSubmit={handleSubmit}>
                     <InputField
                         handleChange={handleApiKeyFieldChange}
