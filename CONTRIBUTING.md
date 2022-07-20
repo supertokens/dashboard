@@ -74,6 +74,13 @@ NOTE: All images from the project get added to `/static/media` in the build fold
 1. Make changes to supertokens-node and build
 2. Quit and re-run `npm run start` to see the changes
 
+### Making changes to the API spec
+When making changes to the `api_spec.yaml` file
+- 1) Go to [the swagger editor](https://editor.swagger.io/)
+- 2) Copy / paste the contents of the `.yaml` file into the editor, and then you should see the API docs on the right of the screen.
+- 3) Make changes to the online editor and then copy / paste the content back into the `.yaml` file
+- 4) Issue a PR to the appropriate branch (refer to the branching section above)
+
 ### Additional Information (Safe to skip)
 
 - This project has ejected react scripts to allow modifications to webpack
