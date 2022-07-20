@@ -14,3 +14,23 @@
   font-family: inherit;
   cursor: pointer;
 }
+
+/* classes for font sizes */
+.text-title {
+  font-size: 24px;
+  line-height: 28px;
+}
+
+.text-small {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+/* classes for text colors */
+.text-error {
+  color: var(--color-error);
+}
+
+.text-black {
+  color: var(--color-black);
+}

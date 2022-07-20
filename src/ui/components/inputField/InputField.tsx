@@ -33,14 +33,14 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
     <div className="input-field-container">
       <label
         htmlFor={props.name}
-        className="input-label"
+        className="text-small input-label"
       >{props.label}:</label>
       <input
         type={props.type}
         name={props.name}
         onChange={props.handleChange}
         value={props.value}
-        className={props.error ? "input-field input-field-error-state" : "input-field"}
+        className={`text-small text-black input-field ${props.error ? "input-field-error-state" : ""}`}
         placeholder={props.placeholder}
       />
       {props.error && (
@@ -50,7 +50,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
             src={getImageUrl("form-field-error-icon.svg")}
             alt="Error in field"
           />
-          <p className="input-field-error-text">{props.error}</p>
+          <p className="text-small text-error">{props.error}</p>
         </div>
       )}
     </div>

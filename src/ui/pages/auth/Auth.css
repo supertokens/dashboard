@@ -17,14 +17,10 @@
 }
 
 .api-key-form-title {
-  margin: 0px 0px 16px;
-  padding: 0px;
-  font-size: 24px;
-  line-height: 28px;
+  margin-bottom: 16px;
   text-align: center;
 }
 
 .api-key-form {
-  width: 100%;
   padding-top: 24px;
 }

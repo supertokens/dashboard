@@ -79,7 +79,7 @@ const Auth: React.FC<{}> = () => {
     return (
         <div className="page-container">
             <div className="api-key-form-container">
-                <h1 className="api-key-form-title">Enter your API Key</h1>
+                <h1 className="api-key-form-title text-title">Enter your API Key</h1>
                 <form className="api-key-form" onSubmit={handleSubmit}>
                     <InputField
                         handleChange={handleApiKeyFieldChange}
