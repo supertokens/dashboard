@@ -6,7 +6,7 @@
 
 .inputLabel {
   font-size: 14px;
-  line-height: 17px;
+  line-height: 16px;
   color: rgb(110, 106, 101);
   font-weight: 500;
   margin-bottom: 14px;
@@ -16,24 +16,24 @@
   font-family: inherit;
   display: block;
   font-size: 14px;
-  line-height: 17px;
-  padding: 9px 14px 10px;
+  line-height: 16px;
+  padding: 10px 14px 10px;
   border: 1px solid rgb(224, 224, 224);
-  color: rgb(34, 34, 34);
+  color: var(--color-black);
   border-radius: 6px;
   outline: none;
 }
 
 .inputField:active, .inputField:focus {
-  border-color: rgb(255, 153, 51);
-  box-shadow: 0px 0px 0px 2px rgba(255, 153, 51, 0.4);
+  border-color: var(--color-primary);
+  box-shadow: 0px 0px 0px 2px var(--color-primary-opacity-40);
 }
 
 .inputFieldErrorState,
 .inputFieldErrorState:focus,
 .inputFieldErrorState:active {
-  border-color: rgb(237, 52, 78);
-  box-shadow: 0px 0px 0px 2px rgba(237, 52, 78, 0.4);
+  border-color: var(--color-error);
+  box-shadow: 0px 0px 0px 2px var(--color-error-opacity-40);
 }
 
 .inputFieldError {
@@ -43,13 +43,14 @@
 }
 
 .inputFieldErrorIcon {
-  height: 15px;
-  width: 17px;
-  margin-right: 5px;
+  height: 16px;
+  width: 16px;
+  margin-right: 4px;
+  margin-bottom: 2px;
 }
 
 .inputFieldErrorText {
-  color: rgb(237, 52, 78);
+  color: var(--color-error);
   font-size: 14px;
   line-height: 17px;
   margin: 0px;

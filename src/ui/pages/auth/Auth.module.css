@@ -21,10 +21,10 @@
   padding: 0px;
   font-size: 24px;
   line-height: 28px;
+  text-align: center;
 }
 
 .apiKeyForm {
-  border-top: 1px solid rgb(229, 229, 229);
   width: 100%;
   padding-top: 24px;
 }
