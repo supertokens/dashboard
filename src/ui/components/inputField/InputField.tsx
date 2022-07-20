@@ -47,7 +47,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
         <div className={styles.inputFieldError}>
           <img
             className={styles.inputFieldErrorIcon}
-            src={getImageUrl("form-field-error-icon.png")}
+            src={getImageUrl("form-field-error-icon.svg")}
             alt="Error in field"
           />
           <p className={styles.inputFieldErrorText}>{props.error}</p>
