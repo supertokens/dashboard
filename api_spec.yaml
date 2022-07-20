@@ -1,10 +1,143 @@
 openapi: 3.0.0
+
 info:
   version: 0.0.0
   title: Dashboard Interface
-  description: Interface for dashboard and backend SDK to communicate with each other
-paths: {}
+  description: Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
+  
+tags: 
+  - name: "User Management"
+    description: APIs for user management features
+
+paths:
+  /users:
+    get: 
+      tags:
+      - User Management
+      summary: Get a list of all users. This API is paginated
+      operationId: getUsersPaginated
+      parameters:
+      - name: authorization
+        in: header
+        required: true
+        schema:
+          type: string
+          example: "Bearer API_KEY"
+      - name: paginationToken
+        required: false
+        in: query
+        schema:
+          type: string
+      - name: limit
+        description: The number of users to fetch for the given page
+        required: true
+        in: query
+        schema:
+          type: number
+      - name: timeJoinedOrder
+        description: The order in which the users should be listed, based on the timestamp for when they were created
+        in: query
+        schema:
+          type: string
+          enum:
+          - "ASC"
+          - "DESC"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    default: "OK"
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        recipeId:
+                          type: string
+                          enum:
+                          - "emailpassword"
+                          - "thirdparty"
+                          - "thirdpartyemailpassword"
+                          - "passwordless"
+                          - "thirdpartypasswordless"
+                        user:
+                          anyOf:
+                            - type: object
+                              properties:
+                                id:
+                                  type: string
+                                  example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                email:
+                                  type: string
+                                  example: "johndoe@gmail.com"
+                                timeJoined:
+                                  type: number
+                                  example: 1623918032231
+                            - type: object
+                              properties:
+                                id:
+                                  type: string
+                                  example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                email:
+                                  type: string
+                                  example: "johndoe@gmail.com"
+                                timeJoined:
+                                  type: number
+                                  example: 1623918032231
+                                thirdparty:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                    userId:
+                                      type: string
+                            - type: object
+                              properties:
+                                id:
+                                  type: string
+                                  example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                email:
+                                  type: string
+                                  example: "johndoe@gmail.com"
+                                phone:
+                                  type: string
+                                  example: "+14155552671"
+                                timeJoined:
+                                  type: number
+                                  example: 1623918032231
+        400:
+          description: error code 400
+          content:
+            text/plain:
+              schema:
+                type: string
+                enum:
+                  - Method not supported
+        401:
+          description: Unauthorised access
+          content:
+            text/plain:
+              schema:
+                type: string
+                enum:
+                - Unauthorised access
+        404:
+          description: error code 404
+          content:
+            text/plain:
+              schema:
+                type: string
+                enum:
+                  - Not Found
+  
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/supertokens/DashboardInterface/0.0.0
+    
