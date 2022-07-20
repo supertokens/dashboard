@@ -1,5 +1,6 @@
 import React from "react";
-import NoUsers from "./NoUsers/NoUsers";
+
+import NoUsers from "../../components/noUsers/NoUsers";
 
 import "./UsersList.css";
 
