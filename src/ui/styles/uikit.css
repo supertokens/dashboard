@@ -1,0 +1,36 @@
+.full-width {
+  width: 100%;
+}
+
+.button {
+  padding: 8px 16px;
+  font-size: 14px;
+  line-height: 16px;
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-primary-darker);
+  font-weight: 600;
+  color: var(--color-white);
+  border-radius: 6px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* classes for font sizes */
+.text-title {
+  font-size: 24px;
+  line-height: 28px;
+}
+
+.text-small {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+/* classes for text colors */
+.text-error {
+  color: var(--color-error);
+}
+
+.text-black {
+  color: var(--color-black);
+}

@@ -12,42 +12,30 @@
 * License for the specific language governing permissions and limitations
 * under the License.
 */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { StorageKeys } from "../../../constants";
+import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
+import { fetchData, getApiUrl } from "../../../utils";
+import InputField from "../../components/inputField/InputField";
+
+import "./Auth.css";
 
 const Auth: React.FC<{}> = () => {
     const navigate = useNavigate();
 
-    // This is to avoid double prompts in dev mode because of useEffect
-    let didPrompt = false;
+    const [apiKey, setApiKey] = useState("");
+    const [apiKeyFieldError, setApiKeyFieldError] = useState("");
+    const [loading, setIsLoading] = useState<boolean>(false);
 
-    const getApiKeyFromUser = (): string => {
-        const apiKey = window.prompt("Please enter API key");
-
-        if (apiKey === null || apiKey.trim().length === 0) {
-            return getApiKeyFromUser();
-        }
-
-        return `${apiKey}`;
-    }
-
-    const promptAndValidateKey = async () => {
-        if (didPrompt) {
-            return;
-        }
-
-        didPrompt = true;
-
-        const apikeyFromUser = getApiKeyFromUser();
-        const response = await fetchDataAndRedirectIf401({
+    const validateKey = async () => {
+        setIsLoading(true);
+        const response = await fetchData({
             url: getApiUrl("/api/key/validate"),
             method: "POST",
             config: {
                 headers: {
-                    authorization: `Bearer ${apikeyFromUser}`,
+                    authorization: `Bearer ${apiKey}`,
                 },
             },
         });
@@ -55,23 +43,62 @@ const Auth: React.FC<{}> = () => {
         const body = await response.json();
 
         if (response.status === 200 && body.status === "OK") {
-            localStorageHandler.setItem(StorageKeys.API_KEY, apikeyFromUser);
+            localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
             navigate("/");
+        } else if (response.status === UNAUTHORISED_STATUS) {
+            setApiKeyFieldError("Invalid API Key.")
         } else {
-            didPrompt = false;
-            promptAndValidateKey();
+            setApiKeyFieldError("Something went wrong.");
         }
+
+        setIsLoading(false);
     }
 
     useEffect(() => {
         // We delete from storage first because the user could have been redirected to auth
         // because of a 401
         localStorageHandler.removeItem(StorageKeys.API_KEY);
-        promptAndValidateKey();
     }, [])
 
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
+            validateKey();
+        } else {
+            setApiKeyFieldError("API Key field cannot be empty.");
+        }
+    }
+
+    const handleApiKeyFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        setApiKey(value);
+        setApiKeyFieldError("");
+    }
+
     return (
-        <div>Loading...</div>
+        <div className="page-container">
+            <div className="api-key-form-container">
+                <h1 className="api-key-form-title text-title">Enter your API Key</h1>
+                <form className="api-key-form" onSubmit={handleSubmit}>
+                    <InputField
+                        handleChange={handleApiKeyFieldChange}
+                        name="apiKey"
+                        type="text"
+                        error={apiKeyFieldError}
+                        label="API Key"
+                        value={apiKey}
+                        placeholder="Your API Key"
+                    />
+
+                    <button
+                        className="button full-width"
+                        type="submit"
+                        disabled={loading}
+                    >Submit</button>
+                </form>
+            </div>
+        </div>
     );
 }
 

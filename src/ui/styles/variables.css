@@ -1,0 +1,12 @@
+body {
+  /* theme colors */
+  --color-primary: rgb(255, 153, 51);
+  --color-primary-opacity-40: rgba(255, 153, 51, 0.40);
+  --color-primary-darker: rgb(255, 128, 0);
+
+  --color-white: rgb(255, 255, 255);
+  --color-black: rgb(34, 34, 34);
+
+  --color-error: rgb(237, 52, 78);
+  --color-error-opacity-40: rgba(237, 52, 78, 0.40);
+}
