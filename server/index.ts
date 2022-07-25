@@ -59,7 +59,7 @@ app.get("/status", (req, res) => {
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     // Leaving this in because it helps with debugging
     console.log("Internal error", err);
-    res.status(500).send("Internal server error");
+    res.status(500).send(err.message === undefined ? "Internal server error" : err.message);
 })
 
 app.listen(3001, () => {
