@@ -53,6 +53,10 @@ paths:
                   status:
                     type: string
                     default: "OK"
+                  nextPaginationToken:
+                    type: string
+                    description: Token to fetch the next set of users, if no more users can be fetched this value is undefined
+                    example: "ZmE3YTA4ND...OzE2MjM5MTgwMzIyMzE="
                   users:
                     type: array
                     items:
@@ -63,13 +67,7 @@ paths:
                           enum:
                           - "emailpassword"
                           - "thirdparty"
-                          - "thirdpartyemailpassword"
                           - "passwordless"
-                          - "thirdpartypasswordless"
-                        nextPaginationToken:
-                          type: string
-                          description: Token to fetch the next set of users, if no more users can be fetched this value is undefined
-                          example: "ZmE3YTA4ND...OzE2MjM5MTgwMzIyMzE="
                         user:
                           anyOf:
                             - type: object
@@ -83,6 +81,10 @@ paths:
                                 timeJoined:
                                   type: number
                                   example: 1623918032231
+                                firstName:
+                                  type: string
+                                lastName:
+                                  type: string
                             - type: object
                               properties:
                                 id:
@@ -94,6 +96,10 @@ paths:
                                 timeJoined:
                                   type: number
                                   example: 1623918032231
+                                firstName:
+                                  type: string
+                                lastName:
+                                  type: string
                                 thirdparty:
                                   type: object
                                   properties:
@@ -115,6 +121,10 @@ paths:
                                 timeJoined:
                                   type: number
                                   example: 1623918032231
+                                firstName:
+                                  type: string
+                                lastName:
+                                  type: string
         400:
           description: error code 400
           content:
