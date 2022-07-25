@@ -7,13 +7,13 @@
 .input-label {
   color: rgb(110, 106, 101);
   font-weight: 500;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .input-field {
   font-family: inherit;
   display: block;
-  padding: 10px 14px 10px;
+  padding: 8px 12px 8px;
   border: 1px solid rgb(224, 224, 224);
   border-radius: 6px;
   outline: none;
