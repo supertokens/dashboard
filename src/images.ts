@@ -5,3 +5,6 @@
  */
 import "./logo.svg";
 import "./assets/form-field-error-icon.svg";
+import "./assets/no-users-graphic.svg";
+import "./assets/chevron-left.svg";
+import "./assets/chevron-right.svg";
