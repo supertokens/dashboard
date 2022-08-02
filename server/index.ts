@@ -1,6 +1,7 @@
 import express from "express";
 import { NextFunction, Request, Response } from "express";
 import SuperTokens from "supertokens-node";
+import UserMetaData from "supertokens-node/recipe/usermetadata";
 import Dashboard from "supertokens-node/lib/build/recipe/dashboard/recipe";
 import {
     middleware,
@@ -39,6 +40,7 @@ SuperTokens.init({
                 }
             },
         }),
+        UserMetaData.init(),
     ],
 })
 
