@@ -149,6 +149,55 @@ paths:
                 type: string
                 enum:
                   - Not Found
+  /users/count:
+    get:
+      tags:
+      - User Management
+      summary: Get total number of users
+      operationId: getUsersCount
+      parameters:
+      - name: authorization
+        in: header
+        required: true
+        schema:
+          type: string
+          example: "Bearer API_KEY"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    default: "OK"
+                  count:
+                    type: number
+                    example: 1000
+        400:
+          description: error code 400
+          content:
+            text/plain:
+              schema:
+                type: string
+        401:
+          description: Unauthorised access
+          content:
+            text/plain:
+              schema:
+                type: string
+                enum:
+                - Unauthorised access
+        404:
+          description: error code 404
+          content:
+            text/plain:
+              schema:
+                type: string
+                enum:
+                  - Not Found
   
 servers:
   # Added by API Auto Mocking Plugin
