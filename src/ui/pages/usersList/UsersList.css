@@ -1,7 +1,8 @@
 .users-list {
-  margin: 100px auto;
+  margin: 0 auto;
+  padding: 30px 0;
   width: calc(100% - 32px);
-  max-width: 829px;
+  max-width: 829px;  
 }
 
 .users-list-title {
