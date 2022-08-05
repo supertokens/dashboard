@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { fetchDataAndRedirectIf401, getApiUrl, ListCount, ResponseList } from '../../../utils'
+import AuthWrapper from '../../components/authWrapper'
 import NoUsers from '../../components/noUsers/NoUsers'
 import UsersListTable, { LIST_DEFAULT_LIMIT } from '../../components/usersListTable/UsersListTable'
 import { User } from './types'
 import './UsersList.css'
 
-const UsersList: React.FC = () => {
+export const UsersList: React.FC = () => {
   const [count, setCount] = useState<number>(0)
   const [users, setUsers] = useState<User[]>([])
   const [offset, setOffset] = useState<number>(0)
@@ -82,4 +83,10 @@ const fetchCount = () =>
     method: 'GET',
   }).then(async (response) => response && ((await response?.json()) as ListCount))
 
-export default UsersList
+export const UserListPage = () => (
+  <AuthWrapper>
+    <UsersList />
+  </AuthWrapper>
+)
+export default UserListPage
+
