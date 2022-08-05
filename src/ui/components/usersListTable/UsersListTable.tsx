@@ -39,10 +39,10 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
         </thead>
         <tbody className='text-small'>
           {
-            isLoading && PlaceholderTableRows() // show placeholder when it is loading from API
+            isLoading && PlaceholderTableRows(limit, 3, 'user-info') // show placeholder when it is loading from API
           }
           {
-            !isLoading && (displayedUsers.length > 0 ? getUserRows() : getNoUsersRow()) // show rows when it is not loading from API
+            !isLoading && (displayedUsers.length > 0 ? UserTableRows(displayedUsers) : NoUsersRow()) // show rows when it is not loading from API
           }
         </tbody>
       </table>
@@ -56,32 +56,14 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
       </div>
     </div>
   )
-
-  function getUserRows(): React.ReactNode {
-    return displayedUsers.map((user, index) => UserTableRow({ user: user, index }))
-  }
-
-  function getNoUsersRow(): React.ReactNode {
-    return (
-      <tr>
-        <td>
-          <NoUsers />
-        </td>
-      </tr>
-    )
-  }
-
-  function PlaceholderTableRows() {
-    return new Array(limit).fill(null).map((_, index) => (
-      <tr key={index} className='user-row placeholder'>
-        <td colSpan={3}>
-          <div className='user-info'></div>
-        </td>
-      </tr>
-    ))
-  }
 }
 
+// Table Rows Section
+const UserTableRows = (displayedUsers: User[]) => {
+  return displayedUsers.map((user, index) => UserTableRow({ user: user, index }))
+}
+
+// Single Row Section
 const UserTableRow: React.FC<{ user: User; index?: number }> = (props) => {
   const { user, index } = props
   return (
@@ -109,7 +91,7 @@ const UserRecipePill = (user: User) => {
   const thirdpartyId = user.recipeId === UserRecipeType.thirdparty && user.user.thirdParty.id
   return (
     <div className={`pill ${user.recipeId} ${thirdpartyId}`}>
-      {UserRecipeTypeText[user.recipeId]}
+      <span>{UserRecipeTypeText[user.recipeId]}</span>
       {thirdpartyId && <span> - {thirdpartyId}</span>}
     </div>
   )
@@ -125,47 +107,32 @@ const UserRecipeTypeText: Record<UserRecipeType, string> = {
   [UserRecipeType.thirdparty]: 'Third party',
 }
 
+// Pagination Section
 const UserListPagination = (props: UserListProps) => {
-  const { limit, offset, goToNext, offsetChange, nextPaginationToken, isLoading, count, users } = {
+  return (
+    <div className='users-list-pagination'>
+      {UserTablePaginationInfo(props)}
+      {UserTablePaginationNavigation(props)}
+    </div>
+  )
+}
+
+const UserTablePaginationInfo = (props: Pick<UserListProps, 'count' | 'limit' | 'offset'>) => {
+  const { offset, limit, count } = { offset: 0, limit: LIST_DEFAULT_LIMIT, ...props }
+  return (
+    <p className='users-list-pagination-count text-small'>
+      {offset + 1} - {offset + limit} of {count}
+    </p>
+  )
+}
+
+const UserTablePaginationNavigation = (props: UserListProps) => {
+  const { offset, limit, count, isLoading, offsetChange, nextPaginationToken, users, goToNext } = {
     offset: 0,
     limit: LIST_DEFAULT_LIMIT,
     ...props,
   }
-  return (
-    <div className='users-list-pagination'>
-      {getPaginationInfo()}
-      {getPaginationNavigation()}
-    </div>
-  )
-
-  function getPaginationInfo() {
-    return (
-      <p className='users-list-pagination-count text-small'>
-        {offset + 1} - {offset + limit} of {count}
-      </p>
-    )
-  }
-
-  function getPaginationNavigation() {
-    return (
-      <div className='users-list-pagination-navigation'>
-        <button
-          className='users-list-pagination-button'
-          disabled={!offset || isLoading}
-          onClick={() => offsetChange && offsetChange(Math.max(offset - limit, 0))}>
-          <img src={getImageUrl('chevron-left.svg')} alt='Previous page' />
-        </button>
-        <button
-          className='users-list-pagination-button'
-          disabled={(!nextPaginationToken && offset + limit > count) || isLoading}
-          onClick={handleNextPagination()}>
-          <img src={getImageUrl('chevron-right.svg')} alt='Next page' />
-        </button>
-      </div>
-    )
-  }
-
-  function handleNextPagination(): React.MouseEventHandler<HTMLButtonElement> | undefined {
+  const handleNextPagination = () => {
     return () => {
       // go to some offset if the next page's records is already exist in memory
       if (offset + limit < users.length) {
@@ -176,6 +143,43 @@ const UserListPagination = (props: UserListProps) => {
       }
     }
   }
+
+  return (
+    <div className='users-list-pagination-navigation'>
+      <button
+        className='users-list-pagination-button'
+        disabled={!offset || isLoading}
+        onClick={() => offsetChange && offsetChange(Math.max(offset - limit, 0))}>
+        <img src={getImageUrl('chevron-left.svg')} alt='Previous page' />
+      </button>
+      <button
+        className='users-list-pagination-button'
+        disabled={(!nextPaginationToken && offset + limit > count) || isLoading}
+        onClick={handleNextPagination()}>
+        <img src={getImageUrl('chevron-right.svg')} alt='Next page' />
+      </button>
+    </div>
+  )
+}
+
+const NoUsersRow = () => {
+  return (
+    <tr>
+      <td>
+        <NoUsers />
+      </td>
+    </tr>
+  )
+}
+
+const PlaceholderTableRows = (rowCount: number, colSpan: number, className?: string) => {
+  return new Array(rowCount).fill(null).map((_, index) => (
+    <tr key={index} className='user-row placeholder'>
+      <td colSpan={colSpan}>
+        <div className={className}></div>
+      </td>
+    </tr>
+  ))
 }
 
 export default UsersListTable
