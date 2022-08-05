@@ -2,9 +2,8 @@
 
 .phone-display {
   display: flex;
-  align-items: center;
-  gap: 5px;
-  @include gap-ios(5px);
+  align-items: flex-start;
+  @include gap-horizontal(5px);
   
   img {
     height: .9em; 

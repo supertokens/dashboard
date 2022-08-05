@@ -6,12 +6,11 @@ export const PhoneDisplay = (phone: string) => {
     parsePhoneNumberFromString(phone) || {}
   return (
     country && (
-      <div className="phone-display">
-        <img
-          alt={country}
-          src={`https://ipdata.co/flags/${country?.toLowerCase()}.png`}
-        />
-        +{countryCallingCode} {format(phone, "NATIONAL")}
+      <div className='phone-display'>
+        <img alt={country} src={`https://ipdata.co/flags/${country?.toLowerCase()}.png`} />
+        <span>
+          +{countryCallingCode} {format(phone, 'NATIONAL')}
+        </span>
       </div>
     )
   )

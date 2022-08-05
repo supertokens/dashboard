@@ -36,8 +36,7 @@ $container-padding-v: 24px;
   .user-info {
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
-    @include gap-ios(0.5em);
+    @include gap-horizontal(0.5em);
     color: var(--color-light);
     padding-right: 1em;
     .main {
@@ -54,8 +53,7 @@ $container-padding-v: 24px;
     align-items: center;
     width: fit-content;
     white-space: nowrap;
-    gap: 4px;
-    @include gap-ios(4px);
+    @include gap-horizontal(4px);
 
     &.passwordless {
       color: var(--color-danger);
@@ -109,16 +107,14 @@ $container-padding-v: 24px;
 
 .users-list-pagination {
   display: flex;
-  gap: 1em;
-  @include gap-ios(1em);
+  @include gap-horizontal(1em);
 
   .users-list-pagination-count {
     font-weight: 500;
   }
   .users-list-pagination-navigation {
     display: flex;
-    gap: .5em;
-    @include gap-ios(.5em);
+    @include gap-horizontal(.5em);
   }
   .users-list-pagination-button {
     border: none;
