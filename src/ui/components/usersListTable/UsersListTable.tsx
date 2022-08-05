@@ -126,7 +126,7 @@ const UserRecipeTypeText: Record<UserRecipeType, string> = {
 }
 
 const UserListPagination = (props: UserListProps) => {
-  const { limit, offset, goToNext, offsetChange, nextPaginationToken, isLoading, count } = {
+  const { limit, offset, goToNext, offsetChange, nextPaginationToken, isLoading, count, users } = {
     offset: 0,
     limit: LIST_DEFAULT_LIMIT,
     ...props,
@@ -141,7 +141,7 @@ const UserListPagination = (props: UserListProps) => {
   function getPaginationInfo() {
     return (
       <p className='users-list-pagination-count text-small'>
-        {offset + 1}- {offset + limit} of {count}
+        {offset + 1} - {offset + limit} of {count}
       </p>
     )
   }
@@ -158,16 +158,23 @@ const UserListPagination = (props: UserListProps) => {
         <button
           className='users-list-pagination-button'
           disabled={(!nextPaginationToken && offset + limit > count) || isLoading}
-          onClick={() =>
-            // load next page from API if it has nextPaginationToken
-            (goToNext && nextPaginationToken && goToNext(nextPaginationToken)) ||
-            // go to some offset if the next page's records is already exist in memory
-            (offsetChange && offsetChange(offset + limit))
-          }>
+          onClick={handleNextPagination()}>
           <img src={getImageUrl('chevron-right.svg')} alt='Next page' />
         </button>
       </div>
     )
+  }
+
+  function handleNextPagination(): React.MouseEventHandler<HTMLButtonElement> | undefined {
+    return () => {
+      // go to some offset if the next page's records is already exist in memory
+      if (offset + limit < users.length) {
+        offsetChange && offsetChange(offset + limit)
+      } else {
+        // load next page from API if it has nextPaginationToken
+        goToNext && nextPaginationToken && goToNext(nextPaginationToken)
+      }
+    }
   }
 }
 
