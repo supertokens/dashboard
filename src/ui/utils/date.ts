@@ -3,7 +3,9 @@ import { ordinal } from "./number";
 const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 /**
- * @param date epooch number of date, or date object
+ * Output long date
+ ** example: 5th August, 03:35 pm
+ * @param date epooch number, or Date object
  */
 export const formatLongDate = (date: number | Date) => {
   if (typeof date === 'number') { date = new Date(date) }

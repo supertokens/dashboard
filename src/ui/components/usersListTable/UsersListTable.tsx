@@ -38,8 +38,12 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
           </tr>
         </thead>
         <tbody className='text-small'>
-          {isLoading && PlaceholderTableRows()}
-          {!isLoading && (displayedUsers.length > 0 ? getUserRows() : getNoUsersRow())}
+          {
+            isLoading && PlaceholderTableRows() // show placeholder when it is loading from API
+          }
+          {
+            !isLoading && (displayedUsers.length > 0 ? getUserRows() : getNoUsersRow()) // show rows when it is not loading from API
+          }
         </tbody>
       </table>
 
@@ -155,7 +159,9 @@ const UserListPagination = (props: UserListProps) => {
           className='users-list-pagination-button'
           disabled={(!nextPaginationToken && offset + limit > count) || isLoading}
           onClick={() =>
+            // load next page from API if it has nextPaginationToken
             (goToNext && nextPaginationToken && goToNext(nextPaginationToken)) ||
+            // go to some offset if the next page's records is already exist in memory
             (offsetChange && offsetChange(offset + limit))
           }>
           <img src={getImageUrl('chevron-right.svg')} alt='Next page' />
