@@ -1,3 +1,5 @@
+@import "../../styles/mixin.scss";
+
 $container-padding-v: 24px;
 
 .users-list-table-container {
@@ -35,6 +37,7 @@ $container-padding-v: 24px;
     display: flex;
     flex-direction: column;
     gap: 0.5em;
+    @include gap-ios(0.5em);
     color: var(--color-light);
     padding-right: 1em;
     .main {
@@ -52,6 +55,7 @@ $container-padding-v: 24px;
     width: fit-content;
     white-space: nowrap;
     gap: 4px;
+    @include gap-ios(4px);
 
     &.passwordless {
       color: var(--color-danger);
@@ -100,6 +104,7 @@ $container-padding-v: 24px;
 .users-list-pagination {
   display: flex;
   gap: 1em;
+  @include gap-ios(1em);
 
   .users-list-pagination-count {
     font-weight: 500;
@@ -107,6 +112,7 @@ $container-padding-v: 24px;
   .users-list-pagination-navigation {
     display: flex;
     gap: .5em;
+    @include gap-ios(.5em);
   }
   .users-list-pagination-button {
     border: none;

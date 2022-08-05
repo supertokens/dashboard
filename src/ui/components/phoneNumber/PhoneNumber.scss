@@ -1,7 +1,11 @@
+@import "../../styles/mixin.scss";
+
 .phone-display {
   display: flex;
   align-items: center;
   gap: 5px;
+  @include gap-ios(5px);
+  
   img {
     height: .9em; 
     border: 1px solid var(--color-light-opacity-40);      

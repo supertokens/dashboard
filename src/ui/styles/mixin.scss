@@ -1,0 +1,7 @@
+@mixin gap-ios($gap) {
+  @supports (-webkit-touch-callout: none) and (not (translate: none)) {
+    &:not(:last-child) {
+      margin-right: $gap;
+    }
+  }
+}
