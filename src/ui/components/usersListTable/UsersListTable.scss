@@ -39,7 +39,7 @@ $container-padding-v: 24px;
     padding-right: 1em;
     .main {
       color: var(--color-black);
-      font-weight: 600;
+      font-weight: 500;
     }
   }
   .pill {
@@ -101,8 +101,15 @@ $container-padding-v: 24px;
   display: flex;
   gap: 1em;
 
+  .users-list-pagination-count {
+    font-weight: 500;
+  }
   .users-list-pagination-navigation {
     display: flex;
     gap: .5em;
+  }
+  .users-list-pagination-button {
+    border: none;
+    background: none;
   }
 }

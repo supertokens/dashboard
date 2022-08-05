@@ -28,3 +28,7 @@ code {
 button:not(:disabled) {
   cursor: pointer;
 }
+
+button:disabled {
+  opacity: 0.5;
+}
