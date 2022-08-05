@@ -38,17 +38,8 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
           </tr>
         </thead>
         <tbody className='text-small'>
-          {isLoading ? (
-            PlaceholderTableRows()
-          ) : displayedUsers.length > 0 ? (
-            displayedUsers.map((user, index) => UserTableRow({ user: user, index }))
-          ) : (
-            <tr>
-              <td>
-                <NoUsers />
-              </td>
-            </tr>
-          )}
+          {isLoading && PlaceholderTableRows()}
+          {!isLoading && (displayedUsers.length > 0 ? getUserRows() : getNoUsersRow())}
         </tbody>
       </table>
 
@@ -61,6 +52,20 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
       </div>
     </div>
   )
+
+  function getUserRows(): React.ReactNode {
+    return displayedUsers.map((user, index) => UserTableRow({ user: user, index }))
+  }
+
+  function getNoUsersRow(): React.ReactNode {
+    return (
+      <tr>
+        <td>
+          <NoUsers />
+        </td>
+      </tr>
+    )
+  }
 
   function PlaceholderTableRows() {
     return new Array(limit).fill(null).map((_, index) => (
@@ -124,9 +129,21 @@ const UserListPagination = (props: UserListProps) => {
   }
   return (
     <div className='users-list-pagination'>
+      {getPaginationInfo()}
+      {getPaginationNavigation()}
+    </div>
+  )
+
+  function getPaginationInfo() {
+    return (
       <p className='users-list-pagination-count text-small'>
         {offset + 1}- {offset + limit} of {count}
       </p>
+    )
+  }
+
+  function getPaginationNavigation() {
+    return (
       <div className='users-list-pagination-navigation'>
         <button
           className='users-list-pagination-button'
@@ -144,8 +161,8 @@ const UserListPagination = (props: UserListProps) => {
           <img src={getImageUrl('chevron-right.svg')} alt='Next page' />
         </button>
       </div>
-    </div>
-  )
+    )
+  }
 }
 
 export default UsersListTable
