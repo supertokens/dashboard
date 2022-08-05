@@ -18,6 +18,7 @@ export const UsersList: React.FC = () => {
       if (users[offset + LIST_DEFAULT_LIMIT] == null) {
         const data = await (paginationToken ? fetchUsers({ paginationToken }) : fetchUsers()).catch(() => null)
         if (data) {
+          // store the users and pagination token
           const { users: responseUsers, nextPaginationToken } = data
           setUsers(users.concat(responseUsers))
           setNextPaginationToken(nextPaginationToken)
