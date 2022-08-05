@@ -14,7 +14,7 @@
 }
 
 .users-list-subtitle {
-  color: rgb(110, 106, 101);
+  color: var(--color-light);
   margin-bottom: 48px;
 }
 

@@ -21,7 +21,7 @@ code {
 }
 
 #root {
-  background-color: rgb(248, 248, 248);
+  background-color: var(--color-light-white);
   min-height: 100vh;
 }
 
