@@ -90,7 +90,13 @@ $container-padding-v: 24px;
       width: 100%;
       background-color: var(--color-light-opacity-20);
       height: 1em;
-      opacity: .2;
+      opacity: .4;
+      animation: blinker 2s linear infinite;
+      @keyframes blinker {
+        50% {
+          opacity: 0.1;
+        }
+      } 
     }
   }
 }
