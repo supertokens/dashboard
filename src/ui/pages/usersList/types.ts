@@ -4,7 +4,7 @@ export enum UserRecipeType {
   passwordless = "passwordless" }
 
 export type User = { recipeId: UserRecipeType.emailpassword, user: UserEmailPassword } | 
-  { recipeId: UserRecipeType.passwordless, user: UserPasswordless } |
+  { recipeId: UserRecipeType.passwordless, user: UserEmailPassword } |
   { recipeId: UserRecipeType.thirdparty, user: UserThirdParty }
 
 export interface UserEmailPassword {
@@ -15,8 +15,6 @@ export interface UserEmailPassword {
   firstName?: string
   lastName?: string
 }
-
-export interface UserPasswordless extends UserEmailPassword {}
 
 export interface UserThirdParty extends UserEmailPassword {
   thirdParty: {
