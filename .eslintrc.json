@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json.schemastore.org/eslintrc.json",
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["plugin:react/recommended", "plugin:react/jsx-runtime"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["react", "@typescript-eslint"],
+  "rules": {
+    "no-eval": "error",
+    "no-unsafe-finally": "error",
+    "indent": "off",
+    "no-whitespace-before-property": "error"
+  },
+  "overrides": [
+    {
+      "files": ["*,js"],
+      "rules": {
+        "quotemark": ["error", "double"],
+        "semicolon": ["error", "always"]
+      }
+    },
+    {
+      "files": ["**/*,ts", "**/*.tsx"],
+      "rules": {
+        "max-len": ["error", { "code": 120 }],
+        "no-var": "error",
+        "@typescript-eslint/no-explicit-any": "error",
+        "no-unused-vars": ["error"],
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "CallExpression[callee.object.name=\"console\"][callee.property.name=/^(debug|log|time|timeEnd|trace)$/]",
+            "message": "Unexpected property on console object was called"
+          }
+        ]
+      }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx"],
+      "rules": {
+        "no-unused-vars": "warn",
+        "no-restricted-syntax": [
+          "warn",
+          {
+            "selector": "CallExpression[callee.object.name=\"console\"][callee.property.name=/^(debug|log|time|timeEnd|trace)$/]",
+            "message": "Unexpected property on console object was called"
+          }
+        ]
+      }
+    }
+  ]
+}
