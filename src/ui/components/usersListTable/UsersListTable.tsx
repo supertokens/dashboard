@@ -1,7 +1,7 @@
 import React from "react";
+import { User, UserRecipeType } from '../../../types'
 
 import { formatLongDate, getImageUrl } from '../../../utils'
-import { User, UserRecipeType } from '../../pages/usersList/types'
 import NoUsers from "../noUsers/NoUsers"
 import PhoneDisplay from "../phoneNumber/PhoneNumber"
 import "./UsersListTable.scss"

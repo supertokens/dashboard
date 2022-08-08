@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { fetchDataAndRedirectIf401, getApiUrl, ListCount, ResponseList } from '../../../utils'
+import { ListCount, ResponseList, User } from '../../../types'
+import { fetchDataAndRedirectIf401, getApiUrl } from '../../../utils'
 import AuthWrapper from '../../components/authWrapper'
 import NoUsers from '../../components/noUsers/NoUsers'
 import UsersListTable, { LIST_DEFAULT_LIMIT } from '../../components/usersListTable/UsersListTable'
-import { User } from './types'
 import './UsersList.css'
 
 export const UsersList: React.FC = () => {
@@ -38,8 +38,7 @@ export const UsersList: React.FC = () => {
     setCount(result ? result?.count : 0)
     setLoading(false)
   }, [])
-
-  const loadOffset = (offset: number) => setOffset(offset)
+  const loadOffset = useCallback((offset: number) => setOffset(offset), [])
 
   useEffect(() => {
     loadCount()

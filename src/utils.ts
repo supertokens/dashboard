@@ -18,13 +18,6 @@ import NetworkManager from "./services/network";
 import { localStorageHandler } from "./services/storage";
 import { HttpMethod } from "./types";
 
-export interface ListCount {count: number}
-export interface ResponseList<T>  {
-    nextPaginationToken?: string
-    status: Response['status'],
-    users: T[]
-}
-
 export function getStaticBasePath(): string {
     return (window as any).staticBasePath;
 }
