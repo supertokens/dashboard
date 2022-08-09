@@ -32,7 +32,8 @@
   "typescript.tsdk": "./node_modules/typescript/lib",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.preferences.quoteStyle": "double",
-  "json.format.enable": false,
+  "json.format.enable": true,
+  "json.format.keepLines": true,
   "html.format.enable": false,
   "typescript.format.semicolons": "insert",
   "[javascript]": {
