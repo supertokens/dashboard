@@ -10,9 +10,15 @@
 npm install
 ```
 
-3. Clone supertokens-node and switch to the desired branch
+3. Install git hooks
 
-4. Link supertokens-node
+```bash
+npm run set-up-hooks
+```
+
+4. Clone supertokens-node and switch to the desired branch
+
+5. Link supertokens-node
 
 ```bash
 cd ../supertokens-node # (Use the path where you clone the repo)

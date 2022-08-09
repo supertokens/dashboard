@@ -82,7 +82,9 @@
     "start-bundle-server": "rm -rf debug && BROWSER=none node scripts/start.js",
     "start-dev-server": "npx ts-node-dev --project server/tsconfig.json server/index.ts",
     "build": "rm -rf build && node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "build-check": "npx tsc -p tsconfig.json --noEmit",
+    "set-up-hooks": "cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit"
   },
   "eslintConfig": {
     "extends": [
