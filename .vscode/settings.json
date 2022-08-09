@@ -31,10 +31,10 @@
   "files.trimTrailingWhitespace": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "double",
   "json.format.enable": false,
   "html.format.enable": false,
-  "typescript.format.semicolons": "ignore",
+  "typescript.format.semicolons": "insert",
   "[javascript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
