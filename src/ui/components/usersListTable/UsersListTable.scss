@@ -66,14 +66,14 @@ $container-padding-v: 24px;
     &.thirdparty {
       color: var(--color-light);
       background-color: var(--color-light-opacity-20);
-      &.google {
+      &.google, &.apple {
         color: var(--color-danger-1);
         background-color: var(--color-danger-1-opacity-20);
         span {
           text-transform: capitalize;
         }
       }
-      &.github {
+      &.github, &.facebook {
         color: var(--color-success-1);
         background-color: var(--color-success-1-opacity-20);
         span {
