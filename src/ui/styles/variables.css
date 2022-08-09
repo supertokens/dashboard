@@ -6,7 +6,34 @@ body {
 
   --color-white: rgb(255, 255, 255);
   --color-black: rgb(34, 34, 34);
+  --color-light-white: rgb(248, 248, 248);
+  --color-border: rgb(229, 229, 229);
+  
 
   --color-error: rgb(237, 52, 78);
   --color-error-opacity-40: rgba(237, 52, 78, 0.40);
+
+  --color-success: rgb(9, 108, 56);
+  --color-success-0: var(--color-success);
+  --color-success-1: rgb(0, 106, 91);
+  --color-danger: rgb(168, 17, 90);
+  --color-danger-0: var(--color-danger);
+  --color-danger-1: rgb(92, 63, 121); 
+  --color-light: rgb(110, 106, 101);
+
+  --color-success-opacity-20: rgba(9, 108, 56, .2);
+  --color-success-0-opacity-20: var(--color-success);
+  --color-success-1-opacity-20: rgba(0, 106, 91, .2);
+  --color-danger-opacity-20: rgba(168, 17, 90, .2);
+  --color-danger-0-opacity-20: var(--color-danger);
+  --color-danger-1-opacity-20: rgba(92, 63, 121, .2);
+  --color-light-opacity-20: rgba(110, 106, 101, .4);
+  
+  --color-success-opacity-40: rgba(9, 108, 56, .4);
+  --color-success-0-opacity-40: var(--color-success);
+  --color-success-1-opacity-40: rgba(0, 106, 91, .4);
+  --color-danger-opacity-40: rgba(168, 17, 90, .4);
+  --color-danger-0-opacity-40: var(--color-danger);
+  --color-danger-1-opacity-40: rgba(92, 63, 121, .4);
+  --color-light-opacity-40: rgba(110, 106, 101, .4);
 }

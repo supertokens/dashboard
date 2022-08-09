@@ -1,0 +1,27 @@
+.users-list {
+  margin: 0 auto;
+  padding: 30px 0;
+  width: calc(100% - 32px);  
+}
+
+.users-list-title {
+  font-size: 28px;
+  line-height: 34px;
+  color: var(--color-black);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.users-list-subtitle {
+  color: var(--color-light);
+  margin-bottom: 48px;
+}
+
+.users-list-paper {
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.16);
+  border-radius: 6px;
+}
+
+@media only screen and (min-width: 900px) {
+  .users-list { width: 90%; }
+}

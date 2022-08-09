@@ -1,0 +1,12 @@
+@import "../../styles/mixin.scss";
+
+.phone-display {
+  display: flex;
+  align-items: flex-start;
+  @include gap-horizontal(5px);
+  
+  img {
+    height: .9em; 
+    border: 1px solid var(--color-light-opacity-40);      
+  }
+}

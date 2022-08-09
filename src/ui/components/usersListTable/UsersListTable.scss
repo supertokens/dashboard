@@ -1,0 +1,123 @@
+@import "../../styles/mixin.scss";
+
+$container-padding-v: 24px;
+
+.users-list-table-container {
+  padding: $container-padding-v 34px;
+}
+
+.users-list-table {
+  width: 100%;
+  border-spacing: 0px;
+}
+
+.users-list-table thead {
+  color: var(--color-light);
+  text-transform: uppercase;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.users-list-table thead tr th {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 500;
+  text-align: left;
+}
+
+.users-list-table tbody tr td {
+  width: 33%;
+  max-width: 50%;
+  padding: 24px 0px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.user-row {
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    @include gap-horizontal(0.5em);
+    color: var(--color-light);
+    padding-right: 1em;
+    .main {
+      color: var(--color-black);
+      font-weight: 500;
+    }
+  }
+  .pill {
+    display: flex;
+    height: 17pt;
+    line-height: 24pt;
+    border-radius: 8pt;
+    padding: 8pt;
+    align-items: center;
+    width: fit-content;
+    white-space: nowrap;
+    @include gap-horizontal(4px);
+
+    &.passwordless {
+      color: var(--color-danger);
+      background-color: var(--color-danger-opacity-20);
+    }
+    &.emailpassword {
+      color: var(--color-success);
+      background-color: var(--color-success-opacity-20);
+    }
+    &.thirdparty {
+      color: var(--color-light);
+      background-color: var(--color-light-opacity-20);
+      &.google, &.apple {
+        color: var(--color-danger-1);
+        background-color: var(--color-danger-1-opacity-20);
+        span {
+          text-transform: capitalize;
+        }
+      }
+      &.github, &.facebook {
+        color: var(--color-success-1);
+        background-color: var(--color-success-1-opacity-20);
+        span {
+          text-transform: capitalize;
+        }
+      }
+    }
+  }
+
+  &.placeholder td {
+    div {
+      width: 100%;
+      background-color: var(--color-light-opacity-20);
+      height: 1em;
+      opacity: .4;
+      animation: blinker 2s linear infinite;
+      @keyframes blinker {
+        50% {
+          opacity: 0.1;
+        }
+      } 
+    }
+  }
+}
+
+.user-list-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: $container-padding-v;
+}
+
+.users-list-pagination {
+  display: flex;
+  @include gap-horizontal(1em);
+
+  .users-list-pagination-count {
+    font-weight: 500;
+  }
+  .users-list-pagination-navigation {
+    display: flex;
+    @include gap-horizontal(.5em);
+  }
+  .users-list-pagination-button {
+    border: none;
+    background: none;
+  }
+}

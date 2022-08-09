@@ -100,7 +100,7 @@ paths:
                                   type: string
                                 lastName:
                                   type: string
-                                thirdparty:
+                                thirdParty:
                                   type: object
                                   properties:
                                     id:
@@ -115,7 +115,7 @@ paths:
                                 email:
                                   type: string
                                   example: "johndoe@gmail.com"
-                                phone:
+                                phoneNumber:
                                   type: string
                                   example: "+14155552671"
                                 timeJoined:
