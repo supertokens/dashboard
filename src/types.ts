@@ -13,4 +13,6 @@
 * under the License.
 */
 
+// HTTP requests & responses related 
 export type HttpMethod = "GET" | "POST";
+export type HttpApiBaseResponse  = { status: 'OK' | string }
