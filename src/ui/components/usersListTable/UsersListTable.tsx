@@ -1,14 +1,14 @@
-import React from "react";
-import { User, UserRecipeType } from '../../../types'
+import React from 'react'
 
 import { formatLongDate, getImageUrl } from '../../../utils'
-import NoUsers from "../noUsers/NoUsers"
-import PhoneDisplay from "../phoneNumber/PhoneNumber"
-import "./UsersListTable.scss"
+import { UserRecipeType, UserWithRecipeId } from '../../pages/usersList/types'
+import NoUsers from '../noUsers/NoUsers'
+import PhoneDisplay from '../phoneNumber/PhoneNumber'
+import './UsersListTable.scss'
 
 export const LIST_DEFAULT_LIMIT = 10
-interface UserListProps {
-  users: User[]
+type UserListProps = {
+  users: UserWithRecipeId[]
   count: number
   nextPaginationToken?: string
   isLoading?: boolean
@@ -58,12 +58,12 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 }
 
 // Table Rows Section
-const UserTableRows = (displayedUsers: User[]) => {
+const UserTableRows = (displayedUsers: UserWithRecipeId[]) => {
   return displayedUsers.map((user, index) => UserTableRow({ user: user, index }))
 }
 
 // Single Row Section
-const UserTableRow: React.FC<{ user: User; index?: number }> = (props) => {
+const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number }> = (props) => {
   const { user, index } = props
   return (
     <tr key={index} className='user-row'>
@@ -74,8 +74,9 @@ const UserTableRow: React.FC<{ user: User; index?: number }> = (props) => {
   )
 }
 
-const UserInfo = (user: User) => {
-  const { firstName, lastName, email, phoneNumber: phone } = user.user
+const UserInfo = (user: UserWithRecipeId) => {
+  const { firstName, lastName, email } = user.user
+  const phone = user.recipeId === 'passwordless' ? user.user.phoneNumber : undefined
   const name = `${firstName ?? ''} ${lastName ?? ''}`.trim()
   return (
     <div className='user-info'>
@@ -86,8 +87,8 @@ const UserInfo = (user: User) => {
   )
 }
 
-const UserRecipePill = (user: User) => {
-  const thirdpartyId = user.recipeId === UserRecipeType.thirdparty && user.user.thirdParty.id
+const UserRecipePill = (user: UserWithRecipeId) => {
+  const thirdpartyId = user.recipeId === 'thirdparty' && user.user.thirdParty.id
   return (
     <div className={`pill ${user.recipeId} ${thirdpartyId}`}>
       <span>{UserRecipeTypeText[user.recipeId]}</span>
@@ -96,14 +97,14 @@ const UserRecipePill = (user: User) => {
   )
 }
 
-const UserDate = (user: User) => {
+const UserDate = (user: UserWithRecipeId) => {
   return <div className='user-date'>{user.user.timeJoined && formatLongDate(user.user.timeJoined)}</div>
 }
 
 const UserRecipeTypeText: Record<UserRecipeType, string> = {
-  [UserRecipeType.emailpassword]: 'Email password',
-  [UserRecipeType.passwordless]: 'Passwordless',
-  [UserRecipeType.thirdparty]: 'Third party',
+  [`emailpassword`]: 'Email password',
+  [`passwordless`]: 'Passwordless',
+  [`thirdparty`]: 'Third party',
 }
 
 // Pagination Section

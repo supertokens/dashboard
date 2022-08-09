@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { ListCount, ResponseList, User } from '../../../types'
+import { UserListCount, UserPaginationList, UserWithRecipeId } from './types'
 import { fetchDataAndRedirectIf401, getApiUrl } from '../../../utils'
 import AuthWrapper from '../../components/authWrapper'
 import NoUsers from '../../components/noUsers/NoUsers'
@@ -8,7 +8,7 @@ import './UsersList.css'
 
 export const UsersList: React.FC = () => {
   const [count, setCount] = useState<number>(0)
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<UserWithRecipeId[]>([])
   const [offset, setOffset] = useState<number>(0)
   const [nextPaginationToken, setNextPaginationToken] = useState<string>()
   const [loading, setLoading] = useState<boolean>(false)
@@ -70,18 +70,22 @@ export const UsersList: React.FC = () => {
   )
 }
 
-const fetchUsers = async (param?: { paginationToken?: string }) =>
-  fetchDataAndRedirectIf401({
+const fetchUsers = async (param?: { paginationToken?: string }) => {
+  const response = await fetchDataAndRedirectIf401({
     url: getApiUrl('/api/users'),
     method: 'GET',
     query: { limit: `${LIST_DEFAULT_LIMIT}`, ...param },
-  }).then(async (response) => response && ((await response?.json()) as ResponseList<User>))
+  })
+  return response && ((await response?.json()) as UserPaginationList)
+}
 
-const fetchCount = () =>
-  fetchDataAndRedirectIf401({
+const fetchCount = async () => {
+  const response = await fetchDataAndRedirectIf401({
     url: getApiUrl('/api/users/count'),
     method: 'GET',
-  }).then(async (response) => response && ((await response?.json()) as ListCount))
+  })
+  return response && ((await response?.json()) as UserListCount)
+}
 
 export const UserListPage = () => (
   <AuthWrapper>
