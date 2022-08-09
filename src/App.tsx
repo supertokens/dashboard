@@ -1,11 +1,7 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
-import './App.css';
-import Auth from './ui/pages/auth/Auth';
-import { getDashboardAppBasePath, getImageUrl } from './utils';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import "./App.css";
+import Auth from "./ui/pages/auth/Auth";
+import { getDashboardAppBasePath, getImageUrl } from "./utils";
 
 // This is to make sure that images are packed in the build folder
 import "./images";
@@ -20,12 +16,7 @@ function Home() {
           <p>
             Edit <code>src/App.tsx</code> and save reload.
           </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
             Learn React
           </a>
         </header>
@@ -38,8 +29,8 @@ function App() {
   return (
     <Router basename={getDashboardAppBasePath()}>
       <Routes>
-        <Route path='/auth' element={<Auth />}/>
-        <Route path='/' element={<Home/>} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/" element={<Home />} />
       </Routes>
     </Router>
   );
