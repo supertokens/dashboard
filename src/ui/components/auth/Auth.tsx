@@ -17,13 +17,13 @@ import { useNavigate } from "react-router-dom";
 import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { fetchData, getApiUrl } from "../../../utils";
-import InputField from "../../components/inputField/InputField";
+import InputField from "../inputField/InputField";
 
 import "./Auth.css";
 
-const Auth: React.FC<{}> = () => {
-    const navigate = useNavigate();
-
+const Auth: React.FC<{
+    onSuccess: () => void;
+}> = (props) => {
     const [apiKey, setApiKey] = useState("");
     const [apiKeyFieldError, setApiKeyFieldError] = useState("");
     const [loading, setIsLoading] = useState<boolean>(false);
@@ -44,7 +44,7 @@ const Auth: React.FC<{}> = () => {
 
         if (response.status === 200 && body.status === "OK") {
             localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
-            navigate("/");
+            props.onSuccess();
         } else if (response.status === UNAUTHORISED_STATUS) {
             setApiKeyFieldError("Invalid API Key")
         } else {
@@ -53,12 +53,6 @@ const Auth: React.FC<{}> = () => {
 
         setIsLoading(false);
     }
-
-    useEffect(() => {
-        // We delete from storage first because the user could have been redirected to auth
-        // because of a 401
-        localStorageHandler.removeItem(StorageKeys.API_KEY);
-    }, [])
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

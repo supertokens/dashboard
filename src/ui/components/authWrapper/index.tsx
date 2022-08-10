@@ -16,28 +16,25 @@
 import {useEffect, useState} from "react";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
-import {
-    useNavigate,
-} from "react-router-dom";
+import Auth from "../auth/Auth";
 
 export default function AuthWrapper(props: {
     children: any,
 }) {
-    const [isValidating, setIsValidating] = useState<boolean>(true);
-    const navigate = useNavigate();
+    const [shouldShowAuthForm, setShouldShowAuthForm] = useState<boolean>(true);
 
     useEffect(() => {
         const apiKey = localStorageHandler.getItem(StorageKeys.API_KEY);
-
-        if (apiKey === undefined) {
-            navigate("/auth");
-        } else {
-            setIsValidating(false);
-        }
+        setShouldShowAuthForm(apiKey === undefined)
     }, [])
 
-    if (isValidating) {
-        return null;
+    if (shouldShowAuthForm) {
+        return (
+            <Auth
+                onSuccess={() => {
+                    setShouldShowAuthForm(false);
+                }}/>
+        );
     }
 
     return props.children;

@@ -4,7 +4,6 @@ import {
   Route,
 } from "react-router-dom";
 import { getDashboardAppBasePath } from './utils';
-import Auth from './ui/pages/auth/Auth'
 import UsersListPage from './ui/pages/usersList/UsersList'
 
 // This is to make sure that images are packed in the build folder
@@ -14,7 +13,6 @@ function App() {
   return (
     <Router basename={getDashboardAppBasePath()}>
       <Routes>
-        <Route path='/auth' element={<Auth />} />
         <Route path='/' element={<UsersListPage />} />
         <Route path="*" element={<UsersListPage />} />
       </Routes>
