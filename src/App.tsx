@@ -8,15 +8,18 @@ import UsersListPage from './ui/pages/usersList/UsersList'
 
 // This is to make sure that images are packed in the build folder
 import './images'
+import ErrorBoundary from "./ui/components/errorboundary";
 
 function App() {
   return (
-    <Router basename={getDashboardAppBasePath()}>
-      <Routes>
-        <Route path='/' element={<UsersListPage />} />
-        <Route path="*" element={<UsersListPage />} />
-      </Routes>
-    </Router>
+    <ErrorBoundary>
+      <Router basename={getDashboardAppBasePath()}>
+        <Routes>
+          <Route path='/' element={<UsersListPage />} />
+          <Route path="*" element={<UsersListPage />} />
+        </Routes>
+      </Router>
+    </ErrorBoundary>
   )
 }
 
