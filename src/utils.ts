@@ -95,3 +95,31 @@ export const fetchData = async ({
 
     return response;
 }
+
+/**
+ * Get Ordinal text from number 
+ ** 1 -> st
+ ** 2 -> nd
+ ** 3 -> rd
+ ** 4 -> th
+ */
+export const ordinal = (num: number) => {
+  const mod = num % 10
+  const modMap: Record<number, string> = {1: 'st',2: 'nd',3: 'rd'}
+  return num >10 && num < 14 ? 'th' : (modMap[mod] ?? 'th')
+}
+
+const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+/**
+ * Output long date
+ ** example: 5th August, 03:35 pm
+ * @param date epooch number, or Date object
+ */
+export const formatLongDate = (date: number | Date) => {
+  if (typeof date === 'number') { date = new Date(date) }
+  const day = date.getDate()
+  const hour = date.getHours();
+  const meridiem = hour < 12 ? 'am' : 'pm'
+  return `${day}${ordinal(day)} ${months[date.getMonth()]}, 
+  ${(hour % 12 || 12).toString().padStart(2, '0')}:${(date.getMinutes()).toString().padStart(2, '0')} ${meridiem}`
+}
