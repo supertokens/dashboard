@@ -52,7 +52,11 @@ export const fetchDataAndRedirectIf401 = async ({
     const response = await fetchData({ url, method, query, config });
 
     if (response.status === UNAUTHORISED_STATUS) {
-        window.location.assign(getDashboardAppBasePath() + "/auth")
+        window.localStorage.removeItem(StorageKeys.API_KEY);
+        /**
+         * After clearing API key from storage, reloading will result in the auth form being visible
+         */
+        window.location.reload();
     }
 
     return response;
