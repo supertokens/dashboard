@@ -1,7 +1,6 @@
 .users-list {
-  margin: 0 auto;
+  margin: 0 16px;
   padding: 30px 0;
-  width: calc(100% - 32px);  
 }
 
 .users-list-title {
@@ -21,8 +20,13 @@
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.16);
   border-radius: 6px;
   background-color: var(--color-white);
+  display: inline-block;
+  min-width: 100%;
 }
 
 @media only screen and (min-width: 900px) {
-  .users-list { width: 90%; }
+  .users-list { 
+    width: 90%; 
+    margin: 0 auto;
+  }
 }

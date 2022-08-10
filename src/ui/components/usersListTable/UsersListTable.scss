@@ -4,10 +4,12 @@ $container-padding-v: 24px;
 
 .users-list-table-container {
   padding: $container-padding-v 34px;
+  display: inline-block;
+  min-width: 100%;
 }
 
 .users-list-table {
-  width: 100%;
+  min-width: 100%;
   border-spacing: 0px;
 }
 

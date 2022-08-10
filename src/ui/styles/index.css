@@ -18,11 +18,14 @@ code {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  position: relative;
 }
 
 #root {
   background-color: var(--color-light-white);
   min-height: 100vh;
+  min-width: 100%;
+  display: inline-block;
 }
 
 button:not(:disabled) {
