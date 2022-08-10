@@ -10,9 +10,15 @@
 npm install
 ```
 
-3. Clone supertokens-node and switch to the desired branch
+3. Install git hooks
 
-4. Link supertokens-node
+```bash
+npm run set-up-hooks
+```
+
+4. Clone supertokens-node and switch to the desired branch
+
+5. Link supertokens-node
 
 ```bash
 cd ../supertokens-node # (Use the path where you clone the repo)
@@ -50,6 +56,7 @@ npm run start
 ```
 
 This will
+
 - start a webpack dev server for the react app
 - start the api server
 
@@ -75,11 +82,13 @@ NOTE: All images from the project get added to `/static/media` in the build fold
 2. Quit and re-run `npm run start` to see the changes
 
 ### Making changes to the API spec
+
 When making changes to the `api_spec.yaml` file
-- 1) Go to [the swagger editor](https://editor.swagger.io/)
-- 2) Copy / paste the contents of the `.yaml` file into the editor, and then you should see the API docs on the right of the screen.
-- 3) Make changes to the online editor and then copy / paste the content back into the `.yaml` file
-- 4) Issue a PR to the appropriate branch (refer to the branching section above)
+
+- 1. Go to [the swagger editor](https://editor.swagger.io/)
+- 2. Copy / paste the contents of the `.yaml` file into the editor, and then you should see the API docs on the right of the screen.
+- 3. Make changes to the online editor and then copy / paste the content back into the `.yaml` file
+- 4. Issue a PR to the appropriate branch (refer to the branching section above)
 
 ### Testing in production mode
 

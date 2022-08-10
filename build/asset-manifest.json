@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/static/css/main.css",
+    "main.js": "/static/js/bundle.js",
+    "static/js/787.bundle.js": "/static/js/787.bundle.js",
+    "static/media/logo.svg": "/static/media/logo.svg",
+    "static/media/no-users-graphic.svg": "/static/media/no-users-graphic.svg",
+    "static/media/form-field-error-icon.svg": "/static/media/form-field-error-icon.svg",
+    "index.html": "/index.html",
+    "static/media/chevron-left.svg": "/static/media/chevron-left.svg",
+    "static/media/chevron-right.svg": "/static/media/chevron-right.svg",
+    "main.css.map": "/static/css/main.css.map",
+    "bundle.js.map": "/static/js/bundle.js.map",
+    "787.bundle.js.map": "/static/js/787.bundle.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.css",
+    "static/js/bundle.js"
+  ]
+}

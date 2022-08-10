@@ -13,28 +13,28 @@
  * under the License.
  */
 
-import { useEffect, useState } from "react";
-import { StorageKeys } from "../../../constants";
-import { localStorageHandler } from "../../../services/storage";
-import Auth from "../auth/Auth";
+import React, { PropsWithChildren } from "react";
 
-export default function AuthWrapper(props: { children: any }) {
-  const [shouldShowAuthForm, setShouldShowAuthForm] = useState<boolean>(true);
+type Props = PropsWithChildren<{}>;
+type State = {
+  hasError: boolean;
+};
 
-  useEffect(() => {
-    const apiKey = localStorageHandler.getItem(StorageKeys.API_KEY);
-    setShouldShowAuthForm(apiKey === undefined);
-  }, []);
-
-  if (shouldShowAuthForm) {
-    return (
-      <Auth
-        onSuccess={() => {
-          setShouldShowAuthForm(false);
-        }}
-      />
-    );
+export default class ErrorBoundary extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
   }
 
-  return props.children;
+  static getDerivedStateFromError(_: any) {
+    return { hasError: true };
+  }
+
+  render(): React.ReactNode {
+    if (this.state.hasError) {
+      return <div>Something went wrong</div>;
+    }
+
+    return this.props.children;
+  }
 }

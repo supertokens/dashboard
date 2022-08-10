@@ -96,8 +96,8 @@
     "start-dev-server": "npx ts-node-dev --project server/tsconfig.json server/index.ts",
     "build": "rm -rf build && node scripts/build.js",
     "lint": "eslint src &&  tsc --project ./tsconfig.json --noEmit",
-    "test": "node scripts/test.js",
-    "prepare": "husky install"
+    "build-check": "npx tsc -p tsconfig.json --noEmit",
+    "set-up-hooks": "cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit"
   },
   "eslintConfig": {
     "extends": [
