@@ -68,7 +68,8 @@
       }
     ],
     "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "react/no-unescaped-entities": "off"
   },
   "overrides": [
     {
