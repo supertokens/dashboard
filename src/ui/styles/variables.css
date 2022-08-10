@@ -36,4 +36,9 @@ body {
   --color-danger-0-opacity-40: var(--color-danger);
   --color-danger-1-opacity-40: rgba(92, 63, 121, .4);
   --color-light-opacity-40: rgba(110, 106, 101, .4);
+
+  --color-success-bg: rgb(222, 255, 238);
+  --color-success-1-bg: rgb(221, 252, 247);
+  --color-danger-bg: rgb(255, 234, 247);
+  --color-danger-1-bg: rgb(241, 222, 255);
 }

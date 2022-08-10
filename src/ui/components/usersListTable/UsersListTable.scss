@@ -57,25 +57,25 @@ $container-padding-v: 24px;
 
     &.passwordless {
       color: var(--color-danger);
-      background-color: var(--color-danger-opacity-20);
+      background-color: var(--color-danger-bg);
     }
     &.emailpassword {
-      color: var(--color-success);
-      background-color: var(--color-success-opacity-20);
+      color: var(--color-success-1);
+      background-color: var(--color-success-1-bg);
     }
-    &.thirdparty {
-      color: var(--color-light);
-      background-color: var(--color-light-opacity-20);
+    &.thirdparty {      
+      color: var(--color-success-0);
+      background-color: var(--color-success-0-bg);
       &.google, &.apple {
         color: var(--color-danger-1);
-        background-color: var(--color-danger-1-opacity-20);
+        background-color: var(--color-danger-1-bg);
         span {
           text-transform: capitalize;
         }
       }
       &.github, &.facebook {
-        color: var(--color-success-1);
-        background-color: var(--color-success-1-opacity-20);
+        color: var(--color-success-0);
+        background-color: var(--color-success-0-bg);
         span {
           text-transform: capitalize;
         }
