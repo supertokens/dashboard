@@ -1,4 +1,4 @@
-@import "../../styles/mixin.scss";
+@import '../../styles/mixin.scss';
 
 $container-padding-v: 24px;
 
@@ -11,6 +11,7 @@ $container-padding-v: 24px;
 .users-list-table {
   min-width: 100%;
   border-spacing: 0px;
+  border-collapse: collapse;
 }
 
 .users-list-table thead {
@@ -20,18 +21,22 @@ $container-padding-v: 24px;
   line-height: 14px;
 }
 
-.users-list-table thead tr th {
-  padding-bottom: 24px;
+.users-list-table thead tr {
   border-bottom: 1px solid var(--color-border);
-  font-weight: 500;
-  text-align: left;
+  th {
+    padding: 0 1em 24px 0;
+    font-weight: 500;
+    text-align: left;
+  }
 }
 
-.users-list-table tbody tr td {
-  width: 33%;
-  max-width: 50%;
-  padding: 24px 0px;
+.users-list-table tbody tr {
   border-bottom: 1px solid var(--color-border);
+  td {
+    width: 33%;
+    max-width: 50%;
+    padding: 24px 1em 24px 0;
+  }
 }
 
 .user-row {
@@ -44,6 +49,12 @@ $container-padding-v: 24px;
     .main {
       color: var(--color-black);
       font-weight: 500;
+      max-width: 15em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      @media only screen and (min-width: 800px) {
+        max-width: 100%;
+      }
     }
   }
   .pill {
@@ -65,17 +76,19 @@ $container-padding-v: 24px;
       color: var(--color-success-1);
       background-color: var(--color-success-1-bg);
     }
-    &.thirdparty {      
+    &.thirdparty {
       color: var(--color-success-0);
       background-color: var(--color-success-0-bg);
-      &.google, &.apple {
+      &.google,
+      &.apple {
         color: var(--color-danger-1);
         background-color: var(--color-danger-1-bg);
         span {
           text-transform: capitalize;
         }
       }
-      &.github, &.facebook {
+      &.github,
+      &.facebook {
         color: var(--color-success-0);
         background-color: var(--color-success-0-bg);
         span {
@@ -85,18 +98,22 @@ $container-padding-v: 24px;
     }
   }
 
+  .user-date {
+    min-width: 110px;
+  }
+
   &.placeholder td {
     div {
       width: 100%;
       background-color: var(--color-light-opacity-20);
       height: 1em;
-      opacity: .4;
+      opacity: 0.4;
       animation: blinker 2s linear infinite;
       @keyframes blinker {
         50% {
           opacity: 0.1;
         }
-      } 
+      }
     }
   }
 }
@@ -116,7 +133,7 @@ $container-padding-v: 24px;
   }
   .users-list-pagination-navigation {
     display: flex;
-    @include gap-horizontal(.5em);
+    @include gap-horizontal(0.5em);
   }
   .users-list-pagination-button {
     border: none;
