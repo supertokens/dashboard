@@ -31,7 +31,7 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
       <table className='users-list-table'>
         <thead>
           <tr>
-            <th>User Info</th>
+            <th>User</th>
             <th>Auth Method</th>
             <th>Time joined</th>
           </tr>

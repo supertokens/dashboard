@@ -16,6 +16,7 @@ function App() {
       <Routes>
         <Route path='/auth' element={<Auth />} />
         <Route path='/' element={<UsersListPage />} />
+        <Route path="*" element={<UsersListPage />} />
       </Routes>
     </Router>
   )

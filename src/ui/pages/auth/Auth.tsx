@@ -46,9 +46,9 @@ const Auth: React.FC<{}> = () => {
             localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
             navigate("/");
         } else if (response.status === UNAUTHORISED_STATUS) {
-            setApiKeyFieldError("Invalid API Key.")
+            setApiKeyFieldError("Invalid API Key")
         } else {
-            setApiKeyFieldError("Something went wrong.");
+            setApiKeyFieldError("Something went wrong");
         }
 
         setIsLoading(false);
@@ -66,7 +66,7 @@ const Auth: React.FC<{}> = () => {
         if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
             validateKey();
         } else {
-            setApiKeyFieldError("API Key field cannot be empty.");
+            setApiKeyFieldError("API Key field cannot be empty");
         }
     }
 

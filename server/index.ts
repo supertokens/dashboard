@@ -33,7 +33,7 @@ SuperTokens.init({
                 functions: (original) => {
                     return {
                         ...original,
-                        getDashboardBundleDomain: async function () {
+                        getDashboardBundleBasePath: async function () {
                             return "http://localhost:3000";
                         },
                     };
