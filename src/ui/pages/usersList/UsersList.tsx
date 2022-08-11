@@ -8,7 +8,7 @@ import './UsersList.css'
 import { Footer } from '../../components/footer/footer'
 
 export const UsersList: React.FC = () => {
-  const [count, setCount] = useState<number>(0)
+  const [count, setCount] = useState<number>()
   const [users, setUsers] = useState<UserWithRecipeId[]>([])
   const [offset, setOffset] = useState<number>(0)
   const [nextPaginationToken, setNextPaginationToken] = useState<string>()
@@ -34,9 +34,9 @@ export const UsersList: React.FC = () => {
     setLoading(true)
     const result = await fetchCount().catch(() => null)
     if (result) {
+      setCount(result.count)
       await loadUsers()
     }
-    setCount(result ? result?.count : 0)
     setLoading(false)
   }, [])
   const loadOffset = useCallback((offset: number) => setOffset(offset), [])
@@ -54,11 +54,11 @@ export const UsersList: React.FC = () => {
       </p>
 
       <div className='users-list-paper'>
-        {users.length > 0 || loading ? (
+        {count == null || count > 0 || loading ? (
           <UsersListTable
             users={users}
             offset={offset}
-            count={count}
+            count={count ?? 0}
             nextPaginationToken={nextPaginationToken}
             goToNext={(token) => loadUsers(token)}
             offsetChange={loadOffset}
