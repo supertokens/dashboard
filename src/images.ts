@@ -13,3 +13,5 @@ import "./assets/star_sparkle_stars_sparkles_icon.svg"
 import "./assets/supertokens.svg"
 import "./assets/supertokens-icon.svg"
 import "./assets/supertokens-dark.svg"
+import "./assets/delete.svg"
+
