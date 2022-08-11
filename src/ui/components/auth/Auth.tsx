@@ -91,7 +91,7 @@ const Auth: React.FC<{
           </button>
         </form>
       </div>
-      <Footer horizontalAlignment='right'></Footer>
+      <Footer horizontalAlignment='right' size='large'></Footer>
     </div>
   )
 }

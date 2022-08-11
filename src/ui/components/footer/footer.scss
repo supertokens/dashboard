@@ -1,11 +1,11 @@
 .footer {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   width: 100%;
   max-width: 100vw;
   min-height: 70px;
   display: flex;
-  padding: 32px;
+  padding: 1em;
 
   &.alignment-right {justify-content: flex-end;}
   &.alignment-center { justify-content: center;}
@@ -15,5 +15,9 @@
 
   &.color-dark {
     background-color: var(--color-black);
+  }
+
+  &.size-large {
+    padding: 2em;
   }
 }

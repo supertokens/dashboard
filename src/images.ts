@@ -11,3 +11,5 @@ import "./assets/chevron-right.svg";
 import "./assets/right_arrow_icon.svg"
 import "./assets/star_sparkle_stars_sparkles_icon.svg"
 import "./assets/supertokens.svg"
+import "./assets/supertokens-icon.svg"
+import "./assets/supertokens-dark.svg"
