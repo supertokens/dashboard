@@ -8,9 +8,11 @@ body {
   --color-black: rgb(34, 34, 34);
   --color-light-white: rgb(248, 248, 248);
   --color-border: rgb(229, 229, 229);
+  --color-border-error: rgb(239, 121, 119);
   
 
   --color-error: rgb(237, 52, 78);
+  --color-error-dark: rgb(158, 37, 38);
   --color-error-opacity-40: rgba(237, 52, 78, 0.40);
 
   --color-success: rgb(9, 108, 56);
@@ -42,4 +44,5 @@ body {
   --color-danger-bg: rgb(255, 234, 247);
   --color-danger-1-bg: rgb(241, 222, 255);
   --color-error-bg: rgba(237, 52, 78, 0.16);
+  --color-error-light-bg: rgb(253, 240, 241)
 }
