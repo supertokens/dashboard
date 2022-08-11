@@ -23,9 +23,10 @@
 
 /* classes for font sizes */
 .text-title {
-  font-size: 24pt;
+  font-size: 24px;
   line-height: 40pt;
   letter-spacing: 0.24pt;
+  font-weight: 600;
 }
 
 .text-small {
@@ -42,6 +43,10 @@
   color: var(--color-black);
 }
 
+.text-label {
+  color: var(--color-light);
+}
+
 /* classes for blocks */
 .block-small {    
   padding: .5em;
@@ -51,6 +56,17 @@
     background-color: var(--color-error-bg);
     color: var(--color-error);
   }
+}
+
+.block-container {
+  display: flex;
+  flex-flow: column;
+  padding: 40px;
+  border-radius: 18pt;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
+  max-width: 476px;
+  width: calc(100% - 32px);
+  background-color: var(--color-white);
 }
 
 /* classes for images */

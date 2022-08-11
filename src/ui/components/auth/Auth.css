@@ -7,17 +7,6 @@
   align-items: center;
 }
 
-.api-key-form-container {
-  display: flex;
-  flex-flow: column;
-  padding: 40px;
-  border-radius: 18pt;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
-  max-width: 476px;
-  width: calc(100% - 32px);
-  background-color: var(--color-white);
-}
-
 .api-key-form {
   padding-top: 16px;
 }
