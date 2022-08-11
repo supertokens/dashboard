@@ -5,7 +5,7 @@
 }
 
 .input-label {
-  color: var(--color-light);
+  color: var(--color-secondary-text);
   font-weight: 500;
   margin-bottom: 12px;
 }
@@ -28,7 +28,7 @@
 .input-field-error-state:focus,
 .input-field-error-state:active {
   border-color: var(--color-error);
-  box-shadow: 0px 0px 0px 2px var(--color-error-opacity-40);
+  box-shadow: 0px 0px 0px 2px var(--color-error-shadow);
 }
 
 .input-field-error {

@@ -22,7 +22,7 @@ code {
 }
 
 #root {
-  background-color: var(--color-light-white);
+  background-color: var(--color-window-bg);
   min-height: 100vh;
   min-width: 100%;
   display: inline-block;
