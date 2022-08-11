@@ -12,7 +12,7 @@ const NoUsers = () => {
       <p className='no-users-title'>Currently, you don't have any users</p>
       <p className='no-users-subtitle text-small'>Once added, all users will be found here</p>
       <p className='no-users-subtitle text-small'>
-        Users that logged only using the Supertokens' Session Recipe will not be displayed.
+        If you are using just the session management feature of SuperTokens, your users will not appear in this list.
       </p>
     </div>
   )
