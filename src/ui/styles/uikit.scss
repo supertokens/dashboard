@@ -1,8 +1,12 @@
+@import "./mixin.scss";
+
 .full-width {
   width: 100%;
 }
 
 .button {
+  display: flex;
+  align-items: center;
   padding: 8px 16px;
   font-size: 14px;
   line-height: 16px;
@@ -13,12 +17,15 @@
   border-radius: 6px;
   font-family: inherit;
   cursor: pointer;
+  @include gap-horizontal(0.75em);
+  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.15);
 }
 
 /* classes for font sizes */
 .text-title {
-  font-size: 24px;
-  line-height: 28px;
+  font-size: 24pt;
+  line-height: 40pt;
+  letter-spacing: 0.24pt;
 }
 
 .text-small {
@@ -33,4 +40,21 @@
 
 .text-black {
   color: var(--color-black);
+}
+
+/* classes for blocks */
+.block-small {    
+  padding: .5em;
+  border-radius: 6pt;
+  padding: 8px 12px 8px;
+  &.block-error {
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+  }
+}
+
+/* classes for images */
+.title-image {
+  width: 33pt;
+  height: 33pt;
 }

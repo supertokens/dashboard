@@ -15,13 +15,13 @@
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
   max-width: 476px;
   width: calc(100% - 32px);
+  background-color: var(--color-white);
 }
 
 .api-key-form-title {
-  margin-bottom: 16px;
-  text-align: center;
+  margin-top: 16px;
 }
 
 .api-key-form {
-  padding-top: 24px;
+  padding-top: 16px;
 }

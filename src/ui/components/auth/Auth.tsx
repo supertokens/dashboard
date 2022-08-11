@@ -16,84 +16,84 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
-import { fetchData, getApiUrl } from "../../../utils";
-import InputField from "../inputField/InputField";
+import { fetchData, getApiUrl, getImageUrl } from '../../../utils'
+import { Footer } from '../footer/footer'
+import InputField from '../inputField/InputField'
 
-import "./Auth.css";
+import './Auth.css'
 
 const Auth: React.FC<{
-    onSuccess: () => void;
+  onSuccess: () => void
 }> = (props) => {
-    const [apiKey, setApiKey] = useState("");
-    const [apiKeyFieldError, setApiKeyFieldError] = useState("");
-    const [loading, setIsLoading] = useState<boolean>(false);
+  const [apiKey, setApiKey] = useState('')
+  const [apiKeyFieldError, setApiKeyFieldError] = useState('')
+  const [loading, setIsLoading] = useState<boolean>(false)
 
-    const validateKey = async () => {
-        setIsLoading(true);
-        const response = await fetchData({
-            url: getApiUrl("/api/key/validate"),
-            method: "POST",
-            config: {
-                headers: {
-                    authorization: `Bearer ${apiKey}`,
-                },
-            },
-        });
+  const validateKey = async () => {
+    setIsLoading(true)
+    const response = await fetchData({
+      url: getApiUrl('/api/key/validate'),
+      method: 'POST',
+      config: {
+        headers: {
+          authorization: `Bearer ${apiKey}`,
+        },
+      },
+    })
 
-        const body = await response.json();
+    const body = await response.json()
 
-        if (response.status === 200 && body.status === "OK") {
-            localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
-            props.onSuccess();
-        } else if (response.status === UNAUTHORISED_STATUS) {
-            setApiKeyFieldError("Invalid API Key")
-        } else {
-            setApiKeyFieldError("Something went wrong");
-        }
-
-        setIsLoading(false);
+    if (response.status === 200 && body.status === 'OK') {
+      localStorageHandler.setItem(StorageKeys.API_KEY, apiKey)
+      props.onSuccess()
+    } else if (response.status === UNAUTHORISED_STATUS) {
+      setApiKeyFieldError('API key doesn’t exist')
+    } else {
+      setApiKeyFieldError('Something went wrong')
     }
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    setIsLoading(false)
+  }
 
-        if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
-            validateKey();
-        } else {
-            setApiKeyFieldError("API Key field cannot be empty");
-        }
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
+      validateKey()
+    } else {
+      setApiKeyFieldError('API Key field cannot be empty')
     }
+  }
 
-    const handleApiKeyFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.target;
-        setApiKey(value);
-        setApiKeyFieldError("");
-    }
+  const handleApiKeyFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target
+    setApiKey(value)
+    setApiKeyFieldError('')
+  }
 
-    return (
-        <div className="page-container">
-            <div className="api-key-form-container">
-                <h1 className="api-key-form-title text-title">Enter your API Key</h1>
-                <form className="api-key-form" onSubmit={handleSubmit}>
-                    <InputField
-                        handleChange={handleApiKeyFieldChange}
-                        name="apiKey"
-                        type="text"
-                        error={apiKeyFieldError}
-                        label="API Key"
-                        value={apiKey}
-                        placeholder="Your API Key"
-                    />
+  return (
+    <div className='page-container'>
+      <div className='api-key-form-container'>
+        <img className='title-image' src={getImageUrl('star_sparkle_stars_sparkles_icon.svg')} alt='Auth Page' />
+        <h1 className='api-key-form-title text-title'>Enter your API Key</h1>
+        <form className='api-key-form' onSubmit={handleSubmit}>
+          <InputField
+            handleChange={handleApiKeyFieldChange}
+            name='apiKey'
+            type='text'
+            error={apiKeyFieldError}
+            value={apiKey}
+            placeholder='Your API Key'
+          />
 
-                    <button
-                        className="button full-width"
-                        type="submit"
-                        disabled={loading}
-                    >Submit</button>
-                </form>
-            </div>
-        </div>
-    );
+          <button className='button' type='submit' disabled={loading}>
+            <span>Continue</span> <img src={getImageUrl('right_arrow_icon.svg')} alt='Auth Page' />
+          </button>
+        </form>
+      </div>
+      <Footer horizontalAlignment='right'></Footer>
+    </div>
+  )
 }
 
 export default Auth;

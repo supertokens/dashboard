@@ -41,4 +41,5 @@ body {
   --color-success-1-bg: rgb(221, 252, 247);
   --color-danger-bg: rgb(255, 234, 247);
   --color-danger-1-bg: rgb(241, 222, 255);
+  --color-error-bg: rgba(237, 52, 78, 0.16);
 }
