@@ -12,8 +12,7 @@
 * License for the specific language governing permissions and limitations
 * under the License.
 */
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
 import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { fetchData, getApiUrl, getImageUrl } from '../../../utils'
