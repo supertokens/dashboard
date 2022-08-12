@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { UserListCount, UserPaginationList, UserWithRecipeId } from './types'
-import { fetchDataAndRedirectIf401, getApiUrl, getImageUrl } from '../../../utils'
+import { fetchDataAndRedirectIf401, getApiUrl } from '../../../utils'
 import AuthWrapper from '../../components/authWrapper'
 import NoUsers from '../../components/noUsers/NoUsers'
 import UsersListTable, { LIST_DEFAULT_LIMIT } from '../../components/usersListTable/UsersListTable'
 import './UsersList.css'
-import { Footer } from '../../components/footer/footer'
+import { Footer, LOGO_ICON_LIGHT } from '../../components/footer/footer'
 
 export const UsersList: React.FC = () => {
   const [count, setCount] = useState<number>()
@@ -47,7 +47,7 @@ export const UsersList: React.FC = () => {
 
   return (
     <div className='users-list with-footer'>
-      <img className='title-image' src={getImageUrl('supertokens-icon.svg')} alt='Auth Page' />
+      <img className='title-image' src={LOGO_ICON_LIGHT} alt='Auth Page' />
       <h1 className='users-list-title'>User Management</h1>
       <p className='text-small users-list-subtitle'>
         One place to manage all your users, revoke access and edit information according to your needs.

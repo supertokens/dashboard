@@ -74,7 +74,7 @@ const Auth: React.FC<{
   return (
     <div className='page-container'>
       <div className='block-container'>
-        <img className='title-image' src={getImageUrl('star_sparkle_stars_sparkles_icon.svg')} alt='Auth Page' />
+        <img className='title-image' src={getImageUrl('star_sparkle.svg')} alt='Auth Page' />
         <h2 className='api-key-form-title text-title'>Enter your API Key</h2>
         <form className='api-key-form' onSubmit={handleSubmit}>
           <InputField

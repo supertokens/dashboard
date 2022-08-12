@@ -23,6 +23,15 @@ export type FooterProps = {
   size?: 'normal' | 'large'
 }
 
+export const LOGO_DARK =
+  'https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_full_logo_dark_theme.svg'
+export const LOGO_LIGHT =
+  'https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_icon_light_theme.svg'
+export const LOGO_ICON_LIGHT =
+  'https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_full_logo_light_theme.svg'
+export const LOGO_ICON_DARK =
+  'https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_icon_dark_theme.svg'
+
 export const Footer = ({ horizontalAlignment, verticalAlignment, colorMode, size }: FooterProps) => {
   return (
     <div
@@ -32,7 +41,7 @@ export const Footer = ({ horizontalAlignment, verticalAlignment, colorMode, size
         target={'_blank'}
         rel='noreferrer'
         title='SuperTokens, Open Source Authentication'>
-        <img src={getImageUrl(`supertokens${colorMode === 'dark' ? '-dark' : ''}.svg`)} alt='Supertokens'></img>
+        <img src={colorMode === 'dark' ? LOGO_DARK : LOGO_LIGHT} alt='Supertokens'></img>
       </a>
     </div>
   )
