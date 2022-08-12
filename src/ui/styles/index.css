@@ -28,7 +28,7 @@ code {
   display: inline-block;
 }
 
-button:not(:disabled) {
+button:not(:disabled), a[href] {
   cursor: pointer;
 }
 
