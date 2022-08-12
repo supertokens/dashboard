@@ -26,7 +26,21 @@
 
 @media only screen and (min-width: 900px) {
   .users-list { 
-    width: 90%; 
+    width: 80%; 
+    margin: 0 auto;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .users-list { 
+    width: 70%; 
+    margin: 0 auto;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .users-list { 
+    width: 60%; 
     margin: 0 auto;
   }
 }

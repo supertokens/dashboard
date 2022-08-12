@@ -11,8 +11,12 @@ body {
   /* Background Colors */
   --color-loader-placeholder-bg: rgba(110, 106, 101, .4);
   --color-error-shadow: rgba(237, 52, 78, 0.40);
-  --color-border: rgb(229, 229, 229);
+  --color-error-bg: rgba(237, 52, 78, 0.16);
 
+  /* Border Colors */
+  --color-border: rgb(229, 229, 229);
+  --color-border-error: rgb(239, 121, 119);
+  
   /* Text Colors */
   --color-secondary-text: rgb(110, 106, 101); /* Below title, table headers, placeholders etc */
   --color-error: rgb(237, 52, 78);

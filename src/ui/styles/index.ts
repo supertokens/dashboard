@@ -1,3 +1,3 @@
 import "./index.css";
 import "./variables.css";
-import "./uikit.css";
+import "./uikit.scss";

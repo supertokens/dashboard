@@ -2,10 +2,10 @@ import React from 'react'
 
 import { formatLongDate, getImageUrl } from '../../../utils'
 import { UserRecipeType, UserWithRecipeId } from '../../pages/usersList/types'
-import NoUsers from '../noUsers/NoUsers'
 import PhoneDisplay from '../phoneNumber/PhoneNumber'
 import './UsersListTable.scss'
 
+const USER_TABLE_COLUMNS_COUNT = 3
 export const LIST_DEFAULT_LIMIT = 10
 type UserListProps = {
   users: UserWithRecipeId[]
@@ -38,10 +38,11 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
         </thead>
         <tbody className='text-small'>
           {
-            isLoading && PlaceholderTableRows(limit, 3, 'user-info') // show placeholder when it is loading from API
+            isLoading && PlaceholderTableRows(limit, USER_TABLE_COLUMNS_COUNT, 'user-info') // show placeholder when it is loading from API
           }
           {
-            !isLoading && (displayedUsers.length > 0 ? UserTableRows(displayedUsers) : NoUsersRow()) // show rows when it is not loading from API
+            !isLoading &&
+              (displayedUsers.length > 0 ? UserTableRows(displayedUsers) : ErrorRow(USER_TABLE_COLUMNS_COUNT)) // show rows when it is not loading from API
           }
         </tbody>
       </table>
@@ -154,7 +155,11 @@ const UserTablePaginationNavigation = (props: UserListProps) => {
       </button>
       <button
         className='users-list-pagination-button'
-        disabled={(!nextPaginationToken && offset + limit > count) || isLoading}
+        disabled={
+          (!nextPaginationToken && offset + limit > count) ||
+          isLoading ||
+          users.slice(offset, offset + limit).length === 0
+        }
         onClick={handleNextPagination()}>
         <img src={getImageUrl('chevron-right.svg')} alt='Next page' />
       </button>
@@ -162,18 +167,21 @@ const UserTablePaginationNavigation = (props: UserListProps) => {
   )
 }
 
-const NoUsersRow = () => {
+const ErrorRow = (colSpan: number) => {
   return (
-    <tr>
-      <td>
-        <NoUsers />
+    <tr className='empty-row'>
+      <td colSpan={colSpan}>
+        <div className='block-medium block-error'>
+          <p className='text-bold'>Server Error:</p>
+          <p>Failed to load user list. Please refresh to try again.</p>
+        </div>
       </td>
     </tr>
   )
 }
 
 const PlaceholderTableRows = (rowCount: number, colSpan: number, className?: string) => {
-  return new Array(rowCount).fill(null).map((_, index) => (
+  return new Array(rowCount).fill(undefined).map((_, index) => (
     <tr key={index} className='user-row placeholder'>
       <td colSpan={colSpan}>
         <div className={className}></div>

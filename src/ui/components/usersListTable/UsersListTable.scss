@@ -37,6 +37,9 @@ $container-padding-v: 24px;
     max-width: 50%;
     padding: 24px 1em 24px 0;
   }
+  &.empty-row {
+    td { padding: 12px 0; }
+  }
 }
 
 .user-row {
