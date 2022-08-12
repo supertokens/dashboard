@@ -23,7 +23,7 @@
 /* classes for blocks */
 .block-small {    
   padding: .5em;
-  border-radius: 6pt;
+  border-radius: 6px;
   padding: 8px 12px 8px;
 }
 
@@ -41,7 +41,7 @@
   background-color: var(--color-error-bg);
   color: var(--color-error);
   border-color: var(--color-border-error);
-  box-shadow: 0px 0px 6px 0px var(--color-error-shadow);
+  &.block-medium {box-shadow: 0px 0px 6px 0px var(--color-error-shadow);}
 }
 
 .block-container {
