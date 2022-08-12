@@ -181,7 +181,7 @@ const ErrorRow = (colSpan: number) => {
 }
 
 const PlaceholderTableRows = (rowCount: number, colSpan: number, className?: string) => {
-  return new Array(rowCount).fill(null).map((_, index) => (
+  return new Array(rowCount).fill(undefined).map((_, index) => (
     <tr key={index} className='user-row placeholder'>
       <td colSpan={colSpan}>
         <div className={className}></div>
