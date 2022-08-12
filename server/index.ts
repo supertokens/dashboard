@@ -22,7 +22,7 @@ SuperTokens.init({
     },
     appInfo: {
         appName: "Dashboard Dev",
-        apiDomain: "http://192.168.29.87:3001",
+        apiDomain: "http://localhost:3001",
         websiteDomain,
         apiBasePath: "/auth"
     },
@@ -34,7 +34,7 @@ SuperTokens.init({
                     return {
                         ...original,
                         getDashboardBundleBasePath: async function () {
-                            return "http://192.168.29.87:3000";
+                            return "http://localhost:3000";
                         },
                     };
                 }
