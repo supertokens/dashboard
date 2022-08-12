@@ -7,7 +7,6 @@ export const PhoneDisplay = (phone: string) => {
   return (
     country && (
       <div className='phone-display'>
-        <img alt={country} src={`https://ipdata.co/flags/${country?.toLowerCase()}.png`} />
         <span>
           +{countryCallingCode} {format(phone, 'NATIONAL')}
         </span>

@@ -1,35 +1,42 @@
-@import "../../styles/mixin.scss";
+@import '../../styles/mixin.scss';
 
 $container-padding-v: 24px;
 
 .users-list-table-container {
   padding: $container-padding-v 34px;
+  display: inline-block;
+  min-width: 100%;
 }
 
 .users-list-table {
-  width: 100%;
+  min-width: 100%;
   border-spacing: 0px;
+  border-collapse: collapse;
 }
 
 .users-list-table thead {
-  color: var(--color-light);
+  color: var(--color-secondary-text);
   text-transform: uppercase;
   font-size: 12px;
   line-height: 14px;
 }
 
-.users-list-table thead tr th {
-  padding-bottom: 24px;
+.users-list-table thead tr {
   border-bottom: 1px solid var(--color-border);
-  font-weight: 500;
-  text-align: left;
+  th {
+    padding: 0 1em 24px 0;
+    font-weight: 500;
+    text-align: left;
+  }
 }
 
-.users-list-table tbody tr td {
-  width: 33%;
-  max-width: 50%;
-  padding: 24px 0px;
+.users-list-table tbody tr {
   border-bottom: 1px solid var(--color-border);
+  td {
+    width: 33%;
+    max-width: 50%;
+    padding: 24px 1em 24px 0;
+  }
 }
 
 .user-row {
@@ -37,11 +44,17 @@ $container-padding-v: 24px;
     display: flex;
     flex-direction: column;
     @include gap-horizontal(0.5em);
-    color: var(--color-light);
+    color: var(--color-secondary-text);
     padding-right: 1em;
     .main {
       color: var(--color-black);
       font-weight: 500;
+      max-width: 15em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      @media only screen and (min-width: 800px) {
+        max-width: 100%;
+      }
     }
   }
   .pill {
@@ -56,26 +69,40 @@ $container-padding-v: 24px;
     @include gap-horizontal(4px);
 
     &.passwordless {
-      color: var(--color-danger);
-      background-color: var(--color-danger-opacity-20);
+      color: var(--color-passwordless-text);
+      background-color: var(--color-passwordless-bg);
     }
     &.emailpassword {
-      color: var(--color-success);
-      background-color: var(--color-success-opacity-20);
+      color: var(--color-emailpassword-text);
+      background-color: var(--color-emailpassword-bg);
     }
     &.thirdparty {
-      color: var(--color-light);
-      background-color: var(--color-light-opacity-20);
-      &.google, &.apple {
-        color: var(--color-danger-1);
-        background-color: var(--color-danger-1-opacity-20);
+      color: var(--color-custom-provider-text);
+      background-color: var(--color-custom-provider-bg);
+      &.google{
+        color: var(--color-google-text);
+        background-color: var(--color-google-bg);
         span {
           text-transform: capitalize;
         }
       }
-      &.github, &.facebook {
-        color: var(--color-success-1);
-        background-color: var(--color-success-1-opacity-20);
+      &.apple {
+        color: var(--color-apple-text);
+        background-color: var(--color-apple-bg);
+        span {
+          text-transform: capitalize;
+        }
+      }
+      &.github {
+        color: var(--color-github-text);
+        background-color: var(--color-github-bg);
+        span {
+          text-transform: capitalize;
+        }
+      }
+      &.facebook {
+        color: var(--color-facebook-text);
+        background-color: var(--color-facebook-bg);
         span {
           text-transform: capitalize;
         }
@@ -83,18 +110,22 @@ $container-padding-v: 24px;
     }
   }
 
+  .user-date {
+    min-width: 110px;
+  }
+
   &.placeholder td {
     div {
       width: 100%;
-      background-color: var(--color-light-opacity-20);
+      background-color: var(--color-loader-placeholder-bg);
       height: 1em;
-      opacity: .4;
+      opacity: 0.4;
       animation: blinker 2s linear infinite;
       @keyframes blinker {
         50% {
           opacity: 0.1;
         }
-      } 
+      }
     }
   }
 }
@@ -114,7 +145,7 @@ $container-padding-v: 24px;
   }
   .users-list-pagination-navigation {
     display: flex;
-    @include gap-horizontal(.5em);
+    @include gap-horizontal(0.5em);
   }
   .users-list-pagination-button {
     border: none;
