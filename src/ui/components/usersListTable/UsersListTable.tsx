@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { formatLongDate, getImageUrl } from '../../../utils'
+import { formatLongDate, getImageUrl, formatNumber } from '../../../utils'
 import { UserRecipeType, UserWithRecipeId } from '../../pages/usersList/types'
 import PhoneDisplay from '../phoneNumber/PhoneNumber'
 import './UsersListTable.scss'
@@ -82,8 +82,8 @@ const UserInfo = (user: UserWithRecipeId) => {
   return (
     <div className='user-info'>
       <div className='main'>{name || email || (phone && PhoneDisplay(phone))}</div>
-      {email && name && <div>{email}</div>}
-      {phone && (name || email) && <div>{PhoneDisplay(phone)}</div>}
+      {email && name && <div className='email'>{email}</div>}
+      {phone && (name || email) && <div className='phone'>{PhoneDisplay(phone)}</div>}
     </div>
   )
 }
@@ -113,7 +113,7 @@ const UserListPagination = (props: UserListProps) => {
   return (
     <div className='users-list-pagination'>
       {UserTablePaginationInfo(props)}
-      {UserTablePaginationNavigation(props)}
+      {props.count > (props.limit ?? LIST_DEFAULT_LIMIT) && UserTablePaginationNavigation(props)}
     </div>
   )
 }
@@ -122,7 +122,7 @@ const UserTablePaginationInfo = (props: Pick<UserListProps, 'count' | 'limit' | 
   const { offset, limit, count } = { offset: 0, limit: LIST_DEFAULT_LIMIT, ...props }
   return (
     <p className='users-list-pagination-count text-small'>
-      {offset + 1} - {offset + limit} of {count}
+      {formatNumber(offset + 1)} - {formatNumber(offset + limit)} of {formatNumber(count)}
     </p>
   )
 }

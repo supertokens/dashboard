@@ -100,6 +100,13 @@ export const fetchData = async ({
     return response;
 }
 
+// Language Utils
+const getLanguage = () => (navigator as any).userLanguage 
+    || (navigator.languages && navigator.languages.length && navigator.languages[0]) 
+    || navigator.language || (navigator as any).browserLanguage || (navigator as any).systemLanguage || 'en';
+
+// Number Utils
+
 /**
  * Get Ordinal text from number 
  ** 1 -> st
@@ -113,7 +120,18 @@ export const ordinal = (num: number) => {
   return num >10 && num < 14 ? 'th' : (modMap[mod] ?? 'th')
 }
 
+/**
+ * Format number into string with its thousand separator
+ ** example: 100000 -> "100,000"
+ */
+export const formatNumber = (num: number) => {
+  return num.toLocaleString(getLanguage())
+}
+
+
+// Date Utils
 const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DATE_DISPLAY_YEAR_LIMIT = 360;
 /**
  * Output long date
  ** example: 5th August, 03:35 pm
@@ -123,7 +141,18 @@ export const formatLongDate = (date: number | Date) => {
   if (typeof date === 'number') { date = new Date(date) }
   const day = date.getDate()
   const hour = date.getHours();
+  const yearDisplay = substractDate(new Date(), date) > DATE_DISPLAY_YEAR_LIMIT ? ` ${date.getFullYear()}` : ''
   const meridiem = hour < 12 ? 'am' : 'pm'
-  return `${day}${ordinal(day)} ${months[date.getMonth()]}, 
+  return `${day}${ordinal(day)} ${months[date.getMonth()]} ${yearDisplay}, 
   ${(hour % 12 || 12).toString().padStart(2, '0')}:${(date.getMinutes()).toString().padStart(2, '0')} ${meridiem}`
+}
+
+const DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
+/**
+ * Substract two date (date2 - date1), and return value in days unit
+ * @returns decimal days value
+ */
+export const substractDate = (date1: Date, date2: Date) => {
+    const diff = date2.getDate() - date1.getDate()
+    return diff / (DAY_IN_MILISECONDS)
 }
