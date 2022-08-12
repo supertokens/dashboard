@@ -34,7 +34,7 @@
 .input-field-error {
   display: flex;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 8pt;
 }
 
 .input-field-error-icon {
