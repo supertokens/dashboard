@@ -4,12 +4,15 @@ $container-padding-v: 24px;
 
 .users-list-table-container {
   padding: $container-padding-v 34px;
-  display: inline-block;
-  min-width: 100%;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: scroll;
 }
 
 .users-list-table {
-  min-width: 100%;
+  width: 100%;
+  max-width: 100%;
   border-spacing: 0px;
   border-collapse: collapse;
 }
@@ -46,26 +49,30 @@ $container-padding-v: 24px;
   .user-info {
     display: flex;
     flex-direction: column;
-    @include gap-horizontal(0.5em);
     color: var(--color-secondary-text);
     padding-right: 1em;
-    .main {
-      color: var(--color-black);
-      font-weight: 500;
+    div {
       max-width: 15em;
       overflow: hidden;
       text-overflow: ellipsis;
-      @media only screen and (min-width: 800px) {
-        max-width: 100%;
+
+      &:not(:last-child) {
+        margin-bottom: 0.5em;
       }
+
+      @media only screen and (min-width: 800px) {
+        max-width: 25em;
+      }
+    }
+    .main {
+      color: var(--color-black);
+      font-weight: 500;
     }
   }
   .pill {
     display: flex;
-    height: 17pt;
-    line-height: 24pt;
-    border-radius: 8pt;
-    padding: 8pt;
+    border-radius: 20px;
+    padding: 4px 8px;
     align-items: center;
     width: fit-content;
     white-space: nowrap;
