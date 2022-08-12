@@ -16,8 +16,8 @@ export const UsersList: React.FC = () => {
   const loadUsers = useCallback(
     async (paginationToken?: string) => {
       setLoading(true)
-      if (users[offset + LIST_DEFAULT_LIMIT] == null) {
-        const data = await (paginationToken ? fetchUsers({ paginationToken }) : fetchUsers()).catch(() => null)
+      if (users[offset + LIST_DEFAULT_LIMIT] === undefined) {
+        const data = await (paginationToken ? fetchUsers({ paginationToken }) : fetchUsers()).catch(() => undefined)
         if (data) {
           // store the users and pagination token
           const { users: responseUsers, nextPaginationToken } = data
@@ -32,7 +32,7 @@ export const UsersList: React.FC = () => {
   )
   const loadCount = useCallback(async () => {
     setLoading(true)
-    const result = await fetchCount().catch(() => null)
+    const result = await fetchCount().catch(() => undefined)
     if (result) {
       setCount(result.count)
       await loadUsers()
@@ -54,7 +54,7 @@ export const UsersList: React.FC = () => {
       </p>
 
       <div className='users-list-paper'>
-        {count == null || count > 0 || loading ? (
+        {count === undefined || count > 0 || loading ? (
           <UsersListTable
             users={users}
             offset={offset}
