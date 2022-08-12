@@ -46,7 +46,7 @@ const Auth: React.FC<{
       localStorageHandler.setItem(StorageKeys.API_KEY, apiKey)
       props.onSuccess()
     } else if (response.status === UNAUTHORISED_STATUS) {
-      setApiKeyFieldError('API key doesn’t exist')
+      setApiKeyFieldError('Invalid API Key')
     } else {
       setApiKeyFieldError('Something went wrong')
     }
