@@ -171,7 +171,7 @@ const ErrorRow = (colSpan: number) => {
   return (
     <tr className='empty-row'>
       <td colSpan={colSpan}>
-        <div className='block-medium block-error-light text-error-dark'>
+        <div className='block-medium block-error'>
           <p className='text-bold'>Server Error:</p>
           <p>Failed to load user list. Please refresh to try again.</p>
         </div>

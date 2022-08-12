@@ -41,12 +41,7 @@
   background-color: var(--color-error-bg);
   color: var(--color-error);
   border-color: var(--color-border-error);
-}
-
-.block-error-light {
-  background-color: var(--color-error-light-bg);
-  color: var(--color-error);
-  border-color: var(--color-border-error);
+  box-shadow: 0px 0px 6px 0px var(--color-error-shadow);
 }
 
 .block-container {
@@ -97,10 +92,6 @@
 /* classes for text colors */
 .text-error {
   color: var(--color-error);
-}
-
-.text-error-dark {
-  color: var(--color-error-dark);
 }
 
 .text-black {
