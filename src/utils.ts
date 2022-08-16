@@ -139,12 +139,13 @@ const DATE_DISPLAY_YEAR_LIMIT = 360;
  */
 export const formatLongDate = (date: number | Date) => {
   if (typeof date === 'number') { date = new Date(date) }
+  const delimiter = ','
   const day = date.getDate()
   const hour = date.getHours();
-  const yearDisplay = substractDate(new Date(), date) > DATE_DISPLAY_YEAR_LIMIT ? ` ${date.getFullYear()}` : ''
+  const yearDisplay = substractDate(date, new Date()) >= DATE_DISPLAY_YEAR_LIMIT ? ` ${date.getFullYear()}` : ''
   const meridiem = hour < 12 ? 'am' : 'pm'
-  return `${day}${ordinal(day)} ${months[date.getMonth()]} ${yearDisplay}, 
-  ${(hour % 12 || 12).toString().padStart(2, '0')}:${(date.getMinutes()).toString().padStart(2, '0')} ${meridiem}`
+    return `${day}${ordinal(day)} ${months[date.getMonth()]}${yearDisplay}${delimiter} 
+  ${(hour % 12 || 12).toString().padStart(2, '0')}:${(date.getMinutes()).toString().padStart(2, '0')} ${meridiem}`;
 }
 
 const DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
@@ -153,6 +154,6 @@ const DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
  * @returns decimal days value
  */
 export const substractDate = (date1: Date, date2: Date) => {
-    const diff = date2.getDate() - date1.getDate()
+    const diff = date2.getTime() - date1.getTime()
     return diff / (DAY_IN_MILISECONDS)
 }
