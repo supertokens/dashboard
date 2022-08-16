@@ -50,18 +50,14 @@ $container-padding-v: 24px;
     display: flex;
     flex-direction: column;
     color: var(--color-secondary-text);
-    padding-right: 1em;
+    padding-right: 16px;
     div {
-      max-width: 15em;
+      max-width: 25ch;
       overflow: hidden;
       text-overflow: ellipsis;
 
       &:not(:last-child) {
-        margin-bottom: 0.5em;
-      }
-
-      @media only screen and (min-width: 800px) {
-        max-width: 25em;
+        margin-bottom: 4px;
       }
     }
     .main {
@@ -89,6 +85,14 @@ $container-padding-v: 24px;
     &.thirdparty {
       color: var(--color-custom-provider-text);
       background-color: var(--color-custom-provider-bg);
+      max-width: 25ch;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      .thirdparty-name {
+        max-width: 10ch;
+        text-overflow: inherit;
+        overflow: inherit;
+      }
       &.google{
         color: var(--color-google-text);
         background-color: var(--color-google-bg);
@@ -122,13 +126,14 @@ $container-padding-v: 24px;
 
   .user-date {
     min-width: 110px;
+    white-space: nowrap;
   }
 
   &.placeholder td {
     div {
       width: 100%;
       background-color: var(--color-loader-placeholder-bg);
-      height: 1em;
+      min-height: 1em;
       opacity: 0.4;
       animation: blinker 2s linear infinite;
       @keyframes blinker {

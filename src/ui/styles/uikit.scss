@@ -22,18 +22,18 @@
 
 /* classes for blocks */
 .block-small {    
-  padding: .5em;
   border-radius: 6px;
   padding: 8px 12px 8px;
 }
 
 .block-medium {
-  padding: 1em;
+  padding: 20px 16px;
+  margin: 4px 0px;
   border-radius: 6pt;
   border-width: 1px;
   border-style: solid;
-  p {
-    line-height: 1.7em;
+  p:not(:last-child) {
+    margin-bottom: 6px;
   }
 }
 
@@ -46,10 +46,9 @@
 .block-container {
   display: flex;
   flex-flow: column;
-  padding: 40px;
+  padding: 32px 48px;
   border-radius: 18pt;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
-  max-width: 416px;
   width: calc(100% - 32px);
   background-color: var(--color-white);
 }
@@ -98,7 +97,7 @@
 }
 
 .text-label {
-  color: var(--color-light);
+  color: var(--color-secondary-text);
 }
 
 /* classes for images */

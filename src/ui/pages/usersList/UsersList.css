@@ -1,5 +1,5 @@
 .users-list {
-  padding: 30px 16px;
+  padding: 72px 16px 32px;
   max-width: 100vw;
 }
 
@@ -25,23 +25,9 @@
   max-width: 100%;
 }
 
-@media only screen and (min-width: 900px) {
+@media only screen and (min-width: 992px) {
   .users-list { 
-    width: 80%; 
-    margin: 0 auto;
-  }
-}
-
-@media only screen and (min-width: 1024px) {
-  .users-list { 
-    width: 70%; 
-    margin: 0 auto;
-  }
-}
-
-@media only screen and (min-width: 1200px) {
-  .users-list { 
-    width: 60%; 
+    max-width: 861px; 
     margin: 0 auto;
   }
 }

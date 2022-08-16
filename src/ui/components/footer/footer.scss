@@ -19,7 +19,7 @@
   width: 100%;
   min-height: 62px;
   display: flex;
-  padding: 1em;
+  padding: 20px 32px;
   
   .logo {
     height: 23px;
@@ -40,6 +40,6 @@
   }
 
   &.size-large {
-    padding: 2em;
+    padding: 40px 32px;
   }
 }
