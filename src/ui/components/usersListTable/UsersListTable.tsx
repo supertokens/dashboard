@@ -1,3 +1,4 @@
+import { count } from 'console'
 import React from 'react'
 
 import { formatLongDate, getImageUrl, formatNumber } from '../../../utils'
@@ -128,21 +129,19 @@ const UserListPagination = (props: UserListProps) => {
   const estimatedCount = getEstimatedCount(props)
   return (
     <div className='users-list-pagination'>
-      {props.count > 0 && <UserTablePaginationInfo {...props} />}
-      {estimatedCount > (props.limit ?? LIST_DEFAULT_LIMIT) && <UserTablePaginationNavigation {...props} />}
+      {props.count > 0 && <UserTablePaginationInfo {...props} count={estimatedCount} />}
+      {estimatedCount > (props.limit ?? LIST_DEFAULT_LIMIT) && (
+        <UserTablePaginationNavigation {...props} count={estimatedCount} />
+      )}
     </div>
   )
 }
 
-const UserTablePaginationInfo = (
-  props: Pick<UserListProps, 'count' | 'limit' | 'offset' | 'users' | 'nextPaginationToken'>
-) => {
-  const { offset, limit } = { offset: 0, limit: LIST_DEFAULT_LIMIT, ...props }
-  const estimatedCount = getEstimatedCount(props)
+const UserTablePaginationInfo = (props: Pick<UserListProps, 'count' | 'limit' | 'offset'>) => {
+  const { offset, limit, count } = { offset: 0, limit: LIST_DEFAULT_LIMIT, ...props }
   return (
     <p className='users-list-pagination-count text-small'>
-      {formatNumber(offset + 1)} - {formatNumber(Math.min(offset + limit, estimatedCount))} of{' '}
-      {formatNumber(estimatedCount)}
+      {formatNumber(offset + 1)} - {formatNumber(Math.min(offset + limit, count))} of {formatNumber(count)}
     </p>
   )
 }
