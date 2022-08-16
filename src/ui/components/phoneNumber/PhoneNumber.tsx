@@ -1,17 +1,18 @@
 import { parsePhoneNumberFromString, format } from "libphonenumber-js"
 import "./PhoneNumber.scss"
 
-export const PhoneDisplay = (phone: string) => {
-  const { country, countryCallingCode } =
-    parsePhoneNumberFromString(phone) || {}
+export const PhoneDisplay = ({ phone }: { phone: string }) => {
+  const { country, countryCallingCode } = parsePhoneNumberFromString(phone) || {}
   return (
-    country && (
-      <div className='phone-display'>
-        <span>
-          +{countryCallingCode} {format(phone, 'NATIONAL')}
-        </span>
-      </div>
-    )
+    <>
+      {country && (
+        <div className='phone-display'>
+          <span>
+            +{countryCallingCode} {format(phone, 'NATIONAL')}
+          </span>
+        </div>
+      )}
+    </>
   )
 }
 
