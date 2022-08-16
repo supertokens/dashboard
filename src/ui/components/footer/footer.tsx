@@ -13,7 +13,6 @@
  * under the License.
  */
 
-import { getImageUrl } from '../../../utils'
 import './footer.scss'
 
 export type FooterProps = {

@@ -14,12 +14,13 @@ type UserListProps = {
   isLoading?: boolean
   limit?: number
   offset?: number
+  errorOffsets?: number[]
   goToNext?: (token: string) => any
   offsetChange?: (offset: number) => any
 }
 
 const UsersListTable: React.FC<UserListProps> = (props) => {
-  const { users, limit, offset, isLoading } = {
+  const { users, limit, offset, isLoading, errorOffsets } = {
     offset: 0,
     limit: LIST_DEFAULT_LIMIT,
     ...props,
@@ -37,30 +38,34 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
           </tr>
         </thead>
         <tbody className='text-small'>
-          {
-            isLoading && PlaceholderTableRows(limit, USER_TABLE_COLUMNS_COUNT, 'user-info') // show placeholder when it is loading from API
-          }
-          {
-            !isLoading &&
-              (displayedUsers.length > 0 ? UserTableRows(displayedUsers) : ErrorRow(USER_TABLE_COLUMNS_COUNT)) // show rows when it is not loading from API
-          }
+          {isLoading && (
+            <PlaceholderTableRows rowCount={limit} colSpan={USER_TABLE_COLUMNS_COUNT} className={'user-info'} /> // show placeholder when it is loading from API
+          )}
+          {!isLoading &&
+            (errorOffsets?.includes(offset) ? (
+              <ErrorRow colSpan={USER_TABLE_COLUMNS_COUNT} /> // show rows when it is not loading from API
+            ) : (
+              <UserTableRows displayedUsers={displayedUsers} />
+            ))}
         </tbody>
       </table>
 
       <div className='user-list-footer'>
-        {UserListPagination({
-          ...props,
-          offset,
-          limit,
-        })}
+        <UserListPagination {...props} offset={offset} limit={limit} />
       </div>
     </div>
   )
 }
 
 // Table Rows Section
-const UserTableRows = (displayedUsers: UserWithRecipeId[]) => {
-  return displayedUsers.map((user, index) => UserTableRow({ user: user, index }))
+const UserTableRows = ({ displayedUsers }: { displayedUsers: UserWithRecipeId[] }) => {
+  return (
+    <>
+      {displayedUsers.map((user, index) => (
+        <UserTableRow user={user} key={index} />
+      ))}
+    </>
+  )
 }
 
 // Single Row Section
@@ -68,37 +73,47 @@ const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number }> = (prop
   const { user, index } = props
   return (
     <tr key={index} className='user-row'>
-      <td>{UserInfo(user)}</td>
-      <td>{UserRecipePill(user)}</td>
-      <td>{UserDate(user)}</td>
+      <td>
+        <UserInfo user={user} />
+      </td>
+      <td>
+        <UserRecipePill user={user} />
+      </td>
+      <td>
+        <UserDate user={user} />
+      </td>
     </tr>
   )
 }
 
-const UserInfo = (user: UserWithRecipeId) => {
+const UserInfo = ({ user }: { user: UserWithRecipeId }) => {
   const { firstName, lastName, email } = user.user
   const phone = user.recipeId === 'passwordless' ? user.user.phoneNumber : undefined
   const name = `${firstName ?? ''} ${lastName ?? ''}`.trim()
   return (
     <div className='user-info'>
-      <div className='main'>{name || email || (phone && PhoneDisplay(phone))}</div>
+      <div className='main'>{name || email || (phone && <PhoneDisplay phone={phone} />)}</div>
       {email && name && <div className='email'>{email}</div>}
-      {phone && (name || email) && <div className='phone'>{PhoneDisplay(phone)}</div>}
+      {phone && (name || email) && (
+        <div className='phone'>
+          <PhoneDisplay phone={phone} />
+        </div>
+      )}
     </div>
   )
 }
 
-const UserRecipePill = (user: UserWithRecipeId) => {
+const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
   const thirdpartyId = user.recipeId === 'thirdparty' && user.user.thirdParty.id
   return (
     <div className={`pill ${user.recipeId} ${thirdpartyId}`}>
       <span>{UserRecipeTypeText[user.recipeId]}</span>
-      {thirdpartyId && <span> - {thirdpartyId}</span>}
+      {thirdpartyId && <span className='thirdparty-name'> - {thirdpartyId}</span>}
     </div>
   )
 }
 
-const UserDate = (user: UserWithRecipeId) => {
+const UserDate = ({ user }: { user: UserWithRecipeId }) => {
   return <div className='user-date'>{user.user.timeJoined && formatLongDate(user.user.timeJoined)}</div>
 }
 
@@ -110,19 +125,24 @@ const UserRecipeTypeText: Record<UserRecipeType, string> = {
 
 // Pagination Section
 const UserListPagination = (props: UserListProps) => {
+  const estimatedCount = getEstimatedCount(props)
   return (
     <div className='users-list-pagination'>
-      {UserTablePaginationInfo(props)}
-      {props.count > (props.limit ?? LIST_DEFAULT_LIMIT) && UserTablePaginationNavigation(props)}
+      {props.count > 0 && <UserTablePaginationInfo {...props} />}
+      {estimatedCount > (props.limit ?? LIST_DEFAULT_LIMIT) && <UserTablePaginationNavigation {...props} />}
     </div>
   )
 }
 
-const UserTablePaginationInfo = (props: Pick<UserListProps, 'count' | 'limit' | 'offset'>) => {
-  const { offset, limit, count } = { offset: 0, limit: LIST_DEFAULT_LIMIT, ...props }
+const UserTablePaginationInfo = (
+  props: Pick<UserListProps, 'count' | 'limit' | 'offset' | 'users' | 'nextPaginationToken'>
+) => {
+  const { offset, limit } = { offset: 0, limit: LIST_DEFAULT_LIMIT, ...props }
+  const estimatedCount = getEstimatedCount(props)
   return (
     <p className='users-list-pagination-count text-small'>
-      {formatNumber(offset + 1)} - {formatNumber(offset + limit)} of {formatNumber(count)}
+      {formatNumber(offset + 1)} - {formatNumber(Math.min(offset + limit, estimatedCount))} of{' '}
+      {formatNumber(estimatedCount)}
     </p>
   )
 }
@@ -156,7 +176,7 @@ const UserTablePaginationNavigation = (props: UserListProps) => {
       <button
         className='users-list-pagination-button'
         disabled={
-          (!nextPaginationToken && offset + limit > count) ||
+          (!nextPaginationToken && offset + limit >= count) ||
           isLoading ||
           users.slice(offset, offset + limit).length === 0
         }
@@ -167,7 +187,7 @@ const UserTablePaginationNavigation = (props: UserListProps) => {
   )
 }
 
-const ErrorRow = (colSpan: number) => {
+const ErrorRow = ({ colSpan }: { colSpan: number }) => {
   return (
     <tr className='empty-row'>
       <td colSpan={colSpan}>
@@ -180,14 +200,31 @@ const ErrorRow = (colSpan: number) => {
   )
 }
 
-const PlaceholderTableRows = (rowCount: number, colSpan: number, className?: string) => {
-  return new Array(rowCount).fill(undefined).map((_, index) => (
-    <tr key={index} className='user-row placeholder'>
-      <td colSpan={colSpan}>
-        <div className={className}></div>
-      </td>
-    </tr>
-  ))
+const PlaceholderTableRows = (props: { rowCount: number; colSpan: number; className?: string }) => {
+  const { colSpan, rowCount, className } = props
+  return (
+    <>
+      {new Array(rowCount).fill(undefined).map((_, index) => (
+        <tr key={index} className='user-row placeholder'>
+          <td colSpan={colSpan}>
+            <div className={className}></div>
+          </td>
+        </tr>
+      ))}
+    </>
+  )
+}
+
+/**
+ * get estimated count as a fallback if the count API don't give correct value
+ */
+const getEstimatedCount = (props: Pick<UserListProps, 'count' | 'limit' | 'users' | 'nextPaginationToken'>) => {
+  const { count, limit, users, nextPaginationToken } = {
+    limit: LIST_DEFAULT_LIMIT,
+    ...props,
+  }
+  // in case the count is smaller than user's length, then estimate the count to be users.length + limit
+  return nextPaginationToken && count <= users.length ? users.length + limit : count
 }
 
 export default UsersListTable
