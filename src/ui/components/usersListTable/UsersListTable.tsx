@@ -92,8 +92,14 @@ const UserInfo = ({ user }: { user: UserWithRecipeId }) => {
   const name = `${firstName ?? ''} ${lastName ?? ''}`.trim()
   return (
     <div className='user-info'>
-      <div className='main'>{name || email || (phone && <PhoneDisplay phone={phone} />)}</div>
-      {email && name && <div className='email'>{email}</div>}
+      <div className='main' title={name || email}>
+        {name || email || (phone && <PhoneDisplay phone={phone} />)}
+      </div>
+      {email && name && (
+        <div className='email' title={email}>
+          {email}
+        </div>
+      )}
       {phone && (name || email) && (
         <div className='phone'>
           <PhoneDisplay phone={phone} />
@@ -108,7 +114,12 @@ const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
   return (
     <div className={`pill ${user.recipeId} ${thirdpartyId}`}>
       <span>{UserRecipeTypeText[user.recipeId]}</span>
-      {thirdpartyId && <span className='thirdparty-name'> - {thirdpartyId}</span>}
+      {thirdpartyId && (
+        <span className='thirdparty-name' title={thirdpartyId}>
+          {' '}
+          - {thirdpartyId}
+        </span>
+      )}
     </div>
   )
 }
