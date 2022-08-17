@@ -139,7 +139,7 @@ const UserListPagination = (props: UserListProps) => {
   const estimatedCount = getEstimatedCount(props)
   return (
     <div className='users-list-pagination'>
-      {props.count > 0 && <UserTablePaginationInfo {...props} count={estimatedCount} />}
+      {estimatedCount > 0 && <UserTablePaginationInfo {...props} count={estimatedCount} />}
       {estimatedCount > (props.limit ?? LIST_DEFAULT_LIMIT) && (
         <UserTablePaginationNavigation {...props} count={estimatedCount} />
       )}
