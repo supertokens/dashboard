@@ -41,6 +41,9 @@
   background-color: var(--color-error-bg);
   color: var(--color-error);
   border-color: var(--color-border-error);
+  &.block-medium {
+    box-shadow: 0px 0px 6px var(--color-error-shadow);
+  }
 }
 
 .block-container {
