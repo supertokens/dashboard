@@ -71,27 +71,29 @@ const Auth: React.FC<{
   }
 
   return (
-    <div className='page-container'>
-      <div className='block-container'>
-        <img className='title-image' src={getImageUrl('star_sparkle.svg')} alt='Auth Page' />
-        <h2 className='api-key-form-title text-title'>Enter your API Key</h2>
-        <form className='api-key-form' onSubmit={handleSubmit}>
-          <InputField
-            handleChange={handleApiKeyFieldChange}
-            name='apiKey'
-            type='text'
-            error={apiKeyFieldError}
-            value={apiKey}
-            placeholder='Your API Key'
-          />
+    <>
+      <div className='page-container'>
+        <div className='block-container'>
+          <img className='title-image' src={getImageUrl('star_sparkle.svg')} alt='Auth Page' />
+          <h2 className='api-key-form-title text-title'>Enter your API Key</h2>
+          <form className='api-key-form' onSubmit={handleSubmit}>
+            <InputField
+              handleChange={handleApiKeyFieldChange}
+              name='apiKey'
+              type='text'
+              error={apiKeyFieldError}
+              value={apiKey}
+              placeholder='Your API Key'
+            />
 
-          <button className='button' type='submit' disabled={loading}>
-            <span>Continue</span> <img src={getImageUrl('right_arrow_icon.svg')} alt='Auth Page' />
-          </button>
-        </form>
+            <button className='button' type='submit' disabled={loading}>
+              <span>Continue</span> <img src={getImageUrl('right_arrow_icon.svg')} alt='Auth Page' />
+            </button>
+          </form>
+        </div>
       </div>
       <Footer horizontalAlignment='right' size='large'></Footer>
-    </div>
+    </>
   )
 }
 
