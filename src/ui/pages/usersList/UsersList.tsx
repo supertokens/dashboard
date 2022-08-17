@@ -39,11 +39,10 @@ export const UsersList: React.FC = () => {
   )
   const loadCount = useCallback(async () => {
     setLoading(true)
-    const result = await fetchCount().catch(() => undefined)
-    if (result) {
-      setCount(result.count)
+    const [countResult] = await Promise.all([fetchCount().catch(() => undefined), loadUsers()])
+    if (countResult) {
+      setCount(countResult.count)
     }
-    await loadUsers()
     setLoading(false)
   }, [])
   const loadOffset = useCallback((offset: number) => setOffset(offset), [])
