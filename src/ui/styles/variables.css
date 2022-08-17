@@ -9,17 +9,23 @@ body {
   --color-window-bg: rgb(248, 248, 248);
 
   /* Background Colors */
-  --color-loader-placeholder-bg: rgba(110, 106, 101, .4);
+  --color-loader-placeholder-bg: rgba(110, 106, 101, .4); 
+  --color-shadow: rgba(158, 37, 38, 0.16);
+  --color-container-shadow: rgba(0, 0, 0, 0.16);
   --color-error-shadow: rgba(158, 37, 38, 0.16);
   --color-error-bg: rgb(253, 240, 241);
+  --color-info-shadow: rgba(158, 37, 38, 0.16);
+  --color-info-bg: rgb(235, 245, 255);
 
   /* Border Colors */
   --color-border: rgb(229, 229, 229);
   --color-border-error: rgb(239, 121, 119);
+  --color-border-info: rgb(151, 189, 250);
   
   /* Text Colors */
   --color-secondary-text: rgb(110, 106, 101); /* Below title, table headers, placeholders etc */
   --color-error: rgb(158, 37, 38);
+  --color-info: rgb(31, 90, 219);
 
   /* Recipe Pill Colors */ 
   --color-emailpassword-bg: rgb(221, 252, 247);

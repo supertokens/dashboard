@@ -21,6 +21,19 @@
 
 
 /* classes for blocks */
+.block-container {
+  display: flex;
+  flex-flow: column;
+  padding: 32px 18px;
+  border-radius: 18pt;
+  box-shadow: 1px 1px 6px var(--color-container-shadow);
+  width: calc(100% - 32px);
+  background-color: var(--color-white);
+  @media only screen and (min-width: 992px) {    
+    padding: 32px 48px;
+  }
+}
+
 .block-small {    
   border-radius: 6px;
   padding: 8px 12px 8px;
@@ -32,31 +45,56 @@
   border-radius: 6pt;
   border-width: 1px;
   border-style: solid;
-  p:not(:last-child) {
-    margin-bottom: 6px;
+  box-shadow: 0px 0px 6px var(--color-shadow);
+  p {
+    line-height: 23px;
+    &:not(:last-child) {
+      margin-bottom: 16px;
+      @media only screen and (min-width: 600px) {
+        margin-bottom: 6px;
+      }
+    }
   }
+
+  &.block-medium-lg {
+    p:not(:last-child) {         
+      @media only screen and (min-width: 768px) {
+        margin-bottom: 6px;
+      }        
+    }
+  }
+}
+
+.block-large {
+  padding: 32px;
+  border-radius: 24px;
+  box-shadow: 1px 1px 60px var(--color-container-shadow);
+  p {
+    letter-spacing: 0.14px;
+    line-height: 21px;
+  }
+  @media only screen and (min-width: 768px) {
+    padding: 32px 48px;
+  }     
 }
 
 .block-error {
   background-color: var(--color-error-bg);
   color: var(--color-error);
   border-color: var(--color-border-error);
-  &.block-medium {
-    box-shadow: 0px 0px 6px var(--color-error-shadow);
-  }
 }
 
-.block-container {
-  display: flex;
-  flex-flow: column;
-  padding: 32px 18px;
-  border-radius: 18pt;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.16);
-  width: calc(100% - 32px);
-  background-color: var(--color-white);
-  @media only screen and (min-width: 992px) {    
-    padding: 32px 48px;
-  }
+.block-info {
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
+  border-color: var(--color-border-info);
+}
+
+.block-snippet {
+  border-width: 1px;
+  border-style: solid;
+  padding: 3px 8px;
+  border-radius: 4px;
 }
 
 .button {
@@ -98,6 +136,10 @@
   color: var(--color-error);
 }
 
+.text-info {
+  color: var(--color-info);
+}
+
 .text-black {
   color: var(--color-black);
 }
@@ -108,8 +150,14 @@
 
 /* classes for images */
 .title-image {
-  width: 35pt;
-  height: 32pt;
+  width: 35px;
+  height: 32px;
+  margin-bottom: 16px;
+}
+
+.title-image-smaller {
+  width: 32px;
+  height: 29px;
   margin-bottom: 16px;
 }
 
