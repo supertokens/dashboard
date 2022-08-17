@@ -13,13 +13,13 @@
 * under the License.
 */
 import React, { useState } from 'react'
-import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
-import { localStorageHandler } from "../../../services/storage";
+import { StorageKeys, UNAUTHORISED_STATUS } from '../../../constants'
+import { localStorageHandler } from '../../../services/storage'
 import { fetchData, getApiUrl, getImageUrl } from '../../../utils'
-import { Footer } from '../footer/footer'
+import { Footer, LOGO_ICON_LIGHT } from '../footer/footer'
 import InputField from '../inputField/InputField'
 
-import './Auth.css'
+import './Auth.scss'
 
 const Auth: React.FC<{
   onSuccess: () => void
@@ -69,12 +69,17 @@ const Auth: React.FC<{
     setApiKey(value)
     setApiKeyFieldError('')
   }
+  const backgroundUrlVars = {
+    '--auth-background': `url(${getImageUrl('auth-background.png')})`,
+    '--auth-background-portrait': `url(${getImageUrl('auth-background-portrait.png')})`,
+  } as React.CSSProperties
 
   return (
-    <div className='page-container'>
-      <div className='block-container'>
-        <img className='title-image' src={getImageUrl('star_sparkle.svg')} alt='Auth Page' />
+    <div className='page-container auth-container' style={backgroundUrlVars}>
+      <div className='block-container block-large'>
+        <img className='title-image-smaller' src={LOGO_ICON_LIGHT} alt='Auth Page' />
         <h2 className='api-key-form-title text-title'>Enter your API Key</h2>
+        <p className='text-small text-label'>Please enter the API key that you used to connect with your backend</p>
         <form className='api-key-form' onSubmit={handleSubmit}>
           <InputField
             handleChange={handleApiKeyFieldChange}
@@ -90,7 +95,7 @@ const Auth: React.FC<{
           </button>
         </form>
       </div>
-      <Footer horizontalAlignment='right' size='large'></Footer>
+      <Footer horizontalAlignment='center' size='normal' verticalAlignment='center' colorMode='dark'></Footer>
     </div>
   )
 }

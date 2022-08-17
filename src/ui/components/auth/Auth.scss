@@ -1,0 +1,30 @@
+.auth-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: var(--auth-background-portrait);
+  @media only screen and (min-width: 600px) {
+    background-image: var(--auth-background);
+  }
+}
+
+.auth-container .block-container {
+  max-width: 320px;
+  @media only screen and (min-width: 600px) {
+    max-width: 416px;
+  }
+}
+
+.auth-container .text-title {
+  margin-bottom: 8px;
+}
+
+.auth-container > * > p {
+  margin-bottom: 16px;
+}
