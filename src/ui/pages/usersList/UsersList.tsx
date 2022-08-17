@@ -55,7 +55,7 @@ export const UsersList: React.FC = () => {
   }, [loadCount])
 
   return (
-    <div className='users-list with-footer'>
+    <div className='users-list'>
       <img className='title-image' src={LOGO_ICON_LIGHT} alt='Auth Page' />
       <h1 className='users-list-title'>User Management</h1>
       <p className='text-small users-list-subtitle'>
