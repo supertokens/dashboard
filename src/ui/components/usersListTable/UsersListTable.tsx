@@ -147,11 +147,12 @@ const UserListPagination = (props: UserListProps) => {
   )
 }
 
-const UserTablePaginationInfo = (props: Pick<UserListProps, 'count' | 'limit' | 'offset'>) => {
-  const { offset, limit, count } = { offset: 0, limit: LIST_DEFAULT_LIMIT, ...props }
+const UserTablePaginationInfo = (props: Pick<UserListProps, 'count' | 'limit' | 'offset' | 'users'>) => {
+  const { offset, limit, count, users } = { offset: 0, limit: LIST_DEFAULT_LIMIT, ...props }
+  const displayedLength = users.slice(offset, offset + limit).length
   return (
     <p className='users-list-pagination-count text-small'>
-      {formatNumber(offset + 1)} - {formatNumber(Math.min(offset + limit, count))} of {formatNumber(count)}
+      {formatNumber(offset + 1)} - {formatNumber(Math.min(offset + displayedLength, count))} of {formatNumber(count)}
     </p>
   )
 }
