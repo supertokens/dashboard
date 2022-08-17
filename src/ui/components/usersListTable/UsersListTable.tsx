@@ -1,4 +1,3 @@
-import { count } from 'console'
 import React from 'react'
 
 import { formatLongDate, getImageUrl, formatNumber } from '../../../utils'
