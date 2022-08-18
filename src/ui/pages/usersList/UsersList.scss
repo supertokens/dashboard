@@ -34,8 +34,7 @@ $container-width: 829;
 
 @media only screen and (min-width: #{$container-width + 2 * $container-padding-horizontal}px) {
   .users-list { 
-    max-width: #{$container-width}px; 
-    width: 100%;
+    width: #{$container-width}px;
     padding-left: 0px;
     padding-right: 0px;
     margin: 0 auto;
