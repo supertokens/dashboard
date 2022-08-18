@@ -6,6 +6,7 @@ import NoUsers from '../../components/noUsers/NoUsers'
 import UsersListTable, { LIST_DEFAULT_LIMIT } from '../../components/usersListTable/UsersListTable'
 import './UsersList.scss'
 import { Footer, LOGO_ICON_LIGHT } from '../../components/footer/footer'
+import InfoConnection from '../../components/info-connection/info-connection'
 
 export const UsersList: React.FC = () => {
   const limit = LIST_DEFAULT_LIMIT
@@ -15,6 +16,7 @@ export const UsersList: React.FC = () => {
   const [nextPaginationToken, setNextPaginationToken] = useState<string>()
   const [loading, setLoading] = useState<boolean>(true)
   const [errorOffsets, setErrorOffsets] = useState<number[]>([])
+  const [connectionURI, setConnectionURI] = useState<string>()
   const loadUsers = useCallback(
     async (paginationToken?: string) => {
       setLoading(true)
@@ -49,6 +51,7 @@ export const UsersList: React.FC = () => {
 
   useEffect(() => {
     loadCount()
+    setConnectionURI((window as any).connectionURI)
   }, [loadCount])
 
   return (
@@ -58,6 +61,8 @@ export const UsersList: React.FC = () => {
       <p className='text-small users-list-subtitle'>
         One place to manage all your users, revoke access and edit information according to your needs.
       </p>
+
+      {connectionURI && <InfoConnection connectionURI={connectionURI} />}
 
       <div className='users-list-paper'>
         {users.length === 0 && !loading && !errorOffsets.includes(0) ? (

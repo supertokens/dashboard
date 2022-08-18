@@ -11,4 +11,6 @@ import "./assets/chevron-right.svg";
 import "./assets/right_arrow_icon.svg"
 import "./assets/star_sparkle.svg"
 import "./assets/delete.svg"
+import "./assets/auth-background.png"
+import "./assets/auth-background-portrait.png"
 

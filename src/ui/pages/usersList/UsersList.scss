@@ -1,4 +1,4 @@
-$container-padding-horizontal: 16;
+$container-padding-horizontal: 40;
 $container-width: 829;
 
 .users-list {
@@ -26,6 +26,10 @@ $container-width: 829;
   display: block;
   width: 100%;
   max-width: 100%;
+}
+
+.users-list .block-info-connection {
+  margin-bottom: 24px;
 }
 
 @media only screen and (min-width: #{$container-width + 2 * $container-padding-horizontal}px) {

@@ -1,25 +1,25 @@
 /* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
-*
-* This software is licensed under the Apache License, Version 2.0 (the
-* "License") as published by the Apache Software Foundation.
-*
-* You may not use this file except in compliance with the License. You may
-* obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-* License for the specific language governing permissions and limitations
-* under the License.
-*/
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
 import React, { useState } from 'react'
-import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
-import { localStorageHandler } from "../../../services/storage";
+import { StorageKeys, UNAUTHORISED_STATUS } from '../../../constants'
+import { localStorageHandler } from '../../../services/storage'
 import { fetchData, getApiUrl, getImageUrl } from '../../../utils'
-import { Footer } from '../footer/footer'
+import { Footer, LOGO_ICON_LIGHT } from '../footer/footer'
 import InputField from '../inputField/InputField'
 
-import './Auth.css'
+import './Auth.scss'
 
 const Auth: React.FC<{
   onSuccess: () => void
@@ -69,13 +69,18 @@ const Auth: React.FC<{
     setApiKey(value)
     setApiKeyFieldError('')
   }
+  const backgroundUrlVars = {
+    '--auth-background': `url("${getImageUrl('auth-background.png')}")`,
+    '--auth-background-portrait': `url("${getImageUrl('auth-background-portrait.png')}")`,
+  } as React.CSSProperties
 
   return (
     <>
-      <div className='page-container'>
-        <div className='block-container'>
-          <img className='title-image' src={getImageUrl('star_sparkle.svg')} alt='Auth Page' />
+      <div className='page-container auth-container' style={backgroundUrlVars}>
+        <div className='block-container block-large'>
+          <img className='title-image-smaller' src={LOGO_ICON_LIGHT} alt='Auth Page' />
           <h2 className='api-key-form-title text-title'>Enter your API Key</h2>
+          <p className='text-small text-label'>Please enter the API key that you used to connect with your backend</p>
           <form className='api-key-form' onSubmit={handleSubmit}>
             <InputField
               handleChange={handleApiKeyFieldChange}
@@ -92,9 +97,9 @@ const Auth: React.FC<{
           </form>
         </div>
       </div>
-      <Footer horizontalAlignment='right' size='large'></Footer>
+      <Footer horizontalAlignment='center' size='normal' verticalAlignment='center' colorMode='dark'></Footer>
     </>
   )
 }
 
-export default Auth;
+export default Auth

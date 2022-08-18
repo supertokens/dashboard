@@ -212,7 +212,7 @@ module.exports = function (webpackEnv) {
         ? 'static/js/bundle.js'
         : isEnvDevelopment && 'static/js/bundle.js',
       // There are also additional JS chunk files if you use code splitting.
-      assetModuleFilename: 'static/media/[name].[ext]',
+      assetModuleFilename: 'static/media/[name][ext]',
       // webpack uses `publicPath` to determine where the app is being served from.
       // It requires a trailing slash, or the file assets will get an incorrect path.
       // We inferred the "public path" (such as / or /my-project) from homepage.
