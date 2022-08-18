@@ -54,15 +54,7 @@
         margin-bottom: 6px;
       }
     }
-  }
-
-  &.block-medium-lg {
-    p:not(:last-child) {         
-      @media only screen and (min-width: 768px) {
-        margin-bottom: 6px;
-      }        
-    }
-  }
+  }  
 }
 
 .block-large {
