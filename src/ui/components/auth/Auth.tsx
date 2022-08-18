@@ -70,8 +70,8 @@ const Auth: React.FC<{
     setApiKeyFieldError('')
   }
   const backgroundUrlVars = {
-    '--auth-background': `url(${getImageUrl('auth-background.png')})`,
-    '--auth-background-portrait': `url(${getImageUrl('auth-background-portrait.png')})`,
+    '--auth-background': `url("${getImageUrl('auth-background.png')}")`,
+    '--auth-background-portrait': `url("${getImageUrl('auth-background-portrait.png')}")`,
   } as React.CSSProperties
 
   return (
