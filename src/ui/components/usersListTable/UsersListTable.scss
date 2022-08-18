@@ -56,6 +56,7 @@ $container-padding-v: 24px;
       max-width: 25ch;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
 
       &:not(:last-child) {
         margin-bottom: 4px;
@@ -89,6 +90,7 @@ $container-padding-v: 24px;
       max-width: 25ch;
       text-overflow: ellipsis;
       overflow: hidden;
+      white-space: nowrap;
       .thirdparty-name {
         max-width: 10ch;
         text-overflow: inherit;
