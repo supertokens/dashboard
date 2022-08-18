@@ -13,7 +13,6 @@
  * under the License.
  */
 
-import { getImageUrl } from '../../../utils'
 import './footer.scss'
 
 export type FooterProps = {
@@ -41,7 +40,7 @@ export const Footer = ({ horizontalAlignment, verticalAlignment, colorMode, size
         target={'_blank'}
         rel='noreferrer'
         title='SuperTokens, Open Source Authentication'>
-        <img src={colorMode === 'dark' ? LOGO_DARK : LOGO_LIGHT} alt='Supertokens'></img>
+        <img className='logo' src={colorMode === 'dark' ? LOGO_DARK : LOGO_LIGHT} alt='Supertokens'></img>
       </a>
     </div>
   )

@@ -7,6 +7,10 @@
   align-items: center;
 }
 
+.page-container .block-container {  
+  max-width: 416px;
+}
+
 .api-key-form {
   padding-top: 16px;
 }

@@ -3,7 +3,7 @@ import { HttpApiBaseResponse } from '../../../types'
 export type UserListCount = HttpApiBaseResponse & { count: number }
 export type UserPaginationList = HttpApiBaseResponse & {
   nextPaginationToken?: string
-  users: UserWithRecipeId
+  users: UserWithRecipeId[]
 }
 
 // Users Models

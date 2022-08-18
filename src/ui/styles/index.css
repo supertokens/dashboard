@@ -25,8 +25,13 @@ code {
   background-color: var(--color-window-bg);
   min-height: 100vh;
   min-width: 100%;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
 }
+
+#root > * { flex: 1; }
+
+#root > .footer { flex: 0; }
 
 button:not(:disabled), a[href] {
   cursor: pointer;

@@ -14,12 +14,16 @@
 */
 
 .footer {
-  position: absolute;
   bottom: 0;
   width: 100%;
-  min-height: 70px;
+  min-height: 62px;
   display: flex;
-  padding: 1em;
+  padding: 20px 32px;
+  
+  .logo {
+    height: 23px;
+    width: 151px;
+  }
 
   &.alignment-right {justify-content: flex-end;}
   &.alignment-center { justify-content: center;}
@@ -29,9 +33,12 @@
 
   &.color-dark {
     background-color: var(--color-black);
+    .logo {
+      width: 148px;
+    }
   }
 
   &.size-large {
-    padding: 2em;
+    padding: 40px 32px;
   }
 }

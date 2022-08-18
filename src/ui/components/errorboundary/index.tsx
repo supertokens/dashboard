@@ -46,7 +46,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
               </p>
             </div>
           </div>
-          <Footer horizontalAlignment='right' verticalAlignment='top' size='large'></Footer>
+          <Footer horizontalAlignment='center' verticalAlignment='center' size='normal' colorMode='dark'></Footer>
         </>
       )
     }
