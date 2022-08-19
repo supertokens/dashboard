@@ -20,6 +20,7 @@ import { Footer, LOGO_ICON_LIGHT } from '../footer/footer'
 import InputField from '../inputField/InputField'
 
 import './Auth.scss'
+import { CY_AUTH_FORM } from '../../../cy-element-ids'
 
 const Auth: React.FC<{
   onSuccess: () => void
@@ -76,7 +77,7 @@ const Auth: React.FC<{
 
   return (
     <>
-      <div className='page-container auth-container' style={backgroundUrlVars}>
+      <div className='page-container auth-container' style={backgroundUrlVars} data-cy={CY_AUTH_FORM}>
         <div className='block-container block-large'>
           <img className='title-image-smaller' src={LOGO_ICON_LIGHT} alt='Auth Page' />
           <h2 className='api-key-form-title text-title'>Enter your API Key</h2>
