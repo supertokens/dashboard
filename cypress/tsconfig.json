@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "include": [
+    "../node_modules/cypress",
+    "**/*.ts",
+    "../src/cy-element-ids.ts"
+  ],
+  "types": [
+    "cypress"
+  ],
+  "compilerOptions": {
+    "sourceMap": false
+  }
+}
