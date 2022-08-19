@@ -20,6 +20,11 @@ export type FooterProps = {
   verticalAlignment?: 'top' | 'bottom' | 'center'
   colorMode?: 'light' | 'dark'
   size?: 'normal' | 'large'
+  /**
+   * Set footer to be sticky
+   * @default sticky = true
+   * */
+  sticky?: boolean
 }
 
 export const LOGO_DARK =
@@ -31,10 +36,12 @@ export const LOGO_ICON_LIGHT =
 export const LOGO_ICON_DARK =
   'https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_icon_dark_theme.svg'
 
-export const Footer = ({ horizontalAlignment, verticalAlignment, colorMode, size }: FooterProps) => {
+export const Footer = ({ horizontalAlignment, verticalAlignment, colorMode, size, sticky }: FooterProps) => {
   return (
     <div
-      className={`footer alignment-${horizontalAlignment} vertical-${verticalAlignment} color-${colorMode} size-${size}`}>
+      className={`footer alignment-${horizontalAlignment} vertical-${verticalAlignment} color-${colorMode} size-${size} ${
+        sticky !== false && 'sticky'
+      }`}>
       <a
         href='https://supertokens.com/'
         target={'_blank'}

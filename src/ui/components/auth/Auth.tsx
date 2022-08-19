@@ -97,7 +97,12 @@ const Auth: React.FC<{
           </form>
         </div>
       </div>
-      <Footer horizontalAlignment='center' size='normal' verticalAlignment='center' colorMode='dark'></Footer>
+      <Footer
+        horizontalAlignment='center'
+        size='normal'
+        verticalAlignment='center'
+        colorMode='dark'
+        sticky={false}></Footer>
     </>
   )
 }
