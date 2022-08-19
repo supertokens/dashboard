@@ -14,7 +14,15 @@
 */
 
 .footer {
-  bottom: 0;
+  &.sticky {
+    position: sticky;
+    padding-top: 12px;
+    background-color: var(--color-window-bg);
+    bottom: 0;
+  }
+}
+
+.footer-container {
   width: 100%;
   min-height: 62px;
   display: flex;
@@ -40,9 +48,5 @@
 
   &.size-large {
     padding: 40px 32px;
-  }
-
-  &.sticky {
-    position: sticky;
   }
 }

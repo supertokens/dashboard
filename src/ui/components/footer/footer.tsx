@@ -36,19 +36,26 @@ export const LOGO_ICON_LIGHT =
 export const LOGO_ICON_DARK =
   'https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_icon_dark_theme.svg'
 
-export const Footer = ({ horizontalAlignment, verticalAlignment, colorMode, size, sticky }: FooterProps) => {
-  return (
-    <div
-      className={`footer alignment-${horizontalAlignment} vertical-${verticalAlignment} color-${colorMode} size-${size} ${
-        sticky !== false && 'sticky'
-      }`}>
-      <a
-        href='https://supertokens.com/'
-        target={'_blank'}
-        rel='noreferrer'
-        title='SuperTokens, Open Source Authentication'>
-        <img className='logo' src={colorMode === 'dark' ? LOGO_DARK : LOGO_LIGHT} alt='Supertokens'></img>
-      </a>
-    </div>
-  )
+export const Footer = (props: FooterProps) => {
+  const { horizontalAlignment, verticalAlignment, colorMode, size, sticky } = {
+    size: 'normal',
+    colorMode: 'light',
+    sticky: true,
+    verticalAlignment: 'top',
+    ...props,
+  } as FooterProps
+   return (
+     <div className={`footer ${sticky !== false && 'sticky'}`}>
+       <div
+         className={`footer-container alignment-${horizontalAlignment} vertical-${verticalAlignment} color-${colorMode} size-${size}`}>
+         <a
+           href='https://supertokens.com/'
+           target={'_blank'}
+           rel='noreferrer'
+           title='SuperTokens, Open Source Authentication'>
+           <img className='logo' src={colorMode === 'dark' ? LOGO_DARK : LOGO_LIGHT} alt='Supertokens'></img>
+         </a>
+       </div>
+     </div>
+   )
 }
