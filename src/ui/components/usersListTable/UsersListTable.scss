@@ -152,6 +152,8 @@ $container-padding-v: 24px;
   display: flex;
   justify-content: flex-end;
   padding-top: $container-padding-v;
+  position: sticky;
+  left: 0px;
 }
 
 .users-list-pagination {
