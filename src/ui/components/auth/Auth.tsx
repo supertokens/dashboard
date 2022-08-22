@@ -18,6 +18,7 @@ import { localStorageHandler } from '../../../services/storage'
 import { fetchData, getApiUrl, getImageUrl } from '../../../utils'
 import { Footer, LOGO_ICON_LIGHT } from '../footer/footer'
 import InputField from '../inputField/InputField'
+import NotchStyle from '../notch-style/notch-style'
 
 import './Auth.scss'
 
@@ -76,6 +77,7 @@ const Auth: React.FC<{
 
   return (
     <>
+      <NotchStyle color='#EFEDEC' />
       <div className='page-container auth-container' style={backgroundUrlVars}>
         <div className='block-container block-large'>
           <img className='title-image-smaller' src={LOGO_ICON_LIGHT} alt='Auth Page' />
