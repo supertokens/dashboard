@@ -12,12 +12,15 @@ describe('Auth', () => {
     cy.visit(`${pageUrl}`)
     cy.get(`[data-cy="${CY_AUTH_FORM}"]`).contains('Enter your API Key')
 
-    cy.intercept(`${(PATH_API_LOGIN)}`).as('login')
+    cy.intercept({
+      method: 'POST',
+      url: `**${PATH_API_LOGIN}`
+    },).as('login')
     cy.get('.page-container > .block-container > .api-key-form > .input-field-container > .text-small').click() 
     cy.get('.page-container > .block-container > .api-key-form > .input-field-container > .text-small').type(DATA_AUTH_KEY)
  
     cy.get('.page-container > .block-container > .api-key-form > .button > span').click()
-    cy.wait('@login').its('status').should('eq', 200)
+    cy.wait('@login')
     cy.contains('User Management')
   })
 
@@ -25,8 +28,8 @@ describe('Auth', () => {
 
     cy.intercept({
       method: 'POST',
-      url: `**${PATH_API_LOGIN}`
-    }).as('login')
+      url: `**${PATH_API_LOGIN}`,
+    }, ).as('login')
     cy.visit(`${pageUrl}`)
     
     cy.get(`[data-cy="${CY_AUTH_FORM}"]`).contains('Enter your API Key')
@@ -34,7 +37,7 @@ describe('Auth', () => {
     cy.get('.page-container > .block-container > .api-key-form > .input-field-container > .text-small').type('sdasdsad')
  
     cy.get('.page-container > .block-container > .api-key-form > .button > span').click()
-    cy.wait('@login').its('status').should('eq', 401)
-    cy.find(`[data-cy="${CY_AUTH_FORM}"] .api-key-form .text-error`).contains('Invalid API Key')
+    cy.wait('@login')
+    cy.get(`[data-cy="${CY_AUTH_FORM}"] .api-key-form .text-error`).contains('Invalid API Key')
   })
 })
