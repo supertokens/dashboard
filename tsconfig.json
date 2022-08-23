@@ -21,7 +21,6 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src",
-    "cypress/e2e/auth.cy.ts"
+    "src"
   ]
 }

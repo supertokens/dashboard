@@ -1,5 +1,4 @@
-import { DATA_AUTH_KEY, PATH_API_LOGIN, PATH_USERS, URL_ROOT } from "./const"
-import { CY_AUTH_FORM } from "../../src/cy-element-ids"
+import { DATA_AUTH_KEY, PATH_API_LOGIN, PATH_USERS, CY_AUTH_FORM } from "./const"
 import { getAppUrl } from "./utils"
 
 const pageUrl = getAppUrl(PATH_USERS)

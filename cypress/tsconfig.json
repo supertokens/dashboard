@@ -3,12 +3,18 @@
   "include": [
     "../node_modules/cypress",
     "**/*.ts",
-    "../src/cy-element-ids.ts"
+    "**/*.json",
+    "../src/cy-element-ids.ts",
+    "../src/constants.ts",
+    "../src/ui/pages/usersList/types.ts"
   ],
   "types": [
     "cypress"
   ],
   "compilerOptions": {
-    "sourceMap": false
+    "module": "commonjs",
+    "sourceMap": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   }
 }
