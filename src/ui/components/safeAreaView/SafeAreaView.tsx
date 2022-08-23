@@ -13,9 +13,21 @@
  * under the License.
  */
 
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 
-export const SafeAreaView = ({ backgroundColor }: { backgroundColor: string }) => {
+type SafeAreaViewProps = {
+  backgroundColor?: string
+}
+
+export const SafeAreaView = (props: SafeAreaViewProps) => {
+  const [defaultProps, setDefaultProps] = useState<SafeAreaViewProps>({})
+  useEffect(() => {
+    setDefaultProps({
+      backgroundColor: getComputedStyle(document.body).getPropertyValue('--color-window-bg'),
+    })   
+  }, [])
+  const { backgroundColor } = { backgroundColor: '#fff' , ...defaultProps, ...props } as SafeAreaViewProps 
   const htmlProps = { style: `background-color: ${backgroundColor}` } as any
   return (
     <Helmet>
