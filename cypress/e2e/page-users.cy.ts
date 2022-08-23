@@ -28,7 +28,7 @@ describe('Users List Page', () => {
       cy.get('.users-list').contains('User Management')      
       cy.document().then(doc => {
         // is first row email truncated
-        const truncatedEmailElement = doc.querySelector(`.user-info .main[title="${userListResponse.users[0].user.email}"]`)
+        const truncatedEmailElement = doc.querySelector(`.user-info .main[title]`)
         expect(Boolean(truncatedEmailElement)).eq(true)
         expect(truncatedEmailElement?.scrollWidth).greaterThan(truncatedEmailElement?.clientWidth ?? 99999)
       })

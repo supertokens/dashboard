@@ -87,7 +87,8 @@
     "test": "node scripts/test.js",
     "build-check": "npx tsc -p tsconfig.json --noEmit",
     "set-up-hooks": "cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "cy:run": "cypress run --browser chrome"
   },
   "eslintConfig": {
     "extends": [
