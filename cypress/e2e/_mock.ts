@@ -1,5 +1,3 @@
-import { UserPaginationList } from '../../src/ui/pages/usersList/types'
-
 /* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
@@ -14,6 +12,8 @@ import { UserPaginationList } from '../../src/ui/pages/usersList/types'
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+
+import { UserPaginationList } from '../../src/ui/pages/usersList/types'
 
 export const userListResponse: UserPaginationList = {
   status: 'OK',
