@@ -9,7 +9,10 @@ export const userListResponse: UserPaginationList = {
         // first row should give truncated texts
         firstName: 'assddsdfnicolas.zherebtsodadasdsaddfsfsdfv',
         lastName: 'assddsdfnicolas.zherebtsodadasdsaddfsfsdfv',
-        thirdParty: { id: 'github', userId: '1146358' },
+        thirdParty: {
+          id: 'emailFromFastmail.comWithLongText',
+          userId: 'assddsdfnicolas.zherebtsodadasdsaddfsfsdfv@gmail.com',
+        },
         email: 'assddsdfnicolas.zherebtsodadasdsaddfsfsdfv@gmail.com',
         id: 'b0b60cc2-569c-42f1-8726-f1fc22ea5e47',
         timeJoined: 1661163314666,

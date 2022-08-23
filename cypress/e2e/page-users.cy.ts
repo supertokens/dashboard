@@ -31,6 +31,10 @@ describe('Users List Page', () => {
         const truncatedEmailElement = doc.querySelector(`.user-info .main[title]`)
         expect(Boolean(truncatedEmailElement)).eq(true)
         expect(truncatedEmailElement?.scrollWidth).greaterThan(truncatedEmailElement?.clientWidth ?? 99999)
+        // is first row thirdparty pill truncated
+        const truncatedPillElement = doc.querySelector(`.pill.thirdparty .thirdparty-name`)
+        expect(Boolean(truncatedPillElement)).eq(true)
+        expect(truncatedPillElement?.scrollWidth).greaterThan(truncatedPillElement?.clientWidth ?? 99999)
       })
     })
   })
