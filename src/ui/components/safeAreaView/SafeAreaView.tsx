@@ -15,14 +15,14 @@
 
 import { Helmet } from 'react-helmet'
 
-export const NotchStyle = ({ color }: { color: string }) => {
-  const htmlProps = { style: `background-color: ${color}` } as any
+export const SafeAreaView = ({ backgroundColor }: { backgroundColor: string }) => {
+  const htmlProps = { style: `background-color: ${backgroundColor}` } as any
   return (
     <Helmet>
       <html {...htmlProps} />
-      <meta name='theme-color' content={color}></meta>
+      <meta name='theme-color' content={backgroundColor} />
     </Helmet>
   )
 }
 
-export default NotchStyle
+export default SafeAreaView
