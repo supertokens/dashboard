@@ -20,10 +20,11 @@ type SafeAreaViewProps = {
 }
 
 export const SafeAreaView = (props: SafeAreaViewProps) => {
-  const defaultProps: SafeAreaViewProps = {
-    backgroundColor: getComputedStyle(document.body).getPropertyValue('--color-window-bg'),
+  let backgroundColor = props.backgroundColor
+
+  if (backgroundColor === undefined) {
+    backgroundColor = getComputedStyle(document.body).getPropertyValue('--color-window-bg')
   }
-  const { backgroundColor } = {...defaultProps, ...props } as SafeAreaViewProps 
   const htmlProps = { style: `background-color: ${backgroundColor}` } as any
   return (
     <Helmet>
