@@ -22,4 +22,4 @@ jobs:
             #   npm ERR! previous versions of npm which has since been addressed.
             - run: chown -R 1001:121 "/github/home/.npm"
             - run: npm i --force
-            - run: ./hooks/pre-commit.sh
+            - run: ./hooks/pre-commit
