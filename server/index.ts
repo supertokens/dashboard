@@ -48,7 +48,7 @@ SuperTokens.init({
                 functions: (original) => {
                     return {
                         ...original,
-                        getDashboardBundleBasePath: async function () {
+                        getDashboardBundleLocation: async function () {
                             return "http://localhost:3000";
                         },
                     };
