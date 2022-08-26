@@ -28,4 +28,5 @@ import "./assets/star_sparkle.svg"
 import "./assets/delete.svg"
 import "./assets/auth-background.png"
 import "./assets/auth-background-portrait.png"
+import "./assets/favicon.ico"
 
