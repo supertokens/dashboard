@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/static/css/main.css",
+    "main.js": "/static/js/bundle.js",
+    "static/js/787.bundle.js": "/static/js/787.bundle.js",
+    "static/media/auth-background.png": "/static/media/auth-background.png",
+    "static/media/auth-background-portrait.png": "/static/media/auth-background-portrait.png",
+    "static/media/favicon.ico": "/static/media/favicon.ico",
+    "static/media/logo.svg": "/static/media/logo.svg",
+    "static/media/no-users-graphic.svg": "/static/media/no-users-graphic.svg",
+    "static/media/form-field-error-icon.svg": "/static/media/form-field-error-icon.svg",
+    "static/media/delete.svg": "/static/media/delete.svg",
+    "index.html": "/index.html",
+    "static/media/star_sparkle.svg": "/static/media/star_sparkle.svg",
+    "static/media/right_arrow_icon.svg": "/static/media/right_arrow_icon.svg",
+    "static/media/chevron-left.svg": "/static/media/chevron-left.svg",
+    "static/media/chevron-right.svg": "/static/media/chevron-right.svg",
+    "main.css.map": "/static/css/main.css.map",
+    "bundle.js.map": "/static/js/bundle.js.map",
+    "787.bundle.js.map": "/static/js/787.bundle.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.css",
+    "static/js/bundle.js"
+  ]
+}

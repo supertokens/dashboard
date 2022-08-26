@@ -10,9 +10,15 @@
 npm install
 ```
 
-3. Clone supertokens-node and switch to the desired branch
+3. Install git hooks
 
-4. Link supertokens-node
+```bash
+npm run set-up-hooks
+```
+
+4. Clone supertokens-node and switch to the desired branch
+
+5. Link supertokens-node
 
 ```bash
 cd ../supertokens-node # (Use the path where you clone the repo)
@@ -108,3 +114,8 @@ You can now access the production build of the dashboard on `http://localhost:30
 ### Additional Information (Safe to skip)
 
 - This project has ejected react scripts to allow modifications to webpack
+- Versioning will follow X.Y.Z format but with slightly different rules than semantic versioning
+    - Dashboard changes that involve adding a new feature and require backend SDK changes will increment the Y version
+    - Dashboard changes that involve adding new features and do not require backend SDK changes will increment the Z version
+    - UI changes that modify existing features or are fixes or enhancements increment the Z version
+    - X version changes should be reserved for overhauls of the entire dashboard

@@ -18,43 +18,39 @@ import { getImageUrl } from "../../../utils";
 import "./InputField.css";
 
 type InputFieldPropTypes = {
-  type: "text" | "email" | "password";
-  name: string;
-  label: string;
-  value: string;
-  placeholder?: string;
-  error?: string;
-  handleChange: React.ChangeEventHandler<HTMLInputElement>;
-};
+  type: 'text' | 'email' | 'password'
+  name: string
+  label?: string
+  value: string
+  placeholder?: string
+  error?: string
+  handleChange: React.ChangeEventHandler<HTMLInputElement>
+}
 
 const InputField: React.FC<InputFieldPropTypes> = (props) => {
-
   return (
-    <div className="input-field-container">
-      <label
-        htmlFor={props.name}
-        className="text-small input-label"
-      >{props.label}:</label>
+    <div className='input-field-container'>
+      {props.label && (
+        <label htmlFor={props.name} className='text-small input-label'>
+          {props.label}:
+        </label>
+      )}
       <input
         type={props.type}
         name={props.name}
         onChange={props.handleChange}
         value={props.value}
-        className={`text-small text-black input-field ${props.error ? "input-field-error-state" : ""}`}
+        className={`text-small text-black input-field ${props.error ? 'input-field-error-state' : ''}`}
         placeholder={props.placeholder}
       />
       {props.error && (
-        <div className="input-field-error">
-          <img
-            className="input-field-error-icon"
-            src={getImageUrl("form-field-error-icon.svg")}
-            alt="Error in field"
-          />
-          <p className="text-small text-error">{props.error}</p>
+        <div className='input-field-error block-small block-error'>
+          <img className='input-field-error-icon' src={getImageUrl('form-field-error-icon.svg')} alt='Error in field' />
+          <p className='text-small text-error'>{props.error}</p>
         </div>
       )}
     </div>
-  );
+  )
 }
 
 export default InputField;
