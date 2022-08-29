@@ -86,7 +86,8 @@
     "build": "rm -rf build && node scripts/build.js",
     "test": "node scripts/test.js",
     "build-check": "npx tsc -p tsconfig.json --noEmit",
-    "set-up-hooks": "cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit"
+    "set-up-hooks": "cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit",
+    "postinstall": "npm run set-up-hooks"
   },
   "eslintConfig": {
     "extends": [
