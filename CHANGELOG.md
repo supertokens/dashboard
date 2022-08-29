@@ -11,4 +11,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a paginated list of all users that have signed up to your app
 - Added API key based authentication
-- Changed Connection URI text
