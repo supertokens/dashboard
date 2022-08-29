@@ -29,4 +29,6 @@ import "./assets/delete.svg"
 import "./assets/auth-background.png"
 import "./assets/auth-background-portrait.png"
 import "./assets/favicon.ico"
+import "./assets/eye.svg"
+import "./assets/eye-stroke.svg"
 
