@@ -88,7 +88,7 @@ const Auth: React.FC<{
             <InputField
               handleChange={handleApiKeyFieldChange}
               name='apiKey'
-              type='text'
+              type='password'
               error={apiKeyFieldError}
               value={apiKey}
               placeholder='Your API Key'

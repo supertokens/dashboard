@@ -12,7 +12,7 @@
 * License for the specific language governing permissions and limitations
 * under the License.
 */
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { getImageUrl } from "../../../utils";
 
 import "./InputField.css";
@@ -28,6 +28,15 @@ type InputFieldPropTypes = {
 }
 
 const InputField: React.FC<InputFieldPropTypes> = (props) => {
+  const handleChange = props.handleChange
+  const [isFocused, setIsFocused] = useState<boolean>(false)
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [inputValue, setInputValue] = useState(props.value ?? "");
+  const onChange = useCallback((event:  React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value)
+    handleChange(event)
+  }, [ handleChange ])
+
   return (
     <div className='input-field-container'>
       {props.label && (
@@ -35,14 +44,27 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
           {props.label}:
         </label>
       )}
-      <input
-        type={props.type}
-        name={props.name}
-        onChange={props.handleChange}
-        value={props.value}
-        className={`text-small text-black input-field ${props.error ? 'input-field-error-state' : ''}`}
-        placeholder={props.placeholder}
-      />
+      <div className={`input-field-inset ${isFocused ? "input-field-inset-focused" : ""}`}>        
+        <input
+          type={props.type === 'password' && showPassword ? "text" : props.type }
+          name={props.name}
+          onChange={onChange}
+          value={props.value}          
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className={`text-small text-black input-field ${props.error ? 'input-field-error-state' : ''}`}
+          placeholder={props.placeholder}
+        />
+        <div className="input-field-suffix">
+          { props.type === 'password' && inputValue.length > 0 && 
+            <img className="icon" 
+              onClick={() => setShowPassword(!showPassword)} 
+              src={getImageUrl( `eye${showPassword ? '-stroke' : ''}.svg`)} 
+              alt="toggle-visibility"
+            />
+          }
+        </div>        
+      </div>
       {props.error && (
         <div className='input-field-error block-small block-error'>
           <img className='input-field-error-icon' src={getImageUrl('form-field-error-icon.svg')} alt='Error in field' />
