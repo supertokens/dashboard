@@ -29,7 +29,7 @@ export const InfoConnection: React.FC<InfoConnectionProps> = ({ connectionURI })
         <p className='text-bold'>
           connectionURI set to <span className='block-info block-snippet'>{connectionURI}</span>
         </p>
-        <p>You are connected to a core that uses SuperTokens instances for demo purposes only.</p>
+        <p>You are connected to an instance of SuperTokens core hosted for demo purposes, this instance should not be used for production apps.</p>
       </div>
     )}
   </>
