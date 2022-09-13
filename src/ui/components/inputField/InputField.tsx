@@ -44,7 +44,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
           {props.label}:
         </label>
       )}
-      <div className={`input-field-inset ${isFocused ? "input-field-inset-focused" : ""}`}>        
+      <div className={`input-field-inset ${isFocused ? "input-field-inset-focused" : ""} ${props.error ? 'input-field-inset-error-state' : ''}`}>        
         <input
           type={props.type === 'password' && showPassword ? "text" : props.type }
           name={props.name}
