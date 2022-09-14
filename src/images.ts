@@ -31,4 +31,6 @@ import "./assets/auth-background-portrait.png"
 import "./assets/favicon.ico"
 import "./assets/eye.svg"
 import "./assets/eye-stroke.svg"
+import "./assets/left-arrow-dark.svg"
+import "./assets/copy.svg"
 

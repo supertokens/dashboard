@@ -109,10 +109,12 @@
 .button.flat {
   display: inline;
   background: none;
-  padding: none;
-  margin: none;
+  padding: 0px;
+  margin: 0px;
   color: var(--color-secondary-text);
-  font-weight: normal;
+  font-weight: 600;
+  @include gap-horizontal(8px);
+  border: none;
 }
 
 /* classes for font sizes */

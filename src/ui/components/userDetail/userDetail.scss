@@ -32,6 +32,7 @@ $container-width: 829;
       border-radius: 50%;
       width: $size;
       height: $size;
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -53,10 +54,22 @@ $container-width: 829;
       font-size: 18px;
       line-height: 28px;
       font-weight: 600;
+      // @include text-ellipsis(15ch);
     }
     &__user-id {
+      display: flex;
+      align-items: center;
       @include gap-horizontal(8px);
-      .block-info { max-width: 280px; }
+      span {
+        white-space: nowrap;
+      }
+      .block-snippet {
+        background-color: var(--color-white);
+        color: var(--color-error);
+        border-color: var(--color-border);
+        display: inline-flex;
+        .copy-text-text { @include text-ellipsis(12ch); }
+      }
     }
     &__action {
       display: flex;

@@ -31,7 +31,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
   const { user, onBackButtonClicked } = props
   return <div className="user-detail">
     <div className="user-detail__navigation" >
-      <button className="button flat" onClick={ onBackButtonClicked }><img src={getImageUrl("left-arrow-dark.svg")} alt="Back to all users"/>Back to all users</button>
+      <button className="button flat" onClick={ onBackButtonClicked }><img src={getImageUrl("left-arrow-dark.svg")} alt="Back to all users"/><span>Back to all users</span></button>
     </div>
     <UserDetailHeader {...props}/>
   </div>

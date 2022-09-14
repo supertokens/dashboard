@@ -14,6 +14,7 @@
  */
 
 import { UserWithRecipeId } from "../../pages/usersList/types";
+import CopyText from "../copyText/CopyText";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "./userDetail";
 
@@ -52,7 +53,7 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCall
       </div>
       <div className="user-detail__header__user-id">
         <span>User ID:</span>
-        <span className="block-info block-snippet">{id}</span>
+        <span className="block-snippet"><CopyText>{id}</CopyText></span>
       </div>
     </div>
     { onDeleteCallback && <div className="user-detail__header__action"></div> }
