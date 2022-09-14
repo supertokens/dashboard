@@ -18,12 +18,18 @@ import { UserListCount, UserPaginationList, UserWithRecipeId } from './types'
 import { fetchDataAndRedirectIf401, getApiUrl } from '../../../utils'
 import AuthWrapper from '../../components/authWrapper'
 import NoUsers from '../../components/noUsers/NoUsers'
-import UsersListTable, { LIST_DEFAULT_LIMIT } from '../../components/usersListTable/UsersListTable'
+import UsersListTable, { LIST_DEFAULT_LIMIT, OnSelectUserFunction } from '../../components/usersListTable/UsersListTable'
 import './UsersList.scss'
 import { Footer, LOGO_ICON_LIGHT } from '../../components/footer/footer'
 import InfoConnection from '../../components/info-connection/info-connection'
+import UserDetail from '../../components/userDetail/userDetail'
 
-export const UsersList: React.FC = () => {
+type UserListProps = {
+  onSelect: OnSelectUserFunction,
+  css?: React.CSSProperties
+}
+
+export const UsersList: React.FC<UserListProps> = ({ onSelect, css }) => {
   const limit = LIST_DEFAULT_LIMIT
   const [count, setCount] = useState<number>()
   const [users, setUsers] = useState<UserWithRecipeId[]>([])
@@ -70,7 +76,7 @@ export const UsersList: React.FC = () => {
   }, [loadCount])
 
   return (
-    <div className='users-list'>
+    <div className='users-list' style={css}>
       <img className='title-image' src={LOGO_ICON_LIGHT} alt='Auth Page' />
       <h1 className='users-list-title'>User Management</h1>
       <p className='text-small users-list-subtitle'>
@@ -93,6 +99,7 @@ export const UsersList: React.FC = () => {
             goToNext={(token) => loadUsers(token)}
             offsetChange={loadOffset}
             isLoading={loading}
+            onSelect={onSelect}
           />
         )}
       </div>
@@ -118,11 +125,14 @@ const fetchCount = async () => {
   return response.ok ? ((await response?.json()) as UserListCount) : undefined
 }
 
-export const UserListPage = () => (
-  <AuthWrapper>
-    <UsersList />
+export const UserListPage = () => {  
+  const [selectedUser, setSelectedUser] = useState<UserWithRecipeId>()
+  const isSelectedUserNotEmpty = selectedUser !== undefined
+  return <AuthWrapper>
+    { isSelectedUserNotEmpty && <UserDetail user={selectedUser} onBackButtonClicked={() => setSelectedUser(undefined)}/> } 
+    <UsersList onSelect={setSelectedUser} css={ isSelectedUserNotEmpty ? { display: 'none' } : undefined }/>
     <Footer colorMode='dark' horizontalAlignment='center' verticalAlignment='center' />
   </AuthWrapper>
-)
+}
 export default UserListPage
 

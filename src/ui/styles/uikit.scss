@@ -89,7 +89,7 @@
   border-radius: 4px;
 }
 
-.button {
+.button:not(.flat) {
   display: flex;
   align-items: center;
   padding: 8px 16px;
@@ -104,6 +104,15 @@
   cursor: pointer;
   @include gap-horizontal(0.75em);
   box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.15);
+}
+
+.button.flat {
+  display: inline;
+  background: none;
+  padding: none;
+  margin: none;
+  color: var(--color-secondary-text);
+  font-weight: normal;
 }
 
 /* classes for font sizes */

@@ -20,8 +20,11 @@ import { UserRecipeType, UserWithRecipeId } from '../../pages/usersList/types'
 import PhoneDisplay from '../phoneNumber/PhoneNumber'
 import './UsersListTable.scss'
 
-const USER_TABLE_COLUMNS_COUNT = 3
+const USER_TABLE_COLUMNS_COUNT = 4
 export const LIST_DEFAULT_LIMIT = 10
+
+export type OnSelectUserFunction = (user: UserWithRecipeId) => void
+
 type UserListProps = {
   users: UserWithRecipeId[]
   count: number
@@ -32,10 +35,11 @@ type UserListProps = {
   errorOffsets?: number[]
   goToNext?: (token: string) => any
   offsetChange?: (offset: number) => any
+  onSelect: OnSelectUserFunction
 }
 
 const UsersListTable: React.FC<UserListProps> = (props) => {
-  const { users, limit, offset, isLoading, errorOffsets } = {
+  const { users, limit, offset, isLoading, errorOffsets, onSelect } = {
     offset: 0,
     limit: LIST_DEFAULT_LIMIT,
     ...props,
@@ -50,6 +54,7 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
             <th>User</th>
             <th>Auth Method</th>
             <th>Time joined</th>
+            <th></th>
           </tr>
         </thead>
         <tbody className='text-small'>
@@ -60,7 +65,7 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
             (errorOffsets?.includes(offset) ? (
               <ErrorRow colSpan={USER_TABLE_COLUMNS_COUNT} /> // show rows when it is not loading from API
             ) : (
-              <UserTableRows displayedUsers={displayedUsers} />
+              <UserTableRows users={displayedUsers} onSelect={onSelect}/>
             ))}
         </tbody>
       </table>
@@ -73,19 +78,19 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 }
 
 // Table Rows Section
-const UserTableRows = ({ displayedUsers }: { displayedUsers: UserWithRecipeId[] }) => {
+const UserTableRows = ({ users, onSelect }: Pick<UserListProps, "users" | "onSelect">) => {
   return (
     <>
-      {displayedUsers.map((user, index) => (
-        <UserTableRow user={user} key={index} />
+      {users.map((user, index) => (
+        <UserTableRow user={user} key={user.user.id} onSelect={onSelect}/>
       ))}
     </>
   )
 }
 
 // Single Row Section
-const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number }> = (props) => {
-  const { user, index } = props
+const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number, onSelect: OnSelectUserFunction }> = (props) => {
+  const { user, index, onSelect } = props
   return (
     <tr key={index} className='user-row'>
       <td>
@@ -97,6 +102,7 @@ const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number }> = (prop
       <td>
         <UserDate user={user} />
       </td>
+      <td><button onClick={() => onSelect(user)}>Go</button></td>
     </tr>
   )
 }
