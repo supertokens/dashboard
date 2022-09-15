@@ -81,8 +81,10 @@
   },
   "scripts": {
     "start": "npm-run-all --parallel start-bundle-server start-dev-server",
+    "start:go": "npm-run-all --parallel start-bundle-server start-dev-server:go",
     "start-bundle-server": "rm -rf debug && BROWSER=none node scripts/start.js",
     "start-dev-server": "npx ts-node-dev --project server/tsconfig.json server/index.ts",
+    "start-dev-server:go": "cd server/go && go run main.go",
     "build": "rm -rf build && node scripts/build.js",
     "test": "node scripts/test.js",
     "build-check": "npx tsc -p tsconfig.json --noEmit",
