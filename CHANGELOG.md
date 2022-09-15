@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Features
+
+- Added user detail page to show the detailed info from the list of users
+
 ## [0.1.2] - 2022-09-15
 
 ### Fixes
