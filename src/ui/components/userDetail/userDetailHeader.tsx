@@ -22,7 +22,7 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
   const { firstName, lastName, email, id } = user;
   // concatting the firstName & lastname to handle 
   // the case if user enters full name in either firstname or last name
-  const fullName = (`${firstName ?? ''} ${lastName ?? ''}`).trim(); console.log(firstName, lastName, fullName, email);
+  const fullName = (`${firstName ?? ''} ${lastName ?? ''}`).trim();
   if (fullName?.length > 0) {
     const splitFullName = fullName.split(" ");
     return splitFullName.length > 1 ? `${splitFullName[0][0]}${splitFullName[1][0]}` : splitFullName[0].slice(0, 2)

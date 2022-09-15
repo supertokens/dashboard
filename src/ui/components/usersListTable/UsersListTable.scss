@@ -171,8 +171,10 @@ $container-padding-v: 24px;
     border-radius: 4px;
     border: 1px solid var(--color-border);
     img {
-      width: 9px;
-      height: 5px;
+      width: 12px;
+    }
+    &:hover {
+      box-shadow: 0px 0px 3px var(--color-shadow);
     }
   }
 }

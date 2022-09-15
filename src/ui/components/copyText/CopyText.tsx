@@ -3,7 +3,8 @@ import { getImageUrl } from '../../../utils'
 import TemporaryContent from '../temporaryContent/temporaryContent'
 import './CopyText.scss'
 
-export const CopyText: React.FC<{ children: string }> = ({ children }) => {  
+export const CopyText: React.FC<{ children: string }> = ({ children }) => { 
+  const alertWidth = 80 
   const copyBoxRef = useRef<HTMLDivElement>(null)
   const [isCopied, setIsCopied] = useState<boolean>(false)
   const copyClick = useCallback(() => {
@@ -20,10 +21,12 @@ export const CopyText: React.FC<{ children: string }> = ({ children }) => {
     if (copyBoxRef.current != null) {
       const copyBoxRect = copyBoxRef.current.getBoundingClientRect()
       if (copyBoxRect !== undefined) {
-        // top position also use the CSS `transform: translateY(-50%)`
+        const leftPosition = copyBoxRect.left + document.body.scrollLeft + copyBoxRect.width + 8;
+        const leftPositionMax = document.body.clientWidth - alertWidth;
         return {
+          // top position also use the CSS `transform: translateY(-50%)`
           top: copyBoxRect.top + document.body.scrollTop + (copyBoxRect.height / 2) + 'px',
-          left: copyBoxRect.left + document.body.scrollLeft + copyBoxRect.width + 8 + 'px'
+          left: Math.min(leftPosition, leftPositionMax) + 'px'
         } as CSSProperties        
       }
     }

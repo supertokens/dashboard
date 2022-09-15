@@ -14,9 +14,12 @@
     "static/media/delete.svg": "/static/media/delete.svg",
     "index.html": "/index.html",
     "static/media/star_sparkle.svg": "/static/media/star_sparkle.svg",
+    "static/media/copy.svg": "/static/media/copy.svg",
     "static/media/right_arrow_icon.svg": "/static/media/right_arrow_icon.svg",
+    "static/media/left-arrow-dark.svg": "/static/media/left-arrow-dark.svg",
     "static/media/chevron-left.svg": "/static/media/chevron-left.svg",
     "static/media/chevron-right.svg": "/static/media/chevron-right.svg",
+    "static/media/chevron-down.svg": "/static/media/chevron-down.svg",
     "main.css.map": "/static/css/main.css.map",
     "bundle.js.map": "/static/js/bundle.js.map",
     "787.bundle.js.map": "/static/js/787.bundle.js.map"
