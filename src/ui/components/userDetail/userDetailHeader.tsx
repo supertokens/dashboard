@@ -22,19 +22,22 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
   const { firstName, lastName, email, id } = user;
   // concatting the firstName & lastname to handle 
   // the case if user enters full name in either firstname or last name
-  const fullName = (`${firstName} ${lastName}`).trim();
+  const fullName = (`${firstName ?? ''} ${lastName ?? ''}`).trim(); console.log(firstName, lastName, fullName, email);
   if (fullName?.length > 0) {
     const splitFullName = fullName.split(" ");
-    return splitFullName.length > 1 ? `${splitFullName[0][0]}${splitFullName[1][0]}` : splitFullName[0].slice(0, 1)
+    return splitFullName.length > 1 ? `${splitFullName[0][0]}${splitFullName[1][0]}` : splitFullName[0].slice(0, 2)
   }
-  if (email !== undefined && email.trim().length > 0 ) { return email.trim().split("@")[0].slice(0, 1) }
-  if (recipeId === 'passwordless' && user.phoneNumber !== undefined && user.phoneNumber.trim().length > 0 ) {
-    return user.phoneNumber.trim().slice(0, 1);
+  if (email !== undefined && email.trim().length > 0 ) { 
+    const splittedEmailName = email.trim().split("@")[0].split(".");
+    return splittedEmailName.length > 1 ? `${splittedEmailName[0][0]}${splittedEmailName[1][0]}` : splittedEmailName[0].slice(0, 2) 
   }
   if (recipeId === 'thirdparty' && user.thirdParty.userId.trim().length > 0) {
-    return user.thirdParty.userId.trim().slice(0, 1);
+    return user.thirdParty.userId.trim().slice(0, 2);
   }
-  return id.trim().slice(0, 1)
+  if (recipeId === 'passwordless' && user.phoneNumber !== undefined && user.phoneNumber.trim().length > 0 ) {
+    return user.phoneNumber.trim().replace("+", "").slice(0, 2);
+  }
+  return id.trim().slice(0, 2)
 }
 
 export const UserDetailBadge: React.FC<{user: UserWithRecipeId}> = ({ user }) => 
@@ -49,14 +52,14 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCall
     <UserDetailBadge user={user} />
     <div className="user-detail__header__info">
       <div className="user-detail__header__title">
-        {fullName || email || thirdPartyUserId || (phone && <PhoneDisplay phone={phone} />)}
+        <span>{fullName || email || thirdPartyUserId || (phone && <PhoneDisplay phone={phone} />)}</span>
       </div>
       <div className="user-detail__header__user-id">
-        <span>User ID:</span>
-        <span className="block-snippet"><CopyText>{id}</CopyText></span>
+        <span className="user-detail__header__user-id__label">User ID:</span>
+        <span className="user-detail__header__user-id__text block-small" title={id}><CopyText>{id}</CopyText></span>
       </div>
     </div>
-    { onDeleteCallback && <div className="user-detail__header__action"></div> }
+    { onDeleteCallback && <div className="user-detail__header__action">{/** Delete button here */}</div> }
   </div>
 }
 

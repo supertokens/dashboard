@@ -18,7 +18,7 @@ $container-width: 829;
 
 .user-detail {
   --badge-bg-color: rgb(197, 224, 253);
-  --badge-color: rgb(0, 122, 255);
+  --copy-text-color: rgb(214, 80, 120);
 
   padding: 72px #{$container-padding-horizontal}px 48px;
   max-width: 100vw;
@@ -26,6 +26,8 @@ $container-width: 829;
   &__header {
     margin-top: 40px;
     display: flex;
+    align-items: center;
+    overflow: hidden;
     @include gap-horizontal(16px);    
     &__badge {
       $size: 60px;
@@ -41,34 +43,40 @@ $container-width: 829;
       text-align: center;
       text-transform: uppercase;
       background-color: var(--badge-bg-color);
-      color: var(--badge-color);
+      color: var(--color-info);
     }
     &__info {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      overflow: hidden;
       @include gap-vertical(6px);
     }
     &__title {
       font-size: 18px;
       line-height: 28px;
       font-weight: 600;
-      // @include text-ellipsis(15ch);
+      display: flex;
+      align-items: center;
+      span { @include text-ellipsis(100%); }
     }
     &__user-id {
       display: flex;
       align-items: center;
+      font-size: 14px;
       @include gap-horizontal(8px);
       span {
         white-space: nowrap;
       }
-      .block-snippet {
+      &__text {
         background-color: var(--color-white);
-        color: var(--color-error);
-        border-color: var(--color-border);
+        color: var(--copy-text-color);
+        border: 1px var(--color-border) solid;
         display: inline-flex;
-        .copy-text-text { @include text-ellipsis(12ch); }
+        overflow: hidden;
+        max-width: 290px;
+        font-size: 13px;
       }
     }
     &__action {

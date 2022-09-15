@@ -102,7 +102,9 @@ const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number, onSelect:
       <td>
         <UserDate user={user} />
       </td>
-      <td><button onClick={() => onSelect(user)}>Go</button></td>
+      <td>
+        <button className="user-row-select-button" onClick={() => onSelect(user)}><img src={getImageUrl("chevron-down.svg")} alt="Open user detail"/></button>
+      </td>
     </tr>
   )
 }
