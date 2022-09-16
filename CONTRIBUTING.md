@@ -117,3 +117,8 @@ You can now access the production build of the dashboard on `http://localhost:30
 ### Additional Information (Safe to skip)
 
 - This project has ejected react scripts to allow modifications to webpack
+- Versioning will follow X.Y.Z format but with slightly different rules than semantic versioning
+  - Dashboard changes that involve adding a new feature and require backend SDK changes will increment the Y version
+  - Dashboard changes that involve adding new features and do not require backend SDK changes will increment the Z version
+  - UI changes that modify existing features or are fixes or enhancements increment the Z version
+  - X version changes should be reserved for overhauls of the entire dashboard

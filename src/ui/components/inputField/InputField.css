@@ -1,3 +1,18 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
 .input-field-container {
   display: flex;
   flex-flow: column;
@@ -5,36 +20,51 @@
 }
 
 .input-label {
-  color: var(--color-light);
+  color: var(--color-secondary-text);
   font-weight: 500;
   margin-bottom: 12px;
 }
 
-.input-field {
-  font-family: inherit;
-  display: block;
-  padding: 8px 12px 8px;
+.input-field-inset {
+  display: flex;
+  align-items: center;
   border: 1px solid rgb(224, 224, 224);
   border-radius: 6px;
   outline: none;
 }
 
-.input-field:active, .input-field:focus {
+.input-field {
+  flex: 1;
+  font-family: inherit;
+  display: block;
+  padding: 8px 12px 8px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+.input-field-inset-focused,
+.input-field-inset:active {
   border-color: var(--color-primary);
   box-shadow: 0px 0px 0px 2px var(--color-primary-opacity-40);
 }
 
-.input-field-error-state,
-.input-field-error-state:focus,
-.input-field-error-state:active {
+.input-field-inset-error-state,
+.input-field-inset-error-state:focus,
+.input-field-inset-error-state:active {
   border-color: var(--color-error);
-  box-shadow: 0px 0px 0px 2px var(--color-error-opacity-40);
+  box-shadow: 0px 0px 0px 2px var(--color-error-shadow);
+}
+
+.input-field-suffix .icon {
+  cursor: pointer;
+  padding: 8px 12px 8px 0px;
 }
 
 .input-field-error {
   display: flex;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 8pt;
 }
 
 .input-field-error-icon {

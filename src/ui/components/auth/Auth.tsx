@@ -12,14 +12,16 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import React, { useState } from "react";
 import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
-import { fetchData, getApiUrl } from "../../../utils";
+import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
+import { Footer, LOGO_ICON_LIGHT } from "../footer/footer";
 import InputField from "../inputField/InputField";
+import SafeAreaView from "../safeAreaView/SafeAreaView";
 
-import "./Auth.css";
+import "./Auth.scss";
 
 const Auth: React.FC<{
   onSuccess: () => void;
@@ -69,28 +71,37 @@ const Auth: React.FC<{
     setApiKey(value);
     setApiKeyFieldError("");
   };
+  const backgroundUrlVars = {
+    "--auth-background": `url("${getImageUrl("auth-background.png")}")`,
+    "--auth-background-portrait": `url("${getImageUrl("auth-background-portrait.png")}")`,
+  } as React.CSSProperties;
 
   return (
-    <div className="page-container">
-      <div className="api-key-form-container">
-        <h1 className="api-key-form-title text-title">Enter your API Key</h1>
-        <form className="api-key-form" onSubmit={handleSubmit}>
-          <InputField
-            handleChange={handleApiKeyFieldChange}
-            name="apiKey"
-            type="text"
-            error={apiKeyFieldError}
-            label="API Key"
-            value={apiKey}
-            placeholder="Your API Key"
-          />
+    <>
+      <SafeAreaView backgroundColor="#EFEDEC" />
+      <div className="page-container auth-container" style={backgroundUrlVars}>
+        <div className="block-container block-large">
+          <img className="title-image-smaller" src={LOGO_ICON_LIGHT} alt="Auth Page" />
+          <h2 className="api-key-form-title text-title">Enter your API Key</h2>
+          <p className="text-small text-label">Please enter the API key that you used to connect with your backend</p>
+          <form className="api-key-form" onSubmit={handleSubmit}>
+            <InputField
+              handleChange={handleApiKeyFieldChange}
+              name="apiKey"
+              type="password"
+              error={apiKeyFieldError}
+              value={apiKey}
+              placeholder="Your API Key"
+            />
 
-          <button className="button full-width" type="submit" disabled={loading}>
-            Submit
-          </button>
-        </form>
+            <button className="button" type="submit" disabled={loading}>
+              <span>Continue</span> <img src={getImageUrl("right_arrow_icon.svg")} alt="Auth Page" />
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+      <Footer horizontalAlignment="center" size="normal" verticalAlignment="center" colorMode="dark"></Footer>
+    </>
   );
 };
 

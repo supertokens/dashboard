@@ -14,6 +14,9 @@
  */
 
 import React, { PropsWithChildren } from "react";
+import { getImageUrl } from "../../../utils";
+import { Footer } from "../footer/footer";
+import "./error-boundary.scss";
 
 type Props = PropsWithChildren<{}>;
 type State = {
@@ -32,7 +35,20 @@ export default class ErrorBoundary extends React.Component<Props, State> {
 
   render(): React.ReactNode {
     if (this.state.hasError) {
-      return <div>Something went wrong</div>;
+      return (
+        <>
+          <div className="error-container">
+            <div className="block-container">
+              <img className="title-image" src={getImageUrl("delete.svg")} alt="Error"></img>
+              <h2 className="text-title">Looks like something went wrong!</h2>
+              <p className="text-small text-label">
+                Please refresh the page to try again or contact us if the error persists.
+              </p>
+            </div>
+          </div>
+          <Footer horizontalAlignment="center" verticalAlignment="center" size="normal" colorMode="dark"></Footer>
+        </>
+      );
     }
 
     return this.props.children;
