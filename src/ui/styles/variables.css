@@ -31,6 +31,7 @@ body {
   --color-error-bg: rgb(253, 240, 241);
   --color-info-shadow: rgba(158, 37, 38, 0.16);
   --color-info-bg: rgb(235, 245, 255);
+  --color-link: rgb(0, 122, 255);
 
   /* Border Colors */
   --color-border: rgb(229, 229, 229);

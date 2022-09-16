@@ -43,7 +43,7 @@ $container-width: 829;
       text-align: center;
       text-transform: uppercase;
       background-color: var(--badge-bg-color);
-      color: var(--color-info);
+      color: var(--color-link);
     }
     &__info {
       flex: 1;
@@ -82,6 +82,65 @@ $container-width: 829;
     &__action {
       display: flex;
       align-items: center;
+    }
+  }
+
+  .panel {
+    margin-top: 40px;
+  }
+
+  &__info-grid {
+    &__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr) );
+      grid-gap: 40px 60px;
+    }
+    &__item {
+      font-size: 14px;
+      &__label {
+        color: var(--color-secondary-text);
+        margin-bottom: 12px;
+      }
+      &__body {
+        font-weight: 600;
+      }
+    }
+  }
+
+  &__provider-box {
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-custom-provider-text);
+    background-color: var(--color-custom-provider-bg);
+    width: 100%;
+    @include gap-horizontal(6px);
+
+    > span {
+      > img { height: 1em; }
+    }
+
+    &__user-id {
+      flex: 1;
+      overflow: hidden;
+      .copy-text { width: 100%; }
+    }
+
+    &.google{
+      color: var(--color-google-text);
+      background-color: var(--color-google-bg);
+    }
+    &.apple {
+      color: var(--color-apple-text);
+      background-color: var(--color-apple-bg);
+    }
+    &.github {
+      color: var(--color-github-text);
+      background-color: var(--color-github-bg);
+    }
+    &.facebook {
+      color: var(--color-facebook-text);
+      background-color: var(--color-facebook-bg);
     }
   }
 

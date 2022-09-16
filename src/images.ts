@@ -34,4 +34,9 @@ import "./assets/eye.svg"
 import "./assets/eye-stroke.svg"
 import "./assets/left-arrow-dark.svg"
 import "./assets/copy.svg"
+import "./assets/provider-apple.svg"
+import "./assets/provider-google.svg"
+import "./assets/provider-github.svg"
+import "./assets/provider-facebook.svg"
+
 

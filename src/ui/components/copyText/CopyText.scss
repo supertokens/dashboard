@@ -20,6 +20,7 @@
   max-width: 100%;
   .copy-text-text {
     @include text-ellipsis(100%);
+    flex: 1;
     padding-right: 4px;
   }
   .copy-text-action:hover {

@@ -19,6 +19,7 @@ import { UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import UserDetailHeader from "./userDetailHeader";
 import "./userDetail.scss"
+import UserDetailInfoGrid from "./userDetailInfoGrid";
 
 export type UserDetailProps = {
   user: UserWithRecipeId,
@@ -34,6 +35,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
       <button className="button flat" onClick={ onBackButtonClicked }><img src={getImageUrl("left-arrow-dark.svg")} alt="Back to all users"/><span>Back to all users</span></button>
     </div>
     <UserDetailHeader {...props}/>
+    <UserDetailInfoGrid user={user}></UserDetailInfoGrid>
   </div>
 }
 

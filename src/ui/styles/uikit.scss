@@ -19,6 +19,34 @@
   width: 100%;
 }
 
+/* classes for layout panel */
+.panel {
+  padding: 0px 34px;
+  background-color: var(--color-white);
+  border-radius: 6px;
+  box-shadow: 0 0 6px var(--color-shadow);
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0px;
+    .title {
+      font-size: 14px;
+      text-transform: uppercase;
+      color: var(--color-secondary-text);
+      font-weight: 600;
+    }
+    &.with-border {
+      border-bottom: 1px solid var(--color-border);
+    }
+  }
+  &__body {
+    padding: 24px 0px;
+  }
+}
 
 /* classes for blocks */
 .block-container {
@@ -32,6 +60,24 @@
   @media only screen and (min-width: 992px) {    
     padding: 32px 48px;
   }
+}
+
+.block-snippet-small {  
+  border: 1px solid var(--color-border);
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.block-snippet {
+  border: 1px solid var(--color-border);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.block-snippet-large { 
+  border: 1px solid var(--color-border); 
+  border-radius: 4px;
+  padding: 6px 8px;
 }
 
 .block-small {    
@@ -82,13 +128,6 @@
   border-color: var(--color-border-info);
 }
 
-.block-snippet {
-  border-width: 1px;
-  border-style: solid;
-  padding: 3px 8px;
-  border-radius: 4px;
-}
-
 .button:not(.flat) {
   display: flex;
   align-items: center;
@@ -106,7 +145,7 @@
   box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.15);
 }
 
-.button.flat {
+.button.flat, button.flat {
   display: inline;
   background: none;
   padding: 0px;
@@ -115,6 +154,11 @@
   font-weight: 600;
   @include gap-horizontal(8px);
   border: none;
+  font-size: inherit;
+}
+
+a, button.link, .button.link {
+  color: var(--color-link);
 }
 
 /* classes for font sizes */
@@ -167,4 +211,14 @@
 /* classes for pages */
 .with-footer {
   margin-bottom: 100px;
+}
+
+/* classes for tooltip */
+.tooltip-container {
+  display: inline-flex;
+  cursor: default;
+  &__popup {
+    position: fixed;
+    transform: translateY(-50%);
+  }
 }

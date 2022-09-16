@@ -1,19 +1,19 @@
 import React, {useState, useEffect, useRef } from "react";
 
-type TemporaryContentProps = {
+export type TemporaryContentProps = {
   /** duration before the content disappear (in miliseconds)*/
   duration?: number;
   contentAfterDisappear?: React.ReactNode,
   children?: React.ReactNode,
   onDisappear?: () => void
 };
-const DEFAULT_TIMER_DURATION = 3000;
+export const TEMPORARY_CONTENT_DURATION = 3000;
 
 /**
  * Simple component that will display one-time content, 
  * and then disappears or replaced by `props.contentAfterDisappear` after `props.duration` miliseconds 
  */
-export const TemporaryContent: React.FC<TemporaryContentProps> = ({ duration = DEFAULT_TIMER_DURATION, children, contentAfterDisappear, onDisappear }) => {
+export const TemporaryContent: React.FC<TemporaryContentProps> = ({ duration = TEMPORARY_CONTENT_DURATION, children, contentAfterDisappear, onDisappear }) => {
   const [showChildern, setShowChildern] = useState(true);
   const timerRef: React.MutableRefObject<undefined | NodeJS.Timeout> = useRef(undefined);
   const startTimer = () => { 
