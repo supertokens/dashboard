@@ -106,6 +106,7 @@ $container-width: 829;
       &__body {
         font-weight: 600;
         @include text-ellipsis(100%);
+        white-space: normal;
       }
       &__guide {
         display: inline-flex;
