@@ -42,7 +42,7 @@ export const UserDetailInfoGridItem: FC<UserDetailInfoGridItemProps> = ({ label,
     null;
   return <div className="user-detail__info-grid__item">
     <div className="user-detail__info-grid__item__label">{ label }{ tooltipElement }</div>
-    <div className="user-detail__info-grid__item__body">{ body ?? "-" }</div>
+    <div className="user-detail__info-grid__item__body" title={ typeof body === "string" ? body : undefined}>{ body ?? "-" }</div>
   </div>
 }
 
