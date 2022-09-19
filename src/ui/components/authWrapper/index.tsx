@@ -18,29 +18,30 @@ import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import Auth from "../auth/Auth";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function AuthWrapper(props: { children: any }) {
-  const [shouldShowAuthForm, setShouldShowAuthForm] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [shouldShowAuthForm, setShouldShowAuthForm] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
+	useEffect(() => {
 		const apiKey = localStorageHandler.getItem(StorageKeys.API_KEY);
 		setShouldShowAuthForm(apiKey === undefined);
 		setIsLoading(false);
-  }, []);
+	}, []);
 
-  if (isLoading) {
-    return <></>;
-  }
+	if (isLoading) {
+		return <></>;
+	}
 
-  if (shouldShowAuthForm) {
-    return (
-      <Auth
-        onSuccess={() => {
-          setShouldShowAuthForm(false);
-        }}
-      />
-    );
-  }
+	if (shouldShowAuthForm) {
+		return (
+			<Auth
+				onSuccess={() => {
+					setShouldShowAuthForm(false);
+				}}
+			/>
+		);
+	}
 
-  return props.children;
+	return props.children;
 }

@@ -18,174 +18,174 @@
 $container-padding-v: 24px;
 
 .users-list-table-container {
-  padding: $container-padding-v 34px;
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
+	padding: $container-padding-v 34px;
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: auto;
 }
 
 .users-list-table {
-  width: 100%;
-  max-width: 100%;
-  border-spacing: 0px;
-  border-collapse: collapse;
+	width: 100%;
+	max-width: 100%;
+	border-spacing: 0px;
+	border-collapse: collapse;
 }
 
 .users-list-table thead {
-  color: var(--color-secondary-text);
-  text-transform: uppercase;
-  font-size: 12px;
-  line-height: 14px;
+	color: var(--color-secondary-text);
+	text-transform: uppercase;
+	font-size: 12px;
+	line-height: 14px;
 }
 
 .users-list-table thead tr {
-  border-bottom: 1px solid var(--color-border);
-  th {
-    padding: 0 1em 24px 0;
-    font-weight: 500;
-    text-align: left;
-    width: 33%;
-  }
+	border-bottom: 1px solid var(--color-border);
+	th {
+		padding: 0 1em 24px 0;
+		font-weight: 500;
+		text-align: left;
+		width: 33%;
+	}
 }
 
 .users-list-table tbody tr {
-  border-bottom: 1px solid var(--color-border);
-  td {
-    width: 33%;
-    max-width: 50%;
-    padding: 24px 1em 24px 0;
-  }
-  &.empty-row {
-    td {
-      padding: 12px 0;
-    }
-  }
+	border-bottom: 1px solid var(--color-border);
+	td {
+		width: 33%;
+		max-width: 50%;
+		padding: 24px 1em 24px 0;
+	}
+	&.empty-row {
+		td {
+			padding: 12px 0;
+		}
+	}
 }
 
 .user-row {
-  .user-info {
-    display: flex;
-    flex-direction: column;
-    color: var(--color-secondary-text);
-    padding-right: 16px;
-    div {
-      max-width: 25ch;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+	.user-info {
+		display: flex;
+		flex-direction: column;
+		color: var(--color-secondary-text);
+		padding-right: 16px;
+		div {
+			max-width: 25ch;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 
-      &:not(:last-child) {
-        margin-bottom: 4px;
-      }
-    }
-    .main {
-      color: var(--color-black);
-      font-weight: 500;
-    }
-  }
-  .pill {
-    display: flex;
-    border-radius: 20px;
-    padding: 4px 8px;
-    align-items: center;
-    width: fit-content;
-    white-space: nowrap;
-    @include gap-horizontal(4px);
+			&:not(:last-child) {
+				margin-bottom: 4px;
+			}
+		}
+		.main {
+			color: var(--color-black);
+			font-weight: 500;
+		}
+	}
+	.pill {
+		display: flex;
+		border-radius: 20px;
+		padding: 4px 8px;
+		align-items: center;
+		width: fit-content;
+		white-space: nowrap;
+		@include gap-horizontal(4px);
 
-    &.passwordless {
-      color: var(--color-passwordless-text);
-      background-color: var(--color-passwordless-bg);
-    }
-    &.emailpassword {
-      color: var(--color-emailpassword-text);
-      background-color: var(--color-emailpassword-bg);
-    }
-    &.thirdparty {
-      color: var(--color-custom-provider-text);
-      background-color: var(--color-custom-provider-bg);
-      max-width: 25ch;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      .thirdparty-name {
-        max-width: 10ch;
-        text-overflow: inherit;
-        overflow: inherit;
-      }
-      &.google {
-        color: var(--color-google-text);
-        background-color: var(--color-google-bg);
-        span {
-          text-transform: capitalize;
-        }
-      }
-      &.apple {
-        color: var(--color-apple-text);
-        background-color: var(--color-apple-bg);
-        span {
-          text-transform: capitalize;
-        }
-      }
-      &.github {
-        color: var(--color-github-text);
-        background-color: var(--color-github-bg);
-        span {
-          text-transform: capitalize;
-        }
-      }
-      &.facebook {
-        color: var(--color-facebook-text);
-        background-color: var(--color-facebook-bg);
-        span {
-          text-transform: capitalize;
-        }
-      }
-    }
-  }
+		&.passwordless {
+			color: var(--color-passwordless-text);
+			background-color: var(--color-passwordless-bg);
+		}
+		&.emailpassword {
+			color: var(--color-emailpassword-text);
+			background-color: var(--color-emailpassword-bg);
+		}
+		&.thirdparty {
+			color: var(--color-custom-provider-text);
+			background-color: var(--color-custom-provider-bg);
+			max-width: 25ch;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+			.thirdparty-name {
+				max-width: 10ch;
+				text-overflow: inherit;
+				overflow: inherit;
+			}
+			&.google {
+				color: var(--color-google-text);
+				background-color: var(--color-google-bg);
+				span {
+					text-transform: capitalize;
+				}
+			}
+			&.apple {
+				color: var(--color-apple-text);
+				background-color: var(--color-apple-bg);
+				span {
+					text-transform: capitalize;
+				}
+			}
+			&.github {
+				color: var(--color-github-text);
+				background-color: var(--color-github-bg);
+				span {
+					text-transform: capitalize;
+				}
+			}
+			&.facebook {
+				color: var(--color-facebook-text);
+				background-color: var(--color-facebook-bg);
+				span {
+					text-transform: capitalize;
+				}
+			}
+		}
+	}
 
-  .user-date {
-    min-width: 110px;
-    white-space: nowrap;
-  }
+	.user-date {
+		min-width: 110px;
+		white-space: nowrap;
+	}
 
-  &.placeholder td {
-    div {
-      width: 100%;
-      background-color: var(--color-loader-placeholder-bg);
-      min-height: 1em;
-      opacity: 0.4;
-      animation: blinker 2s linear infinite;
-      @keyframes blinker {
-        50% {
-          opacity: 0.1;
-        }
-      }
-    }
-  }
+	&.placeholder td {
+		div {
+			width: 100%;
+			background-color: var(--color-loader-placeholder-bg);
+			min-height: 1em;
+			opacity: 0.4;
+			animation: blinker 2s linear infinite;
+			@keyframes blinker {
+				50% {
+					opacity: 0.1;
+				}
+			}
+		}
+	}
 }
 
 .user-list-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: $container-padding-v;
-  position: sticky;
-  left: 0px;
+	display: flex;
+	justify-content: flex-end;
+	padding-top: $container-padding-v;
+	position: sticky;
+	left: 0px;
 }
 
 .users-list-pagination {
-  display: flex;
-  @include gap-horizontal(1em);
+	display: flex;
+	@include gap-horizontal(1em);
 
-  .users-list-pagination-count {
-    font-weight: 500;
-  }
-  .users-list-pagination-navigation {
-    display: flex;
-    @include gap-horizontal(0.5em);
-  }
-  .users-list-pagination-button {
-    border: none;
-    background: none;
-  }
+	.users-list-pagination-count {
+		font-weight: 500;
+	}
+	.users-list-pagination-navigation {
+		display: flex;
+		@include gap-horizontal(0.5em);
+	}
+	.users-list-pagination-button {
+		border: none;
+		background: none;
+	}
 }

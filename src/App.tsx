@@ -23,19 +23,25 @@ import ErrorBoundary from "./ui/components/errorboundary";
 import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
 
 function App() {
-  return (
-    <>
-      <SafeAreaView />
-      <ErrorBoundary>
-        <Router basename={getDashboardAppBasePath()}>
-          <Routes>
-            <Route path="/" element={<UsersListPage />} />
-            <Route path="*" element={<UsersListPage />} />
-          </Routes>
-        </Router>
-      </ErrorBoundary>
-    </>
-  );
+	return (
+		<>
+			<SafeAreaView />
+			<ErrorBoundary>
+				<Router basename={getDashboardAppBasePath()}>
+					<Routes>
+						<Route
+							path="/"
+							element={<UsersListPage />}
+						/>
+						<Route
+							path="*"
+							element={<UsersListPage />}
+						/>
+					</Routes>
+				</Router>
+			</ErrorBoundary>
+		</>
+	);
 }
 
 export default App;

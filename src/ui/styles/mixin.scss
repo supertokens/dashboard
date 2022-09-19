@@ -14,7 +14,7 @@
  */
 
 @mixin gap-horizontal($gap) {
-  *:not(:last-child) {
-    margin-right: $gap;
-  }
+	*:not(:last-child) {
+		margin-right: $gap;
+	}
 }

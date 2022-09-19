@@ -14,38 +14,38 @@
  */
 
 .no-users {
-  padding: 60px 24px;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
+	padding: 60px 24px;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
 }
 
 .no-users-image {
-  height: 43px;
-  width: 63px;
-  margin-bottom: 24px;
+	height: 43px;
+	width: 63px;
+	margin-bottom: 24px;
 }
 
 .no-users-title {
-  font-size: 18px;
-  line-height: 22px;
-  font-weight: 500;
-  color: var(--color-black);
-  letter-spacing: 0.18px;
-  margin-bottom: 8px;
-  text-align: center;
+	font-size: 18px;
+	line-height: 22px;
+	font-weight: 500;
+	color: var(--color-black);
+	letter-spacing: 0.18px;
+	margin-bottom: 8px;
+	text-align: center;
 }
 
 .no-users .no-users-subtitle {
-  color: var(--color-secondary-text);
-  padding: 4px 0;
-  text-align: center;
-  max-width: 54ch;
-  line-height: 1.5em;
+	color: var(--color-secondary-text);
+	padding: 4px 0;
+	text-align: center;
+	max-width: 54ch;
+	line-height: 1.5em;
 }
 
 @media only screen and (min-width: 992px) {
-  .no-users {
-    padding: 60px;
-  }
+	.no-users {
+		padding: 60px;
+	}
 }

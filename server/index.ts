@@ -27,40 +27,40 @@ let app = express();
 app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[content-length]"));
 
 SuperTokens.init({
-  framework: "express",
-  supertokens: {
-    connectionURI: "https://try.supertokens.com",
-  },
-  appInfo: {
-    appName: "Dashboard Dev",
-    apiDomain: "http://localhost:3001",
-    websiteDomain,
-    apiBasePath: "/auth",
-  },
-  recipeList: [
-    Dashboard.init({
-      apiKey: "someapikey",
-      override: {
-        functions: (original) => {
-          return {
-            ...original,
-            getDashboardBundleLocation: async function () {
-              return "http://localhost:3000";
-            },
-          };
-        },
-      },
-    }),
-    UserMetaData.init(),
-  ],
+	framework: "express",
+	supertokens: {
+		connectionURI: "https://try.supertokens.com",
+	},
+	appInfo: {
+		appName: "Dashboard Dev",
+		apiDomain: "http://localhost:3001",
+		websiteDomain,
+		apiBasePath: "/auth",
+	},
+	recipeList: [
+		Dashboard.init({
+			apiKey: "someapikey",
+			override: {
+				functions: (original) => {
+					return {
+						...original,
+						getDashboardBundleLocation: async function () {
+							return "http://localhost:3000";
+						},
+					};
+				},
+			},
+		}),
+		UserMetaData.init(),
+	],
 });
 
 app.use(
-  cors({
-    origin: websiteDomain,
-    allowedHeaders: ["content-type", ...SuperTokens.getAllCORSHeaders()],
-    credentials: true,
-  })
+	cors({
+		origin: websiteDomain,
+		allowedHeaders: ["content-type", ...SuperTokens.getAllCORSHeaders()],
+		credentials: true,
+	})
 );
 
 app.use(middleware());
@@ -68,15 +68,15 @@ app.use(middleware());
 app.use(errorHandler());
 
 app.get("/status", (req, res) => {
-  res.status(200).send("Started");
+	res.status(200).send("Started");
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  // Leaving this in because it helps with debugging
-  console.log("Internal error", err);
-  res.status(500).send(err.message === undefined ? "Internal server error" : err.message);
+	// Leaving this in because it helps with debugging
+	console.log("Internal error", err);
+	res.status(500).send(err.message === undefined ? "Internal server error" : err.message);
 });
 
 app.listen(3001, () => {
-  console.log("Server started on port 3001");
+	console.log("Server started on port 3001");
 });
