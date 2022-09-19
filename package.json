@@ -96,8 +96,12 @@
     "start-bundle-server": "rm -rf debug && BROWSER=none node scripts/start.js",
     "start-dev-server": "npx ts-node-dev --project server/tsconfig.json server/index.ts",
     "build": "rm -rf build && node scripts/build.js",
-    "lint": "eslint src &&  tsc --project ./tsconfig.json --noEmit",
+    "test": "node scripts/test.js",
     "build-check": "npx tsc -p tsconfig.json --noEmit",
+    "build-pretty": "npm run build && npm run pretty && npm run pretty",
+    "lint": "eslint src",
+    "pretty": "npx pretty-quick .",
+    "pretty-check": "npx pretty-quick --staged --check .",
     "set-up-hooks": "cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit"
   },
   "eslintConfig": {
