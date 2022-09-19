@@ -21,10 +21,8 @@ import Auth from "../auth/Auth";
 export default function AuthWrapper(props: { children: any }) {
   const [shouldShowAuthForm, setShouldShowAuthForm] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  let testValue = false;
 
   useEffect(() => {
-		testValue = true;
 		const apiKey = localStorageHandler.getItem(StorageKeys.API_KEY);
 		setShouldShowAuthForm(apiKey === undefined);
 		setIsLoading(false);
