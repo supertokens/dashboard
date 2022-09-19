@@ -7,8 +7,9 @@ import './CopyText.scss';
  * Get coordinates that is located horizontally on the (right + 8px space) of CopyBox, and vertically centered to the `refElement`
  ** top position also use the CSS `transform: translateY(-50%)`
  * @param popupWidth it is used to prevent the popup to be truncated on the right side of the page
+ * @param popupPosition default `right`
  */
-export const getPopupPosition = (refElement: HTMLElement | null, popupWidth: number, calculateScrollPosition?: boolean) => {
+export const getPopupPosition = (refElement: HTMLElement | null, popupWidth: number, popupPosition: "bottom" | "right" | "top" = "right", calculateScrollPosition?: boolean) => {
   if (refElement != null) {
     const refElementRect = refElement.getBoundingClientRect();
     console.log((calculateScrollPosition ? document.body.scrollTop : 0));

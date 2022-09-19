@@ -18,9 +18,9 @@ type UserDetailInfoGridItemProps = {
 };
 
 const NameTooltip: FC<{fieldName: string}> = ({ fieldName }) => <>
-  <p>To change this information, please 
+  <p className="center">To change this information, please 
     add / change <span className="block-snippet-small">{fieldName}</span> key in the user metadata section below.</p>
-  <p>Eg: <span className="block-snippet-small">“{fieldName}”:“Jane”</span></p>
+  <p className="center">Eg: <span className="block-snippet-small">“{fieldName}”:“Jane”</span></p>
 </>
 
 export const UserDetailProviderBox: FC<{user: UserThirdParty }> = ({user}) => { 
@@ -37,7 +37,7 @@ export const UserDetailProviderBox: FC<{user: UserThirdParty }> = ({user}) => {
 export const UserDetailInfoGridItem: FC<UserDetailInfoGridItemProps> = ({ label, body, tooltip }) => {
   const tooltipElement = tooltip !== undefined ? 
     <TooltipContainer tooltip={tooltip}>
-      <span className="user-detail__info-grid__item__guide">?</span>
+      <span className="user-detail__info-grid__item__guide"><img src={getImageUrl("help.png")} alt={`${label} guideline`} /></span>
     </TooltipContainer> : 
     null;
   return <div className="user-detail__info-grid__item">

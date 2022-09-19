@@ -218,7 +218,26 @@ a, button.link, .button.link {
   display: inline-flex;
   cursor: default;
   &__popup {
+    font-size: 14px;
+    line-height: 23px;
+    padding: 14px;
+    max-width: 380px;
     position: fixed;
     transform: translateY(-50%);
+    background-color: var(--color-white);
+    color: var(--color-black);
+    border-radius: 6px;
+    z-index: 1;
+    p:not(:last-child) {
+      margin-bottom: 6px;
+    }
+    .block-snippet-small {
+      background-color: var(--color-window-bg);
+      color: var(--color-secondary-text);
+    }    
   }
+}
+
+.center {
+  text-align: center;
 }

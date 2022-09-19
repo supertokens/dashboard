@@ -61,3 +61,10 @@ body {
   --color-custom-provider-bg: rgb(228, 224, 255);
   --color-custom-provider-text: rgb(84, 37, 176);
 }
+
+*[data-theme="dark"] {
+  --color-black: rgb(255, 255, 255);
+  --color-white: rgb(34, 34, 34);
+  --color-window-bg: rgb(74, 74, 74);
+  --color-secondary-text: rgb(221, 221, 221);
+}
