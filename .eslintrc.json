@@ -33,7 +33,7 @@
 				"markers": ["/"]
 			}
 		],
-		"lines-around-comment": ["warn", { "afterBlockComment": false }],
+		"lines-around-comment": ["off"],
 		"indent": "off",
 		"no-empty": ["error", { "allowEmptyCatch": true }],
 		"no-console": ["error", { "allow": ["info", "error", "warn"] }],
