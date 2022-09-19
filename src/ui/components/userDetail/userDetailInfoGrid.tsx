@@ -37,7 +37,7 @@ export const UserDetailProviderBox: FC<{user: UserThirdParty }> = ({user}) => {
 export const UserDetailInfoGridItem: FC<UserDetailInfoGridItemProps> = ({ label, body, tooltip }) => {
   const tooltipElement = tooltip !== undefined ? 
     <TooltipContainer tooltip={tooltip}>
-      <span className="user-detail__info-grid__item__guide"><img src={getImageUrl("help.png")} alt={`${label} guideline`} /></span>
+      <span className="user-detail__info-grid__item__guide"><img src={getImageUrl("help-icon.png")} alt={`${label} guideline`} /></span>
     </TooltipContainer> : 
     null;
   return <div className="user-detail__info-grid__item">
@@ -50,24 +50,38 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
   const nonApplicableText = "N/A";
   const { recipeId } = user;
   const { firstName, lastName, timeJoined, email } = user.user;
+  
   const phone = recipeId === 'passwordless' && user.user.phoneNumber !== undefined && user.user.phoneNumber.trim().length > 0 ? 
     <PhoneDisplay phone={user.user.phoneNumber} /> : undefined;
   const header = <>
     <div className="title">User Information</div>
     {onUpdateCallback !== undefined && <div>Edit Info</div>}
   </>
+
   return <div className="user-detail__info-grid">
     <LayoutPanel header={header}>
       <div className="user-detail__info-grid__grid">
-        <UserDetailInfoGridItem label={'First Name:'} body={firstName} tooltip={<NameTooltip fieldName="firstName"/>}/>
-        <UserDetailInfoGridItem label={'Last Name:'} body={lastName} tooltip={<NameTooltip fieldName="lastName" />}/>
-        <UserDetailInfoGridItem label={'Signed up on:'} body={timeJoined && formatLongDate(timeJoined)}/>
+        <UserDetailInfoGridItem 
+          label={'First Name:'} 
+          body={firstName} 
+          tooltip={<NameTooltip fieldName="firstName"/>}/>
+        <UserDetailInfoGridItem 
+          label={'Last Name:'} 
+          body={lastName} 
+          tooltip={<NameTooltip fieldName="lastName" />}/>
+        <UserDetailInfoGridItem 
+          label={'Signed up on:'} 
+          body={timeJoined && formatLongDate(timeJoined)}/>
         <UserDetailInfoGridItem label={'Email ID:'} body={email}/>
         <UserDetailInfoGridItem label={'Is Email Verified:'} body={"Yes"}/>
-        <UserDetailInfoGridItem label={'Phone Number:'} 
+        <UserDetailInfoGridItem 
+          label={'Phone Number:'} 
           body={ recipeId === "passwordless" ? phone : nonApplicableText }/>
-        <UserDetailInfoGridItem label={'Password:'} body={recipeId === "emailpassword" ? <button className="flat link">Change Password</button> : nonApplicableText}/>
-        <UserDetailInfoGridItem label={'Provider | Provider user id:'} 
+        <UserDetailInfoGridItem 
+          label={'Password:'} 
+          body={recipeId === "emailpassword" ? <button className="flat link">Change Password</button> : nonApplicableText}/>
+        <UserDetailInfoGridItem 
+          label={'Provider | Provider user id:'} 
           body={recipeId === "thirdparty" ? <UserDetailProviderBox user={user.user}/> : nonApplicableText}/>
       </div>
     </LayoutPanel>

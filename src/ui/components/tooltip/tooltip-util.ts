@@ -1,46 +1,72 @@
 import { CSSProperties } from "react";
 
-type PopUpPositionType = "bottom" | "right" | "top" | "left";
+/** If empty, the app will decide the position based on the location on the screen using `getAutomaticPopupPosition()` */
+export type PopUpPositionType = "bottom" | "right" | "top" | "left";
 
-type PopUpPositionProperties = {
+export type PopUpCoordinateProperties = {
   top: number,
   left: number,
   css?: CSSProperties
 }
 
+export type PopUpPositionProperties = PopUpCoordinateProperties & {
+  positionType?: PopUpPositionType,
+}
+
 /**
- * Get coordinates that is located horizontally on the (right + 8px space) of CopyBox, and vertically centered to the `refElement`
- ** top position also use the CSS `transform: translateY(-50%)`
  * @param popupWidth it is used to prevent the popup to be truncated on the right side of the page
- * @param popupPosition default `right`
+ * @ereturn `PopUpCoordinateProperties` the popup coordinates, additional CSS, and the final value of `popupPosition`
  */
- export const getPopupPosition = (refElement: HTMLElement | null, popupPosition: PopUpPositionType = "right", calculateScrollPosition?: boolean) => {
+ export const getPopupPosition = (refElement: HTMLElement | null, popupWidth: number, popupPosition?: PopUpPositionType, calculateScrollPosition?: boolean) => {
   if (refElement != null) {
-    const rect = refElement.getBoundingClientRect();
-    console.log((calculateScrollPosition ? document.body.scrollTop : 0));
-    console.log(rect.top, (rect.height / 2), (calculateScrollPosition ? document.body.scrollTop : 0));
+    const rect = refElement.getBoundingClientRect(); 
     
-    return getPosition(rect, popupPosition, calculateScrollPosition)
+    // estimate the position if the `popupPosition` is empty
+    if (popupPosition === undefined) { 
+      popupPosition = getAutomaticPopupPosition(rect, popupWidth) 
+    }    
+
+    return { ...getPopupCoordinatesAndCSS(rect, popupPosition, calculateScrollPosition), positionType: popupPosition} as PopUpPositionProperties
   }
 }
 
-const getPosition: (rect: DOMRect, popupPosition: PopUpPositionType, calculateScrollPosition?: boolean) => PopUpPositionProperties = (rect, popupPosition, calculateScrollPosition) => {
+/**
+ * estimate the popup position based on the `popupWidth` & the `refElement.rect` position on the screen
+ * @param popupWidth it is used to prevent the popup to be truncated on the right side of the page
+ */
+const getAutomaticPopupPosition : (rect: DOMRect,popupWidth: number) => PopUpPositionType = (rect, popupWidth ) => { 
+  if ((window.innerWidth - rect.right) > popupWidth) {
+    return "right";
+  } else if (rect.left > popupWidth) {
+    return "left";
+  } else if (rect.top < (window.innerHeight / 2)) {
+    return "bottom"
+  } 
+  return "top"
+}
+
+const getPopupCoordinatesAndCSS: (rect: DOMRect, popupPosition: PopUpPositionType, calculateScrollPosition?: boolean) => PopUpCoordinateProperties = (rect, popupPosition = "right", calculateScrollPosition) => {
+  const bottomPosition = rect.bottom - (calculateScrollPosition ? document.body.scrollTop : 0);
   const topPosition = rect.top - (calculateScrollPosition ? document.body.scrollTop : 0);
   const leftPosition = rect.left + (calculateScrollPosition ? document.body.scrollLeft : 0);
+  const rightPosition = rect.right - (calculateScrollPosition ? document.body.scrollLeft : 0);
+  const distanceToRefElement = 8;
+  
   if (popupPosition === "right" || popupPosition === "left") {
     return {
       top: topPosition + (rect.height / 2),
-      left: leftPosition  + rect.width + 8,
+      left: popupPosition === "right" ? (rightPosition + distanceToRefElement) : (leftPosition - distanceToRefElement),      
       css: {
-        transform: "translateY(-50%)"
+        transform: `translateY(-50%) ${popupPosition === "left" ? "translateX(-100%)" : ""}`
       }
     }
   }
+
   return {
-    top: topPosition + (popupPosition === "bottom" ? rect.height : 0),
+    top: popupPosition === "bottom" ? (bottomPosition + distanceToRefElement) : (topPosition - distanceToRefElement),
     left: leftPosition + (rect.width / 2),
     css: {
-      transform: "translateX(-50%)"
+      transform: `translateX(-50%) ${popupPosition === "top" ? "translateY(-100%)" : ""}`
     }
   }
 }

@@ -221,20 +221,59 @@ a, button.link, .button.link {
     font-size: 14px;
     line-height: 23px;
     padding: 14px;
-    max-width: 380px;
     position: fixed;
     transform: translateY(-50%);
     background-color: var(--color-white);
     color: var(--color-black);
     border-radius: 6px;
     z-index: 1;
+
+    &::before {
+      // arrow/triangle
+      display: block;
+      content: "";
+      $arrow-width: 6px;
+      width: 0; 
+      height: 0; 
+      border: $arrow-width solid transparent;
+      position: absolute;
+    }
     p:not(:last-child) {
       margin-bottom: 6px;
     }
     .block-snippet-small {
       background-color: var(--color-window-bg);
       color: var(--color-secondary-text);
-    }    
+    }  
+    
+    &.popup_left::before {
+      border-left-color: var(--color-white);
+      border-right: none;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    &.popup_right::before {
+      border-right-color: var(--color-white);
+      border-left: none;
+      left: 0px;
+      top: 50%;
+      transform: translateX(-100%) translateY(-50%);
+    }
+    &.popup_top::before {
+      border-top-color: var(--color-white);
+      border-bottom: none;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    &.popup_bottom::before {
+      border-bottom-color: var(--color-white);
+      border-top: none;
+      top: 0;
+      left: 50%;
+      transform: translateY(-100%) translateX(-50%);
+    }
   }
 }
 

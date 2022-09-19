@@ -157,3 +157,7 @@ export const substractDate = (date1: Date, date2: Date) => {
     const diff = date2.getTime() - date1.getTime()
     return diff / (DAY_IN_MILISECONDS)
 }
+
+/** Layout Utils */
+
+export const isMobile = () => /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
