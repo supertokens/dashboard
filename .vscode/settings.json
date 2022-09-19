@@ -12,6 +12,7 @@
 	"editor.tabCompletion": "on",
 	"editor.tabSize": 4,
 	"editor.trimAutoWhitespace": true,
+	"editor.formatOnSave": true,
 	"editor.codeActionsOnSave": {
 		"source.organizeImports": true
 	},
