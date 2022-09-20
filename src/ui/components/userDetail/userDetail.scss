@@ -128,10 +128,14 @@ $container-width: 829;
     font-size: 13px;
     display: inline-flex;
     align-items: center;
-    color: var(--color-custom-provider-text);
-    background-color: var(--color-custom-provider-bg);
+    color: var(--color-provider-copy-box);
+    background-color: var(--color-provider-copy-box-bg);
     width: 100%;
     @include gap-horizontal(6px);
+
+    &.block-snippet-large {
+      border: none;
+    }
 
     > span {
       > img { height: 1em; }
@@ -141,23 +145,6 @@ $container-width: 829;
       flex: 1;
       overflow: hidden;
       .copy-text { width: 100%; }
-    }
-
-    &.google{
-      color: var(--color-google-text);
-      background-color: var(--color-google-bg);
-    }
-    &.apple {
-      color: var(--color-apple-text);
-      background-color: var(--color-apple-bg);
-    }
-    &.github {
-      color: var(--color-github-text);
-      background-color: var(--color-github-bg);
-    }
-    &.facebook {
-      color: var(--color-facebook-text);
-      background-color: var(--color-facebook-bg);
     }
   }
 

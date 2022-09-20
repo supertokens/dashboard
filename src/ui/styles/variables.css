@@ -60,6 +60,9 @@ body {
   --color-apple-text: rgb(11, 28, 69);
   --color-custom-provider-bg: rgb(228, 224, 255);
   --color-custom-provider-text: rgb(84, 37, 176);
+
+  --color-provider-copy-box: rgb(83, 101, 121);
+  --color-provider-copy-box-bg: rgb(240, 244, 247);
 }
 
 *[data-theme="dark"] {
