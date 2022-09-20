@@ -19,6 +19,16 @@
   width: 100%;
 }
 
+/* classes for layout panel */
+.panel {
+  padding: 0px 34px;
+  background-color: var(--color-white);
+  border-radius: 6px;
+  box-shadow: 0 0 6px var(--color-shadow);
+  display: block;
+  max-width: 100%;
+  width: 100%;
+}
 
 /* classes for blocks */
 .block-container {
