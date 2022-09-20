@@ -133,8 +133,9 @@ $container-width: 829;
     width: 100%;
     @include gap-horizontal(6px);
 
-    &.block-snippet-large {
+    &.block-snippet {
       border: none;
+      padding-right: 4px;
     }
 
     > span {
@@ -143,7 +144,8 @@ $container-width: 829;
 
     &__user-id {
       flex: 1;
-      overflow: hidden;
+      overflow-x: hidden;
+      padding: 4px 4px 4px 0px;
       .copy-text { width: 100%; }
     }
   }

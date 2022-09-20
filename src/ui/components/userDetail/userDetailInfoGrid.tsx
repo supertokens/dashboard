@@ -27,7 +27,7 @@ export const UserDetailProviderBox: FC<{user: UserThirdParty }> = ({user}) => {
   const { userId, id } = user.thirdParty;
   const useLogoIcon = ['apple', 'github', 'google', 'facebook'].includes(id.toLowerCase())
 
-  return <div className={`user-detail__provider-box block-snippet-large ${id.toLowerCase()}`}>
+  return <div className={`user-detail__provider-box block-snippet ${id.toLowerCase()}`}>
     <span>{ 
       // display logo for recognized provider, otherwise displays providerId as text
       useLogoIcon ? <img src={getImageUrl(`provider-${id}.svg`)} alt={id} /> : id
