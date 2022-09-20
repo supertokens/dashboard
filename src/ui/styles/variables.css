@@ -61,8 +61,10 @@ body {
   --color-custom-provider-bg: rgb(228, 224, 255);
   --color-custom-provider-text: rgb(84, 37, 176);
 
-  --color-provider-copy-box: rgb(83, 101, 121);
-  --color-provider-copy-box-bg: rgb(240, 244, 247);
+  /* Copy box color */
+  --color-copy-box: rgb(83, 101, 121);
+  --color-copy-box-bg: rgb(240, 244, 247);
+  --color-copy-box-shadow: rgba(83, 101, 121, 0.2);
 }
 
 *[data-theme="dark"] {

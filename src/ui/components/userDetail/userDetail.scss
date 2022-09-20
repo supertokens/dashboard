@@ -128,8 +128,8 @@ $container-width: 829;
     font-size: 13px;
     display: inline-flex;
     align-items: center;
-    color: var(--color-provider-copy-box);
-    background-color: var(--color-provider-copy-box-bg);
+    color: var(--color-copy-box);
+    background-color: var(--color-copy-box-bg);
     width: 100%;
     @include gap-horizontal(6px);
 
