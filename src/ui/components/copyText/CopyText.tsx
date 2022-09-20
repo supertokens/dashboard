@@ -21,11 +21,11 @@ export const CopyText: React.FC<{ children: string }> = ({ children }) => {
     if (copyBoxRef.current != null) {
       const copyBoxRect = copyBoxRef.current.getBoundingClientRect()
       if (copyBoxRect !== undefined) {
-        const leftPosition = copyBoxRect.left + document.body.scrollLeft + copyBoxRect.width + 8;
+        const leftPosition = copyBoxRect.left + copyBoxRect.width + 8;
         const leftPositionMax = document.body.clientWidth - alertWidth;
         return {
           // top position also use the CSS `transform: translateY(-50%)`
-          top: copyBoxRect.top + document.body.scrollTop + (copyBoxRect.height / 2) + 'px',
+          top: copyBoxRect.top + (copyBoxRect.height / 2) + 'px',
           left: Math.min(leftPosition, leftPositionMax) + 'px'
         } as CSSProperties        
       }
