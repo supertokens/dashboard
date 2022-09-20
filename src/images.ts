@@ -39,5 +39,12 @@ import "./assets/provider-apple.svg"
 import "./assets/provider-google.svg"
 import "./assets/provider-github.svg"
 import "./assets/provider-facebook.svg"
-
+import "./assets/lock.svg"
+import "./assets/lock-opened.svg"
+import "./assets/mail.svg"
+import "./assets/mail-opened.svg"
+import "./assets/people.svg"
+import "./assets/people-opened.svg"
+import "./assets/trash.svg"
+import "./assets/trash-opened.svg"
 

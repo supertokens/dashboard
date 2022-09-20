@@ -18,6 +18,7 @@ import React from 'react'
 import { formatLongDate, getImageUrl, formatNumber } from '../../../utils'
 import { UserRecipeType, UserWithRecipeId } from '../../pages/usersList/types'
 import PhoneDisplay from '../phoneNumber/PhoneNumber'
+import UserRowMenu from './UserRowMenu'
 import './UsersListTable.scss'
 
 const USER_TABLE_COLUMNS_COUNT = 4
@@ -103,7 +104,7 @@ const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number, onSelect:
         <UserDate user={user} />
       </td>
       <td>
-        <button className="user-row-select-button" onClick={() => onSelect(user)}><img src={getImageUrl("chevron-down.svg")} alt="Open user detail"/></button>
+        <UserRowMenu onSelect={onSelect} user={user} />
       </td>
     </tr>
   )
