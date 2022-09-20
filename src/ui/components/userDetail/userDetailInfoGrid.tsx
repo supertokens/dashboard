@@ -26,13 +26,16 @@ const NameTooltip: FC<{fieldName: string}> = ({ fieldName }) => <>
 export const UserDetailProviderBox: FC<{user: UserThirdParty }> = ({user}) => { 
   const { userId, id } = user.thirdParty;
   const useLogoIcon = ['apple', 'github', 'google', 'facebook'].includes(id.toLowerCase())
+
   return <div className={`user-detail__provider-box block-snippet-large ${id.toLowerCase()}`}>
-    <span>{ useLogoIcon ? <img src={getImageUrl(`provider-${id}.svg`)} alt={id} /> : id}</span>
+    <span>{ 
+      // display logo for recognized provider, otherwise displays providerId as text
+      useLogoIcon ? <img src={getImageUrl(`provider-${id}.svg`)} alt={id} /> : id
+    }</span>
     <span>|</span> 
     <span className="user-detail__provider-box__user-id"><CopyText>{userId}</CopyText></span>
   </div>
 }
-
 
 export const UserDetailInfoGridItem: FC<UserDetailInfoGridItemProps> = ({ label, body, tooltip }) => {
   const tooltipElement = tooltip !== undefined ? 
@@ -40,9 +43,10 @@ export const UserDetailInfoGridItem: FC<UserDetailInfoGridItemProps> = ({ label,
       <span className="user-detail__info-grid__item__guide"><img src={getImageUrl("help-icon.png")} alt={`${label} guideline`} /></span>
     </TooltipContainer> : 
     null;
+    
   return <div className="user-detail__info-grid__item">
     <div className="user-detail__info-grid__item__label">{ label }{ tooltipElement }</div>
-    <div className="user-detail__info-grid__item__body" title={ typeof body === "string" ? body : undefined}>{ body ?? "-" }</div>
+    <div className="user-detail__info-grid__item__body" title={ typeof body === "string" ? body : undefined }>{ body ?? "-" }</div>
   </div>
 }
 

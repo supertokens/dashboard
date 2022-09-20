@@ -366,11 +366,6 @@ module.exports = function (webpackEnv) {
             {
               test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
               type: 'asset/resource',
-              // parser: {
-              //   dataUrlCondition: {
-              //     maxSize: imageInlineSizeLimit,
-              //   },
-              // },
             },
             {
               test: /\.svg$/,

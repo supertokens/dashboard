@@ -3,30 +3,6 @@ import { getImageUrl } from '../../../utils'
 import TemporaryContent from '../temporaryContent/temporaryContent'
 import './CopyText.scss';
 
-/**
- * Get coordinates that is located horizontally on the (right + 8px space) of CopyBox, and vertically centered to the `refElement`
- ** top position also use the CSS `transform: translateY(-50%)`
- * @param popupWidth it is used to prevent the popup to be truncated on the right side of the page
- * @param popupPosition default `right`
- */
-export const getPopupPosition = (refElement: HTMLElement | null, popupWidth: number, popupPosition: "bottom" | "right" | "top" = "right", calculateScrollPosition?: boolean) => {
-  if (refElement != null) {
-    const refElementRect = refElement.getBoundingClientRect();
-    console.log((calculateScrollPosition ? document.body.scrollTop : 0));
-    console.log(refElementRect.top, (refElementRect.height / 2), (calculateScrollPosition ? document.body.scrollTop : 0));
-    
-    if (refElementRect !== undefined) {
-      const leftPosition = refElementRect.left + (calculateScrollPosition ? document.body.scrollLeft : 0) + refElementRect.width + 8;
-      const leftPositionMax = document.body.clientWidth - popupWidth;
-      return {
-        // top position also use the CSS `transform: translateY(-50%)`
-        top: (refElementRect.top + (refElementRect.height / 2) - (calculateScrollPosition ? document.body.scrollTop : 0)) + 'px',
-        left: Math.min(leftPosition, leftPositionMax) + 'px'
-      } as CSSProperties        
-    }
-  }
-}
-
 export const CopyText: React.FC<{ children: string }> = ({ children }) => { 
   const alertWidth = 80 
   const copyBoxRef = useRef<HTMLDivElement>(null)
@@ -38,7 +14,24 @@ export const CopyText: React.FC<{ children: string }> = ({ children }) => {
     }
   }, [isCopied, children])
 
-  
+  /**
+   * Put alert horizontally on the (right + 8px space) of CopyBox, and vertically centered to the CopyBox
+   */
+   const getAlertPosition = () => {
+    if (copyBoxRef.current != null) {
+      const copyBoxRect = copyBoxRef.current.getBoundingClientRect()
+      if (copyBoxRect !== undefined) {
+        const leftPosition = copyBoxRect.left + document.body.scrollLeft + copyBoxRect.width + 8;
+        const leftPositionMax = document.body.clientWidth - alertWidth;
+        return {
+          // top position also use the CSS `transform: translateY(-50%)`
+          top: copyBoxRect.top + document.body.scrollTop + (copyBoxRect.height / 2) + 'px',
+          left: Math.min(leftPosition, leftPositionMax) + 'px'
+        } as CSSProperties        
+      }
+    }
+  }
+
   useEffect(() => {
     // hide alert on scroll, otherwise the alert will look not aligned with the CopyBox
     const onScroll = () => setIsCopied(false);
@@ -54,7 +47,7 @@ export const CopyText: React.FC<{ children: string }> = ({ children }) => {
         <img src={getImageUrl("copy.svg")} alt="Copy text to clipboard"/>
       </span>
       {isCopied && <TemporaryContent onDisappear={() => setIsCopied(false)}>
-        <span className='copy-text-notification' style={getPopupPosition(copyBoxRef.current, alertWidth)}><span className='block-snippet'>Copied!</span></span>
+        <span className='copy-text-notification' style={getAlertPosition()}><span className='block-snippet'>Copied!</span></span>
       </TemporaryContent>}
     </span>
   )
