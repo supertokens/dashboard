@@ -50,6 +50,45 @@
 	}
 }
 
+/* Classes for layout modal */
+.layout-modal {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	z-index: var(--z-index-modal-popup);
+	display: block;
+	width: 100vw;
+	height: 100vw;
+	background: none;
+	pointer-events: none;
+	&__backdrop {
+		pointer-events: all;
+		display: block;
+		width: 100%;
+		height: 100%;
+		background-color: var(--color-black);
+		opacity: 0.4;
+	}
+	&__container {
+		position: relative;
+		display: flex;
+		width: 100%;
+		height: 100%;
+	}
+	.panel {
+		pointer-events: all;
+		position: absolute;
+		margin: 0 auto;
+		z-index: 1;
+		top: 50vh;
+		left: 50vw;
+		transform: translate(-50%);
+		max-height: calc(100vh - 32px);
+		max-width: calc(100vh - 32px);
+		width: auto;
+	}
+}
+
 /* classes for blocks */
 .block-container {
 	display: flex;
@@ -253,7 +292,7 @@ button.link,
 		background-color: var(--color-white);
 		color: var(--color-black);
 		border-radius: 6px;
-		z-index: 1;
+		z-index: var(--z-index-inline-popup);
 
 		&::before {
 			// arrow/triangle

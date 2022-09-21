@@ -65,6 +65,10 @@ body {
 	--color-copy-box: rgb(83, 101, 121);
 	--color-copy-box-bg: rgb(240, 244, 247);
 	--color-copy-box-shadow: rgba(83, 101, 121, 0.2);
+
+	/* Z-index value for different of popup element */
+	--z-index-inline-popup: 1;
+	--z-index-modal-popup: 10;
 }
 
 *[data-theme="dark"] {

@@ -6,6 +6,7 @@ import InputField from "../inputField/InputField";
 import { LayoutPanel } from "../layout/layoutPanel";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import TooltipContainer from "../tooltip/tooltip";
+import { UserDetailChangePassword } from "./userDetailForm";
 
 type UserDetailInfoGridProps = {
 	user: UserWithRecipeId;
@@ -16,6 +17,12 @@ type UserDetailInfoGridItemProps = {
 	label?: ReactNode;
 	body?: ReactNode;
 	tooltip?: ReactNode;
+};
+
+type UserDetailInfoGridHeaderProps = UserDetailInfoGridProps & {
+	onSave: () => void;
+	onEdit: () => void;
+	isEditing: boolean;
 };
 
 const NameTooltip: FC<{ fieldName: string }> = ({ fieldName }) => (
@@ -85,12 +92,39 @@ export const UserDetailInfoGridItem: FC<UserDetailInfoGridItemProps> = ({ label,
 	);
 };
 
+const UserDetailInfoGridHeader: FC<UserDetailInfoGridHeaderProps> = ({
+	onUpdateCallback,
+	onSave,
+	onEdit,
+	isEditing,
+}: UserDetailInfoGridHeaderProps) => (
+	<>
+		<div className="title">User Information</div>
+		{onUpdateCallback !== undefined && (
+			<>
+				{isEditing ? (
+					<button
+						className="button link outline small"
+						onClick={onSave}>
+						Save
+					</button>
+				) : (
+					<button
+						className="button flat link small"
+						onClick={onEdit}>
+						Edit Info
+					</button>
+				)}
+			</>
+		)}
+	</>
+);
 export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdateCallback }) => {
 	const nonApplicableText = "N/A";
 	const [userState, setUserState] = useState<UserWithRecipeId>(user);
 	const { recipeId } = userState;
 	const { firstName, lastName, timeJoined, email } = userState.user;
-
+	const [isEmailVerified, setIsEmailVerified] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
 
 	const onSave = useCallback(() => {
@@ -107,6 +141,8 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 		});
 	}, []);
 
+	const toggleEmailVerified = useCallback(() => setIsEmailVerified(!isEmailVerified), [isEmailVerified]);
+
 	useEffect(() => setUserState(user), [user]);
 
 	const phone =
@@ -115,29 +151,6 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 		userState.user.phoneNumber.trim().length > 0 ? (
 			<PhoneDisplay phone={userState.user.phoneNumber} />
 		) : undefined;
-
-	const header = (
-		<>
-			<div className="title">User Information</div>
-			{onUpdateCallback !== undefined && (
-				<>
-					{isEditing ? (
-						<button
-							className="button link outline small"
-							onClick={onSave}>
-							Save
-						</button>
-					) : (
-						<button
-							className="button flat link small"
-							onClick={() => setIsEditing(true)}>
-							Edit Info
-						</button>
-					)}
-				</>
-			)}
-		</>
-	);
 
 	const emailGridContent =
 		isEditing && (recipeId === "emailpassword" || recipeId === "passwordless") ? (
@@ -151,9 +164,23 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 			email
 		);
 
+	const emailVerifiedToggle = email !== undefined && isEditing && (
+		<button
+			className="flat link email-verified-toggle"
+			onClick={toggleEmailVerified}>
+			Set as {isEmailVerified ? "unverified" : "verified"}
+		</button>
+	);
+
 	return (
 		<div className="user-detail__info-grid">
-			<LayoutPanel header={header}>
+			<LayoutPanel
+				header={
+					<UserDetailInfoGridHeader
+						{...{ onSave, isEditing, user, onUpdateCallback }}
+						onEdit={() => setIsEditing(true)}
+					/>
+				}>
 				<div className="user-detail__info-grid__grid">
 					<UserDetailInfoGridItem
 						label={"First Name:"}
@@ -175,7 +202,12 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 					/>
 					<UserDetailInfoGridItem
 						label={"Is Email Verified:"}
-						body={"Yes"}
+						body={
+							<>
+								{" "}
+								{isEmailVerified ? "Yes" : "No"} {emailVerifiedToggle}{" "}
+							</>
+						}
 					/>
 					<UserDetailInfoGridItem
 						label={"Phone Number:"}
@@ -185,7 +217,10 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 						label={"Password:"}
 						body={
 							recipeId === "emailpassword" ? (
-								<button className="flat link">Change Password</button>
+								<>
+									<button className="flat link">Change Password</button>
+									{isEditing && <UserDetailChangePassword />}
+								</>
 							) : (
 								nonApplicableText
 							)

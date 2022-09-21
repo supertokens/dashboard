@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-type LayoutPanelProps = {
+export type LayoutPanelProps = {
 	children?: React.ReactNode;
 	header?: React.ReactNode;
 	className?: string;
