@@ -129,7 +129,7 @@ export const UserListPage = () => {
   const [selectedUser, setSelectedUser] = useState<UserWithRecipeId>()
   const isSelectedUserNotEmpty = selectedUser !== undefined
   return <AuthWrapper>
-    { isSelectedUserNotEmpty && <UserDetail user={selectedUser} onBackButtonClicked={() => setSelectedUser(undefined)}/> } 
+    { isSelectedUserNotEmpty && <UserDetail user={selectedUser} onBackButtonClicked={() => setSelectedUser(undefined)} onUpdateCallback={() => {}}/> } 
     <UsersList onSelect={setSelectedUser} css={ isSelectedUserNotEmpty ? { display: 'none' } : undefined }/>
     <Footer colorMode='dark' horizontalAlignment='center' verticalAlignment='center' />
   </AuthWrapper>

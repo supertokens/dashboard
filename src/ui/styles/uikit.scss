@@ -32,7 +32,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 0px;
+    padding: 16px 0px;
+    min-height: 64px;
+    font-size: 14px;
     .title {
       font-size: 14px;
       text-transform: uppercase;
@@ -143,6 +145,11 @@
   cursor: pointer;
   @include gap-horizontal(0.75em);
   box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.15);
+
+  &.small {
+    padding: 6px 8px;
+    font-weight: normal;
+  }
 }
 
 .button.flat, button.flat {
@@ -157,8 +164,24 @@
   font-size: inherit;
 }
 
+.button.outline, button.outline {
+  background: none;
+  box-shadow: none;
+  &:hover {
+    background-color: inherit;
+    box-shadow: inherit;
+    color: var(--color-white);
+  }
+}
+
 a, button.link, .button.link {
   color: var(--color-link);
+  &:not(.flat) {
+    border-color: var(--color-link);
+    &:hover {      
+      background-color: var(--color-link);
+    }
+  }
 }
 
 /* classes for font sizes */

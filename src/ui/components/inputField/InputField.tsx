@@ -12,7 +12,7 @@
 * License for the specific language governing permissions and limitations
 * under the License.
 */
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getImageUrl } from "../../../utils";
 
 import "./InputField.css";
@@ -21,7 +21,7 @@ type InputFieldPropTypes = {
   type: 'text' | 'email' | 'password'
   name: string
   label?: string
-  value: string
+  value?: string | undefined
   placeholder?: string
   error?: string
   handleChange: React.ChangeEventHandler<HTMLInputElement>
@@ -37,6 +37,8 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
     handleChange(event)
   }, [ handleChange ])
 
+  useEffect(() => console.log( props.value ),[props.value])
+
   return (
     <div className='input-field-container'>
       {props.label && (
@@ -48,8 +50,8 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
         <input
           type={props.type === 'password' && showPassword ? "text" : props.type }
           name={props.name}
-          onChange={onChange}
-          value={props.value}          
+          onKeyUp={onChange}
+          defaultValue={props.value}          
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           className={`text-small text-black input-field ${props.error ? 'input-field-error-state' : ''}`}

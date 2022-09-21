@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import { getImageUrl } from "../../../utils";
 import { UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
@@ -29,13 +29,18 @@ export type UserDetailProps = {
 }
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
-  const { user, onBackButtonClicked } = props
+  const { user, onBackButtonClicked, onUpdateCallback } = props
+
+  const onUpdate = useCallback((updatedValue: Partial<UserWithRecipeId>) => {
+    if (onUpdateCallback !== undefined) { onUpdateCallback(user.user.id, updatedValue) }
+  }, [ onUpdateCallback, user])
+
   return <div className="user-detail">
     <div className="user-detail__navigation" >
       <button className="button flat" onClick={ onBackButtonClicked }><img src={getImageUrl("left-arrow-dark.svg")} alt="Back to all users"/><span>Back to all users</span></button>
     </div>
     <UserDetailHeader {...props}/>
-    <UserDetailInfoGrid user={user}></UserDetailInfoGrid>
+    <UserDetailInfoGrid user={user} onUpdateCallback={onUpdate } />
   </div>
 }
 

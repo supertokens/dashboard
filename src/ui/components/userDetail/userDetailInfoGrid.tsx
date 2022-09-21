@@ -1,14 +1,15 @@
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { formatLongDate, getImageUrl } from "../../../utils";
 import { UserThirdParty, UserWithRecipeId } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
+import InputField from "../inputField/InputField";
 import { LayoutPanel } from "../layout/layoutPanel";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import TooltipContainer from "../tooltip/tooltip";
 
 type UserDetailInfoGridProps = {
   user: UserWithRecipeId;
-  onUpdateCallback?: () => void;
+  onUpdateCallback?: (user: UserWithRecipeId) => void;
 };
 
 type UserDetailInfoGridItemProps = {
@@ -52,15 +53,42 @@ export const UserDetailInfoGridItem: FC<UserDetailInfoGridItemProps> = ({ label,
 
 export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdateCallback }) => {
   const nonApplicableText = "N/A";
-  const { recipeId } = user;
-  const { firstName, lastName, timeJoined, email } = user.user;
+  const [ userState, setUserState ] = useState<UserWithRecipeId>(user);
+  const { recipeId } = userState;
+  const { firstName, lastName, timeJoined, email } = userState.user;
+
+  const [ isEditing, setIsEditing ] = useState(false);
   
-  const phone = recipeId === 'passwordless' && user.user.phoneNumber !== undefined && user.user.phoneNumber.trim().length > 0 ? 
-    <PhoneDisplay phone={user.user.phoneNumber} /> : undefined;
+  const onSave = useCallback(() => {
+    if (onUpdateCallback) { onUpdateCallback(userState) }
+    setIsEditing(false)
+  }, [ onUpdateCallback, userState ])
+
+  const updateUserData = useCallback((userData: Partial<UserWithRecipeId['user']>) => {
+    setUserState(currentState => {
+      currentState.user = { ...currentState.user, ...userData };
+      return currentState;
+    });
+  }, [])
+
+  useEffect(() => setUserState(user), [ user ])
+  
+  const phone = recipeId === 'passwordless' && userState.user.phoneNumber !== undefined && userState.user.phoneNumber.trim().length > 0 ? 
+    <PhoneDisplay phone={userState.user.phoneNumber} /> : undefined;
+
   const header = <>
     <div className="title">User Information</div>
-    {onUpdateCallback !== undefined && <div>Edit Info</div>}
+    { onUpdateCallback !== undefined && <>
+      { isEditing ? 
+        <button className="button link outline small" onClick={onSave}>Save</button> : 
+        <button className="button flat link small" onClick={() => setIsEditing(true)}>Edit Info</button>}
+    </> }
   </>
+
+  const emailGridContent = isEditing && (recipeId === 'emailpassword' || recipeId === 'passwordless') ?
+    <InputField type="email" name="email" value={email} handleChange={({ target: { value } }) => updateUserData({ email: value })} /> :
+    email;
+
 
   return <div className="user-detail__info-grid">
     <LayoutPanel header={header}>
@@ -76,8 +104,8 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
         <UserDetailInfoGridItem 
           label={'Signed up on:'} 
           body={timeJoined && formatLongDate(timeJoined)}/>
-        <UserDetailInfoGridItem label={'Email ID:'} body={email}/>
-        <UserDetailInfoGridItem label={'Is Email Verified:'} body={"Yes"}/>
+        <UserDetailInfoGridItem label={'Email ID:'} body={ emailGridContent }/>
+        <UserDetailInfoGridItem label={'Is Email Verified:'} body={ "Yes"}/>
         <UserDetailInfoGridItem 
           label={'Phone Number:'} 
           body={ recipeId === "passwordless" ? phone : nonApplicableText }/>
@@ -86,7 +114,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
           body={recipeId === "emailpassword" ? <button className="flat link">Change Password</button> : nonApplicableText}/>
         <UserDetailInfoGridItem 
           label={'Provider | Provider user id:'} 
-          body={recipeId === "thirdparty" ? <UserDetailProviderBox user={user.user}/> : nonApplicableText}/>
+          body={recipeId === "thirdparty" ? <UserDetailProviderBox user={userState.user}/> : nonApplicableText}/>
       </div>
     </LayoutPanel>
   </div>
