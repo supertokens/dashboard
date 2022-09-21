@@ -14,27 +14,27 @@
 */
 
 .error-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .block-container {
-    text-align: center;
-    max-width: 560px;
-    margin: 32px auto;
-    .text-title {
-      font-size: 24px;
-      line-height: normal;
-      margin-top: 8px;
-    }
-    .title-image {
-      margin-left: auto;
-      margin-right: auto;
-    }
-    p {
-      margin-top: 12px;
-      letter-spacing: 0.14px;
-    }
-  }
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	.block-container {
+		text-align: center;
+		max-width: 560px;
+		margin: 32px auto;
+		.text-title {
+			font-size: 24px;
+			line-height: normal;
+			margin-top: 8px;
+		}
+		.title-image {
+			margin-left: auto;
+			margin-right: auto;
+		}
+		p {
+			margin-top: 12px;
+			letter-spacing: 0.14px;
+		}
+	}
 }

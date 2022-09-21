@@ -12,9 +12,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
- 
- @mixin gap-horizontal($gap) {
-  *:not(:last-child) {
-    margin-right: $gap;
-  }  
+
+@mixin gap-horizontal($gap) {
+	*:not(:last-child) {
+		margin-right: $gap;
+	}
 }
