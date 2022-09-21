@@ -16,24 +16,25 @@
 ## Test Plan
 
 ### Tested on all primary browsers for:
-- Chrome
-    - [ ] Desktop
-    - [ ] Mobile
-    - [ ] Tablet
-- Safari
-    - [ ] Desktop
-    - [ ] Mobile
-    - [ ] Tablet
-- Firefox
-    - [ ] Desktop
-    - [ ] Mobile
-    - [ ] Tablet
-- (Optional) Tested on Safari 12 (Physical or emulator)
-    - [ ] iPad
-    - [ ] iPhone
-- (Optional) Tested on physical mobile and tablet device for:
-    - [ ] Android
-    - [ ] iOS (including iPadOS)
+
+-   Chrome
+    -   [ ] Desktop
+    -   [ ] Mobile
+    -   [ ] Tablet
+-   Safari
+    -   [ ] Desktop
+    -   [ ] Mobile
+    -   [ ] Tablet
+-   Firefox
+    -   [ ] Desktop
+    -   [ ] Mobile
+    -   [ ] Tablet
+-   (Optional) Tested on Safari 12 (Physical or emulator)
+    -   [ ] iPad
+    -   [ ] iPhone
+-   (Optional) Tested on physical mobile and tablet device for:
+    -   [ ] Android
+    -   [ ] iOS (including iPadOS)
 
 ## Documentation changes
 

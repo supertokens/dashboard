@@ -56,8 +56,9 @@ npm run start
 ```
 
 This will
-- start a webpack dev server for the react app
-- start the api server
+
+-   start a webpack dev server for the react app
+-   start the api server
 
 The API server will start on `http://localhost:3001`, you can access the dashboard on `http://localhost:3001/auth/dashboard`
 
@@ -81,11 +82,13 @@ NOTE: All images from the project get added to `/static/media` in the build fold
 2. Quit and re-run `npm run start` to see the changes
 
 ### Making changes to the API spec
+
 When making changes to the `api_spec.yaml` file
-- 1) Go to [the swagger editor](https://editor.swagger.io/)
-- 2) Copy / paste the contents of the `.yaml` file into the editor, and then you should see the API docs on the right of the screen.
-- 3) Make changes to the online editor and then copy / paste the content back into the `.yaml` file
-- 4) Issue a PR to the appropriate branch (refer to the branching section above)
+
+-   1. Go to [the swagger editor](https://editor.swagger.io/)
+-   2. Copy / paste the contents of the `.yaml` file into the editor, and then you should see the API docs on the right of the screen.
+-   3. Make changes to the online editor and then copy / paste the content back into the `.yaml` file
+-   4. Issue a PR to the appropriate branch (refer to the branching section above)
 
 ### Testing in production mode
 
@@ -113,9 +116,9 @@ You can now access the production build of the dashboard on `http://localhost:30
 
 ### Additional Information (Safe to skip)
 
-- This project has ejected react scripts to allow modifications to webpack
-- Versioning will follow X.Y.Z format but with slightly different rules than semantic versioning
-    - Dashboard changes that involve adding a new feature and require backend SDK changes will increment the Y version
-    - Dashboard changes that involve adding new features and do not require backend SDK changes will increment the Z version
-    - UI changes that modify existing features or are fixes or enhancements increment the Z version
-    - X version changes should be reserved for overhauls of the entire dashboard
+-   This project has ejected react scripts to allow modifications to webpack
+-   Versioning will follow X.Y.Z format but with slightly different rules than semantic versioning
+    -   Dashboard changes that involve adding a new feature and require backend SDK changes will increment the Y version
+    -   Dashboard changes that involve adding new features and do not require backend SDK changes will increment the Z version
+    -   UI changes that modify existing features or are fixes or enhancements increment the Z version
+    -   X version changes should be reserved for overhauls of the entire dashboard

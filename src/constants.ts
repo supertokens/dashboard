@@ -14,7 +14,7 @@
  */
 
 export class StorageKeys {
-    static API_KEY: string = "api-key";
+	static API_KEY = "api-key";
 }
 
 export const UNAUTHORISED_STATUS = 401;

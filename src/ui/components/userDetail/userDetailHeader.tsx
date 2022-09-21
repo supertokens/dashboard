@@ -18,6 +18,10 @@ import CopyText from "../copyText/CopyText";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "./userDetail";
 
+type UserDetailBaseProps = {
+	user: UserWithRecipeId;
+};
+
 const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 	const { firstName, lastName, email, id } = user;
 	// concatting the firstName & lastname to handle
@@ -42,11 +46,11 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 	return id.trim().slice(0, 2);
 };
 
-export const UserDetailBadge: React.FC<{ user: UserWithRecipeId }> = ({ user }) => (
+export const UserDetailBadge: React.FC<UserDetailBaseProps> = ({ user }: UserDetailBaseProps) => (
 	<div className="user-detail__header__badge">{getBadgeInitial(user)}</div>
 );
 
-export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCallback }) => {
+export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCallback }: UserDetailProps) => {
 	const { firstName, lastName, email, id } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
 	const thirdPartyUserId = user.recipeId === "thirdparty" ? user.user.thirdParty.userId : undefined;

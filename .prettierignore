@@ -1,0 +1,9 @@
+# testing
+/coverage
+
+# production
+/debug
+/build
+
+# static files
+/public

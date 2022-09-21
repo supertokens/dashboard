@@ -14,18 +14,18 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { UserListCount, UserPaginationList, UserWithRecipeId } from "./types";
 import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
 import AuthWrapper from "../../components/authWrapper";
+import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
+import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
+import UserDetail from "../../components/userDetail/userDetail";
 import UsersListTable, {
 	LIST_DEFAULT_LIMIT,
 	OnSelectUserFunction,
 } from "../../components/usersListTable/UsersListTable";
+import { UserListCount, UserPaginationList, UserWithRecipeId } from "./types";
 import "./UsersList.scss";
-import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
-import InfoConnection from "../../components/info-connection/info-connection";
-import UserDetail from "../../components/userDetail/userDetail";
 
 type UserListProps = {
 	onSelect: OnSelectUserFunction;
@@ -76,7 +76,8 @@ export const UsersList: React.FC<UserListProps> = ({ onSelect, css }) => {
 	const loadOffset = useCallback((offset: number) => setOffset(offset), []);
 
 	useEffect(() => {
-		loadCount();
+		void loadCount();
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		setConnectionURI((window as any).connectionURI);
 	}, [loadCount]);
 

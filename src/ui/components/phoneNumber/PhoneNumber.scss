@@ -12,11 +12,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
- 
- @import "../../styles/mixin.scss";
+
+@import "../../styles/mixin.scss";
 
 .phone-display {
-  display: flex;
-  align-items: flex-start;
-  @include gap-horizontal(5px);
+	display: flex;
+	align-items: flex-start;
+	@include gap-horizontal(5px);
 }

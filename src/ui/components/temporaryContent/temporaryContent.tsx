@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 type TemporaryContentProps = {
 	/** duration before the content disappear (in miliseconds)*/
@@ -27,7 +27,7 @@ export const TemporaryContent: React.FC<TemporaryContentProps> = ({
 			if (onDisappear !== undefined) {
 				onDisappear();
 			}
-		}, duration) as any as NodeJS.Timeout;
+		}, duration) as NodeJS.Timeout;
 	};
 
 	useEffect(() => {
