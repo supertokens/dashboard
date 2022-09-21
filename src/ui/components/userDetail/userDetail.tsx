@@ -18,23 +18,33 @@ import { getImageUrl } from "../../../utils";
 import { UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import UserDetailHeader from "./userDetailHeader";
-import "./userDetail.scss"
+import "./userDetail.scss";
 
 export type UserDetailProps = {
-  user: UserWithRecipeId,
-  onBackButtonClicked: () => void
-  onDeleteCallback?: OnSelectUserFunction
-  onUpdateCallback?: (userId: string, updatedValue: Partial<UserWithRecipeId>) => void
-}
+	user: UserWithRecipeId;
+	onBackButtonClicked: () => void;
+	onDeleteCallback?: OnSelectUserFunction;
+	onUpdateCallback?: (userId: string, updatedValue: Partial<UserWithRecipeId>) => void;
+};
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
-  const { user, onBackButtonClicked } = props
-  return <div className="user-detail">
-    <div className="user-detail__navigation" >
-      <button className="button flat" onClick={ onBackButtonClicked }><img src={getImageUrl("left-arrow-dark.svg")} alt="Back to all users"/><span>Back to all users</span></button>
-    </div>
-    <UserDetailHeader {...props}/>
-  </div>
-}
+	const { user, onBackButtonClicked } = props;
+	return (
+		<div className="user-detail">
+			<div className="user-detail__navigation">
+				<button
+					className="button flat"
+					onClick={onBackButtonClicked}>
+					<img
+						src={getImageUrl("left-arrow-dark.svg")}
+						alt="Back to all users"
+					/>
+					<span>Back to all users</span>
+				</button>
+			</div>
+			<UserDetailHeader {...props} />
+		</div>
+	);
+};
 
 export default UserDetail;
