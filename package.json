@@ -59,10 +59,10 @@
 		"@types/node": "^16.11.43",
 		"@types/react": "^18.0.15",
 		"@types/react-dom": "^18.0.6",
+		"@types/react-helmet": "^6.1.5",
 		"@typescript-eslint/eslint-plugin": "^5.32.0",
 		"@typescript-eslint/eslint-plugin-tslint": "^5.33.0",
 		"@typescript-eslint/parser": "^5.32.0",
-		"@types/react-helmet": "^6.1.5",
 		"cors": "^2.8.5",
 		"eslint": "^8.21.0",
 		"eslint-config-prettier": "^8.5.0",
@@ -81,6 +81,7 @@
 		"jest": "^27.4.3",
 		"jest-resolve": "^27.4.2",
 		"jest-watch-typeahead": "^1.0.0",
+		"madge": "^5.0.1",
 		"morgan": "^1.10.0",
 		"npm-run-all": "^4.1.5",
 		"prettier": "^2.7.1",
@@ -102,7 +103,8 @@
 		"lint": "eslint src",
 		"pretty": "npx pretty-quick .",
 		"pretty-check": "npx pretty-quick --staged --check .",
-		"set-up-hooks": "cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit"
+		"set-up-hooks": "cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit",
+		"check-circular-dependencies": "npx madge --circular --extensions js ./build/"
 	},
 	"eslintConfig": {
 		"extends": [
