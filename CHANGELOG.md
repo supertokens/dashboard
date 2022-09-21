@@ -9,23 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
-- Added user detail page to show the detailed info from the list of users
+-   Added user detail page to show the detailed info from the list of users
 
 ## [0.1.2] - 2022-09-15
 
 ### Fixes
 
-- Fixes an issue where validation error for the API key would render incorrectly
+-   Fixes an issue where validation error for the API key would render incorrectly
 
 ## [0.1.1] - 2022-09-13
 
 ### Changes
 
-- Hides user input when entering the API key
+-   Hides user input when entering the API key
 
 ## [0.1.0] - 2022-08-25
 
 ### Features
 
-- Added a paginated list of all users that have signed up to your app
-- Added API key based authentication
+-   Added a paginated list of all users that have signed up to your app
+-   Added API key based authentication
