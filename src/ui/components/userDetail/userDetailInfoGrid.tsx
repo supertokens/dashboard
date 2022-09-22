@@ -6,7 +6,7 @@ import InputField from "../inputField/InputField";
 import { LayoutPanel } from "../layout/layoutPanel";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import TooltipContainer from "../tooltip/tooltip";
-import { UserDetailChangePassword } from "./userDetailForm";
+import { UserDetailChangePasswordPopup } from "./userDetailForm";
 
 type UserDetailInfoGridProps = {
 	user: UserWithRecipeId;
@@ -217,10 +217,9 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 						label={"Password:"}
 						body={
 							recipeId === "emailpassword" ? (
-								<>
+								<UserDetailChangePasswordPopup onPasswordChange={() => {}}>
 									<button className="flat link">Change Password</button>
-									{isEditing && <UserDetailChangePassword />}
-								</>
+								</UserDetailChangePasswordPopup>
 							) : (
 								nonApplicableText
 							)
