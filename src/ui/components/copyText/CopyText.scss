@@ -34,6 +34,8 @@
 		position: fixed;
 		font-size: 12px;
 		transform: translateY(-50%);
+		z-index: 1;
+
 		span {
 			margin: 0px 12px;
 			white-space: nowrap;

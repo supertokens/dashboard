@@ -68,7 +68,9 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCall
 					</span>
 				</div>
 			</div>
-			{onDeleteCallback && <div className="user-detail__header__action">{/** Delete button here */}</div>}
+			<div className="user-detail__header__action">
+				<button className="button button-error ">Delete</button>
+			</div>
 		</div>
 	);
 };

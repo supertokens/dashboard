@@ -114,6 +114,11 @@
 	cursor: pointer;
 	@include gap-horizontal(0.75em);
 	box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.15);
+	&.button-error {
+		background-color: var(--color-button-error);
+		color: var(--color-white);
+		border-color: var(--color-button-error-border);
+	}
 }
 
 .button.flat {

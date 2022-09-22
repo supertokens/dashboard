@@ -17,14 +17,14 @@ import React from "react";
 import { getImageUrl } from "../../../utils";
 import { UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
-import UserDetailHeader from "./userDetailHeader";
 import "./userDetail.scss";
+import UserDetailHeader from "./userDetailHeader";
 
 export type UserDetailProps = {
 	user: UserWithRecipeId;
 	onBackButtonClicked: () => void;
-	onDeleteCallback?: OnSelectUserFunction;
-	onUpdateCallback?: (userId: string, updatedValue: Partial<UserWithRecipeId>) => void;
+	onDeleteCallback: OnSelectUserFunction;
+	onUpdateCallback: (userId: string, updatedValue: UserWithRecipeId) => void;
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {

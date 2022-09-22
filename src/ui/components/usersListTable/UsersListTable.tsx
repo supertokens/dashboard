@@ -18,7 +18,7 @@ import React from "react";
 import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
 import { UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
-import UserRowMenu from "./UserRowMenu";
+import UserRowMenu, { UserRowMenuItemProps } from "./UserRowMenu";
 import "./UsersListTable.scss";
 
 const USER_TABLE_COLUMNS_COUNT = 4;
@@ -93,7 +93,7 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 const UserTableRows = ({ users, onSelect }: Pick<UserListProps, "users" | "onSelect">) => {
 	return (
 		<>
-			{users.map((user, index) => (
+			{users.map((user) => (
 				<UserTableRow
 					user={user}
 					key={user.user.id}
@@ -111,6 +111,38 @@ const UserTableRow: React.FC<{
 	onSelect: OnSelectUserFunction;
 }> = (props) => {
 	const { user, index, onSelect } = props;
+	const menuItems: UserRowMenuItemProps[] = [
+		{
+			onClick: () => onSelect(user),
+			text: "View Details",
+			imageUrl: "people.svg",
+			hoverImageUrl: "people-opened.svg",
+		},
+		{
+			onClick: () => {
+				/* TODO */
+			},
+			text: "Change Email",
+			imageUrl: "mail.svg",
+			hoverImageUrl: "mail-opened.svg",
+		},
+		{
+			onClick: () => {
+				/* TODO */
+			},
+			text: "Change Password",
+			imageUrl: "lock.svg",
+			hoverImageUrl: "lock-opened.svg",
+		},
+		{
+			onClick: () => {
+				/* TODO */
+			},
+			text: "Delete user",
+			imageUrl: "trash.svg",
+			hoverImageUrl: "trash-opened.svg",
+		},
+	];
 	return (
 		<tr
 			key={index}
@@ -126,7 +158,7 @@ const UserTableRow: React.FC<{
 			</td>
 			<td>
 				<UserRowMenu
-					onSelect={onSelect}
+					menuItems={menuItems}
 					user={user}
 				/>
 			</td>

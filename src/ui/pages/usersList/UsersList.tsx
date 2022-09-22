@@ -146,6 +146,12 @@ export const UserListPage = () => {
 				<UserDetail
 					user={selectedUser}
 					onBackButtonClicked={() => setSelectedUser(undefined)}
+					onDeleteCallback={() => {
+						/* TODO */
+					}}
+					onUpdateCallback={() => {
+						/* TODO */
+					}}
 				/>
 			)}
 			<UsersList

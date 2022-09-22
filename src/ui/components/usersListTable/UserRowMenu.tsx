@@ -3,24 +3,22 @@ import { getImageUrl } from "../../../utils";
 import { UserWithRecipeId } from "../../pages/usersList/types";
 
 export type UserRowMenuProps = {
-	onSelect?: (user: UserWithRecipeId) => void;
-	onDelete?: (user: UserWithRecipeId) => void;
-	onChangeEmail?: (user: UserWithRecipeId) => void;
-	onChangePassword?: (user: UserWithRecipeId) => void;
+	menuItems: UserRowMenuItemProps[];
 	user: UserWithRecipeId;
 };
 
-type UserRowMenuItemProps = {
+export type UserRowMenuItemProps = {
 	onClick: () => void;
 	text: string;
 	imageUrl: string;
 	hoverImageUrl?: string;
+	className?: string;
 };
 
-export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imageUrl, hoverImageUrl, text, onClick }) => (
+export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imageUrl, hoverImageUrl, text, onClick, className }) => (
 	<>
 		<button
-			className="user-row-select-popup-item button flat"
+			className={`user-row-select-popup-item button flat ${className}`}
 			onClick={onClick}>
 			<img
 				className="img-normal"
@@ -37,7 +35,7 @@ export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imageUrl, hoverImage
 	</>
 );
 
-export const UserRowMenu: FC<UserRowMenuProps> = ({ onDelete, onSelect, onChangePassword, onChangeEmail, user }) => {
+export const UserRowMenu: FC<UserRowMenuProps> = ({ user, menuItems }) => {
 	return (
 		<>
 			<div className="user-row-select-menu">
@@ -49,38 +47,12 @@ export const UserRowMenu: FC<UserRowMenuProps> = ({ onDelete, onSelect, onChange
 				</button>
 				<div className="user-row-select-popup">
 					<div className="panel">
-						{onSelect && (
+						{menuItems.map((menu) => (
 							<UserRowMenuItem
-								onClick={() => onSelect(user)}
-								text="View Details"
-								imageUrl="people.svg"
-								hoverImageUrl="people-opened.svg"
+								{...menu}
+								key={menu.text}
 							/>
-						)}
-						{onChangeEmail && (
-							<UserRowMenuItem
-								onClick={() => onChangeEmail(user)}
-								text="Change Email"
-								imageUrl="mail.svg"
-								hoverImageUrl="mail-opened.svg"
-							/>
-						)}
-						{onChangePassword && (
-							<UserRowMenuItem
-								onClick={() => onChangePassword(user)}
-								text="Change Password"
-								imageUrl="lock.svg"
-								hoverImageUrl="lock-opened.svg"
-							/>
-						)}
-						{onDelete && (
-							<UserRowMenuItem
-								onClick={() => onDelete(user)}
-								text="Delete user"
-								imageUrl="trash.svg"
-								hoverImageUrl="trash-opened.svg"
-							/>
-						)}
+						))}
 					</div>
 				</div>
 			</div>

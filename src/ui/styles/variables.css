@@ -65,4 +65,8 @@ body {
 	--color-copy-box: rgb(83, 101, 121);
 	--color-copy-box-bg: rgb(240, 244, 247);
 	--color-copy-box-shadow: rgba(83, 101, 121, 0.2);
+
+	/* color for button */
+	--color-button-error: rgb(237, 52, 78);
+	--color-button-error-border: rgb(222, 35, 61);
 }
