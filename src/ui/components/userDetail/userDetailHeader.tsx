@@ -37,12 +37,10 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 			? `${splittedEmailName[0][0]}${splittedEmailName[1][0]}`
 			: splittedEmailName[0].slice(0, 2);
 	}
-	if (recipeId === "thirdparty" && user.thirdParty.userId.trim().length > 0) {
-		return user.thirdParty.userId.trim().slice(0, 2);
-	}
 	if (recipeId === "passwordless" && user.phoneNumber !== undefined && user.phoneNumber.trim().length > 0) {
 		return user.phoneNumber.trim().replace("+", "").slice(0, 2);
 	}
+	// this id is to prevent the function to have `undefined` return
 	return id.trim().slice(0, 2);
 };
 
@@ -53,14 +51,13 @@ export const UserDetailBadge: React.FC<UserDetailBaseProps> = ({ user }: UserDet
 export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCallback }: UserDetailProps) => {
 	const { firstName, lastName, email, id } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
-	const thirdPartyUserId = user.recipeId === "thirdparty" ? user.user.thirdParty.userId : undefined;
 	const fullName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 	return (
 		<div className="user-detail__header">
 			<UserDetailBadge user={user} />
 			<div className="user-detail__header__info">
 				<div className="user-detail__header__title">
-					<span>{fullName || email || thirdPartyUserId || (phone && <PhoneDisplay phone={phone} />)}</span>
+					<span>{fullName || email || (phone && <PhoneDisplay phone={phone} />)}</span>
 				</div>
 				<div className="user-detail__header__user-id">
 					<span className="user-detail__header__user-id__label">User ID:</span>

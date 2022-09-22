@@ -13,23 +13,23 @@ export type UserRowMenuProps = {
 type UserRowMenuItemProps = {
 	onClick: () => void;
 	text: string;
-	imgUrl: string;
-	imgHoverUrl?: string;
+	imageUrl: string;
+	hoverImageUrl?: string;
 };
 
-export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imgUrl, imgHoverUrl, text, onClick }) => (
+export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imageUrl, hoverImageUrl, text, onClick }) => (
 	<>
 		<button
 			className="user-row-select-popup-item button flat"
 			onClick={onClick}>
 			<img
 				className="img-normal"
-				src={getImageUrl(imgUrl)}
+				src={getImageUrl(imageUrl)}
 				alt={text}
 			/>
 			<img
 				className="img-hover"
-				src={getImageUrl(imgHoverUrl ?? imgUrl)}
+				src={getImageUrl(hoverImageUrl ?? imageUrl)}
 				alt={text}
 			/>
 			<span>{text}</span>
@@ -53,32 +53,32 @@ export const UserRowMenu: FC<UserRowMenuProps> = ({ onDelete, onSelect, onChange
 							<UserRowMenuItem
 								onClick={() => onSelect(user)}
 								text="View Details"
-								imgUrl="people.svg"
-								imgHoverUrl="people-opened.svg"
+								imageUrl="people.svg"
+								hoverImageUrl="people-opened.svg"
 							/>
 						)}
 						{onChangeEmail && (
 							<UserRowMenuItem
 								onClick={() => onChangeEmail(user)}
 								text="Change Email"
-								imgUrl="mail.svg"
-								imgHoverUrl="mail-opened.svg"
+								imageUrl="mail.svg"
+								hoverImageUrl="mail-opened.svg"
 							/>
 						)}
 						{onChangePassword && (
 							<UserRowMenuItem
 								onClick={() => onChangePassword(user)}
 								text="Change Password"
-								imgUrl="lock.svg"
-								imgHoverUrl="lock-opened.svg"
+								imageUrl="lock.svg"
+								hoverImageUrl="lock-opened.svg"
 							/>
 						)}
 						{onDelete && (
 							<UserRowMenuItem
 								onClick={() => onDelete(user)}
 								text="Delete user"
-								imgUrl="trash.svg"
-								imgHoverUrl="trash-opened.svg"
+								imageUrl="trash.svg"
+								hoverImageUrl="trash-opened.svg"
 							/>
 						)}
 					</div>

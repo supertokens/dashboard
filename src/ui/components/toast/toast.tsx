@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-type TemporaryContentProps = {
+type ToastProps = {
 	/** duration before the content disappear (in miliseconds)*/
 	duration?: number;
 	contentAfterDisappear?: React.ReactNode;
@@ -13,7 +13,7 @@ const DEFAULT_TIMER_DURATION = 3000;
  * Simple component that will display one-time content,
  * and then disappears or replaced by `props.contentAfterDisappear` after `props.duration` miliseconds
  */
-export const TemporaryContent: React.FC<TemporaryContentProps> = ({
+export const Toast: React.FC<ToastProps> = ({
 	duration = DEFAULT_TIMER_DURATION,
 	children,
 	contentAfterDisappear,
@@ -41,4 +41,4 @@ export const TemporaryContent: React.FC<TemporaryContentProps> = ({
 	return <>{showChildern ? children : contentAfterDisappear}</>;
 };
 
-export default TemporaryContent;
+export default Toast;
