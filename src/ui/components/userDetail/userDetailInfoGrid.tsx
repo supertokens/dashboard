@@ -5,6 +5,7 @@ import CopyText from "../copyText/CopyText";
 import InputField from "../inputField/InputField";
 import { LayoutPanel } from "../layout/layoutPanel";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
+import { PhoneNumberInput } from "../phoneNumber/PhoneNumberInput";
 import TooltipContainer from "../tooltip/tooltip";
 import { UserDetailChangePasswordPopup } from "./userDetailForm";
 
@@ -147,10 +148,21 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 
 	const phone =
 		recipeId === "passwordless" &&
-		userState.user.phoneNumber !== undefined &&
-		userState.user.phoneNumber.trim().length > 0 ? (
+		(isEditing ? (
+			<PhoneNumberInput
+				name="phone number"
+				value={userState.user.phoneNumber}
+				isRequired={ 
+					// prevent delete phone number if it was a phoneNumber account
+					user.recipeId === 'passwordless' && user.user.phoneNumber !== undefined 
+				}
+				onChange={(phoneNumber) => {
+					updateUserData({ phoneNumber })
+				}}
+			/>
+		) : userState.user.phoneNumber !== undefined && userState.user.phoneNumber.trim().length > 0 ? (
 			<PhoneDisplay phone={userState.user.phoneNumber} />
-		) : undefined;
+		) : undefined);
 
 	const emailGridContent =
 		isEditing && (recipeId === "emailpassword" || recipeId === "passwordless") ? (

@@ -13,7 +13,8 @@
  * under the License.
  */
 
-import { FC, ReactNode, useEffect, useState } from "react";
+import { FC, MutableRefObject, ReactNode, useEffect, useRef, useState } from "react";
+import { getImageUrl } from "../../../utils";
 import { LayoutPanel, LayoutPanelProps } from "./layoutPanel";
 
 export type LayoutModalProps = LayoutPanelProps & {
@@ -21,28 +22,31 @@ export type LayoutModalProps = LayoutPanelProps & {
 	onClose?: () => void;
 };
 
-export type LayoutModalTriggerProps = LayoutModalProps & { modalContent: ReactNode; shouldClose?: boolean };
+export type LayoutModalTriggerProps = LayoutModalProps & { modalContent: ReactNode; closeCallbackRef?: MutableRefObject<Function | undefined> };
 
 export const LayoutModal: FC<LayoutModalProps> = (props: LayoutModalProps) => {
-	const { hideBackDrop } = props;
+	const { hideBackDrop, header, onClose } = props;
+	const closeButton = <div className="layout-modal__close"><div onClick={onClose}><img src={getImageUrl("close.svg")} alt="Close Modal"/></div></div>
 
 	return (
 		<>
 			<div className="layout-modal">
 				{!hideBackDrop && <div className="layout-modal__backdrop"></div>}
-				<LayoutPanel {...props} />
+				<LayoutPanel {...props} header={<>{header}{closeButton}</>}/>
 			</div>
 		</>
 	);
 };
 
 export const LayoutModalTrigger: FC<LayoutModalTriggerProps> = (props: LayoutModalTriggerProps) => {
-	const { children, modalContent, shouldClose } = props;
+	const { children, modalContent, closeCallbackRef } = props;
 	const [isOpened, setIsOpened] = useState(false);
 
 	useEffect(() => {
-		setIsOpened(!shouldClose);
-	}, [shouldClose]);
+		if (closeCallbackRef !== undefined) {
+			closeCallbackRef.current = () => setIsOpened(false);
+		}
+	}, [ closeCallbackRef ]);
 
 	return (
 		<>

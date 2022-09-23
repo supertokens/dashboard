@@ -133,6 +133,11 @@ $container-width: 829;
 				font-weight: normal;
 			}
 		}
+
+
+		input, .phone-input {
+			background-color: var(--color-window-bg);
+		}
 	}
 
 	&__provider-box {

@@ -13,6 +13,7 @@
  * under the License.
  */
 
+import { BaseSyntheticEvent, useEffect } from "react";
 import { StorageKeys, UNAUTHORISED_STATUS } from "./constants";
 import NetworkManager from "./services/network";
 import { localStorageHandler } from "./services/storage";
@@ -179,3 +180,25 @@ export const substractDate = (date1: Date, date2: Date) => {
 /** Layout Utils */
 
 export const isMobile = () => /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+/**
+ * Hook that alerts clicks outside of the passed ref
+ */
+ export const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void) => {
+  useEffect(() => {
+    /**
+     * Alert if clicked on outside of element
+     */
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && event.target !== null && !ref.current.contains(event.target as Node)) {
+        callback()
+      }
+    }
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ ref, callback]);
+}

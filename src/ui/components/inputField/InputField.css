@@ -25,6 +25,11 @@
   margin-bottom: 12px;
 }
 
+.input-label-required {
+  color: var(--color-error);
+  margin: 0px 4px;
+}
+
 .input-field-inset {
   display: flex;
   align-items: center;

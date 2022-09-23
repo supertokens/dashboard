@@ -13,9 +13,10 @@
  * under the License.
  */
 
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useRef, useState } from "react";
 import InputField from "../inputField/InputField";
 import LayoutModalTrigger, { LayoutModalTriggerProps } from "../layout/layoutModal";
+import "./userDetailForm.scss";
 
 type PasswordChangeCallback = (password?: string) => void;
 
@@ -38,11 +39,13 @@ export const UserDetailChangePasswordPopup: FC<UserDetailChangePasswordPopupProp
 	props: UserDetailChangePasswordPopupProps
 ) => {
 	const { onPasswordChange } = props;
-	const [shouldModalClose, setShouldModalClose] = useState(false);
+	const closeModalRef = useRef<Function>();
 
 	const onModalClose = useCallback(
 		(password?: string) => {
-			setShouldModalClose(true);
+			if (closeModalRef.current !== undefined) {
+				closeModalRef.current();
+			}
 			if (password !== undefined) {
 				onPasswordChange(password);
 			}
@@ -55,8 +58,9 @@ export const UserDetailChangePasswordPopup: FC<UserDetailChangePasswordPopupProp
 	return (
 		<LayoutModalTrigger
 			{...props}
+			header={<h2 className="user-detail-form__header">Change Password</h2>}
 			modalContent={modalContent}
-			shouldClose={shouldModalClose}
+			closeCallbackRef={closeModalRef}
 		/>
 	);
 };
@@ -81,6 +85,8 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 					name="password"
 					type="password"
 					label="Password"
+					isRequired={true}
+					hideColon={true}
 					error={passwordError}
 					handleChange={({ target: { value } }) => setPassword(value)}
 				/>
@@ -88,12 +94,14 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 					name="repeatPassword"
 					type="password"
 					label="Confirm Password"
+					isRequired={true}
+					hideColon={true}
 					error={repeatPassword !== undefined && !isPasswordMatch ? "Passwords do not match" : undefined}
 					handleChange={({ target: { value } }) => setRepeatPassword(value)}
 				/>
 				<div className="user-detail-form__actions">
 					<button
-						className="outline"
+						className="button outline"
 						onClick={() => onPasswordChange()}>
 						Cancel
 					</button>

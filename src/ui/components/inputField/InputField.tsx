@@ -17,13 +17,15 @@ import { getImageUrl } from "../../../utils";
 
 import "./InputField.css";
 
-type InputFieldPropTypes = {
+export type InputFieldPropTypes = {
 	type: "text" | "email" | "password";
 	name: string;
 	label?: string;
 	value?: string | undefined;
 	placeholder?: string;
 	error?: string;
+	isRequired?: boolean;
+	hideColon?: boolean;
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 };
 
@@ -32,15 +34,16 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 	const [isFocused, setIsFocused] = useState<boolean>(false);
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState(props.value ?? "");
+	const [isTouched, setIsTouched] = useState(false);
+
 	const onChange = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>) => {
+			setIsTouched(true);
 			setInputValue(event.target.value);
 			handleChange(event);
 		},
 		[handleChange]
 	);
-
-	useEffect(() => console.log(props.value), [props.value]);
 
 	return (
 		<div className="input-field-container">
@@ -48,12 +51,14 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 				<label
 					htmlFor={props.name}
 					className="text-small input-label">
-					{props.label}:
+					{props.label}
+					{props.isRequired && <span className="text-error input-label-required">*</span>}
+					{!props.hideColon ? ":" : ""}
 				</label>
 			)}
 			<div
 				className={`input-field-inset ${isFocused ? "input-field-inset-focused" : ""} ${
-					props.error ? "input-field-inset-error-state" : ""
+					props.error && isTouched ? "input-field-inset-error-state" : ""
 				}`}>
 				<input
 					type={props.type === "password" && showPassword ? "text" : props.type}
@@ -62,7 +67,9 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					defaultValue={props.value}
 					onFocus={() => setIsFocused(true)}
 					onBlur={() => setIsFocused(false)}
-					className={`text-small text-black input-field ${props.error ? "input-field-error-state" : ""}`}
+					className={`text-small text-black input-field ${
+						props.error && isTouched ? "input-field-error-state" : ""
+					}`}
 					placeholder={props.placeholder}
 				/>
 				<div className="input-field-suffix">
@@ -76,7 +83,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					)}
 				</div>
 			</div>
-			{props.error && (
+			{props.error && isTouched && (
 				<div className="input-field-error block-small block-error">
 					<img
 						className="input-field-error-icon"

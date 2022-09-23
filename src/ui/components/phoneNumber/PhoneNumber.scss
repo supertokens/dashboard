@@ -20,3 +20,89 @@
   align-items: flex-start;
   @include gap-horizontal(5px);
 }
+
+.phone-input {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  &__country-select {
+    display: inline-flex;
+    flex-direction: column;
+    font-weight: normal;
+    &__current-value {
+      display: inline-flex;
+      align-items: center;
+      padding-left: 12px;
+      cursor: pointer;
+      @include gap-horizontal(8px);
+      .PhoneInputCountryIcon  {
+        img { 
+          height: 14px; 
+          box-shadow: 0px 0px 3px var(--color-shadow);
+        }
+      }
+      .country-calling-code { color: var(--color-black); }
+    }
+    &__popup {
+      display: none;
+      position: relative;
+      position: fixed;
+      border-radius: 6px;
+      background-color: var(--color-white);
+      box-shadow:  0px 0px 4px var(--color-shadow);
+      overflow-y: auto;
+      &__option {
+        display: flex;
+        padding: 10px 12px;
+        align-items: center;
+        font-weight: normal;
+        cursor: pointer;
+        @include gap-horizontal(12px);
+        .PhoneInputCountryIcon  {
+          font-size: 14px;
+          img { 
+            height: 1em;             
+            box-shadow:  0px 0px 4px var(--color-shadow); 
+          }
+        }
+        .country-calling-code { color: var(--color-secondary-text); }
+        
+        &.selected {
+          background-color: var(--color-window-bg);
+          color: var(--color-link);
+          pointer-events: none;
+          .country-calling-code { color: var(--color-secondary-text); }
+        }        
+      }
+
+      
+      &.popup-active {
+        display: block;
+        z-index: var(--z-index-inline-popup);
+      }
+    }
+  }
+  input.PhoneInputInput {    
+    flex: 1 1 auto;
+    border-left: none;
+    overflow-x: hidden;
+    font-family: inherit;
+    display: block;
+    padding: 8px 12px 8px;
+    border: none;
+    outline: none;
+  }
+}
+
+.phone-input.PhoneInput--focus {  
+  border-color: var(--color-primary);
+  box-shadow: 0px 0px 0px 2px var(--color-primary-opacity-40);
+}
+
+.phone-input.phone-input-error {  
+  border-color: var(--color-error);
+  box-shadow: 0px 0px 0px 2px var(--color-error-shadow);
+}

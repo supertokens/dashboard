@@ -75,9 +75,32 @@
 		width: 100%;
 		height: 100%;
 	}
+	&__close {
+		display: flex;
+		height: 32px;
+		align-items: flex-start;
+		justify-content: flex-end;
+		> div {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 22px;
+			height: 1em;
+			width: 1em;
+			padding: 6px;
+			border-radius: 50%;
+			background-color: var(--color-border);
+			cursor: pointer;
+			> img {
+				width: 8px;
+			}		
+		}
+	}
 	.panel {
 		pointer-events: all;
 		position: absolute;
+		padding-top: 16px;
+		padding-bottom: 16px;
 		margin: 0 auto;
 		z-index: 1;
 		top: 50vh;
@@ -85,12 +108,15 @@
 		transform: translateX(-50%) translateY(-50%);
 		max-height: calc(100vh - 32px);
 		max-width: calc(100vh - 32px);
-		width: auto;
+		width: 470px;
+		&__header {
+			align-items: flex-end;
+		}
 	}
 }
 
 .layout-modal-trigger {
-	display: inline;
+	display: inline-block;
 	cursor: pointer;
 }
 
@@ -213,8 +239,10 @@ button.flat {
 button.outline {
 	background: none;
 	box-shadow: none;
+	color: var(--color-secondary-text);
+	border-color: var(--color-secondary-text);
 	&:hover {
-		background-color: inherit;
+		background-color: var(--color-secondary-text);
 		box-shadow: inherit;
 		color: var(--color-white);
 	}
