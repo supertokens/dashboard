@@ -125,6 +125,7 @@ const UserTableRow: React.FC<{
 			text: "Change Email",
 			imageUrl: "mail.svg",
 			hoverImageUrl: "mail-opened.svg",
+			disabled: (user) => user.recipeId === "thirdparty",
 		},
 		{
 			onClick: () => {
@@ -133,6 +134,7 @@ const UserTableRow: React.FC<{
 			text: "Change Password",
 			imageUrl: "lock.svg",
 			hoverImageUrl: "lock-opened.svg",
+			disabled: (user) => user.recipeId !== "emailpassword",
 		},
 		{
 			onClick: () => {

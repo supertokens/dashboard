@@ -28,6 +28,7 @@ export type UserRowMenuItemProps = {
 	imageUrl: string;
 	hoverImageUrl?: string;
 	className?: string;
+	disabled?: (user: UserWithRecipeId) => boolean;
 };
 
 export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imageUrl, hoverImageUrl, text, onClick, className }) => (
@@ -62,12 +63,14 @@ export const UserRowMenu: FC<UserRowMenuProps> = ({ user, menuItems }) => {
 				</button>
 				<div className="user-row-select-popup">
 					<div className="panel">
-						{menuItems.map((menu) => (
-							<UserRowMenuItem
-								{...menu}
-								key={menu.text}
-							/>
-						))}
+						{menuItems.map((menu) =>
+							menu.disabled === undefined || !menu.disabled(user) ? (
+								<UserRowMenuItem
+									{...menu}
+									key={menu.text}
+								/>
+							) : null
+						)}
 					</div>
 				</div>
 			</div>
