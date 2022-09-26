@@ -80,9 +80,7 @@ export const UsersList: React.FC = () => {
 				alt="Auth Page"
 			/>
 			<h1 className="users-list-title">User Management</h1>
-			<p className="text-small users-list-subtitle">
-				One place to manage all your users, revoke access and edit information according to your needs.
-			</p>
+			<p className="text-small users-list-subtitle">One place to manage all your users.</p>
 
 			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
 
