@@ -150,7 +150,10 @@ const UserTableRow: React.FC<{
 			key={index}
 			className="user-row">
 			<td>
-				<UserInfo user={user} />
+				<UserInfo
+					user={user}
+					onSelect={onSelect}
+				/>
 			</td>
 			<td>
 				<UserRecipePill user={user} />
@@ -168,13 +171,14 @@ const UserTableRow: React.FC<{
 	);
 };
 
-const UserInfo = ({ user }: { user: UserWithRecipeId }) => {
+const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSelectUserFunction }) => {
 	const { firstName, lastName, email } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 	return (
 		<div className="user-info">
 			<div
+				onClick={() => onSelect(user)}
 				className="main"
 				title={name || email}>
 				{name || email || (phone && <PhoneDisplay phone={phone} />)}
