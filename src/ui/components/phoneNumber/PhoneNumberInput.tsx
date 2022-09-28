@@ -226,32 +226,18 @@ const PhoneNumberTextField: FC<PhoneNumberTextFieldProps> = forwardRef(
 );
 
 export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberInputProps) => {
-	const { onChange, value, isRequired } = props;
+	const { onChange, value, error } = props;
   const [ isTouched, setIsTouched] = useState(false);
-  const [ currentValue, setCurrentValue] = useState(value);
 
   // call the `onChange` and set form as touched
   const handleChange = useCallback((newValue: E164Number ) => {
     onChange(newValue);
-    setCurrentValue(newValue)
     setIsTouched(true)
   }, [onChange]);
 
-  // check the phone number validity
-  const isValid = useCallback(() => {
-    if (isTouched) {
-      if (isRequired) {
-        return currentValue !== undefined && isValidPhoneNumber(currentValue);
-      } else {
-        return currentValue === undefined || isValidPhoneNumber(currentValue);
-      }      
-    }
-    return true;
-  }, [isTouched, isRequired, currentValue]);
-
-	return (
+	return <>
 		<PhoneInputWithCountrySelect
-			className={`phone-input ${!isValid() ? "phone-input-error" : ""}`}
+			className={`phone-input ${error !== undefined ? "phone-input-error" : ""}`}
 			value={value}
 			onChange={handleChange}
 			international={true}
@@ -264,5 +250,6 @@ export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberIn
 			inputComponent={
 				PhoneNumberTextField // use custom component because the default one always show country calling code in the text field
 			}></PhoneInputWithCountrySelect>
-	);
+		{ isTouched && error !== undefined && <div className="block-small block-error">{error}</div> }
+	</>;
 };

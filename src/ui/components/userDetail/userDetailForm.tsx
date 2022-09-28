@@ -14,9 +14,11 @@
  */
 
 import { FC, useCallback, useRef, useState } from "react";
+import { UserProps, UserWithRecipeId } from "../../pages/usersList/types";
 import InputField from "../inputField/InputField";
 import LayoutModalTrigger, { LayoutModalTriggerProps } from "../layout/layoutModal";
 import "./userDetailForm.scss";
+import { UserDisplayName } from "./userDetailHeader";
 
 type PasswordChangeCallback = (password?: string) => void;
 
@@ -116,3 +118,24 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 		</>
 	);
 };
+
+type UserDeleteConfirmationProps = UserProps & { onConfirmed: (isConfirmed: boolean) => void }
+
+export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, onConfirmed }) => {
+	return <div className="user-detail-form">
+		<p>Are you sure you want to delete user <b>“<UserDisplayName user={user}/>”</b>?</p>
+		<p>All the user’s sessions will be revoked and the user will be deleted permanently.</p>
+		<div className="user-detail-form__actions">
+					<button
+						className="button outline"
+						onClick={() => onConfirmed(false)}>
+						Cancel
+					</button>
+					<button
+						className="button button-error"
+						onClick={() => onConfirmed(true)}>
+						Save
+					</button>
+				</div>
+	</div>;
+}

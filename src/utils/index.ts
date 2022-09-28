@@ -13,11 +13,11 @@
  * under the License.
  */
 
-import { BaseSyntheticEvent, useEffect } from "react";
-import { StorageKeys, UNAUTHORISED_STATUS } from "./constants";
-import NetworkManager from "./services/network";
-import { localStorageHandler } from "./services/storage";
-import { HttpMethod } from "./types";
+import { useEffect } from "react";
+import { StorageKeys, UNAUTHORISED_STATUS } from "../constants";
+import NetworkManager from "../services/network";
+import { localStorageHandler } from "../services/storage";
+import { HttpMethod } from "../types";
 
 export function getStaticBasePath(): string {
 	return (window as any).staticBasePath;

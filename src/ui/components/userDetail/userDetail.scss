@@ -138,6 +138,10 @@ $container-width: 829;
 		input, .phone-input {
 			background-color: var(--color-window-bg);
 		}
+
+		.input-field-error {
+			font-weight: normal;
+		}
 	}
 
 	&__provider-box {

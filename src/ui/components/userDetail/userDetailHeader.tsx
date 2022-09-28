@@ -13,10 +13,13 @@
  * under the License.
  */
 
-import { UserWithRecipeId } from "../../pages/usersList/types";
+import { FC, useCallback, useRef } from "react";
+import { UserProps, UserWithRecipeId } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
+import LayoutModalTrigger from "../layout/layoutModal";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "./userDetail";
+import { UserDeleteConfirmation } from "./userDetailForm";
 
 const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 	const { firstName, lastName, email, id } = user;
@@ -42,21 +45,34 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 	return id.trim().slice(0, 2);
 };
 
+export const UserDisplayName: FC<UserProps>= ({user}) => {
+	const { firstName, lastName, email, id } = user.user;
+	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
+	const thirdPartyUserId = user.recipeId === "thirdparty" ? user.user.thirdParty.userId : undefined;
+	const fullName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+
+	return <>{ fullName || email || thirdPartyUserId || (phone && <PhoneDisplay phone={phone} />) }</>;
+}
+
 export const UserDetailBadge: React.FC<{ user: UserWithRecipeId }> = ({ user }) => (
 	<div className="user-detail__header__badge">{getBadgeInitial(user)}</div>
 );
 
 export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCallback }) => {
-	const { firstName, lastName, email, id } = user.user;
-	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
-	const thirdPartyUserId = user.recipeId === "thirdparty" ? user.user.thirdParty.userId : undefined;
-	const fullName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+	const { id } = user.user;
+	const onConfirmedDelete = useCallback((isConfirmed: boolean) => {
+		if (isConfirmed) {
+			onDeleteCallback(user)
+		}
+		closeConfirmDeleteRef.current?.();
+	}, [onDeleteCallback, user]);	
+	const closeConfirmDeleteRef = useRef<Function>();
 	return (
 		<div className="user-detail__header">
 			<UserDetailBadge user={user} />
 			<div className="user-detail__header__info">
 				<div className="user-detail__header__title">
-					<span>{fullName || email || thirdPartyUserId || (phone && <PhoneDisplay phone={phone} />)}</span>
+					<span><UserDisplayName user={user}/></span>
 				</div>
 				<div className="user-detail__header__user-id">
 					<span className="user-detail__header__user-id__label">User ID:</span>
@@ -67,7 +83,14 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCall
 					</span>
 				</div>
 			</div>
-			{onDeleteCallback && <div className="user-detail__header__action">{/** Delete button here */}</div>}
+			<div className="user-detail__header__action">
+				<LayoutModalTrigger 
+					modalContent={<UserDeleteConfirmation user={user} onConfirmed={onConfirmedDelete}/>}
+					header={<h2>Delete User?</h2>}
+					closeCallbackRef={closeConfirmDeleteRef}>
+					<button className="button button-error" style={{fontWeight: "normal"}}>Delete</button>
+				</LayoutModalTrigger>
+			</div>
 		</div>
 	);
 };

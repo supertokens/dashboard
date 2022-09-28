@@ -51,3 +51,5 @@ export type UserThirdParty = User & {
     userId: string
   }
 }
+
+export type UserProps = { user: UserWithRecipeId }

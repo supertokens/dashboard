@@ -1,6 +1,7 @@
 import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { formatLongDate, getImageUrl } from "../../../utils";
-import { UserThirdParty, UserWithRecipeId } from "../../pages/usersList/types";
+import { validateEmail, isNotEmpty, validatePhoneNumber } from "../../../utils/form";
+import { UserEmailPassword, UserPasswordLess, UserThirdParty, UserWithRecipeId } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
 import InputField from "../inputField/InputField";
 import { LayoutPanel } from "../layout/layoutPanel";
@@ -11,7 +12,7 @@ import { UserDetailChangePasswordPopup } from "./userDetailForm";
 
 type UserDetailInfoGridProps = {
 	user: UserWithRecipeId;
-	onUpdateCallback?: (user: UserWithRecipeId) => void;
+	onUpdateCallback: (user: UserWithRecipeId) => void;
 };
 
 type UserDetailInfoGridItemProps = {
@@ -23,6 +24,7 @@ type UserDetailInfoGridItemProps = {
 type UserDetailInfoGridHeaderProps = UserDetailInfoGridProps & {
 	onSave: () => void;
 	onEdit: () => void;
+	isSaveDisabled: boolean;
 	isEditing: boolean;
 };
 
@@ -94,51 +96,45 @@ export const UserDetailInfoGridItem: FC<UserDetailInfoGridItemProps> = ({ label,
 };
 
 const UserDetailInfoGridHeader: FC<UserDetailInfoGridHeaderProps> = ({
-	onUpdateCallback,
 	onSave,
 	onEdit,
 	isEditing,
 }: UserDetailInfoGridHeaderProps) => (
 	<>
 		<div className="title">User Information</div>
-		{onUpdateCallback !== undefined && (
-			<>
-				{isEditing ? (
-					<button
-						className="button link outline small"
-						onClick={onSave}>
-						Save
-					</button>
-				) : (
-					<button
-						className="button flat link small"
-						onClick={onEdit}>
-						Edit Info
-					</button>
-				)}
-			</>
-		)}
+		{isEditing ? (
+			<button
+				className="button link outline small"
+				onClick={onSave}>
+				Save
+			</button>
+		) : (
+			<button
+				className="button flat link small"
+				onClick={onEdit}>
+				Edit Info
+			</button>
+		)}		
 	</>
 );
+
 export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdateCallback }) => {
 	const nonApplicableText = "N/A";
-	const [userState, setUserState] = useState<UserWithRecipeId>(user);
+	const [userState, setUserState] = useState<UserWithRecipeId>({ ...user});
 	const { recipeId } = userState;
 	const { firstName, lastName, timeJoined, email } = userState.user;
 	const [isEmailVerified, setIsEmailVerified] = useState(true);
 	const [isEditing, setIsEditing] = useState(false);
 
 	const onSave = useCallback(() => {
-		if (onUpdateCallback) {
+			console.log('onSave', userState)
 			onUpdateCallback(userState);
-		}
 		setIsEditing(false);
 	}, [onUpdateCallback, userState]);
 
-	const updateUserData = useCallback((userData: Partial<UserWithRecipeId["user"]>) => {
+	const updateUserDataState = useCallback((updatedUser: Partial<UserWithRecipeId["user"]>) => {
 		setUserState((currentState) => {
-			currentState.user = { ...currentState.user, ...userData };
-			return currentState;
+			return { ...currentState, user: { ...currentState.user, ...updatedUser } } as UserWithRecipeId;
 		});
 	}, []);
 
@@ -146,22 +142,48 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 
 	useEffect(() => setUserState(user), [user]);
 
-	const phone =
-		recipeId === "passwordless" &&
+	useEffect(() => console.log('setUserState', user), [user]);
+
+	// validate email if `isEditing=true`
+	const emailError = useCallback(() => {
+		if (!isEditing) { return; }
+		if (isNotEmpty(email)) {
+			return !validateEmail(email!) ? "Email address is invalid" : undefined;
+		} else if (user.user.email !== undefined) {
+			return "Email cannot be empty"
+		}
+	}, [ email, user.user.email, isEditing ])();
+
+	// validate phone if `isEditing=true`
+	const phoneNumber = recipeId === "passwordless" ? userState.user.phoneNumber : undefined;
+	const phoneNumberProps = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
+	const phoneNumberError = useCallback(() => {
+		if (!isEditing) { return; }
+		console.log(phoneNumber)
+		if (isNotEmpty(phoneNumber)) {
+			return !validatePhoneNumber(phoneNumber!) ? "Phone number is invalid" : undefined;
+		} else if (phoneNumberProps !== undefined) {
+			return "Phone number cannot be empty"
+		}
+	}, [ phoneNumber, phoneNumberProps, isEditing ])();
+
+
+	const phone = 
 		(isEditing ? (
 			<PhoneNumberInput
 				name="phone number"
-				value={userState.user.phoneNumber}
+				value={phoneNumber}
+				error={phoneNumberError}
 				isRequired={ 
 					// prevent delete phone number if it was a phoneNumber account
 					user.recipeId === 'passwordless' && user.user.phoneNumber !== undefined 
 				}
 				onChange={(phoneNumber) => {
-					updateUserData({ phoneNumber })
+					updateUserDataState({ phoneNumber })
 				}}
 			/>
-		) : userState.user.phoneNumber !== undefined && userState.user.phoneNumber.trim().length > 0 ? (
-			<PhoneDisplay phone={userState.user.phoneNumber} />
+		) : phoneNumber !== undefined ? (
+			<PhoneDisplay phone={phoneNumber} />
 		) : undefined);
 
 	const emailGridContent =
@@ -169,8 +191,9 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 			<InputField
 				type="email"
 				name="email"
+				error={emailError}
 				value={email}
-				handleChange={({ target: { value } }) => updateUserData({ email: value })}
+				handleChange={({ target: { value } }) => updateUserDataState({ email: value })}
 			/>
 		) : (
 			email
@@ -184,6 +207,8 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 		</button>
 	);
 
+	const saveDisabled = emailError !== undefined || phoneNumberError !== undefined;
+
 	return (
 		<div className="user-detail__info-grid">
 			<LayoutPanel
@@ -191,6 +216,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 					<UserDetailInfoGridHeader
 						{...{ onSave, isEditing, user, onUpdateCallback }}
 						onEdit={() => setIsEditing(true)}
+						isSaveDisabled={saveDisabled}
 					/>
 				}>
 				<div className="user-detail__info-grid__grid">
@@ -216,8 +242,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = ({ user, onUpdate
 						label={"Is Email Verified:"}
 						body={
 							<>
-								{" "}
-								{isEmailVerified ? "Yes" : "No"} {emailVerifiedToggle}{" "}
+								{isEmailVerified ? "Yes" : "No"} {emailVerifiedToggle}
 							</>
 						}
 					/>

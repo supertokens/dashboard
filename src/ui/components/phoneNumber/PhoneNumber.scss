@@ -16,8 +16,6 @@
  @import "../../styles/mixin.scss";
 
 .phone-display {
-  display: flex;
-  align-items: flex-start;
   @include gap-horizontal(5px);
 }
 

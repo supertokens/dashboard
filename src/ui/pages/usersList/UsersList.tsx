@@ -13,9 +13,8 @@
  * under the License.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
-import { UserListCount, UserPaginationList, UserWithRecipeId } from "./types";
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
+import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
+import { UserWithRecipeId } from "./types";
 import AuthWrapper from "../../components/authWrapper";
 import NoUsers from "../../components/noUsers/NoUsers";
 import UsersListTable, {
@@ -26,45 +25,73 @@ import "./UsersList.scss";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
 import UserDetail from "../../components/userDetail/userDetail";
+import fetchUsers from "../../api/users";
+import fetchCount from "../../api/users/count";
+import { updateUser as updateUserApi, deleteUser as deleteUserApi, getUser } from "../../api/user"
+
+type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 
 type UserListProps = {
 	onSelect: OnSelectUserFunction;
 	css?: React.CSSProperties;
+	/**
+	 * a callback that can be used to trigger reloading the current active page
+	 */
+	reloadRef?: UserListPropsReloadRef
 };
 
-export const UsersList: React.FC<UserListProps> = ({ onSelect, css }) => {
+type NextPaginationTokenByOffset = Record<number, string | undefined>;
+
+export const UsersList: React.FC<UserListProps> = ({ onSelect, css, reloadRef }) => {
 	const limit = LIST_DEFAULT_LIMIT;
 	const [count, setCount] = useState<number>();
 	const [users, setUsers] = useState<UserWithRecipeId[]>([]);
 	const [offset, setOffset] = useState<number>(0);
-	const [nextPaginationToken, setNextPaginationToken] = useState<string>();
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
 	const [connectionURI, setConnectionURI] = useState<string>();
+	const [paginationTokenByOffset, setPaginationTokenByOffset ] = useState<NextPaginationTokenByOffset>({});
+
+	const insertUsersAtOffset = useCallback((paramUsers: UserWithRecipeId[], paramOffset?: number) => {
+		if (paramOffset === undefined) {
+			return [ ...users, ...paramUsers]
+		} return [ ...users.slice(0, paramOffset), ...paramUsers, ...users.slice(paramOffset + limit)]
+	}, [users, limit])
+
+	const getOffsetByPaginationToken = useCallback((paginationToken?: string) => {
+		if (paginationToken === undefined) {
+			return 0;
+		}
+		const matchedPaginationTokenByOffsetPair = Object.entries(paginationTokenByOffset).find(([ _, token]) => paginationToken === token);
+		return matchedPaginationTokenByOffsetPair !== undefined ? parseInt(matchedPaginationTokenByOffsetPair[0]) : undefined;
+	}, [paginationTokenByOffset])
+
 	const loadUsers = useCallback(
 		async (paginationToken?: string) => {
+			const paramOffset = getOffsetByPaginationToken(paginationToken) ?? offset;
+			console.log(paginationToken, paramOffset);
 			setLoading(true);
-			const nextOffset = offset + limit;
-			const newOffset = paginationToken ? nextOffset : offset;
-			if (!users || users[nextOffset] === undefined) {
-				const data = await (paginationToken ? fetchUsers({ paginationToken }) : fetchUsers()).catch(
-					() => undefined
-				);
-				if (data) {
-					// store the users and pagination token
-					const { users: responseUsers, nextPaginationToken } = data;
-					setUsers(users.concat(responseUsers));
-					setNextPaginationToken(nextPaginationToken);
-					setErrorOffsets(errorOffsets.filter((item) => item !== nextOffset));
-				} else {
-					setErrorOffsets([newOffset]);
-				}
-				setLoading(false);
+			const nextOffset = paramOffset + limit;
+			
+			const data = await (paginationToken ? fetchUsers({ paginationToken }) : fetchUsers()).catch(
+				() => undefined
+			);
+			if (data) {
+				// store the users and pagination token
+				const { users: responseUsers, nextPaginationToken } = data;
+				setUsers(insertUsersAtOffset(responseUsers, paramOffset));
+				setPaginationTokenByOffset({ ...paginationTokenByOffset, [nextOffset]: nextPaginationToken});
+				setErrorOffsets(errorOffsets.filter((item) => item !== nextOffset));
+				console.log(nextOffset, { ...paginationTokenByOffset, [nextOffset]: nextPaginationToken});
+			} else {
+				setErrorOffsets([paramOffset]);
 			}
-			setOffset(newOffset);
+			setLoading(false);
+			setOffset(paramOffset);
 		},
-		[offset, users, errorOffsets, limit]
+		[offset, errorOffsets, limit, paginationTokenByOffset, insertUsersAtOffset, getOffsetByPaginationToken]
 	);
+
 	const loadCount = useCallback(async () => {
 		setLoading(true);
 		const [countResult] = await Promise.all([fetchCount().catch(() => undefined), loadUsers()]);
@@ -73,12 +100,21 @@ export const UsersList: React.FC<UserListProps> = ({ onSelect, css }) => {
 		}
 		setLoading(false);
 	}, []);
-	const loadOffset = useCallback((offset: number) => setOffset(offset), []);
+
+	const loadOffset = useCallback(async (offset: number) => {
+		await loadUsers(paginationTokenByOffset[offset])
+	}, [ paginationTokenByOffset, loadUsers ]);
 
 	useEffect(() => {
 		loadCount();
 		setConnectionURI((window as any).connectionURI);
 	}, [loadCount]);
+
+	useEffect(() => {
+		if (reloadRef !== undefined) {
+			reloadRef.current = () => loadOffset(offset)
+		}
+	}, [ reloadRef, loadOffset, offset ])
 
 	return (
 		<div
@@ -106,7 +142,7 @@ export const UsersList: React.FC<UserListProps> = ({ onSelect, css }) => {
 						count={count ?? 0}
 						errorOffsets={errorOffsets}
 						limit={limit}
-						nextPaginationToken={nextPaginationToken}
+						nextPaginationToken={paginationTokenByOffset[offset + limit]}
 						goToNext={(token) => loadUsers(token)}
 						offsetChange={loadOffset}
 						isLoading={loading}
@@ -118,39 +154,45 @@ export const UsersList: React.FC<UserListProps> = ({ onSelect, css }) => {
 	);
 };
 
-const fetchUsers = async (param?: { paginationToken?: string; limit?: number }) => {
-	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl("/api/users"),
-		method: "GET",
-		query: { ...param, limit: `${param?.limit ?? LIST_DEFAULT_LIMIT}` },
-	});
-	return response.ok ? ((await response?.json()) as UserPaginationList) : undefined;
-};
-
-const fetchCount = async () => {
-	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl("/api/users/count"),
-		method: "GET",
-	});
-
-	return response.ok ? ((await response?.json()) as UserListCount) : undefined;
-};
-
 export const UserListPage = () => {
 	const [selectedUser, setSelectedUser] = useState<UserWithRecipeId>();
 	const isSelectedUserNotEmpty = selectedUser !== undefined;
+	const reloadListRef: UserListPropsReloadRef = useRef();
+
+	const backToList = useCallback(() => {
+		void reloadListRef.current?.();
+		setSelectedUser(undefined);
+	}, []);
+
+	const updateUser = useCallback(async (userId: string, data: UserWithRecipeId) => {
+		if ((await updateUserApi(userId, data)) === true) {
+			setSelectedUser(await getUser(userId));
+		} else {
+			console.log("setSelectedUser", selectedUser)
+			setSelectedUser({ ...selectedUser!} );
+		}
+	}, [ selectedUser ])
+
+	const deleteUser = useCallback(async (userId: string) => {
+		if ((await deleteUserApi(userId)) === true) {
+			backToList();
+		}
+	}, [ backToList ]);
+
 	return (
 		<AuthWrapper>
 			{isSelectedUserNotEmpty && (
 				<UserDetail
 					user={selectedUser}
-					onBackButtonClicked={() => setSelectedUser(undefined)}
-					onUpdateCallback={() => {}}
+					onBackButtonClicked={backToList}
+					onUpdateCallback={updateUser}
+					onDeleteCallback={({user: {id}}) => deleteUser(id)}
 				/>
 			)}
 			<UsersList
-				onSelect={setSelectedUser}
+				onSelect={(user) => setSelectedUser({ ...user, user: { ...user.user } as any })}
 				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
+				reloadRef={reloadListRef}
 			/>
 			<Footer
 				colorMode="dark"
@@ -160,4 +202,5 @@ export const UserListPage = () => {
 		</AuthWrapper>
 	);
 };
+
 export default UserListPage;

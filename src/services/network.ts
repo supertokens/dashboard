@@ -30,7 +30,14 @@ export default class NetworkManager {
             return this.get(url, query, config);
         }
 
-        return this.post(url, config);
+        return fetch(new URL(url), {
+            ...config,
+            method,
+            headers: {
+                ...config?.headers,
+                "Content-Type": "application/json",
+            },
+        });
     }
 
     private static async get(
@@ -48,20 +55,5 @@ export default class NetworkManager {
         }
 
         return fetch(_url, config);
-    }
-
-    private static async post(
-        url: string,
-        config?: RequestInit,
-    ) {
-
-        return fetch(new URL(url), {
-            ...config,
-            method: "POST",
-            headers: {
-                ...config?.headers,
-                "Content-Type": "application/json",
-            },
-        });
     }
 }

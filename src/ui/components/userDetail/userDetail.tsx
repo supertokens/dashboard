@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { getImageUrl } from "../../../utils";
 import { UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
@@ -24,21 +24,23 @@ import UserDetailInfoGrid from "./userDetailInfoGrid";
 export type UserDetailProps = {
 	user: UserWithRecipeId;
 	onBackButtonClicked: () => void;
-	onDeleteCallback?: OnSelectUserFunction;
-	onUpdateCallback?: (userId: string, updatedValue: Partial<UserWithRecipeId>) => void;
+	onDeleteCallback: OnSelectUserFunction;
+	onUpdateCallback: (userId: string, updatedValue: UserWithRecipeId) => void;
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { user, onBackButtonClicked, onUpdateCallback } = props;
 
 	const onUpdate = useCallback(
-		(updatedValue: Partial<UserWithRecipeId>) => {
+		(updatedValue: UserWithRecipeId) => {
 			if (onUpdateCallback !== undefined) {
 				onUpdateCallback(user.user.id, updatedValue);
 			}
 		},
 		[onUpdateCallback, user]
 	);
+
+	useEffect(() => console.log('UserDetail', user), [user]);
 
 	return (
 		<div className="user-detail">

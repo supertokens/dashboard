@@ -235,6 +235,17 @@ button.flat {
 	font-size: inherit;
 }
 
+.button.button-error,
+button.button-error {
+	display: inline;
+	background: var(--color-button-error);
+	margin: 0px;
+	color: var(--color-white);
+	@include gap-horizontal(8px);
+	border: none;
+	font-size: inherit;
+}
+
 .button.outline,
 button.outline {
 	background: none;

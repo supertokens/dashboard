@@ -13,22 +13,17 @@
  * under the License.
  */
 
-import { parsePhoneNumberFromString, format } from "libphonenumber-js"
-import "./PhoneNumber.scss"
+import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
+import { LIST_DEFAULT_LIMIT } from "../../components/usersListTable/UsersListTable";
+import { UserPaginationList } from "../../pages/usersList/types";
 
-export const PhoneDisplay = ({ phone }: { phone: string }) => {
-  const { country, countryCallingCode } = parsePhoneNumberFromString(phone) || {}
-  return (
-    <>
-      {country && (
-        <span className='phone-display'>
-          <span>
-            +{countryCallingCode} {format(phone, 'NATIONAL')}
-          </span>
-        </span>
-      )}
-    </>
-  )
-}
+export const fetchUsers = async (param?: { paginationToken?: string; limit?: number }) => {
+	const response = await fetchDataAndRedirectIf401({
+		url: getApiUrl("/api/users"),
+		method: "GET",
+		query: { ...param, limit: `${param?.limit ?? LIST_DEFAULT_LIMIT}` },
+	});
+	return response.ok ? ((await response?.json()) as UserPaginationList) : undefined;
+};
 
-export default PhoneDisplay
+export default fetchUsers;
