@@ -13,13 +13,13 @@
  * under the License.
  */
 
-import { FC, useCallback, useRef } from "react";
+import { FC, useCallback, useContext } from "react";
+import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { UserProps, UserWithRecipeId } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
-import LayoutModalTrigger from "../layout/layoutModal";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "./userDetail";
-import { UserDeleteConfirmation } from "./userDetailForm";
+import { getUserDeleteConfirmationProps } from "./userDetailForm";
 
 const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 	const { firstName, lastName, email, id } = user;
@@ -60,13 +60,15 @@ export const UserDetailBadge: React.FC<{ user: UserWithRecipeId }> = ({ user }) 
 
 export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCallback }) => {
 	const { id } = user.user;
-	const onConfirmedDelete = useCallback((isConfirmed: boolean) => {
-		if (isConfirmed) {
-			onDeleteCallback(user)
-		}
-		closeConfirmDeleteRef.current?.();
-	}, [onDeleteCallback, user]);	
-	const closeConfirmDeleteRef = useRef<Function>();
+	const {showModal} = useContext(PopupContentContext);
+
+	const openDeleteConfirmation = useCallback(() => showModal(getUserDeleteConfirmationProps({
+		onDeleteCallback,
+		user
+	})), [
+		user, onDeleteCallback, showModal
+	])
+
 	return (
 		<div className="user-detail__header">
 			<UserDetailBadge user={user} />
@@ -84,12 +86,7 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCall
 				</div>
 			</div>
 			<div className="user-detail__header__action">
-				<LayoutModalTrigger 
-					modalContent={<UserDeleteConfirmation user={user} onConfirmed={onConfirmedDelete}/>}
-					header={<h2>Delete User?</h2>}
-					closeCallbackRef={closeConfirmDeleteRef}>
-					<button className="button button-error" style={{fontWeight: "normal"}}>Delete</button>
-				</LayoutModalTrigger>
+			<button className="button button-error" style={{fontWeight: "normal"}} onClick={openDeleteConfirmation}>Delete</button>				
 			</div>
 		</div>
 	);

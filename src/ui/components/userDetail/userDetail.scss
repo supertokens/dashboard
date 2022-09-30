@@ -99,14 +99,18 @@ $container-width: 829;
 		}
 		&__item {
 			font-size: 14px;
+			display: flex;
+			flex-wrap: wrap;
 			&__label {
 				color: var(--color-secondary-text);
 				margin-bottom: 12px;
 				display: inline-flex;
 				align-items: center;
+				width: 100%;
 			}
 			&__body {
 				font-weight: 600;
+				width: 100%;
 				@include text-ellipsis(100%);
 				white-space: normal;
 			}
@@ -128,7 +132,7 @@ $container-width: 829;
 				margin: 0px;
 			}
 
-			.email-verified-toggle {
+			.email-verified-button {
 				margin-left: 12px;
 				font-weight: normal;
 			}

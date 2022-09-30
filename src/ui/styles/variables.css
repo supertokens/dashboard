@@ -31,17 +31,21 @@ body {
 	--color-error-bg: rgb(253, 240, 241);
 	--color-info-shadow: rgba(158, 37, 38, 0.16);
 	--color-info-bg: rgb(235, 245, 255);
+	--color-success-bg: rgb(241, 250, 247);
+	--color-success-shadow: rgba(4, 84, 62, 0.16);
 	--color-link: rgb(0, 122, 255);
 
 	/* Border Colors */
 	--color-border: rgb(229, 229, 229);
 	--color-border-error: rgb(239, 121, 119);
 	--color-border-info: rgb(151, 189, 250);
+	--color-border-success: rgb(73, 200, 153);
 
 	/* Text Colors */
 	--color-secondary-text: rgb(110, 106, 101); /* Below title, table headers, placeholders etc */
 	--color-error: rgb(158, 37, 38);
 	--color-info: rgb(31, 90, 219);
+	--color-success: rgb(4, 84, 62);
 
 	/* Recipe Pill Colors */
 	--color-emailpassword-bg: rgb(221, 252, 247);

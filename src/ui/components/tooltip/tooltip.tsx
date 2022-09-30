@@ -1,11 +1,11 @@
 import { FC, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { isMobile } from "../../../utils";
-import TemporaryContent, { TemporaryContentProps } from "../temporaryContent/temporaryContent";
+import Toast, { ToastProps } from "../toast/toast";
 import { getPopupPosition, PopUpPositionProperties, PopUpPositionType } from "./tooltip-util";
 
 const DEFAULT_TOOLTIP_WIDTH = 380;
 
-type TooltipBaseProps = Pick<TemporaryContentProps, "children" | "duration" | "onDisappear"> & {
+type TooltipBaseProps = Pick<ToastProps, "children" | "duration" | "onDisappear"> & {
 	/** tooltip width in pixel, will get `DEFAULT_TOOLTIP_WIDTH` by default */
 	tooltipWidth?: number;
 };
@@ -32,7 +32,7 @@ export const TooltipPopup: FC<TooltipPopupProps> = ({ duration, children, onDisa
 		properties?.positionType === "left" || properties?.positionType === "right" ? `${tooltipWidth}px` : "auto";
 
 	return (
-		<TemporaryContent
+		<Toast
 			duration={duration}
 			onDisappear={onDisappear}>
 			<div
@@ -41,7 +41,7 @@ export const TooltipPopup: FC<TooltipPopupProps> = ({ duration, children, onDisa
 				style={{ maxWidth: `${tooltipWidth}px`, width, ...properties?.css }}>
 				{children}
 			</div>
-		</TemporaryContent>
+		</Toast>
 	);
 };
 

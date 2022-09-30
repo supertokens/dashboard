@@ -40,6 +40,11 @@
 			text-transform: uppercase;
 			color: var(--color-secondary-text);
 			font-weight: 600;
+			flex: 1;
+		}
+		.actions {
+			display: inline-flex;
+			@include gap-horizontal(16px);
 		}
 		&.with-border {
 			border-bottom: 1px solid var(--color-border);

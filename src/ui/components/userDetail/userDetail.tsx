@@ -13,9 +13,9 @@
  * under the License.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React from "react";
 import { getImageUrl } from "../../../utils";
-import { UserWithRecipeId } from "../../pages/usersList/types";
+import { EmailVerificationStatus, UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import UserDetailHeader from "./userDetailHeader";
 import "./userDetail.scss";
@@ -23,24 +23,17 @@ import UserDetailInfoGrid from "./userDetailInfoGrid";
 
 export type UserDetailProps = {
 	user: UserWithRecipeId;
+	emailVerification: EmailVerificationStatus | undefined, 
 	onBackButtonClicked: () => void;
 	onDeleteCallback: OnSelectUserFunction;
 	onUpdateCallback: (userId: string, updatedValue: UserWithRecipeId) => void;
+	onSendEmailVerificationCallback: (user: UserWithRecipeId) => Promise<boolean>,
+	onUpdateEmailVerificationStatusCallback: (userId: string, isVerified: boolean) => Promise<boolean>;
+	onChangePasswordCallback: (userId: string, newPassword: string) => void
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
-	const { user, onBackButtonClicked, onUpdateCallback } = props;
-
-	const onUpdate = useCallback(
-		(updatedValue: UserWithRecipeId) => {
-			if (onUpdateCallback !== undefined) {
-				onUpdateCallback(user.user.id, updatedValue);
-			}
-		},
-		[onUpdateCallback, user]
-	);
-
-	useEffect(() => console.log('UserDetail', user), [user]);
+	const { onBackButtonClicked } = props;	
 
 	return (
 		<div className="user-detail">
@@ -56,10 +49,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				</button>
 			</div>
 			<UserDetailHeader {...props} />
-			<UserDetailInfoGrid
-				user={user}
-				onUpdateCallback={onUpdate}
-			/>
+			<UserDetailInfoGrid  {...props} />
 		</div>
 	);
 };

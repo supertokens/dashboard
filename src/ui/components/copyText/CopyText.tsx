@@ -1,6 +1,6 @@
 import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "../../../utils";
-import TemporaryContent from "../temporaryContent/temporaryContent";
+import Toast from "../toast/toast";
 import "./CopyText.scss";
 
 export const CopyText: React.FC<{ children: string }> = ({ children }) => {
@@ -55,13 +55,13 @@ export const CopyText: React.FC<{ children: string }> = ({ children }) => {
 				/>
 			</span>
 			{isCopied && (
-				<TemporaryContent onDisappear={() => setIsCopied(false)}>
+				<Toast onDisappear={() => setIsCopied(false)}>
 					<span
 						className="copy-text-notification"
 						style={getAlertPosition()}>
 						<span className="block-snippet">Copied!</span>
 					</span>
-				</TemporaryContent>
+				</Toast>
 			)}
 		</span>
 	);

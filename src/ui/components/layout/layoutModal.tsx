@@ -13,18 +13,19 @@
  * under the License.
  */
 
-import { FC, MutableRefObject, ReactNode, useEffect, useRef, useState } from "react";
+import { FC, MutableRefObject, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { getImageUrl } from "../../../utils";
+import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { LayoutPanel, LayoutPanelProps } from "./layoutPanel";
 
-export type LayoutModalProps = LayoutPanelProps & {
+export type LayoutModalContentProps = LayoutPanelProps & {
 	hideBackDrop?: boolean;
 	onClose?: () => void;
 };
 
-export type LayoutModalTriggerProps = LayoutModalProps & { modalContent: ReactNode; closeCallbackRef?: MutableRefObject<Function | undefined> };
+export type LayoutModalProps = LayoutModalContentProps & { modalContent: ReactNode; closeCallbackRef?: MutableRefObject<Function | undefined> };
 
-export const LayoutModal: FC<LayoutModalProps> = (props: LayoutModalProps) => {
+export const LayoutModalContent: FC<LayoutModalContentProps> = (props: LayoutModalContentProps) => {
 	const { hideBackDrop, header, onClose } = props;
 	const closeButton = <div className="layout-modal__close"><div onClick={onClose}><img src={getImageUrl("close.svg")} alt="Close Modal"/></div></div>
 
@@ -38,32 +39,43 @@ export const LayoutModal: FC<LayoutModalProps> = (props: LayoutModalProps) => {
 	);
 };
 
-export const LayoutModalTrigger: FC<LayoutModalTriggerProps> = (props: LayoutModalTriggerProps) => {
-	const { children, modalContent, closeCallbackRef } = props;
-	const [isOpened, setIsOpened] = useState(false);
+export const LayoutModal: FC<LayoutModalProps> = (props: LayoutModalProps) => {
+	const { modalContent, closeCallbackRef, onClose } = props;
+	const [isOpened, setIsOpened] = useState(true);
+
+	const handleClose = useCallback(() => {
+		setIsOpened(false);
+		onClose?.();
+	}, [onClose]);
 
 	useEffect(() => {
 		if (closeCallbackRef !== undefined) {
-			closeCallbackRef.current = () => setIsOpened(false);
+			closeCallbackRef.current = handleClose
 		}
-	}, [ closeCallbackRef ]);
+	}, [ closeCallbackRef, handleClose ]);
 
 	return (
 		<>
-			<div
-				className="layout-modal-trigger"
-				onClick={() => setIsOpened(true)}>
-				{children}
-			</div>
 			{isOpened && (
-				<LayoutModal
+				<LayoutModalContent
 					{...props}
 					children={modalContent}
-					onClose={() => setIsOpened(false)}
+					onClose={handleClose}
 				/>
 			)}
 		</>
 	);
 };
 
-export default LayoutModalTrigger;
+export const LayoutModalContainer: FC = () => {
+  const { modals, removeModal } = useContext(PopupContentContext)
+	const [modal] = modals
+
+	return modal !== undefined ? <LayoutModal
+		{...modal}
+		key={modal.id}
+		onClose={() => removeModal(modal.id) }
+	/> : null
+}
+
+export default LayoutModal;

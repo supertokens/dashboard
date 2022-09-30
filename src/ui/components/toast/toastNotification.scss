@@ -1,0 +1,104 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+ @import "../../styles/mixin.scss";
+
+.notification {
+  display: flex;
+  padding: 16px;
+  @include gap-horizontal(8px);
+  line-height: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-window-bg);
+  box-shadow: 0px 0px 6px var(--color-shadow);
+  font-size: 14px;
+  animation: notificationScale 0.3s;
+  transition: 0.3s;
+  &__icon {
+    display: flex;
+    align-items: center;
+    img {
+      height: 16px;
+    }
+  }
+  &__info {
+    flex: 1;
+    padding-right: 24px;
+    font-weight: 500;
+    max-width: 300px;
+    white-space: wrap;
+  }
+  &__close {
+    display: flex;
+    align-items: center;
+    svg {
+      width: 8px;
+      cursor: pointer;
+    }
+  }
+  
+  &.notification-info {
+    background-color: var(--color-info-bg);
+    color: var(--color-info);
+    border-color: var(--color-border-info);
+    box-shadow: 0px 0px 6px var(--color-info-shadow);
+    svg {
+      stroke: var(--color-info);
+    }
+  }
+  &.notification-error {
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+    border-color: var(--color-border-error);
+    box-shadow: 0px 0px 6px var(--color-error-shadow);
+    svg {
+      stroke: var(--color-error);
+    }
+  }
+  &.notification-success {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+    border-color: var(--color-border-success);
+    box-shadow: 0px 0px 6px var(--color-success-shadow);
+    svg {
+      stroke: var(--color-success);
+    }
+  }
+}
+
+.notification-container {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  transition: 0.3s;
+  @include gap-vertical(16px);
+  max-height: 100vh;
+  justify-content: flex-end;
+  width: max-content;
+}
+
+@keyframes notificationScale {
+  0%   {
+      transform: scale(0);
+
+  }
+  100% {
+      transform: scale(1);
+  }
+}
