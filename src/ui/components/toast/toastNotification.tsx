@@ -13,47 +13,54 @@
  * under the License.
  */
 
-import { FC, useContext } from 'react'
-import { PopupContentContext } from '../../contexts/PopupContentContext';
-import Toast, { ToastProps } from './toast';
+import { FC, useContext } from "react";
+import { PopupContentContext } from "../../contexts/PopupContentContext";
+import Toast, { ToastProps } from "./toast";
 import "./toastNotification.scss";
-import {ReactComponent as CloseIcon } from '../../../assets/close-icon.svg';
+import { ReactComponent as CloseIcon } from "../../../assets/close-icon.svg";
 
-export type ToastNotificationProps = Omit<ToastProps, 'contentAfterDisappear'> & {
-  iconImage: string
-  toastType: 'error' | 'success' | 'info'
-}
+export type ToastNotificationProps = Omit<ToastProps, "contentAfterDisappear"> & {
+	iconImage: string;
+	toastType: "error" | "success" | "info";
+};
 
 export const ToastNotification: FC<ToastNotificationProps> = (props: ToastNotificationProps) => {
-  const { iconImage, toastType, children, duration, onDisappear } = props
+	const { iconImage, toastType, children, duration, onDisappear } = props;
 
-  return (
-    <Toast duration={duration} onDisappear={onDisappear}>
-      <div className={`notification notification-${toastType}`}>
-        <span className='notification__icon'>
-          <img src={iconImage} alt={toastType} />
-        </span>
-        <span className='notification__info'>{children}</span>
-        <span className='notification__close' onClick={onDisappear}>
-          <CloseIcon />
-        </span>
-      </div>
-    </Toast>
-  )
-}
+	return (
+		<Toast
+			duration={duration}
+			onDisappear={onDisappear}>
+			<div className={`notification notification-${toastType}`}>
+				<span className="notification__icon">
+					<img
+						src={iconImage}
+						alt={toastType}
+					/>
+				</span>
+				<span className="notification__info">{children}</span>
+				<span
+					className="notification__close"
+					onClick={onDisappear}>
+					<CloseIcon />
+				</span>
+			</div>
+		</Toast>
+	);
+};
 
 export const ToastNotificationContainer: FC = () => {
-  const { toasts, removeToast } = useContext(PopupContentContext)
+	const { toasts, removeToast } = useContext(PopupContentContext);
 
-  return (
-    <div className='notification-container'>
-      {toasts.map((toast) => (
-        <ToastNotification
-          {...toast}
-          key={toast.id}
-          onDisappear={() => removeToast(toast.id) }
-        />
-      ))}
-    </div>
-  )
-}
+	return (
+		<div className="notification-container">
+			{toasts.map((toast) => (
+				<ToastNotification
+					{...toast}
+					key={toast.id}
+					onDisappear={() => removeToast(toast.id)}
+				/>
+			))}
+		</div>
+	);
+};

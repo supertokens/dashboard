@@ -23,17 +23,17 @@ import UserDetailInfoGrid from "./userDetailInfoGrid";
 
 export type UserDetailProps = {
 	user: UserWithRecipeId;
-	emailVerification: EmailVerificationStatus | undefined, 
+	emailVerification: EmailVerificationStatus | undefined;
 	onBackButtonClicked: () => void;
 	onDeleteCallback: OnSelectUserFunction;
 	onUpdateCallback: (userId: string, updatedValue: UserWithRecipeId) => void;
-	onSendEmailVerificationCallback: (user: UserWithRecipeId) => Promise<boolean>,
+	onSendEmailVerificationCallback: (user: UserWithRecipeId) => Promise<boolean>;
 	onUpdateEmailVerificationStatusCallback: (userId: string, isVerified: boolean) => Promise<boolean>;
-	onChangePasswordCallback: (userId: string, newPassword: string) => void
+	onChangePasswordCallback: (userId: string, newPassword: string) => void;
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
-	const { onBackButtonClicked } = props;	
+	const { onBackButtonClicked } = props;
 
 	return (
 		<div className="user-detail">
@@ -49,7 +49,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				</button>
 			</div>
 			<UserDetailHeader {...props} />
-			<UserDetailInfoGrid  {...props} />
+			<UserDetailInfoGrid {...props} />
 		</div>
 	);
 };

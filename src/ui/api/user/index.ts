@@ -21,16 +21,16 @@ export const getUser = async (userId: string) => {
 		url: getApiUrl(`/api/user/${userId}`),
 		method: "GET",
 	});
-	return response?.ok ? await response.json() as UserWithRecipeId : undefined;
+	return response?.ok ? ((await response.json()) as UserWithRecipeId) : undefined;
 };
 
 export const updateUser = async (userId: string, updatedData: UserWithRecipeId) => {
 	const response = await fetchDataAndRedirectIf401({
 		url: getApiUrl(`/api/user/${userId}`),
-		method: "PUT", 
-    config: {
-      body: JSON.stringify(updatedData)
-    }
+		method: "PUT",
+		config: {
+			body: JSON.stringify(updatedData),
+		},
 	});
 	return response?.ok;
 };

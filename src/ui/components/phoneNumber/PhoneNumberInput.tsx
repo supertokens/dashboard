@@ -78,9 +78,9 @@ export const PhoneNumberCountrySelect: FC<PhoneNumberCountrySelectProps> = (prop
 	const [popUpPosition, setPopUpPosition] = useState<PopUpPositionProperties>();
 	const { onChange, options, value: selectedValue, iconComponent: Icon } = props;
 
-  const getRowOptionheight = () => 
-    countrySelectPopupRef.current?.querySelector("phone-input__country-select__popup__option")?.clientHeight ?? 
-    estimatedRowOptionheight;
+	const getRowOptionheight = () =>
+		countrySelectPopupRef.current?.querySelector("phone-input__country-select__popup__option")?.clientHeight ??
+		estimatedRowOptionheight;
 
 	/** handle the country code changes */
 	const handleChange = useCallback(
@@ -109,7 +109,7 @@ export const PhoneNumberCountrySelect: FC<PhoneNumberCountrySelectProps> = (prop
 		if (isPopupActive && countrySelectPopupRef.current !== null) {
 			// scroll option dropdown into the currently selected option when popup is getting active
 			const scrollTopPosition =
-        getRowOptionheight() *
+				getRowOptionheight() *
 				Math.max(
 					options.findIndex(({ value }) => value === selectedValue),
 					0
@@ -204,9 +204,9 @@ const PhoneNumberTextField: FC<PhoneNumberTextFieldProps> = forwardRef(
 			[onChange, countryCallingCode]
 		);
 
-		/** if the value is valid one then format as national number, 
-    * otherwise format with some space(` `) every 3 chars for better reading
-    **/
+		/** if the value is valid one then format as national number,
+		 * otherwise format with some space(` `) every 3 chars for better reading
+		 **/
 		const displayedNationalNumber =
 			value && isValidPhoneNumber(value) ? format(value, "NATIONAL") : nationalPhoneNumber.join(" ");
 
@@ -227,29 +227,34 @@ const PhoneNumberTextField: FC<PhoneNumberTextFieldProps> = forwardRef(
 
 export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberInputProps) => {
 	const { onChange, value, error } = props;
-  const [ isTouched, setIsTouched] = useState(false);
+	const [isTouched, setIsTouched] = useState(false);
 
-  // call the `onChange` and set form as touched
-  const handleChange = useCallback((newValue: E164Number ) => {
-    onChange(newValue);
-    setIsTouched(true)
-  }, [onChange]);
+	// call the `onChange` and set form as touched
+	const handleChange = useCallback(
+		(newValue: E164Number) => {
+			onChange(newValue);
+			setIsTouched(true);
+		},
+		[onChange]
+	);
 
-	return <>
-		<PhoneInputWithCountrySelect
-			className={`phone-input ${error !== undefined ? "phone-input-error" : ""}`}
-			value={value}
-			onChange={handleChange}
-			international={true}
-			addInternationalOption={false}
-			withCountryCallingCode={false}
-			countryCallingCodeEditable={false}
-			countrySelectComponent={
-				PhoneNumberCountrySelect // use custom component because the default one doesn't display country calling code
-			}
-			inputComponent={
-				PhoneNumberTextField // use custom component because the default one always show country calling code in the text field
-			}></PhoneInputWithCountrySelect>
-		{ isTouched && error !== undefined && <div className="block-small block-error">{error}</div> }
-	</>;
+	return (
+		<>
+			<PhoneInputWithCountrySelect
+				className={`phone-input ${error !== undefined ? "phone-input-error" : ""}`}
+				value={value}
+				onChange={handleChange}
+				international={true}
+				addInternationalOption={false}
+				withCountryCallingCode={false}
+				countryCallingCodeEditable={false}
+				countrySelectComponent={
+					PhoneNumberCountrySelect // use custom component because the default one doesn't display country calling code
+				}
+				inputComponent={
+					PhoneNumberTextField // use custom component because the default one always show country calling code in the text field
+				}></PhoneInputWithCountrySelect>
+			{isTouched && error !== undefined && <div className="block-small block-error">{error}</div>}
+		</>
+	);
 };

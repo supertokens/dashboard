@@ -13,22 +13,22 @@
  * under the License.
  */
 
-import { parsePhoneNumberFromString, format } from "libphonenumber-js"
-import "./PhoneNumber.scss"
+import { parsePhoneNumberFromString, format } from "libphonenumber-js";
+import "./PhoneNumber.scss";
 
 export const PhoneDisplay = ({ phone }: { phone: string }) => {
-  const { country, countryCallingCode } = parsePhoneNumberFromString(phone) || {}
-  return (
-    <>
-      {country && (
-        <span className='phone-display'>
-          <span>
-            +{countryCallingCode} {format(phone, 'NATIONAL')}
-          </span>
-        </span>
-      )}
-    </>
-  )
-}
+	const { country, countryCallingCode } = parsePhoneNumberFromString(phone) || {};
+	return (
+		<>
+			{country && (
+				<span className="phone-display">
+					<span>
+						+{countryCallingCode} {format(phone, "NATIONAL")}
+					</span>
+				</span>
+			)}
+		</>
+	);
+};
 
-export default PhoneDisplay
+export default PhoneDisplay;

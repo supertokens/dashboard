@@ -40,12 +40,17 @@ export const getPopupPosition = (
  * estimate the popup position based on the `popupWidth` & the `refElement.rect` position on the screen
  * @param popupWidth it is used to prevent the popup to be truncated on the right side of the page
  */
-const getAutomaticPopupPosition: (rect: DOMRect, popupWidth: number, eligiblePositions?: PopUpPositionType[]) => PopUpPositionType = (rect, popupWidth, eligiblePositions) => {
-	const isPositionEligible = (position: PopUpPositionType) => (eligiblePositions === undefined || eligiblePositions.includes(position));
+const getAutomaticPopupPosition: (
+	rect: DOMRect,
+	popupWidth: number,
+	eligiblePositions?: PopUpPositionType[]
+) => PopUpPositionType = (rect, popupWidth, eligiblePositions) => {
+	const isPositionEligible = (position: PopUpPositionType) =>
+		eligiblePositions === undefined || eligiblePositions.includes(position);
 	// if there is enough space on right/left then displays on right/left
 	if (window.innerWidth - rect.right > popupWidth && isPositionEligible("right")) {
 		return "right";
-	} else if (rect.left > popupWidth  && isPositionEligible("left")) {
+	} else if (rect.left > popupWidth && isPositionEligible("left")) {
 		return "left";
 	} // if there is no enough space on right/left then displays above/below depend on the current position on the screen
 	else if (rect.top < window.innerHeight / 2 && isPositionEligible("bottom")) {

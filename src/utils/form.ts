@@ -16,11 +16,11 @@
 import { isValidPhoneNumber } from "libphonenumber-js";
 
 export const validateEmail = (email: string) => {
- return  (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
-}
+	return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+};
 
 export const isNotEmpty = (value: any) => {
-  return !(value === undefined || value === null || (`${value}`).trim().length === 0);
-}
+	return !(value === undefined || value === null || `${value}`.trim().length === 0);
+};
 
 export const validatePhoneNumber = isValidPhoneNumber;

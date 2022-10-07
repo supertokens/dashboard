@@ -45,14 +45,14 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 	return id.trim().slice(0, 2);
 };
 
-export const UserDisplayName: FC<UserProps>= ({user}) => {
+export const UserDisplayName: FC<UserProps> = ({ user }) => {
 	const { firstName, lastName, email, id } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
 	const thirdPartyUserId = user.recipeId === "thirdparty" ? user.user.thirdParty.userId : undefined;
 	const fullName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 
-	return <>{ fullName || email || thirdPartyUserId || (phone && <PhoneDisplay phone={phone} />) }</>;
-}
+	return <>{fullName || email || thirdPartyUserId || (phone && <PhoneDisplay phone={phone} />)}</>;
+};
 
 export const UserDetailBadge: React.FC<{ user: UserWithRecipeId }> = ({ user }) => (
 	<div className="user-detail__header__badge">{getBadgeInitial(user)}</div>
@@ -60,21 +60,27 @@ export const UserDetailBadge: React.FC<{ user: UserWithRecipeId }> = ({ user }) 
 
 export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCallback }) => {
 	const { id } = user.user;
-	const {showModal} = useContext(PopupContentContext);
+	const { showModal } = useContext(PopupContentContext);
 
-	const openDeleteConfirmation = useCallback(() => showModal(getUserDeleteConfirmationProps({
-		onDeleteCallback,
-		user
-	})), [
-		user, onDeleteCallback, showModal
-	])
+	const openDeleteConfirmation = useCallback(
+		() =>
+			showModal(
+				getUserDeleteConfirmationProps({
+					onDeleteCallback,
+					user,
+				})
+			),
+		[user, onDeleteCallback, showModal]
+	);
 
 	return (
 		<div className="user-detail__header">
 			<UserDetailBadge user={user} />
 			<div className="user-detail__header__info">
 				<div className="user-detail__header__title">
-					<span><UserDisplayName user={user}/></span>
+					<span>
+						<UserDisplayName user={user} />
+					</span>
 				</div>
 				<div className="user-detail__header__user-id">
 					<span className="user-detail__header__user-id__label">User ID:</span>
@@ -86,7 +92,12 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCall
 				</div>
 			</div>
 			<div className="user-detail__header__action">
-			<button className="button button-error" style={{fontWeight: "normal"}} onClick={openDeleteConfirmation}>Delete</button>				
+				<button
+					className="button button-error"
+					style={{ fontWeight: "normal" }}
+					onClick={openDeleteConfirmation}>
+					Delete
+				</button>
 			</div>
 		</div>
 	);

@@ -33,7 +33,7 @@ export const Toast: React.FC<ToastProps> = ({
 	// hide if childern is empty
 	useEffect(() => {
 		if (children === undefined) {
-			setShowChildern(false)
+			setShowChildern(false);
 		}
 	}, [children]);
 

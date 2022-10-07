@@ -6,17 +6,17 @@ export const updatePassword = async (userId: string, newPassword: string) => {
 		formFields: [
 			{
 				id: "password",
-				value: newPassword
-			}
+				value: newPassword,
+			},
 		],
-	}
+	};
 	const response = await fetchDataAndRedirectIf401({
 		url: getApiUrl(`/api/user/email/password/reset`),
-		method: "POST", 
+		method: "POST",
 		query: { userId },
 		config: {
-      body: JSON.stringify(body)
-    }
+			body: JSON.stringify(body),
+		},
 	});
 	return response?.ok;
 };

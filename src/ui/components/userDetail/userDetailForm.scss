@@ -12,27 +12,27 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
- @import "../../styles/mixin.scss";
+@import "../../styles/mixin.scss";
 
 .user-detail-form {
-  .input-field-container:not(:last-of-type) {
-    margin-bottom: 24px;
-  }
-  &__header {
-    font-size: 24px;
-  }
-  &__actions {
-    display: flex;
-    justify-content: flex-end;
-    @include gap-horizontal(24px);
-    button {
-      width: 80px;
-      justify-content: center;
-      font-weight: normal;
-    }
-  }
-  p {
-    font-size: 14px;
-    line-height: 2em;
-  }
+	.input-field-container:not(:last-of-type) {
+		margin-bottom: 24px;
+	}
+	&__header {
+		font-size: 24px;
+	}
+	&__actions {
+		display: flex;
+		justify-content: flex-end;
+		@include gap-horizontal(24px);
+		button {
+			width: 80px;
+			justify-content: center;
+			font-weight: normal;
+		}
+	}
+	p {
+		font-size: 14px;
+		line-height: 2em;
+	}
 }

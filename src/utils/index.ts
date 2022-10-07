@@ -184,21 +184,21 @@ export const isMobile = () => /iPhone|iPad|iPod|Android/i.test(navigator.userAge
 /**
  * Hook that alerts clicks outside of the passed ref
  */
- export const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void) => {
-  useEffect(() => {
-    /**
-     * Alert if clicked on outside of element
-     */
-    const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && event.target !== null && !ref.current.contains(event.target as Node)) {
-        callback()
-      }
-    }
-    // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [ ref, callback]);
-}
+export const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void) => {
+	useEffect(() => {
+		/**
+		 * Alert if clicked on outside of element
+		 */
+		const handleClickOutside = (event: MouseEvent) => {
+			if (ref.current && event.target !== null && !ref.current.contains(event.target as Node)) {
+				callback();
+			}
+		};
+		// Bind the event listener
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			// Unbind the event listener on clean up
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [ref, callback]);
+};

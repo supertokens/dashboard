@@ -13,38 +13,44 @@
  * under the License.
  */
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { getDashboardAppBasePath } from './utils'
-import UsersListPage from './ui/pages/usersList/UsersList'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { getDashboardAppBasePath } from "./utils";
+import UsersListPage from "./ui/pages/usersList/UsersList";
 
 // This is to make sure that images are packed in the build folder
-import './images'
-import ErrorBoundary from './ui/components/errorboundary'
-import SafeAreaView from './ui/components/safeAreaView/SafeAreaView'
-import { ToastNotificationContainer } from './ui/components/toast/toastNotification'
-import { PopupContentContextProvider } from './ui/contexts/PopupContentContext'
-import { LayoutModalContainer } from './ui/components/layout/layoutModal'
+import "./images";
+import ErrorBoundary from "./ui/components/errorboundary";
+import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
+import { ToastNotificationContainer } from "./ui/components/toast/toastNotification";
+import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
+import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
 
 function App() {
-  return (
-    <>
-      <SafeAreaView />
-      <ErrorBoundary>
-        <PopupContentContextProvider>
-          <>
-            <Router basename={getDashboardAppBasePath()}>
-              <Routes>
-                <Route path='/' element={<UsersListPage />} />
-                <Route path='*' element={<UsersListPage />} />
-              </Routes>
-            </Router>
-            <ToastNotificationContainer />
-            <LayoutModalContainer/>
-          </>
-        </PopupContentContextProvider>
-      </ErrorBoundary>
-    </>
-  )
+	return (
+		<>
+			<SafeAreaView />
+			<ErrorBoundary>
+				<PopupContentContextProvider>
+					<>
+						<Router basename={getDashboardAppBasePath()}>
+							<Routes>
+								<Route
+									path="/"
+									element={<UsersListPage />}
+								/>
+								<Route
+									path="*"
+									element={<UsersListPage />}
+								/>
+							</Routes>
+						</Router>
+						<ToastNotificationContainer />
+						<LayoutModalContainer />
+					</>
+				</PopupContentContextProvider>
+			</ErrorBoundary>
+		</>
+	);
 }
 
-export default App
+export default App;

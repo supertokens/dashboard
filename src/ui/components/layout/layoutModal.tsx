@@ -23,17 +23,37 @@ export type LayoutModalContentProps = LayoutPanelProps & {
 	onClose?: () => void;
 };
 
-export type LayoutModalProps = LayoutModalContentProps & { modalContent: ReactNode; closeCallbackRef?: MutableRefObject<Function | undefined> };
+export type LayoutModalProps = LayoutModalContentProps & {
+	modalContent: ReactNode;
+	closeCallbackRef?: MutableRefObject<Function | undefined>;
+};
 
 export const LayoutModalContent: FC<LayoutModalContentProps> = (props: LayoutModalContentProps) => {
 	const { hideBackDrop, header, onClose } = props;
-	const closeButton = <div className="layout-modal__close"><div onClick={onClose}><img src={getImageUrl("close.svg")} alt="Close Modal"/></div></div>
+	const closeButton = (
+		<div className="layout-modal__close">
+			<div onClick={onClose}>
+				<img
+					src={getImageUrl("close.svg")}
+					alt="Close Modal"
+				/>
+			</div>
+		</div>
+	);
 
 	return (
 		<>
 			<div className="layout-modal">
 				{!hideBackDrop && <div className="layout-modal__backdrop"></div>}
-				<LayoutPanel {...props} header={<>{header}{closeButton}</>}/>
+				<LayoutPanel
+					{...props}
+					header={
+						<>
+							{header}
+							{closeButton}
+						</>
+					}
+				/>
 			</div>
 		</>
 	);
@@ -50,9 +70,9 @@ export const LayoutModal: FC<LayoutModalProps> = (props: LayoutModalProps) => {
 
 	useEffect(() => {
 		if (closeCallbackRef !== undefined) {
-			closeCallbackRef.current = handleClose
+			closeCallbackRef.current = handleClose;
 		}
-	}, [ closeCallbackRef, handleClose ]);
+	}, [closeCallbackRef, handleClose]);
 
 	return (
 		<>
@@ -68,14 +88,16 @@ export const LayoutModal: FC<LayoutModalProps> = (props: LayoutModalProps) => {
 };
 
 export const LayoutModalContainer: FC = () => {
-  const { modals, removeModal } = useContext(PopupContentContext)
-	const [modal] = modals
+	const { modals, removeModal } = useContext(PopupContentContext);
+	const [modal] = modals;
 
-	return modal !== undefined ? <LayoutModal
-		{...modal}
-		key={modal.id}
-		onClose={() => removeModal(modal.id) }
-	/> : null
-}
+	return modal !== undefined ? (
+		<LayoutModal
+			{...modal}
+			key={modal.id}
+			onClose={() => removeModal(modal.id)}
+		/>
+	) : null;
+};
 
 export default LayoutModal;

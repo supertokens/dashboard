@@ -7,21 +7,25 @@ export const getUserEmailVerificationStatus = async (userId: string) => {
 		method: "GET",
 		query: { userId },
 	});
-	
-	return (response?.ok ? (await response?.json()) : {
-		status: "FEATURE_NOT_ENABLED",
-		isVerified: false
-	}) as EmailVerificationStatus;
+
+	return (
+		response?.ok
+			? await response?.json()
+			: {
+					status: "FEATURE_NOT_ENABLED",
+					isVerified: false,
+			  }
+	) as EmailVerificationStatus;
 };
 
 export const updateUserEmailVerificationStatus = async (userId: string, isEmailVerified: boolean) => {
 	const response = await fetchDataAndRedirectIf401({
 		url: getApiUrl(`/api/user/email/verify`),
-		method: "PUT", 
+		method: "PUT",
 		query: { userId },
-    config: {
-      body: JSON.stringify({ isVerified: isEmailVerified })
-    }
+		config: {
+			body: JSON.stringify({ isVerified: isEmailVerified }),
+		},
 	});
 	return response?.ok;
 };
