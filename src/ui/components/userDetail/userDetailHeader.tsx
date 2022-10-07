@@ -54,11 +54,11 @@ export const UserDisplayName: FC<UserProps> = ({ user }) => {
 	return <>{fullName || email || thirdPartyUserId || (phone && <PhoneDisplay phone={phone} />)}</>;
 };
 
-export const UserDetailBadge: React.FC<{ user: UserWithRecipeId }> = ({ user }) => (
+export const UserDetailBadge: React.FC<UserProps> = ({ user }: UserProps) => (
 	<div className="user-detail__header__badge">{getBadgeInitial(user)}</div>
 );
 
-export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCallback }) => {
+export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCallback }: UserDetailProps) => {
 	const { id } = user.user;
 	const { showModal } = useContext(PopupContentContext);
 

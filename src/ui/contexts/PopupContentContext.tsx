@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { createContext, PropsWithChildren, useReducer } from "react";
 import { LayoutModalProps } from "../components/layout/layoutModal";
 import { ToastNotificationProps } from "../components/toast/toastNotification";
@@ -52,12 +53,20 @@ export function modalReducer(state: ModalContextItem[], action: PopupAction<Layo
 
 const POPUP_CONTENT_CONTEXT_DEFAULT_VALUE = {
 	toasts: [],
-	showToast: () => {},
-	removeToast: () => {},
+	showToast: () => {
+		/* TODO */
+	},
+	removeToast: () => {
+		/* TODO */
+	},
 
 	modals: [],
-	showModal: () => {},
-	removeModal: () => {},
+	showModal: () => {
+		/* TODO */
+	},
+	removeModal: () => {
+		/* TODO */
+	},
 };
 export const PopupContentContext = createContext<PopupContentContextProps>(POPUP_CONTENT_CONTEXT_DEFAULT_VALUE);
 

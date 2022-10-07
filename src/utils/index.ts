@@ -163,7 +163,7 @@ export const formatLongDate = (date: number | Date) => {
 	const hour = date.getHours();
 	const yearDisplay = substractDate(date, new Date()) >= DATE_DISPLAY_YEAR_LIMIT ? ` ${date.getFullYear()}` : "";
 	const meridiem = hour < 12 ? "am" : "pm";
-	return `${day}${ordinal(day)} ${months[date.getMonth()]}${yearDisplay}${delimiter} 
+	return `${day}${ordinal(day)} ${months[date.getMonth()]}${yearDisplay}${delimiter}
   ${(hour % 12 || 12).toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")} ${meridiem}`;
 };
 

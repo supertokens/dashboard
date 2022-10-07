@@ -11,7 +11,7 @@ export const updatePassword = async (userId: string, newPassword: string) => {
 		],
 	};
 	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl(`/api/user/email/password/reset`),
+		url: getApiUrl("/api/user/email/password/reset"),
 		method: "POST",
 		query: { userId },
 		config: {

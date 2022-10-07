@@ -13,17 +13,17 @@
  * under the License.
  */
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { getDashboardAppBasePath } from "./utils";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import UsersListPage from "./ui/pages/usersList/UsersList";
+import { getDashboardAppBasePath } from "./utils";
 
 // This is to make sure that images are packed in the build folder
 import "./images";
 import ErrorBoundary from "./ui/components/errorboundary";
+import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
 import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
 import { ToastNotificationContainer } from "./ui/components/toast/toastNotification";
 import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
-import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
 
 function App() {
 	return (

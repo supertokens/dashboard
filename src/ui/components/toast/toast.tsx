@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export type ToastProps = {
 	/** duration before the content disappear (in miliseconds)*/
@@ -27,7 +27,8 @@ export const Toast: React.FC<ToastProps> = ({
 			if (onDisappear !== undefined) {
 				onDisappear();
 			}
-		}, duration) as any as NodeJS.Timeout;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		}, duration) as any;
 	};
 
 	// hide if childern is empty

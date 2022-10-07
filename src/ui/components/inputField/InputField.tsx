@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { getImageUrl } from "../../../utils";
 
 import "./InputField.css";

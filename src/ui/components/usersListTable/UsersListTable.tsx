@@ -15,7 +15,7 @@
 
 import React from "react";
 
-import { formatLongDate, getImageUrl, formatNumber } from "../../../utils";
+import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
 import { UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import UserRowMenu from "./UserRowMenu";
@@ -34,8 +34,8 @@ type UserListProps = {
 	limit?: number;
 	offset?: number;
 	errorOffsets?: number[];
-	goToNext?: (token: string) => any;
-	offsetChange?: (offset: number) => any;
+	goToNext?: (token: string) => void;
+	offsetChange?: (offset: number) => void;
 	onSelect: OnSelectUserFunction;
 };
 
@@ -179,9 +179,9 @@ const UserDate = ({ user }: { user: UserWithRecipeId }) => {
 };
 
 const UserRecipeTypeText: Record<UserRecipeType, string> = {
-	[`emailpassword`]: "Email password",
-	[`passwordless`]: "Passwordless",
-	[`thirdparty`]: "Third party",
+	["emailpassword"]: "Email password",
+	["passwordless"]: "Passwordless",
+	["thirdparty"]: "Third party",
 };
 
 // Pagination Section

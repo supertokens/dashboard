@@ -3,14 +3,18 @@ import { getImageUrl } from "../../../utils";
 import Toast from "../toast/toast";
 import "./CopyText.scss";
 
-export const CopyText: React.FC<{ children: string }> = ({ children }) => {
+type CopyTextProps = {
+	children: string;
+};
+
+export const CopyText: React.FC<CopyTextProps> = ({ children }: CopyTextProps) => {
 	const alertWidth = 80;
 	const copyBoxRef = useRef<HTMLDivElement>(null);
 	const [isCopied, setIsCopied] = useState<boolean>(false);
 	const copyClick = useCallback(() => {
 		if (!isCopied) {
 			setIsCopied(true);
-			navigator.clipboard.writeText(children);
+			void navigator.clipboard.writeText(children);
 		}
 	}, [isCopied, children]);
 

@@ -13,96 +13,117 @@
  * under the License.
  */
 
-import React, { useState } from 'react'
-import { StorageKeys, UNAUTHORISED_STATUS } from '../../../constants'
-import { localStorageHandler } from '../../../services/storage'
-import { fetchData, getApiUrl, getImageUrl } from '../../../utils'
-import { Footer, LOGO_ICON_LIGHT } from '../footer/footer'
-import InputField from '../inputField/InputField'
-import SafeAreaView from '../safeAreaView/SafeAreaView'
+import React, { useState } from "react";
+import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
+import { localStorageHandler } from "../../../services/storage";
+import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
+import { Footer, LOGO_ICON_LIGHT } from "../footer/footer";
+import InputField from "../inputField/InputField";
+import SafeAreaView from "../safeAreaView/SafeAreaView";
 
-import './Auth.scss'
+import "./Auth.scss";
 
 const Auth: React.FC<{
-  onSuccess: () => void
+	onSuccess: () => void;
 }> = (props) => {
-  const [apiKey, setApiKey] = useState('')
-  const [apiKeyFieldError, setApiKeyFieldError] = useState('')
-  const [loading, setIsLoading] = useState<boolean>(false)
+	const [apiKey, setApiKey] = useState("");
+	const [apiKeyFieldError, setApiKeyFieldError] = useState("");
+	const [loading, setIsLoading] = useState<boolean>(false);
 
-  const validateKey = async () => {
-    setIsLoading(true)
-    const response = await fetchData({
-      url: getApiUrl('/api/key/validate'),
-      method: 'POST',
-      config: {
-        headers: {
-          authorization: `Bearer ${apiKey}`,
-        },
-      },
-    })
+	const validateKey = async () => {
+		setIsLoading(true);
+		const response = await fetchData({
+			url: getApiUrl("/api/key/validate"),
+			method: "POST",
+			config: {
+				headers: {
+					authorization: `Bearer ${apiKey}`,
+				},
+			},
+		});
 
-    const body = await response.json()
+		const body = await response.json();
 
-    if (response.status === 200 && body.status === 'OK') {
-      localStorageHandler.setItem(StorageKeys.API_KEY, apiKey)
-      props.onSuccess()
-    } else if (response.status === UNAUTHORISED_STATUS) {
-      setApiKeyFieldError('Invalid API Key')
-    } else {
-      setApiKeyFieldError('Something went wrong')
-    }
+		if (response.status === 200 && body.status === "OK") {
+			localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
+			props.onSuccess();
+		} else if (response.status === UNAUTHORISED_STATUS) {
+			setApiKeyFieldError("Invalid API Key");
+		} else {
+			setApiKeyFieldError("Something went wrong");
+		}
 
-    setIsLoading(false)
-  }
+		setIsLoading(false);
+	};
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 
-    if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
-      validateKey()
-    } else {
-      setApiKeyFieldError('API Key field cannot be empty')
-    }
-  }
+		if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
+			void validateKey();
+		} else {
+			setApiKeyFieldError("API Key field cannot be empty");
+		}
+	};
 
-  const handleApiKeyFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target
-    setApiKey(value)
-    setApiKeyFieldError('')
-  }
-  const backgroundUrlVars = {
-    '--auth-background': `url("${getImageUrl('auth-background.png')}")`,
-    '--auth-background-portrait': `url("${getImageUrl('auth-background-portrait.png')}")`,
-  } as React.CSSProperties
+	const handleApiKeyFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { value } = e.target;
+		setApiKey(value);
+		setApiKeyFieldError("");
+	};
+	const backgroundUrlVars = {
+		"--auth-background": `url("${getImageUrl("auth-background.png")}")`,
+		"--auth-background-portrait": `url("${getImageUrl("auth-background-portrait.png")}")`,
+	} as React.CSSProperties;
 
-  return (
-    <>
-      <SafeAreaView backgroundColor='#EFEDEC' />
-      <div className='page-container auth-container' style={backgroundUrlVars}>
-        <div className='block-container block-large'>
-          <img className='title-image-smaller' src={LOGO_ICON_LIGHT} alt='Auth Page' />
-          <h2 className='api-key-form-title text-title'>Enter your API Key</h2>
-          <p className='text-small text-label'>Please enter the API key that you used to connect with your backend</p>
-          <form className='api-key-form' onSubmit={handleSubmit}>
-            <InputField
-              handleChange={handleApiKeyFieldChange}
-              name='apiKey'
-              type='password'
-              error={apiKeyFieldError}
-              value={apiKey}
-              placeholder='Your API Key'
-            />
+	return (
+		<>
+			<SafeAreaView backgroundColor="#EFEDEC" />
+			<div
+				className="page-container auth-container"
+				style={backgroundUrlVars}>
+				<div className="block-container block-large">
+					<img
+						className="title-image-smaller"
+						src={LOGO_ICON_LIGHT}
+						alt="Auth Page"
+					/>
+					<h2 className="api-key-form-title text-title">Enter your API Key</h2>
+					<p className="text-small text-label">
+						Please enter the API key that you used to connect with your backend
+					</p>
+					<form
+						className="api-key-form"
+						onSubmit={handleSubmit}>
+						<InputField
+							handleChange={handleApiKeyFieldChange}
+							name="apiKey"
+							type="password"
+							error={apiKeyFieldError}
+							value={apiKey}
+							placeholder="Your API Key"
+						/>
 
-            <button className='button' type='submit' disabled={loading}>
-              <span>Continue</span> <img src={getImageUrl('right_arrow_icon.svg')} alt='Auth Page' />
-            </button>
-          </form>
-        </div>
-      </div>
-      <Footer horizontalAlignment='center' size='normal' verticalAlignment='center' colorMode='dark'></Footer>
-    </>
-  )
-}
+						<button
+							className="button"
+							type="submit"
+							disabled={loading}>
+							<span>Continue</span>{" "}
+							<img
+								src={getImageUrl("right_arrow_icon.svg")}
+								alt="Auth Page"
+							/>
+						</button>
+					</form>
+				</div>
+			</div>
+			<Footer
+				horizontalAlignment="center"
+				size="normal"
+				verticalAlignment="center"
+				colorMode="dark"></Footer>
+		</>
+	);
+};
 
-export default Auth
+export default Auth;

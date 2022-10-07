@@ -1,3 +1,5 @@
+/* eslint-disable brace-style */
+
 import { CSSProperties } from "react";
 
 /** If empty, the app will decide the position based on the location on the screen using `getAutomaticPopupPosition()` */
@@ -52,7 +54,8 @@ const getAutomaticPopupPosition: (
 		return "right";
 	} else if (rect.left > popupWidth && isPositionEligible("left")) {
 		return "left";
-	} // if there is no enough space on right/left then displays above/below depend on the current position on the screen
+	}
+	// if there is no enough space on right/left then displays above/below depend on the current position on the screen
 	else if (rect.top < window.innerHeight / 2 && isPositionEligible("bottom")) {
 		return "bottom";
 	}

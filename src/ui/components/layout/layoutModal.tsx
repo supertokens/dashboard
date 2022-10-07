@@ -25,7 +25,7 @@ export type LayoutModalContentProps = LayoutPanelProps & {
 
 export type LayoutModalProps = LayoutModalContentProps & {
 	modalContent: ReactNode;
-	closeCallbackRef?: MutableRefObject<Function | undefined>;
+	closeCallbackRef?: MutableRefObject<(() => void) | undefined>;
 };
 
 export const LayoutModalContent: FC<LayoutModalContentProps> = (props: LayoutModalContentProps) => {
@@ -79,9 +79,9 @@ export const LayoutModal: FC<LayoutModalProps> = (props: LayoutModalProps) => {
 			{isOpened && (
 				<LayoutModalContent
 					{...props}
-					children={modalContent}
-					onClose={handleClose}
-				/>
+					onClose={handleClose}>
+					{modalContent}
+				</LayoutModalContent>
 			)}
 		</>
 	);

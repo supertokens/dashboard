@@ -13,11 +13,10 @@
  * under the License.
  */
 
-import PhoneInputWithCountrySelect, { getCountryCallingCode } from "react-phone-number-input/min";
+import { CountryCode, E164Number, format, formatIncompletePhoneNumber, isValidPhoneNumber } from "libphonenumber-js";
 import {
 	BaseSyntheticEvent,
 	ChangeEvent,
-	CSSProperties,
 	FC,
 	FocusEventHandler,
 	ForwardedRef,
@@ -28,12 +27,11 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { InputFieldPropTypes } from "../inputField/InputField";
-import "./PhoneNumber.scss";
-import { CountryCode, E164Number, format, formatIncompletePhoneNumber, isValidPhoneNumber } from "libphonenumber-js";
-import { getPopupPosition, PopUpPositionProperties } from "../tooltip/tooltip-util";
+import PhoneInputWithCountrySelect, { getCountryCallingCode } from "react-phone-number-input";
 import { getImageUrl, useClickOutside } from "../../../utils";
-import e from "cors";
+import { InputFieldPropTypes } from "../inputField/InputField";
+import { getPopupPosition, PopUpPositionProperties } from "../tooltip/tooltip-util";
+import "./PhoneNumber.scss";
 
 export type PhoneNumberInputProps = Omit<InputFieldPropTypes, "type" | "handleChange"> & {
 	onChange: (phoneNumber: string) => void;
@@ -68,6 +66,7 @@ const calculateOptionDropdownPosition = (countrySelectRef: React.RefObject<HTMLD
 
 export const PhoneNumberCountrySelect: FC<PhoneNumberCountrySelectProps> = (props: PhoneNumberCountrySelectProps) => {
 	// "ZZ" means "International".
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const emptyValue = "ZZ" as any;
 	/** `estimatedRowOptionheight` is used to define dropdown's max-height and the option's scroll postion */
 	const estimatedRowOptionheight = 36;
@@ -224,6 +223,7 @@ const PhoneNumberTextField: FC<PhoneNumberTextFieldProps> = forwardRef(
 		);
 	}
 );
+PhoneNumberTextField.displayName = "PhoneNumberTextField";
 
 export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberInputProps) => {
 	const { onChange, value, error } = props;

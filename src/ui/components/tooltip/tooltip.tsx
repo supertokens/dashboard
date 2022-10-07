@@ -97,9 +97,9 @@ export const TooltipContainer: FC<TooltipProps> = (props) => {
 					{...props}
 					tooltipWidth={tooltipWidth}
 					properties={getPopupPosition(containerRef.current, tooltipWidth, position)}
-					children={tooltip}
-					onDisappear={() => setIsTooltipShown(false)}
-				/>
+					onDisappear={() => setIsTooltipShown(false)}>
+					{tooltip}
+				</TooltipPopup>
 			)}
 		</div>
 	);

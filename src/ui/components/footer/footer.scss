@@ -14,31 +14,39 @@
 */
 
 .footer {
-  bottom: 0;
-  width: 100%;
-  min-height: 62px;
-  display: flex;
-  padding: 20px 32px;
-  
-  .logo {
-    height: 23px;
-    width: 151px;
-  }
+	bottom: 0;
+	width: 100%;
+	min-height: 62px;
+	display: flex;
+	padding: 20px 32px;
 
-  &.alignment-right {justify-content: flex-end;}
-  &.alignment-center { justify-content: center;}
+	.logo {
+		height: 23px;
+		width: 151px;
+	}
 
-  &.vertical-center { align-items: center; }
-  &.vertical-bottom { align-self: flex-end; }
+	&.alignment-right {
+		justify-content: flex-end;
+	}
+	&.alignment-center {
+		justify-content: center;
+	}
 
-  &.color-dark {
-    background-color: var(--color-black);
-    .logo {
-      width: 148px;
-    }
-  }
+	&.vertical-center {
+		align-items: center;
+	}
+	&.vertical-bottom {
+		align-self: flex-end;
+	}
 
-  &.size-large {
-    padding: 40px 32px;
-  }
+	&.color-dark {
+		background-color: var(--color-black);
+		.logo {
+			width: 148px;
+		}
+	}
+
+	&.size-large {
+		padding: 40px 32px;
+	}
 }

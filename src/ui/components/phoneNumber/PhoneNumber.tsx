@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { parsePhoneNumberFromString, format } from "libphonenumber-js";
+import { format, parsePhoneNumberFromString } from "libphonenumber-js";
 import "./PhoneNumber.scss";
 
 export const PhoneDisplay = ({ phone }: { phone: string }) => {
@@ -21,11 +21,11 @@ export const PhoneDisplay = ({ phone }: { phone: string }) => {
 	return (
 		<>
 			{country && (
-				<span className="phone-display">
+				<div className="phone-display">
 					<span>
 						+{countryCallingCode} {format(phone, "NATIONAL")}
 					</span>
-				</span>
+				</div>
 			)}
 		</>
 	);

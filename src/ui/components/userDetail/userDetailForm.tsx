@@ -13,11 +13,11 @@
  * under the License.
  */
 
-import { FC, PropsWithChildren, useCallback, useRef, useState } from "react";
+import { FC, useState } from "react";
 import { getImageUrl } from "../../../utils";
 import { UserProps } from "../../pages/usersList/types";
 import InputField from "../inputField/InputField";
-import LayoutModal, { LayoutModalProps } from "../layout/layoutModal";
+import { LayoutModalProps } from "../layout/layoutModal";
 import { ToastNotificationProps } from "../toast/toastNotification";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import "./userDetailForm.scss";
@@ -46,7 +46,7 @@ const getPasswordError = (password: string) => {
 
 export const getUserChangePasswordPopupProps = (props: UserDetailChangePasswordPopupProps) => {
 	const { onPasswordChange } = props;
-	const closeModalRef: React.MutableRefObject<Function | undefined> = { current: undefined };
+	const closeModalRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
 
 	const onModalClose = (password?: string) => {
 		if (closeModalRef.current !== undefined) {
@@ -148,7 +148,7 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 
 export const getUserDeleteConfirmationProps = (props: UserDeleteConfirmationTriggerProps) => {
 	const { user, onDeleteCallback } = props;
-	const closeConfirmDeleteRef: React.MutableRefObject<Function | undefined> = { current: undefined };
+	const closeConfirmDeleteRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
 
 	const onConfirmedDelete = (isConfirmed: boolean) => {
 		if (isConfirmed) {

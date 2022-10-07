@@ -14,33 +14,33 @@
  */
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { EmailVerificationStatus, UserWithRecipeId } from "./types";
+import { deleteUser as deleteUserApi, getUser as getUserApi, updateUser as updateUserApi } from "../../api/user";
+import { getUserEmailVerificationStatus, updateUserEmailVerificationStatus } from "../../api/user/email/verify";
+import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../api/user/email/verify/token";
+import { updatePassword } from "../../api/user/password/reset";
+import fetchUsers from "../../api/users";
+import fetchCount from "../../api/users/count";
 import AuthWrapper from "../../components/authWrapper";
+import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
+import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
+import UserDetail from "../../components/userDetail/userDetail";
+import {
+	getDeleteUserToast,
+	getEmailUnVerifiedToast,
+	getEmailVerifiedToast,
+	getSendEmailVerificationToast,
+	getUpdatePasswordToast,
+	getUpdateUserToast,
+} from "../../components/userDetail/userDetailForm";
+import { isEmailVerificationApplicable } from "../../components/userDetail/userDetailInfoGrid";
 import UsersListTable, {
 	LIST_DEFAULT_LIMIT,
 	OnSelectUserFunction,
 } from "../../components/usersListTable/UsersListTable";
-import "./UsersList.scss";
-import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
-import InfoConnection from "../../components/info-connection/info-connection";
-import UserDetail from "../../components/userDetail/userDetail";
-import fetchUsers from "../../api/users";
-import fetchCount from "../../api/users/count";
-import { updateUser as updateUserApi, deleteUser as deleteUserApi, getUser as getUserApi } from "../../api/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import {
-	getDeleteUserToast,
-	getEmailUnVerifiedToast,
-	getSendEmailVerificationToast,
-	getEmailVerifiedToast,
-	getUpdateUserToast,
-	getUpdatePasswordToast,
-} from "../../components/userDetail/userDetailForm";
-import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../api/user/email/verify/token";
-import { getUserEmailVerificationStatus, updateUserEmailVerificationStatus } from "../../api/user/email/verify";
-import { isEmailVerificationApplicable } from "../../components/userDetail/userDetailInfoGrid";
-import { updatePassword } from "../../api/user/password/reset";
+import { EmailVerificationStatus, UserWithRecipeId } from "./types";
+import "./UsersList.scss";
 
 type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 
@@ -131,7 +131,8 @@ export const UsersList: React.FC<UserListProps> = ({ onSelect, css, reloadRef })
 	);
 
 	useEffect(() => {
-		loadCount();
+		void loadCount();
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		setConnectionURI((window as any).connectionURI);
 	}, [loadCount]);
 
@@ -259,9 +260,9 @@ export const UserListPage = () => {
 	// load user detail && email verification from API when userId changes
 	useEffect(() => {
 		if (selectedUser?.user.id !== undefined) {
-			getUser(selectedUser?.user.id);
+			void getUser(selectedUser?.user.id);
 			if (isEmailVerificationApplicable(selectedUser.recipeId)) {
-				getUserEmailVerificationStatus(selectedUser?.user.id).then(setSelectedUserEmailVerification);
+				void getUserEmailVerificationStatus(selectedUser?.user.id).then(setSelectedUserEmailVerification);
 			}
 		} else {
 			setSelectedUserEmailVerification(undefined);
@@ -283,6 +284,7 @@ export const UserListPage = () => {
 				/>
 			)}
 			<UsersList
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				onSelect={(user) => setSelectedUser({ ...user, user: { ...user.user } as any })}
 				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
 				reloadRef={reloadListRef}
