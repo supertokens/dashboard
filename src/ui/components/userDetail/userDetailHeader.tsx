@@ -21,6 +21,10 @@ import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "./userDetail";
 import { getUserDeleteConfirmationProps } from "./userDetailForm";
 
+type UserDetailBaseProps = {
+	user: UserWithRecipeId;
+};
+
 const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 	const { firstName, lastName, email, id } = user;
 	// concatting the firstName & lastname to handle
@@ -35,9 +39,6 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 		return splittedEmailName.length > 1
 			? `${splittedEmailName[0][0]}${splittedEmailName[1][0]}`
 			: splittedEmailName[0].slice(0, 2);
-	}
-	if (recipeId === "thirdparty" && user.thirdParty.userId.trim().length > 0) {
-		return user.thirdParty.userId.trim().slice(0, 2);
 	}
 	if (recipeId === "passwordless" && user.phoneNumber !== undefined && user.phoneNumber.trim().length > 0) {
 		return user.phoneNumber.trim().replace("+", "").slice(0, 2);

@@ -18,7 +18,7 @@ import React from "react";
 import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
 import { UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
-import UserRowMenu from "./UserRowMenu";
+import UserRowMenu, { UserRowMenuItemProps } from "./UserRowMenu";
 import "./UsersListTable.scss";
 
 const USER_TABLE_COLUMNS_COUNT = 4;
@@ -93,7 +93,7 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 const UserTableRows = ({ users, onSelect }: Pick<UserListProps, "users" | "onSelect">) => {
 	return (
 		<>
-			{users.map((user, index) => (
+			{users.map((user) => (
 				<UserTableRow
 					user={user}
 					key={user.user.id}
@@ -105,14 +105,55 @@ const UserTableRows = ({ users, onSelect }: Pick<UserListProps, "users" | "onSel
 };
 
 // Single Row Section
-const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number; onSelect: OnSelectUserFunction }> = (props) => {
+const UserTableRow: React.FC<{
+	user: UserWithRecipeId;
+	index?: number;
+	onSelect: OnSelectUserFunction;
+}> = (props) => {
 	const { user, index, onSelect } = props;
+	const menuItems: UserRowMenuItemProps[] = [
+		{
+			onClick: () => onSelect(user),
+			text: "View Details",
+			imageUrl: "people.svg",
+			hoverImageUrl: "people-opened.svg",
+		},
+		{
+			onClick: () => {
+				/* TODO */
+			},
+			text: "Change Email",
+			imageUrl: "mail.svg",
+			hoverImageUrl: "mail-opened.svg",
+			disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
+		},
+		{
+			onClick: () => {
+				/* TODO */
+			},
+			text: "Change Password",
+			imageUrl: "lock.svg",
+			hoverImageUrl: "lock-opened.svg",
+			disabled: (user: UserWithRecipeId) => user.recipeId !== "emailpassword",
+		},
+		{
+			onClick: () => {
+				/* TODO */
+			},
+			text: "Delete user",
+			imageUrl: "trash.svg",
+			hoverImageUrl: "trash-opened.svg",
+		},
+	];
 	return (
 		<tr
 			key={index}
 			className="user-row">
 			<td>
-				<UserInfo user={user} />
+				<UserInfo
+					user={user}
+					onSelect={onSelect}
+				/>
 			</td>
 			<td>
 				<UserRecipePill user={user} />
@@ -122,7 +163,7 @@ const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number; onSelect:
 			</td>
 			<td>
 				<UserRowMenu
-					onSelect={onSelect}
+					menuItems={menuItems}
 					user={user}
 				/>
 			</td>
@@ -130,13 +171,14 @@ const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number; onSelect:
 	);
 };
 
-const UserInfo = ({ user }: { user: UserWithRecipeId }) => {
+const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSelectUserFunction }) => {
 	const { firstName, lastName, email } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 	return (
 		<div className="user-info">
 			<div
+				onClick={() => onSelect(user)}
 				className="main"
 				title={name || email}>
 				{name || email || (phone && <PhoneDisplay phone={phone} />)}

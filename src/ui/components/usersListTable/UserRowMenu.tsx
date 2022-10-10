@@ -1,35 +1,49 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
 import { FC } from "react";
 import { getImageUrl } from "../../../utils";
 import { UserWithRecipeId } from "../../pages/usersList/types";
 
 export type UserRowMenuProps = {
-	onSelect?: (user: UserWithRecipeId) => void;
-	onDelete?: (user: UserWithRecipeId) => void;
-	onChangeEmail?: (user: UserWithRecipeId) => void;
-	onChangePassword?: (user: UserWithRecipeId) => void;
+	menuItems: UserRowMenuItemProps[];
 	user: UserWithRecipeId;
 };
 
-type UserRowMenuItemProps = {
+export type UserRowMenuItemProps = {
 	onClick: () => void;
 	text: string;
-	imgUrl: string;
-	imgHoverUrl?: string;
+	imageUrl: string;
+	hoverImageUrl?: string;
+	className?: string;
+	disabled?: (user: UserWithRecipeId) => boolean;
 };
 
-export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imgUrl, imgHoverUrl, text, onClick }) => (
+export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imageUrl, hoverImageUrl, text, onClick, className }) => (
 	<>
 		<button
-			className="user-row-select-popup-item button flat"
+			className={`user-row-select-popup-item button flat ${className}`}
 			onClick={onClick}>
 			<img
 				className="img-normal"
-				src={getImageUrl(imgUrl)}
+				src={getImageUrl(imageUrl)}
 				alt={text}
 			/>
 			<img
 				className="img-hover"
-				src={getImageUrl(imgHoverUrl ?? imgUrl)}
+				src={getImageUrl(hoverImageUrl ?? imageUrl)}
 				alt={text}
 			/>
 			<span>{text}</span>
@@ -37,7 +51,7 @@ export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imgUrl, imgHoverUrl,
 	</>
 );
 
-export const UserRowMenu: FC<UserRowMenuProps> = ({ onDelete, onSelect, onChangePassword, onChangeEmail, user }) => {
+export const UserRowMenu: FC<UserRowMenuProps> = ({ user, menuItems }) => {
 	return (
 		<>
 			<div className="user-row-select-menu">
@@ -49,37 +63,13 @@ export const UserRowMenu: FC<UserRowMenuProps> = ({ onDelete, onSelect, onChange
 				</button>
 				<div className="user-row-select-popup">
 					<div className="panel">
-						{onSelect && (
-							<UserRowMenuItem
-								onClick={() => onSelect(user)}
-								text="View Details"
-								imgUrl="people.svg"
-								imgHoverUrl="people-opened.svg"
-							/>
-						)}
-						{onChangeEmail && (
-							<UserRowMenuItem
-								onClick={() => onChangeEmail(user)}
-								text="Change Email"
-								imgUrl="mail.svg"
-								imgHoverUrl="mail-opened.svg"
-							/>
-						)}
-						{onChangePassword && (
-							<UserRowMenuItem
-								onClick={() => onChangePassword(user)}
-								text="Change Password"
-								imgUrl="lock.svg"
-								imgHoverUrl="lock-opened.svg"
-							/>
-						)}
-						{onDelete && (
-							<UserRowMenuItem
-								onClick={() => onDelete(user)}
-								text="Delete user"
-								imgUrl="trash.svg"
-								imgHoverUrl="trash-opened.svg"
-							/>
+						{menuItems.map((menu) =>
+							menu.disabled === undefined || !menu.disabled(user) ? (
+								<UserRowMenuItem
+									{...menu}
+									key={menu.text}
+								/>
+							) : null
 						)}
 					</div>
 				</div>

@@ -17,8 +17,8 @@ import React from "react";
 import { getImageUrl } from "../../../utils";
 import { EmailVerificationStatus, UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
-import UserDetailHeader from "./userDetailHeader";
 import "./userDetail.scss";
+import UserDetailHeader from "./userDetailHeader";
 import UserDetailInfoGrid from "./userDetailInfoGrid";
 
 export type UserDetailProps = {

@@ -65,13 +65,14 @@ body {
 	--color-custom-provider-bg: rgb(228, 224, 255);
 	--color-custom-provider-text: rgb(84, 37, 176);
 
-	/* Copy box color */
+	/* Color for Copy-Box */
 	--color-copy-box: rgb(83, 101, 121);
 	--color-copy-box-bg: rgb(240, 244, 247);
 	--color-copy-box-shadow: rgba(83, 101, 121, 0.2);
 
 	/* Button color */
 	--color-button-error: rgb(237, 52, 78);
+	--color-button-error-border: rgb(222, 35, 61);
 
 	/* Z-index value for different of popup element */
 	--z-index-inline-popup: 1;
