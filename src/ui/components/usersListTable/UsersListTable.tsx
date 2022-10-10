@@ -13,11 +13,14 @@
  * under the License.
  */
 
-import React from "react";
+import React, { useCallback, useContext } from "react";
 
 import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
+import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
+import { UserDetailProps } from "../userDetail/userDetail";
+import { getUserChangePasswordPopupProps, getUserDeleteConfirmationProps } from "../userDetail/userDetailForm";
 import UserRowMenu, { UserRowMenuItemProps } from "./UserRowMenu";
 import "./UsersListTable.scss";
 
@@ -25,6 +28,8 @@ const USER_TABLE_COLUMNS_COUNT = 4;
 export const LIST_DEFAULT_LIMIT = 10;
 
 export type OnSelectUserFunction = (user: UserWithRecipeId) => void;
+
+export type UserRowActionProps = Pick<UserDetailProps, "onDeleteCallback" | "onChangePasswordCallback">;
 
 type UserListProps = {
 	users: UserWithRecipeId[];
@@ -37,10 +42,10 @@ type UserListProps = {
 	goToNext?: (token: string) => void;
 	offsetChange?: (offset: number) => void;
 	onSelect: OnSelectUserFunction;
-};
+} & UserRowActionProps;
 
 const UsersListTable: React.FC<UserListProps> = (props) => {
-	const { users, limit, offset, isLoading, errorOffsets, onSelect } = {
+	const { users, limit, offset, isLoading, errorOffsets, onSelect, onChangePasswordCallback, onDeleteCallback } = {
 		offset: 0,
 		limit: LIST_DEFAULT_LIMIT,
 		...props,
@@ -73,6 +78,8 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 							<UserTableRows
 								users={displayedUsers}
 								onSelect={onSelect}
+								onChangePasswordCallback={onChangePasswordCallback}
+								onDeleteCallback={onDeleteCallback}
 							/>
 						))}
 				</tbody>
@@ -90,7 +97,12 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 };
 
 // Table Rows Section
-const UserTableRows = ({ users, onSelect }: Pick<UserListProps, "users" | "onSelect">) => {
+const UserTableRows = ({
+	users,
+	onSelect,
+	onChangePasswordCallback,
+	onDeleteCallback,
+}: Pick<UserListProps, "users" | "onSelect"> & UserRowActionProps) => {
 	return (
 		<>
 			{users.map((user) => (
@@ -98,6 +110,8 @@ const UserTableRows = ({ users, onSelect }: Pick<UserListProps, "users" | "onSel
 					user={user}
 					key={user.user.id}
 					onSelect={onSelect}
+					onChangePasswordCallback={onChangePasswordCallback}
+					onDeleteCallback={onDeleteCallback}
 				/>
 			))}
 		</>
@@ -105,12 +119,41 @@ const UserTableRows = ({ users, onSelect }: Pick<UserListProps, "users" | "onSel
 };
 
 // Single Row Section
-const UserTableRow: React.FC<{
-	user: UserWithRecipeId;
-	index?: number;
-	onSelect: OnSelectUserFunction;
-}> = (props) => {
-	const { user, index, onSelect } = props;
+const UserTableRow: React.FC<
+	{
+		user: UserWithRecipeId;
+		index?: number;
+		onSelect: OnSelectUserFunction;
+	} & UserRowActionProps
+> = (props) => {
+	const { user, index, onSelect, onChangePasswordCallback, onDeleteCallback } = props;
+	const { showModal } = useContext(PopupContentContext);
+
+	const openChangePasswordModal = useCallback(
+		() =>
+			showModal(
+				getUserChangePasswordPopupProps({
+					onPasswordChange: (password) => {
+						if (password !== undefined) {
+							onChangePasswordCallback(user.user.id, password);
+						}
+					},
+				})
+			),
+		[showModal, user.user.id, onChangePasswordCallback]
+	);
+
+	const openDeleteConfirmation = useCallback(
+		() =>
+			showModal(
+				getUserDeleteConfirmationProps({
+					onDeleteCallback,
+					user,
+				})
+			),
+		[user, onDeleteCallback, showModal]
+	);
+
 	const menuItems: UserRowMenuItemProps[] = [
 		{
 			onClick: () => onSelect(user),
@@ -128,18 +171,14 @@ const UserTableRow: React.FC<{
 			disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
 		},
 		{
-			onClick: () => {
-				/* TODO */
-			},
+			onClick: openChangePasswordModal,
 			text: "Change Password",
 			imageUrl: "lock.svg",
 			hoverImageUrl: "lock-opened.svg",
 			disabled: (user: UserWithRecipeId) => user.recipeId !== "emailpassword",
 		},
 		{
-			onClick: () => {
-				/* TODO */
-			},
+			onClick: openDeleteConfirmation,
 			text: "Delete user",
 			imageUrl: "trash.svg",
 			hoverImageUrl: "trash-opened.svg",

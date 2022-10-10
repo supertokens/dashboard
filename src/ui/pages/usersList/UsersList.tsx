@@ -37,6 +37,7 @@ import { isEmailVerificationApplicable } from "../../components/userDetail/userD
 import UsersListTable, {
 	LIST_DEFAULT_LIMIT,
 	OnSelectUserFunction,
+	UserRowActionProps,
 } from "../../components/usersListTable/UsersListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { EmailVerificationStatus, UserWithRecipeId } from "./types";
@@ -51,11 +52,17 @@ type UserListProps = {
 	 * a callback that can be used to trigger reloading the current active page
 	 */
 	reloadRef?: UserListPropsReloadRef;
-};
+} & UserRowActionProps;
 
 type NextPaginationTokenByOffset = Record<number, string | undefined>;
 
-export const UsersList: React.FC<UserListProps> = ({ onSelect, css, reloadRef }) => {
+export const UsersList: React.FC<UserListProps> = ({
+	onSelect,
+	css,
+	reloadRef,
+	onChangePasswordCallback,
+	onDeleteCallback,
+}) => {
 	const limit = LIST_DEFAULT_LIMIT;
 	const [count, setCount] = useState<number>();
 	const [users, setUsers] = useState<UserWithRecipeId[]>([]);
@@ -173,6 +180,8 @@ export const UsersList: React.FC<UserListProps> = ({ onSelect, css, reloadRef })
 						offsetChange={loadOffset}
 						isLoading={loading}
 						onSelect={onSelect}
+						onChangePasswordCallback={onChangePasswordCallback}
+						onDeleteCallback={onDeleteCallback}
 					/>
 				)}
 			</div>
@@ -210,7 +219,9 @@ export const UserListPage = () => {
 				await getUser(userId);
 			} else {
 				// reset the user data from the memory
-				setSelectedUser({ ...selectedUser! });
+				// it uses three dots,
+				// otherwise the original source of selectedUser will be modified along with the state changes
+				setSelectedUser(selectedUser !== undefined ? { ...selectedUser } : undefined);
 			}
 			showToast(getUpdateUserToast(updateSucceed));
 		},
@@ -288,6 +299,8 @@ export const UserListPage = () => {
 				onSelect={(user) => setSelectedUser({ ...user, user: { ...user.user } as any })}
 				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
 				reloadRef={reloadListRef}
+				onChangePasswordCallback={changePassword}
+				onDeleteCallback={({ user: { id } }) => deleteUser(id)}
 			/>
 			<Footer
 				colorMode="dark"
