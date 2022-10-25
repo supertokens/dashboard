@@ -17,7 +17,6 @@ import { FC, useCallback, useContext } from "react";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { UserProps, UserWithRecipeId } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
-import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "./userDetail";
 import { getUserDeleteConfirmationProps } from "./userDetailForm";
 
@@ -46,12 +45,11 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 };
 
 export const UserDisplayName: FC<UserProps> = ({ user }) => {
-	const { firstName, lastName, email, id } = user.user;
+	const { firstName, lastName, email } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
-	const thirdPartyUserId = user.recipeId === "thirdparty" ? user.user.thirdParty.userId : undefined;
 	const fullName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 
-	return <>{fullName || email || thirdPartyUserId || (phone && <PhoneDisplay phone={phone} />)}</>;
+	return <span>{fullName || email || phone}</span>;
 };
 
 export const UserDetailBadge: React.FC<UserProps> = ({ user }: UserProps) => (

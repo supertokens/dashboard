@@ -296,7 +296,7 @@ export const UserListPage = () => {
 			)}
 			<UsersList
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				onSelect={(user) => setSelectedUser({ ...user, user: { ...user.user } as any })}
+				onSelect={(user) => setSelectedUser({ ...user })}
 				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
 				reloadRef={reloadListRef}
 				onChangePasswordCallback={changePassword}

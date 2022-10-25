@@ -154,36 +154,71 @@ const UserTableRow: React.FC<
 		[user, onDeleteCallback, showModal]
 	);
 
-	const menuItems: UserRowMenuItemProps[] = [
-		{
-			onClick: () => onSelect(user),
-			text: "View Details",
-			imageUrl: "people.svg",
-			hoverImageUrl: "people-opened.svg",
-		},
-		{
-			onClick: () => {
-				/* TODO */
+	const getMenuItems = (): UserRowMenuItemProps[] => {
+		const menuItems: UserRowMenuItemProps[] = [
+			{
+				onClick: () => onSelect(user),
+				text: "View Details",
+				imageUrl: "people.svg",
+				hoverImageUrl: "people-opened.svg",
 			},
-			text: "Change Email",
-			imageUrl: "mail.svg",
-			hoverImageUrl: "mail-opened.svg",
-			disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
-		},
-		{
-			onClick: openChangePasswordModal,
-			text: "Change Password",
-			imageUrl: "lock.svg",
-			hoverImageUrl: "lock-opened.svg",
-			disabled: (user: UserWithRecipeId) => user.recipeId !== "emailpassword",
-		},
-		{
+		];
+
+		if (user.recipeId === "emailpassword") {
+			menuItems.push({
+				onClick: openChangePasswordModal,
+				text: "Change Password",
+				imageUrl: "lock.svg",
+				hoverImageUrl: "lock-opened.svg",
+				disabled: (user: UserWithRecipeId) => user.recipeId !== "emailpassword",
+			});
+
+			menuItems.push({
+				onClick: () => {
+					/* TODO */
+				},
+				text: "Change Email",
+				imageUrl: "mail.svg",
+				hoverImageUrl: "mail-opened.svg",
+				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
+			});
+		}
+
+		if (user.recipeId === "passwordless" && user.user.email !== undefined) {
+			menuItems.push({
+				onClick: () => {
+					/* TODO */
+				},
+				text: "Change Email",
+				imageUrl: "mail.svg",
+				hoverImageUrl: "mail-opened.svg",
+				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
+			});
+		}
+
+		if (user.recipeId === "passwordless" && user.user.phoneNumber !== undefined) {
+			menuItems.push({
+				onClick: () => {
+					/* TODO */
+				},
+				text: "Change Phone Number",
+				// TODO: Need an icon for phone
+				imageUrl: "mail.svg",
+				hoverImageUrl: "mail-opened.svg",
+				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
+			});
+		}
+
+		menuItems.push({
 			onClick: openDeleteConfirmation,
 			text: "Delete user",
 			imageUrl: "trash.svg",
 			hoverImageUrl: "trash-opened.svg",
-		},
-	];
+		});
+
+		return menuItems;
+	};
+
 	return (
 		<tr
 			key={index}
@@ -202,7 +237,7 @@ const UserTableRow: React.FC<
 			</td>
 			<td>
 				<UserRowMenu
-					menuItems={menuItems}
+					menuItems={getMenuItems()}
 					user={user}
 				/>
 			</td>

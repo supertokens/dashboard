@@ -15,7 +15,7 @@
 
 import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "../../../utils";
-import Toast from "../toast/toast";
+import Toast, { TOAST_DEFAULT_DURATION } from "../toast/toast";
 import "./CopyText.scss";
 
 type CopyTextProps = {
@@ -74,7 +74,9 @@ export const CopyText: React.FC<CopyTextProps> = ({ children }: CopyTextProps) =
 				/>
 			</span>
 			{isCopied && (
-				<Toast onDisappear={() => setIsCopied(false)}>
+				<Toast
+					duration={TOAST_DEFAULT_DURATION}
+					onDisappear={() => setIsCopied(false)}>
 					<span
 						className="copy-text-notification"
 						style={getAlertPosition()}>

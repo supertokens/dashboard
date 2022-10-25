@@ -123,13 +123,13 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 	return (
 		<div className="user-detail-form">
 			<p>
-				Are you sure you want to delete user{" "}
+				Are you sure you want to delete user “
 				<b>
-					“<UserDisplayName user={user} />”
+					<UserDisplayName user={user} />
 				</b>
-				?
+				”?
 			</p>
-			<p>All the user’s sessions will be revoked and the user will be deleted permanently.</p>
+			<p> This action is irreversible.</p>
 			<div className="user-detail-form__actions">
 				<button
 					className="button outline"
@@ -139,7 +139,7 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 				<button
 					className="button button-error"
 					onClick={() => onConfirmed(true)}>
-					Save
+					Yes, Delete
 				</button>
 			</div>
 		</div>

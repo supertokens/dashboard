@@ -22,21 +22,20 @@ export type ToastProps = {
 	children?: React.ReactNode;
 	onDisappear?: () => void;
 };
-export const TOAST_DURATION = 3000;
+export const TOAST_DEFAULT_DURATION = 3000;
 
 /**
  * Simple component that will display one-time content,
  * and then disappears or replaced by `props.contentAfterDisappear` after `props.duration` miliseconds
  */
-export const Toast: React.FC<ToastProps> = ({
-	duration = TOAST_DURATION,
-	children,
-	contentAfterDisappear,
-	onDisappear,
-}) => {
+export const Toast: React.FC<ToastProps> = ({ duration, children, contentAfterDisappear, onDisappear }) => {
 	const [showChildern, setShowChildern] = useState(true);
 	const timerRef: React.MutableRefObject<undefined | NodeJS.Timeout> = useRef(undefined);
 	const startTimer = () => {
+		if (duration === undefined) {
+			return;
+		}
+
 		timerRef.current = setTimeout(() => {
 			setShowChildern(false);
 			if (onDisappear !== undefined) {

@@ -95,6 +95,7 @@ export const TooltipContainer: FC<TooltipProps> = (props) => {
 			{isTooltipShown && (
 				<TooltipPopup
 					{...props}
+					duration={undefined}
 					tooltipWidth={tooltipWidth}
 					properties={getPopupPosition(containerRef.current, tooltipWidth, position)}
 					onDisappear={() => setIsTooltipShown(false)}>

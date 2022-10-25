@@ -26,9 +26,12 @@
 		justify-content: flex-end;
 		@include gap-horizontal(24px);
 		button {
-			width: 80px;
 			justify-content: center;
 			font-weight: normal;
+			padding-top: 10px;
+			padding-bottom: 10px;
+			padding-right: 16px;
+			padding-left: 16px;
 		}
 	}
 	p {
