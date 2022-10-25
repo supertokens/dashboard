@@ -37,11 +37,9 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 			? `${splittedEmailName[0][0]}${splittedEmailName[1][0]}`
 			: splittedEmailName[0].slice(0, 2);
 	}
-	if (recipeId === "passwordless" && user.phoneNumber !== undefined && user.phoneNumber.trim().length > 0) {
-		return user.phoneNumber.trim().replace("+", "").slice(0, 2);
-	}
-	// this id is to prevent the function to have `undefined` return
-	return id.trim().slice(0, 2);
+
+	// If we dont have a name or email for the user just use "ST" as the inital
+	return "ST";
 };
 
 export const UserDetailBadge: React.FC<UserDetailBaseProps> = ({ user }: UserDetailBaseProps) => (
