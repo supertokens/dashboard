@@ -19,11 +19,20 @@ import AuthWrapper from "../../components/authWrapper";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
-import UsersListTable, { LIST_DEFAULT_LIMIT } from "../../components/usersListTable/UsersListTable";
+import UserDetail from "../../components/userDetail/userDetail";
+import UsersListTable, {
+	LIST_DEFAULT_LIMIT,
+	OnSelectUserFunction,
+} from "../../components/usersListTable/UsersListTable";
 import { UserListCount, UserPaginationList, UserWithRecipeId } from "./types";
 import "./UsersList.scss";
 
-export const UsersList: React.FC = () => {
+type UserListProps = {
+	onSelect: OnSelectUserFunction;
+	css?: React.CSSProperties;
+};
+
+export const UsersList: React.FC<UserListProps> = ({ onSelect, css }) => {
 	const limit = LIST_DEFAULT_LIMIT;
 	const [count, setCount] = useState<number>();
 	const [users, setUsers] = useState<UserWithRecipeId[]>([]);
@@ -73,7 +82,9 @@ export const UsersList: React.FC = () => {
 	}, [loadCount]);
 
 	return (
-		<div className="users-list">
+		<div
+			className="users-list"
+			style={css}>
 			<img
 				className="title-image"
 				src={LOGO_ICON_LIGHT}
@@ -100,6 +111,7 @@ export const UsersList: React.FC = () => {
 						goToNext={(token) => loadUsers(token)}
 						offsetChange={loadOffset}
 						isLoading={loading}
+						onSelect={onSelect}
 					/>
 				)}
 			</div>
@@ -125,14 +137,33 @@ const fetchCount = async () => {
 	return response.ok ? ((await response?.json()) as UserListCount) : undefined;
 };
 
-export const UserListPage = () => (
-	<AuthWrapper>
-		<UsersList />
-		<Footer
-			colorMode="dark"
-			horizontalAlignment="center"
-			verticalAlignment="center"
-		/>
-	</AuthWrapper>
-);
+export const UserListPage = () => {
+	const [selectedUser, setSelectedUser] = useState<UserWithRecipeId>();
+	const isSelectedUserNotEmpty = selectedUser !== undefined;
+	return (
+		<AuthWrapper>
+			{isSelectedUserNotEmpty && (
+				<UserDetail
+					user={selectedUser}
+					onBackButtonClicked={() => setSelectedUser(undefined)}
+					onDeleteCallback={() => {
+						/* TODO */
+					}}
+					onUpdateCallback={() => {
+						/* TODO */
+					}}
+				/>
+			)}
+			<UsersList
+				onSelect={setSelectedUser}
+				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
+			/>
+			<Footer
+				colorMode="dark"
+				horizontalAlignment="center"
+				verticalAlignment="center"
+			/>
+		</AuthWrapper>
+	);
+};
 export default UserListPage;

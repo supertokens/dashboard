@@ -12,22 +12,36 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+@import "../../styles/mixin.scss";
 
-@mixin gap-horizontal($gap) {
-	> :not(:last-child) {
-		margin-right: $gap;
+.copy-text {
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	.copy-text-text {
+		@include text-ellipsis(100%);
+		padding-right: 4px;
 	}
-}
-
-@mixin gap-vertical($gap) {
-	> :not(:last-child) {
-		margin-bottom: $gap;
+	.copy-text-action {
+		border-radius: 50%;
+		transition: 0.3s;
+		&:hover {
+			background-color: var(--color-copy-box-shadow);
+			box-shadow: 0px 0px 0px 4px var(--color-copy-box-shadow);
+		}
 	}
-}
+	.copy-text-notification {
+		position: fixed;
+		font-size: 12px;
+		transform: translateY(-50%);
+		z-index: 1;
 
-@mixin text-ellipsis($max-width) {
-	max-width: $max-width;
-	overflow-x: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+		span {
+			margin: 0px 12px;
+			white-space: nowrap;
+			background-color: var(--color-black);
+			border-color: var(--color-black);
+			color: var(--color-white);
+		}
+	}
 }

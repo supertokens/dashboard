@@ -31,6 +31,7 @@ body {
 	--color-error-bg: rgb(253, 240, 241);
 	--color-info-shadow: rgba(158, 37, 38, 0.16);
 	--color-info-bg: rgb(235, 245, 255);
+	--color-link: rgb(0, 122, 255);
 
 	/* Border Colors */
 	--color-border: rgb(229, 229, 229);
@@ -59,4 +60,13 @@ body {
 	--color-apple-text: rgb(11, 28, 69);
 	--color-custom-provider-bg: rgb(228, 224, 255);
 	--color-custom-provider-text: rgb(84, 37, 176);
+
+	/* Color for Copy-Box */
+	--color-copy-box: rgb(83, 101, 121);
+	--color-copy-box-bg: rgb(240, 244, 247);
+	--color-copy-box-shadow: rgba(83, 101, 121, 0.2);
+
+	/* color for button */
+	--color-button-error: rgb(237, 52, 78);
+	--color-button-error-border: rgb(222, 35, 61);
 }

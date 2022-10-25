@@ -23,8 +23,7 @@ const isDemoConnectionUri = (connectionURI: string) => {
 	return DEMO_CONNECTION_URIS.some((domains) => connectionURI.includes(domains));
 };
 
-// eslint-disable-next-line react/prop-types
-export const InfoConnection: React.FC<InfoConnectionProps> = ({ connectionURI }) => (
+export const InfoConnection: React.FC<InfoConnectionProps> = ({ connectionURI }: InfoConnectionProps) => (
 	<>
 		{isDemoConnectionUri(connectionURI) && (
 			<div className="block-info block-medium block-info-connection text-small">

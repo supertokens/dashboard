@@ -18,16 +18,27 @@
  *
  * Note: Never use local imports or relative paths when using images in src etc
  */
-import "./logo.svg";
-import "./assets/form-field-error-icon.svg";
-import "./assets/no-users-graphic.svg";
+import "./assets/auth-background-portrait.png";
+import "./assets/auth-background.png";
+import "./assets/chevron-down.svg";
 import "./assets/chevron-left.svg";
 import "./assets/chevron-right.svg";
+import "./assets/copy.svg";
+import "./assets/delete.svg";
+import "./assets/eye-stroke.svg";
+import "./assets/eye.svg";
+import "./assets/favicon.ico";
+import "./assets/form-field-error-icon.svg";
+import "./assets/left-arrow-dark.svg";
+import "./assets/lock-opened.svg";
+import "./assets/lock.svg";
+import "./assets/mail-opened.svg";
+import "./assets/mail.svg";
+import "./assets/no-users-graphic.svg";
+import "./assets/people-opened.svg";
+import "./assets/people.svg";
 import "./assets/right_arrow_icon.svg";
 import "./assets/star_sparkle.svg";
-import "./assets/delete.svg";
-import "./assets/auth-background.png";
-import "./assets/auth-background-portrait.png";
-import "./assets/favicon.ico";
-import "./assets/eye.svg";
-import "./assets/eye-stroke.svg";
+import "./assets/trash-opened.svg";
+import "./assets/trash.svg";
+import "./logo.svg";

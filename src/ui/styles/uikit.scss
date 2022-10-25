@@ -19,6 +19,17 @@
 	width: 100%;
 }
 
+/* classes for layout panel */
+.panel {
+	padding: 0px 34px;
+	background-color: var(--color-white);
+	border-radius: 6px;
+	box-shadow: 0 0 6px var(--color-shadow);
+	display: block;
+	max-width: 100%;
+	width: 100%;
+}
+
 /* classes for blocks */
 .block-container {
 	display: flex;
@@ -88,7 +99,7 @@
 	border-radius: 4px;
 }
 
-.button {
+.button:not(.flat) {
 	display: flex;
 	align-items: center;
 	padding: 8px 16px;
@@ -103,6 +114,22 @@
 	cursor: pointer;
 	@include gap-horizontal(0.75em);
 	box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.15);
+	&.button-error {
+		background-color: var(--color-button-error);
+		color: var(--color-white);
+		border-color: var(--color-button-error-border);
+	}
+}
+
+.button.flat {
+	display: inline;
+	background: none;
+	padding: 0px;
+	margin: 0px;
+	color: var(--color-secondary-text);
+	font-weight: 600;
+	@include gap-horizontal(8px);
+	border: none;
 }
 
 /* classes for font sizes */

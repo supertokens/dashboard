@@ -13,21 +13,10 @@
  * under the License.
  */
 
-@mixin gap-horizontal($gap) {
-	> :not(:last-child) {
-		margin-right: $gap;
-	}
-}
+import { FC } from "react";
 
-@mixin gap-vertical($gap) {
-	> :not(:last-child) {
-		margin-bottom: $gap;
-	}
-}
-
-@mixin text-ellipsis($max-width) {
-	max-width: $max-width;
-	overflow-x: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
+// This component is placeholder,
+// its created because in the future UserDetailChangePassword can be done via user detail or user list
+export const UserDetailChangePassword: FC<unknown> = () => {
+	return null;
+};
