@@ -13,17 +13,19 @@
  * under the License.
  */
 
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getImageUrl } from "../../../utils";
-import { EmailVerificationStatus, UserWithRecipeId } from "../../pages/usersList/types";
+import { getUser } from "../../api/user";
+import { UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import "./userDetail.scss";
 import UserDetailHeader from "./userDetailHeader";
 import UserDetailInfoGrid from "./userDetailInfoGrid";
+import { UserDetailsSessionList } from "./userDetailSessionList";
 
 export type UserDetailProps = {
-	user: UserWithRecipeId;
-	emailVerification: EmailVerificationStatus | undefined;
+	user: string;
+	recipeId: string;
 	onBackButtonClicked: () => void;
 	onDeleteCallback: OnSelectUserFunction;
 	onUpdateCallback: (userId: string, updatedValue: UserWithRecipeId) => void;
@@ -33,7 +35,21 @@ export type UserDetailProps = {
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
-	const { onBackButtonClicked } = props;
+	const { onBackButtonClicked, user, recipeId } = props;
+	const [userDetail, setUserDetail] = useState<UserWithRecipeId | undefined>(undefined);
+
+	const loadUserDetail = useCallback(async () => {
+		const userDetailsResponse = await getUser(user, recipeId);
+		setUserDetail(userDetailsResponse);
+	}, []);
+
+	useEffect(() => {
+		void loadUserDetail();
+	}, [loadUserDetail]);
+
+	if (userDetail === undefined) {
+		return <></>;
+	}
 
 	return (
 		<div className="user-detail">
@@ -48,8 +64,15 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 					<span>Back to all users</span>
 				</button>
 			</div>
-			<UserDetailHeader {...props} />
-			<UserDetailInfoGrid {...props} />
+			<UserDetailHeader
+				userDetail={userDetail}
+				{...props}
+			/>
+			<UserDetailInfoGrid
+				userDetail={userDetail}
+				{...props}
+			/>
+			<UserDetailsSessionList userId={user} />
 		</div>
 	);
 };

@@ -1,11 +1,11 @@
 import { FC, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { formatLongDate, getImageUrl } from "../../../utils";
-import { validateEmail, isNotEmpty, validatePhoneNumber } from "../../../utils/form";
+import { isNotEmpty, validateEmail, validatePhoneNumber } from "../../../utils/form";
+import { getUserEmailVerificationStatus } from "../../api/user/email/verify";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import {
 	EmailVerificationStatus,
 	FEATURE_NOT_ENABLED_TEXT,
-	User,
 	UserProps,
 	UserRecipeType,
 	UserThirdParty,
@@ -22,13 +22,13 @@ import { getUserChangePasswordPopupProps } from "./userDetailForm";
 
 type UserDetailInfoGridProps = Pick<
 	UserDetailProps,
-	| "user"
 	| "onUpdateCallback"
 	| "onSendEmailVerificationCallback"
 	| "onUpdateEmailVerificationStatusCallback"
-	| "emailVerification"
 	| "onChangePasswordCallback"
->;
+> & {
+	userDetail: UserWithRecipeId;
+};
 
 type UserDetailInfoGridItemProps = {
 	label?: ReactNode;
@@ -150,30 +150,50 @@ const UserDetailInfoGridHeader: FC<UserDetailInfoGridHeaderProps> = ({
 	</>
 );
 
-type EmailVerifiedFieldProps = UserProps & {
+type EmailVerifiedFieldProps = {
+	user: UserWithRecipeId;
 	isEditing: boolean;
-	emailVerification: EmailVerificationStatus | undefined;
 	setVerificationStatus: (isVerified: boolean) => void;
 	sendVerification: () => void;
 };
 
 export const EmailVerifiedField: FC<EmailVerifiedFieldProps> = (props: EmailVerifiedFieldProps) => {
-	const { user, isEditing, setVerificationStatus, sendVerification, emailVerification } = props;
+	const { user, isEditing, setVerificationStatus, sendVerification } = props;
 	const { recipeId } = user;
+
+	const [emailVerificationStatus, setEmailVerificationStatus] = useState<EmailVerificationStatus | undefined>(
+		undefined
+	);
+
 	const isApplicable = isEmailVerificationApplicable(recipeId);
+
+	const fetchEmailVerificationStatus = useCallback(async () => {
+		if (isApplicable) {
+			return;
+		}
+
+		const response: EmailVerificationStatus = await getUserEmailVerificationStatus(user.user.id);
+		setEmailVerificationStatus(response);
+	}, []);
+
+	useEffect(() => {
+		void fetchEmailVerificationStatus();
+	}, [fetchEmailVerificationStatus]);
 
 	if (!isApplicable) {
 		return <>{NON_APPLICABLE_TEXT}</>;
 	}
 
-	if (emailVerification === undefined) {
+	if (emailVerificationStatus === undefined) {
 		return <>Loading...</>;
 	}
 
-	const { isVerified, status } = emailVerification;
+	const { status } = emailVerificationStatus;
 	if (status === FEATURE_NOT_ENABLED_TEXT) {
 		return <>Feature not enabled</>;
 	}
+
+	const { isVerified } = emailVerificationStatus;
 
 	return (
 		<>
@@ -198,23 +218,22 @@ export const EmailVerifiedField: FC<EmailVerifiedFieldProps> = (props: EmailVeri
 
 export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const {
-		user,
+		userDetail,
 		onUpdateCallback,
 		onSendEmailVerificationCallback,
 		onUpdateEmailVerificationStatusCallback,
 		onChangePasswordCallback,
-		emailVerification,
 	} = props;
-	const [userState, setUserState] = useState<UserWithRecipeId>({ ...user });
+	const [userState, setUserState] = useState<UserWithRecipeId>({ ...userDetail });
 	const { showModal } = useContext(PopupContentContext);
 	const { recipeId } = userState;
 	const { firstName, lastName, timeJoined, email } = userState.user;
 	const [isEditing, setIsEditing] = useState(false);
 
 	const onSave = useCallback(() => {
-		onUpdateCallback(user.user.id, userState);
+		onUpdateCallback(userDetail.user.id, userState);
 		setIsEditing(false);
-	}, [onUpdateCallback, userState, user]);
+	}, [onUpdateCallback, userState, userDetail]);
 
 	const updateUserDataState = useCallback((updatedUser: Partial<UserWithRecipeId["user"]>) => {
 		setUserState((currentState) => {
@@ -222,7 +241,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		});
 	}, []);
 
-	useEffect(() => setUserState(user), [user]);
+	useEffect(() => setUserState(userDetail), [userDetail]);
 
 	// validate email if `isEditing=true`
 	const emailError = useCallback(() => {
@@ -231,14 +250,14 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		}
 		if (isNotEmpty(email)) {
 			return !validateEmail(email!) ? "Email address is invalid" : undefined;
-		} else if (user.user.email !== undefined) {
+		} else if (userDetail.user.email !== undefined) {
 			return "Email cannot be empty";
 		}
-	}, [email, user.user.email, isEditing])();
+	}, [email, userDetail.user.email, isEditing])();
 
 	// validate phone if `isEditing=true`
 	const phoneNumber = recipeId === "passwordless" ? userState.user.phoneNumber : undefined;
-	const phoneNumberProps = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
+	const phoneNumberProps = userDetail.recipeId === "passwordless" ? userDetail.user.phoneNumber : undefined;
 	const phoneNumberError = useCallback(() => {
 		if (!isEditing) {
 			return;
@@ -257,7 +276,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 			error={phoneNumberError}
 			isRequired={
 				// prevent delete phone number if it was a phoneNumber account
-				user.recipeId === "passwordless" && user.user.phoneNumber !== undefined
+				userDetail.recipeId === "passwordless" && userDetail.user.phoneNumber !== undefined
 			}
 			onChange={(phoneNumber) => {
 				updateUserDataState({ phoneNumber });
@@ -284,16 +303,16 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 
 	const handleCancelSave = useCallback(() => {
 		setIsEditing(false);
-		setUserState(user);
-	}, [user]);
+		setUserState(userDetail);
+	}, [userDetail]);
 
 	const handleChangePassword = useCallback(
 		(password?: string) => {
 			if (password !== undefined) {
-				onChangePasswordCallback(user.user.id, password);
+				onChangePasswordCallback(userDetail.user.id, password);
 			}
 		},
-		[onChangePasswordCallback, user.user.id]
+		[onChangePasswordCallback, userDetail.user.id]
 	);
 
 	const openChangePasswordModal = useCallback(
@@ -306,7 +325,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 			<LayoutPanel
 				header={
 					<UserDetailInfoGridHeader
-						{...{ onSave, isEditing, user, onUpdateCallback }}
+						{...{ onSave, isEditing, user: userDetail, onUpdateCallback }}
 						onEdit={() => setIsEditing(true)}
 						onCancel={handleCancelSave}
 						isSaveDisabled={saveDisabled}
@@ -316,12 +335,12 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 					<UserDetailInfoGridItem
 						label={"First Name:"}
 						body={firstName}
-						tooltip={<NameTooltip fieldName="firstName" />}
+						tooltip={<NameTooltip fieldName="first_name" />}
 					/>
 					<UserDetailInfoGridItem
 						label={"Last Name:"}
 						body={lastName}
-						tooltip={<NameTooltip fieldName="lastName" />}
+						tooltip={<NameTooltip fieldName="last_name" />}
 					/>
 					<UserDetailInfoGridItem
 						label={"Signed up on:"}
@@ -335,13 +354,12 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 						label={"Is Email Verified:"}
 						body={
 							<EmailVerifiedField
-								user={user}
+								user={userDetail}
 								isEditing={isEditing}
-								emailVerification={emailVerification}
 								setVerificationStatus={(isVerified) =>
-									onUpdateEmailVerificationStatusCallback(user.user.id, isVerified)
+									onUpdateEmailVerificationStatusCallback(userDetail.user.id, isVerified)
 								}
-								sendVerification={() => onSendEmailVerificationCallback(user)}
+								sendVerification={() => onSendEmailVerificationCallback(userDetail)}
 							/>
 						}
 					/>

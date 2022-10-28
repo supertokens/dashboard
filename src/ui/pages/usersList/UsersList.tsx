@@ -14,8 +14,9 @@
  */
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { deleteUser as deleteUserApi, getUser as getUserApi, updateUser as updateUserApi } from "../../api/user";
-import { getUserEmailVerificationStatus, updateUserEmailVerificationStatus } from "../../api/user/email/verify";
+import { updateUserEmailVerificationStatus } from "../../api/user/email/verify";
 import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../api/user/email/verify/token";
 import { updatePassword } from "../../api/user/password/reset";
 import fetchUsers from "../../api/users";
@@ -33,7 +34,6 @@ import {
 	getUpdatePasswordToast,
 	getUpdateUserToast,
 } from "../../components/userDetail/userDetailForm";
-import { isEmailVerificationApplicable } from "../../components/userDetail/userDetailInfoGrid";
 import UsersListTable, {
 	LIST_DEFAULT_LIMIT,
 	OnSelectUserFunction,
@@ -190,24 +190,37 @@ export const UsersList: React.FC<UserListProps> = ({
 };
 
 export const UserListPage = () => {
-	const [selectedUser, setSelectedUser] = useState<UserWithRecipeId>();
+	const navigate = useNavigate();
+	const currentLocation = useLocation();
+	const [selectedUser, setSelectedUser] = useState<string>();
+	const [selectedRecipeId, setSelectedRecipeId] = useState<string>();
 	const [selectedUserEmailVerification, setSelectedUserEmailVerification] = useState<
 		EmailVerificationStatus | undefined
 	>();
 	const isSelectedUserNotEmpty = selectedUser !== undefined;
+
 	const reloadListRef: UserListPropsReloadRef = useRef();
 
 	const { showToast } = useContext(PopupContentContext);
 
 	const backToList = useCallback(() => {
+		navigate(
+			{
+				pathname: currentLocation.pathname,
+				search: "",
+			},
+			{
+				replace: true,
+			}
+		);
 		void reloadListRef.current?.();
 		setSelectedUser(undefined);
 	}, []);
 
-	const getUser = useCallback(async (userId: string) => {
-		const data = await getUserApi(userId);
+	const getUser = useCallback(async (userId: string, recipeId: string) => {
+		const data = await getUserApi(userId, recipeId);
 		if (data !== undefined) {
-			setSelectedUser(data);
+			setSelectedUser(data.user.id);
 		}
 	}, []);
 
@@ -216,12 +229,12 @@ export const UserListPage = () => {
 			const updateSucceed = (await updateUserApi(userId, data)) === true;
 			if (updateSucceed) {
 				// load the latest user data from API
-				await getUser(userId);
+				// await getUser(userId);
 			} else {
 				// reset the user data from the memory
 				// it uses three dots,
 				// otherwise the original source of selectedUser will be modified along with the state changes
-				setSelectedUser(selectedUser !== undefined ? { ...selectedUser } : undefined);
+				// setSelectedUser(selectedUser !== undefined ? { ...selectedUser } : undefined);
 			}
 			showToast(getUpdateUserToast(updateSucceed));
 		},
@@ -269,34 +282,62 @@ export const UserListPage = () => {
 	);
 
 	// load user detail && email verification from API when userId changes
+	// useEffect(() => {
+	// 	if (selectedUser !== undefined) {
+	// 		void getUser(selectedUser);
+	// 		if (isEmailVerificationApplicable(selectedUser.recipeId)) {
+	// 			void getUserEmailVerificationStatus(selectedUser?.user.id).then(setSelectedUserEmailVerification);
+	// 		}
+	// 	} else {
+	// 		setSelectedUserEmailVerification(undefined);
+	// 	}
+	// }, [selectedUser?.user.id, selectedUser?.recipeId, getUser]);
+
 	useEffect(() => {
-		if (selectedUser?.user.id !== undefined) {
-			void getUser(selectedUser?.user.id);
-			if (isEmailVerificationApplicable(selectedUser.recipeId)) {
-				void getUserEmailVerificationStatus(selectedUser?.user.id).then(setSelectedUserEmailVerification);
+		if (selectedUser === undefined && currentLocation.search !== null && currentLocation.search !== "") {
+			const urlParams = new URLSearchParams(currentLocation.search);
+			const userid = urlParams.get("userid");
+			const recipeId = urlParams.get("recipeId");
+
+			if (userid !== null && recipeId !== null) {
+				// This means that there is a userid in the URL, show details
+				setSelectedUser(userid);
+				setSelectedRecipeId(recipeId);
 			}
-		} else {
-			setSelectedUserEmailVerification(undefined);
 		}
-	}, [selectedUser?.user.id, selectedUser?.recipeId, getUser]);
+	}, []);
+
+	const onUserSelected = (user: UserWithRecipeId) => {
+		navigate(
+			{
+				pathname: currentLocation.pathname,
+				search: `?userid=${user.user.id}&recipeId=${user.recipeId}`,
+			},
+			{
+				replace: true,
+			}
+		);
+		setSelectedUser(user.user.id);
+		setSelectedRecipeId(user.recipeId);
+	};
 
 	return (
 		<AuthWrapper>
-			{isSelectedUserNotEmpty && (
+			{isSelectedUserNotEmpty && selectedRecipeId !== undefined && (
 				<UserDetail
+					recipeId={selectedRecipeId}
 					user={selectedUser}
 					onBackButtonClicked={backToList}
 					onUpdateCallback={updateUser}
 					onDeleteCallback={({ user: { id } }) => deleteUser(id)}
 					onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
 					onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
-					emailVerification={selectedUserEmailVerification}
 					onChangePasswordCallback={changePassword}
 				/>
 			)}
 			<UsersList
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				onSelect={(user) => setSelectedUser({ ...user })}
+				onSelect={onUserSelected}
 				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
 				reloadRef={reloadListRef}
 				onChangePasswordCallback={changePassword}

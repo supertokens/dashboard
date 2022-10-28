@@ -251,6 +251,20 @@ button.button-error {
 	font-size: inherit;
 }
 
+.button.button-error-outline,
+button.button-error-outline {
+	display: inline;
+	background-color: transparent;
+	border-color: var(--color-button-error);
+	border-width: 1;
+	border-style: solid;
+	margin: 0px;
+	color: var(--color-button-error);
+	@include gap-horizontal(8px);
+	font-size: inherit;
+	box-shadow: none;
+}
+
 .button.outline,
 button.outline {
 	background: none;

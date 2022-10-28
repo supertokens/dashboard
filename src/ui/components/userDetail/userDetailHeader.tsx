@@ -56,8 +56,15 @@ export const UserDetailBadge: React.FC<UserProps> = ({ user }: UserProps) => (
 	<div className="user-detail__header__badge">{getBadgeInitial(user)}</div>
 );
 
-export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCallback }: UserDetailProps) => {
-	const { id } = user.user;
+export type UserDetailHeaderProps = UserDetailProps & {
+	userDetail: UserWithRecipeId;
+};
+
+export const UserDetailHeader: React.FC<UserDetailHeaderProps> = ({
+	userDetail,
+	onDeleteCallback,
+}: UserDetailHeaderProps) => {
+	const { id } = userDetail.user;
 	const { showModal } = useContext(PopupContentContext);
 
 	const openDeleteConfirmation = useCallback(
@@ -65,19 +72,19 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ user, onDeleteCall
 			showModal(
 				getUserDeleteConfirmationProps({
 					onDeleteCallback,
-					user,
+					user: userDetail,
 				})
 			),
-		[user, onDeleteCallback, showModal]
+		[userDetail, onDeleteCallback, showModal]
 	);
 
 	return (
 		<div className="user-detail__header">
-			<UserDetailBadge user={user} />
+			<UserDetailBadge user={userDetail} />
 			<div className="user-detail__header__info">
 				<div className="user-detail__header__title">
 					<span>
-						<UserDisplayName user={user} />
+						<UserDisplayName user={userDetail} />
 					</span>
 				</div>
 				<div className="user-detail__header__user-id">

@@ -62,7 +62,11 @@ export type UserProps = { user: UserWithRecipeId };
 
 export const FEATURE_NOT_ENABLED_TEXT = "FEATURE_NOT_ENABLED";
 
-export type EmailVerificationStatus = {
-	status: "OK" | typeof FEATURE_NOT_ENABLED_TEXT;
-	isVerified: boolean;
-};
+export type EmailVerificationStatus =
+	| {
+			status: typeof FEATURE_NOT_ENABLED_TEXT;
+	  }
+	| {
+			status: "OK";
+			isVerified: boolean;
+	  };

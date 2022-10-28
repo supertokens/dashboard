@@ -391,7 +391,7 @@ const ErrorRow = ({ colSpan }: { colSpan: number }) => {
 	);
 };
 
-const PlaceholderTableRows = (props: { rowCount: number; colSpan: number; className?: string }) => {
+export const PlaceholderTableRows = (props: { rowCount: number; colSpan: number; className?: string }) => {
 	const { colSpan, rowCount, className } = props;
 	return (
 		<>

@@ -16,12 +16,27 @@
 import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
 import { UserWithRecipeId } from "../../pages/usersList/types";
 
-export const getUser = async (userId: string) => {
+export const getUser = async (userId: string, recipeId: string): Promise<UserWithRecipeId | undefined> => {
 	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl(`/api/user/${userId}`),
+		url: getApiUrl("/api/user"),
 		method: "GET",
+		query: {
+			userId,
+			recipeId,
+		},
 	});
-	return response?.ok ? ((await response.json()) as UserWithRecipeId) : undefined;
+
+	if (response.ok) {
+		const body = await response.json();
+
+		if (body.status !== "OK") {
+			return undefined;
+		}
+
+		return body.user;
+	}
+
+	return undefined;
 };
 
 export const updateUser = async (userId: string, updatedData: UserWithRecipeId) => {
