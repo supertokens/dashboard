@@ -37,18 +37,41 @@ $container-width: 829;
 		align-items: center;
 		color: var(--color-secondary-text);
 
+		@media only screen and (max-width: 600px) {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
 		.header-primary {
 			font-weight: 500;
 			font-size: 14px;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+
+			@media only screen and (max-width: 600px) {
+				flex-direction: column;
+				align-items: flex-start;
+			}
 		}
 
 		.header-secondary {
 			font-weight: 400;
 			font-size: 12px;
+			margin-left: 4px;
+
+			@media only screen and (max-width: 600px) {
+				margin-left: 0px;
+				margin-top: 2px;
+			}
 		}
 
 		.button-error {
 			font-weight: 500;
+
+			@media only screen and (max-width: 600px) {
+				margin-top: 12px;
+			}
 		}
 	}
 
@@ -69,7 +92,6 @@ $container-width: 829;
 		border-collapse: collapse;
 
 		.thead {
-			width: 100%;
 			color: var(--color-black);
 			text-transform: uppercase;
 			font-size: 12px;
@@ -80,8 +102,6 @@ $container-width: 829;
 				border-top: 1px solid var(--color-border);
 				padding-left: 34px;
 				padding-right: 34px;
-				display: flex;
-				flex-direction: row;
 				padding-top: 15px;
 				padding-bottom: 15px;
 				background: #fafafa;
@@ -89,56 +109,57 @@ $container-width: 829;
 				th {
 					font-weight: 500;
 					text-align: center;
-					width: calc(70% / 3);
+					white-space: nowrap;
+					padding-top: 15px;
+					padding-bottom: 15px;
+					padding-left: 35px;
+					padding-right: 35px;
+				}
+
+				th:last-child {
+					padding-right: 34px;
 				}
 
 				.w30 {
-					width: 30%;
 					text-align: left;
+					padding-left: 34px;
 				}
 			}
 		}
 
 		tbody {
-			width: 100%;
 			padding-left: 34px;
 			padding-right: 34px;
 
 			.placeholder {
 				display: flex;
-
-				td {
-					width: 100%;
-					display: flex;
-				}
 			}
 
 			.session-info {
 				display: flex;
 				width: 100%;
-				margin-top: 29px;
 				margin-left: 34px;
 				margin-right: 34px;
 			}
 
 			.session-row {
-				display: flex;
-				align-items: center;
-				width: 100%;
 				margin-top: 29px;
 				margin-left: 34px;
 				margin-right: 34px;
 
 				&.with-data {
-					width: auto;
-
 					td {
 						font-weight: 400;
 						text-align: center;
 						width: calc(70% / 3);
 						font-size: 14px;
 						color: var(--color-secondary-text);
+						height: 1px;
 						min-height: 28px;
+						padding-left: 35px;
+						padding-right: 35px;
+						white-space: nowrap;
+						padding-top: 29px;
 
 						span {
 							display: flex;
@@ -150,10 +171,18 @@ $container-width: 829;
 							width: fit-content;
 							border-radius: 4px;
 						}
+
+						.button-error-outline {
+							display: block;
+						}
+					}
+
+					td:last-child {
+						padding-right: 34px;
 					}
 
 					.w30 {
-						width: 30%;
+						padding-left: 34px;
 						text-align: left;
 					}
 				}

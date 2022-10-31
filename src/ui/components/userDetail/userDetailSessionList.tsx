@@ -41,12 +41,14 @@ export const UserDetailsSessionList: React.FC<UserDetailsSessionListProps> = ({
 		void fetchSession();
 	}, [fetchSession]);
 
+	const sessionCountText = sessionList === undefined ? "" : `(TOTAL NO OF SESSIONS: ${sessionList.length})`;
+
 	return (
 		<div className="panel no-padding-horizontal">
 			<div className="content-container">
 				<div className="header">
 					<span className="header-primary">
-						SESSION INFORMATION <span className="header-secondary">(TOTAL NO OF SESSIONS: 5033)</span>
+						SESSION INFORMATION <span className="header-secondary">{sessionCountText}</span>
 					</span>
 					<div className="button button-error">Revoke all sessions</div>
 				</div>
