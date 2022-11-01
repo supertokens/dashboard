@@ -20,16 +20,6 @@ export const getUserMetaData = async (userId: string): Promise<string | any> => 
 			return undefined;
 		}
 
-		return {
-			key: "value",
-			numberKey: 1234,
-			nested: {
-				key: "value",
-				numberKey: 1234,
-			},
-			array: ["val", "val", "val"],
-		};
-
 		return body.data;
 	}
 

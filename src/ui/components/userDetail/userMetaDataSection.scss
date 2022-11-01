@@ -21,7 +21,7 @@ $container-width: 829;
 	padding-bottom: 24px !important;
 }
 
-.header {
+.metadata-header {
 	display: flex;
 	flex-direction: row;
 	width: 100%;
@@ -47,4 +47,11 @@ $container-width: 829;
 	padding-bottom: 15px;
 	background: #0d2e4e;
 	border-radius: 6px;
+
+	.hljs {
+		background: #0d2e4e;
+		font-weight: 400;
+		font-size: 13px;
+		line-height: 21px;
+	}
 }

@@ -12,6 +12,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+import HighlightJS from "highlight.js";
+import TSHighlight from "highlight.js/lib/languages/typescript";
+import "highlight.js/scss/dark.scss";
 import { useCallback, useEffect, useState } from "react";
 import { getImageUrl } from "../../../utils";
 import { getUserMetaData } from "../../api/user/metadata";
@@ -41,17 +44,31 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({ userId
 		void fetchUserMetaData();
 	}, [fetchUserMetaData]);
 
+	useEffect(() => {
+		HighlightJS.registerLanguage("typescript", TSHighlight);
+		HighlightJS.initHighlightingOnLoad();
+	}, []);
+
 	const renderContent = () => {
 		if (userMetaData === undefined) {
 			return "Loading...";
 		}
 
-		return <code className="language-javascript">{userMetaData}</code>;
+		const highlightedCode = HighlightJS.highlight(userMetaData, {
+			language: "typescript",
+		});
+
+		return (
+			<code
+				className="hljs"
+				dangerouslySetInnerHTML={{ __html: highlightedCode.value }}
+			/>
+		);
 	};
 
 	return (
 		<div className="panel padding-vertical-24">
-			<div className="header">
+			<div className="metadata-header">
 				<span className="text-small title">USER METADATA</span>
 				<IconButton
 					size="small"
