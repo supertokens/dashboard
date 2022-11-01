@@ -22,6 +22,7 @@ import "./userDetail.scss";
 import UserDetailHeader from "./userDetailHeader";
 import UserDetailInfoGrid from "./userDetailInfoGrid";
 import { UserDetailsSessionList } from "./userDetailSessionList";
+import { UserMetaDataSection } from "./userMetaDataSection";
 
 export type UserDetailProps = {
 	user: string;
@@ -72,6 +73,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				userDetail={userDetail}
 				{...props}
 			/>
+			<UserMetaDataSection userId={user} />
 			<UserDetailsSessionList userId={user} />
 		</div>
 	);

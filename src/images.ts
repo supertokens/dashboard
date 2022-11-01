@@ -28,6 +28,7 @@ import "./assets/chevron-right.svg";
 import "./assets/close.svg";
 import "./assets/copy.svg";
 import "./assets/delete.svg";
+import "./assets/edit.svg";
 import "./assets/envelope-green.svg";
 import "./assets/eye-stroke.svg";
 import "./assets/eye.svg";
