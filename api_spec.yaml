@@ -1,206 +1,981 @@
 openapi: 3.0.0
 
 info:
-  version: 0.0.0
-  title: Dashboard Interface
-  description: Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
-  
-tags: 
-  - name: "User Management"
-    description: APIs for user management features
+    version: 0.0.0
+    title: Dashboard Interface
+    description: Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
+
+tags:
+    - name: "User Management"
+      description: APIs for user management features
+    - name: "User Details"
+      description: APIs for fetching and modifying information specific to one user
 
 paths:
-  /users:
-    get: 
-      tags:
-      - User Management
-      summary: Get a list of all users. This API is paginated
-      operationId: getUsersPaginated
-      parameters:
-      - name: authorization
-        in: header
-        required: true
-        schema:
-          type: string
-          example: "Bearer API_KEY"
-      - name: paginationToken
-        required: false
-        in: query
-        schema:
-          type: string
-      - name: limit
-        description: The number of users to fetch for the given page
-        required: true
-        in: query
-        schema:
-          type: number
-      - name: timeJoinedOrder
-        description: The order in which the users should be listed, based on the timestamp for when they were created
-        in: query
-        schema:
-          type: string
-          enum:
-          - "ASC"
-          - "DESC"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    default: "OK"
-                  nextPaginationToken:
-                    type: string
-                    description: Token to fetch the next set of users, if no more users can be fetched this value is undefined
-                    example: "ZmE3YTA4ND...OzE2MjM5MTgwMzIyMzE="
-                  users:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        recipeId:
-                          type: string
-                          enum:
-                          - "emailpassword"
-                          - "thirdparty"
-                          - "passwordless"
-                        user:
-                          anyOf:
-                            - type: object
-                              properties:
-                                id:
-                                  type: string
-                                  example: "fa7a0841-b533-4478-95533-0fde890c3483"
+    /users:
+        get:
+            tags:
+                - User Management
+            summary: Get a list of all users. This API is paginated
+            operationId: getUsersPaginated
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+                - name: paginationToken
+                  required: false
+                  in: query
+                  schema:
+                      type: string
+                - name: limit
+                  description: The number of users to fetch for the given page
+                  required: true
+                  in: query
+                  schema:
+                      type: number
+                - name: timeJoinedOrder
+                  description: The order in which the users should be listed, based on the timestamp for when they were created
+                  in: query
+                  schema:
+                      type: string
+                      enum:
+                          - "ASC"
+                          - "DESC"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    nextPaginationToken:
+                                        type: string
+                                        description: Token to fetch the next set of users, if no more users can be fetched this value is undefined
+                                        example: "ZmE3YTA4ND...OzE2MjM5MTgwMzIyMzE="
+                                    users:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                recipeId:
+                                                    type: string
+                                                    enum:
+                                                        - "emailpassword"
+                                                        - "thirdparty"
+                                                        - "passwordless"
+                                                user:
+                                                    anyOf:
+                                                        - type: object
+                                                          properties:
+                                                              id:
+                                                                  type: string
+                                                                  example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                                              email:
+                                                                  type: string
+                                                                  example: "johndoe@gmail.com"
+                                                              timeJoined:
+                                                                  type: number
+                                                                  example: 1623918032231
+                                                              firstName:
+                                                                  type: string
+                                                              lastName:
+                                                                  type: string
+                                                        - type: object
+                                                          properties:
+                                                              id:
+                                                                  type: string
+                                                                  example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                                              email:
+                                                                  type: string
+                                                                  example: "johndoe@gmail.com"
+                                                              timeJoined:
+                                                                  type: number
+                                                                  example: 1623918032231
+                                                              firstName:
+                                                                  type: string
+                                                              lastName:
+                                                                  type: string
+                                                              thirdParty:
+                                                                  type: object
+                                                                  properties:
+                                                                      id:
+                                                                          type: string
+                                                                      userId:
+                                                                          type: string
+                                                        - type: object
+                                                          properties:
+                                                              id:
+                                                                  type: string
+                                                                  example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                                              email:
+                                                                  type: string
+                                                                  example: "johndoe@gmail.com"
+                                                              phoneNumber:
+                                                                  type: string
+                                                                  example: "+14155552671"
+                                                              timeJoined:
+                                                                  type: number
+                                                                  example: 1623918032231
+                                                              firstName:
+                                                                  type: string
+                                                              lastName:
+                                                                  type: string
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+    /users/count:
+        get:
+            tags:
+                - User Management
+            summary: Get total number of users
+            operationId: getUsersCount
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    count:
+                                        type: number
+                                        example: 1000
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+    /user:
+        get:
+            tags:
+                - User Details
+            summary: Get user information
+            operationId: getUserInformation
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+                - name: userId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                - name: recipeId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          recipeId:
+                                              type: string
+                                              enum:
+                                                  - "emailpassword"
+                                                  - "thirdparty"
+                                                  - "passwordless"
+                                          user:
+                                              anyOf:
+                                                  - type: object
+                                                    properties:
+                                                        id:
+                                                            type: string
+                                                            example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                                        email:
+                                                            type: string
+                                                            example: "johndoe@gmail.com"
+                                                        timeJoined:
+                                                            type: number
+                                                            example: 1623918032231
+                                                        firstName:
+                                                            oneOf:
+                                                                - type: string
+                                                                - type: string
+                                                                  default: "FEATURE_NOT_ENABLED_ERROR"
+                                                        lastName:
+                                                            oneOf:
+                                                                - type: string
+                                                                - type: string
+                                                                  default: "FEATURE_NOT_ENABLED_ERROR"
+                                                  - type: object
+                                                    properties:
+                                                        id:
+                                                            type: string
+                                                            example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                                        email:
+                                                            type: string
+                                                            example: "johndoe@gmail.com"
+                                                        timeJoined:
+                                                            type: number
+                                                            example: 1623918032231
+                                                        firstName:
+                                                            oneOf:
+                                                                - type: string
+                                                                - type: string
+                                                                  default: "FEATURE_NOT_ENABLED_ERROR"
+                                                        lastName:
+                                                            oneOf:
+                                                                - type: string
+                                                                - type: string
+                                                                  default: "FEATURE_NOT_ENABLED_ERROR"
+                                                        thirdParty:
+                                                            type: object
+                                                            properties:
+                                                                id:
+                                                                    type: string
+                                                                userId:
+                                                                    type: string
+                                                  - type: object
+                                                    properties:
+                                                        id:
+                                                            type: string
+                                                            example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                                        email:
+                                                            type: string
+                                                            example: "johndoe@gmail.com"
+                                                        phoneNumber:
+                                                            type: string
+                                                            example: "+14155552671"
+                                                        timeJoined:
+                                                            type: number
+                                                            example: 1623918032231
+                                                        firstName:
+                                                            oneOf:
+                                                                - type: string
+                                                                - type: string
+                                                                  default: "FEATURE_NOT_ENABLED_ERROR"
+                                                        lastName:
+                                                            oneOf:
+                                                                - type: string
+                                                                - type: string
+                                                                  default: "FEATURE_NOT_ENABLED_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "NO_USER_FOUND_ERROR"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+        put:
+            tags:
+                - User Details
+            summary: Update user information
+            operationId: userInformationPut
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                userId:
+                                    type: string
+                                recipeId:
+                                    type: string
+                                    enum:
+                                        - "emailpassword"
+                                        - "thirdparty"
+                                        - "passwordless"
+                                phone:
+                                    type: string
                                 email:
-                                  type: string
-                                  example: "johndoe@gmail.com"
-                                timeJoined:
-                                  type: number
-                                  example: 1623918032231
+                                    type: string
                                 firstName:
-                                  type: string
+                                    type: string
                                 lastName:
-                                  type: string
-                            - type: object
-                              properties:
-                                id:
-                                  type: string
-                                  example: "fa7a0841-b533-4478-95533-0fde890c3483"
-                                email:
-                                  type: string
-                                  example: "johndoe@gmail.com"
-                                timeJoined:
-                                  type: number
-                                  example: 1623918032231
-                                firstName:
-                                  type: string
-                                lastName:
-                                  type: string
-                                thirdParty:
-                                  type: object
-                                  properties:
-                                    id:
-                                      type: string
-                                    userId:
-                                      type: string
-                            - type: object
-                              properties:
-                                id:
-                                  type: string
-                                  example: "fa7a0841-b533-4478-95533-0fde890c3483"
-                                email:
-                                  type: string
-                                  example: "johndoe@gmail.com"
-                                phoneNumber:
-                                  type: string
-                                  example: "+14155552671"
-                                timeJoined:
-                                  type: number
-                                  example: 1623918032231
-                                firstName:
-                                  type: string
-                                lastName:
-                                  type: string
-        400:
-          description: error code 400
-          content:
-            text/plain:
-              schema:
-                type: string
-                enum:
-                  - Method not supported
-        401:
-          description: Unauthorised access
-          content:
-            text/plain:
-              schema:
-                type: string
-                enum:
-                - Unauthorised access
-        404:
-          description: error code 404
-          content:
-            text/plain:
-              schema:
-                type: string
-                enum:
-                  - Not Found
-  /users/count:
-    get:
-      tags:
-      - User Management
-      summary: Get total number of users
-      operationId: getUsersCount
-      parameters:
-      - name: authorization
-        in: header
-        required: true
-        schema:
-          type: string
-          example: "Bearer API_KEY"
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    default: "OK"
-                  count:
-                    type: number
-                    example: 1000
-        400:
-          description: error code 400
-          content:
-            text/plain:
-              schema:
-                type: string
-        401:
-          description: Unauthorised access
-          content:
-            text/plain:
-              schema:
-                type: string
-                enum:
-                - Unauthorised access
-        404:
-          description: error code 404
-          content:
-            text/plain:
-              schema:
-                type: string
-                enum:
-                  - Not Found
-  
+                                    type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "EMAIL_ALREADY_EXISTS_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "PHONE_ALREADY_EXISTS_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INVALID_EMAIL_ERROR"
+                                          error:
+                                              type: string
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INVALID_PHONE_ERROR"
+                                          error:
+                                              type: string
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+        delete:
+            tags:
+                - User Details
+            summary: Delete a user
+            operationId: userDelete
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+                - name: userId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+    /user/email/verify:
+        get:
+            tags:
+                - User Details
+            summary: Check if a user's email is verified
+            operationId: getUserEmailVerified
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+                - name: userId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          isVerified:
+                                              type: boolean
+                                              default: true
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+        put:
+            tags:
+                - User Details
+            summary: Set a user's email as verified
+            operationId: userEmailVerifyPut
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                userId:
+                                    type: string
+                                verified:
+                                    type: boolean
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+    /user/email/verify/token:
+        post:
+            tags:
+                - User Details
+            summary: Send verification email to the user
+            operationId: userEmailVerifyTokenPost
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                userId:
+                                    type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "EMAIL_ALREADY_VERIFIED_ERROR"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+    /user/metadata:
+        get:
+            tags:
+                - User Details
+            summary: Get meta data stored for a user
+            operationId: getUserMetaData
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+                - name: userId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          data:
+                                              type: object
+                                              description: A JSON object
+                                              example:
+                                                  {
+                                                      "preferences": { "theme": "dark" },
+                                                      "notifications": { "email": true },
+                                                      "todos": ["example"],
+                                                  }
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+        put:
+            tags:
+                - User Details
+            summary: Update meta data for a user
+            operationId: userMetadataPut
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                userId:
+                                    type: string
+                                data:
+                                    type: object
+                                    default: {}
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+    /user/password:
+        put:
+            tags:
+                - User Details
+            summary: Change the user's password
+            operationId: userPasswordPut
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                userId:
+                                    type: string
+                                newPassword:
+                                    type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INVALID_PASSWORD_ERROR"
+                                          error:
+                                              type: string
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+    /user/sessions:
+        get:
+            tags:
+                - User Details
+            summary: Get all active sessions for a user
+            operationId: getUserSessions
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+                - name: userId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    sessions:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                sessionData:
+                                                    type: object
+                                                    example: { "test": 123 }
+                                                accessTokenPayload:
+                                                    type: object
+                                                    example: { "test": 123 }
+                                                userId:
+                                                    type: string
+                                                    example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                                expiry:
+                                                    type: number
+                                                    example: 1637262633029
+                                                timeCreated:
+                                                    type: number
+                                                    example: 1637262633029
+                                                sessionHandle:
+                                                    type: string
+                                                    example: "68en6gd6-865b-4af6-ba00-96e5c153257d"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+        post:
+            tags:
+                - User Details
+            summary: Delete/Revoke sessions for a user
+            operationId: userSessionsDelete
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                sessionHandles:
+                                    type: array
+                                    items:
+                                        type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
 servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/supertokens/DashboardInterface/0.0.0
-    
+    # Added by API Auto Mocking Plugin
+    - description: SwaggerHub API Auto Mocking
+      url: https://virtserver.swaggerhub.com/supertokens/DashboardInterface/0.0.0
