@@ -1,5 +1,5 @@
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../../../utils";
-import { EmailVerificationStatus } from "../../../../pages/usersList/types";
+import { EmailVerificationStatus } from "../../../../ui/pages/usersList/types";
+import { fetchDataAndRedirectIf401, getApiUrl } from "../../../../utils";
 
 export const getUserEmailVerificationStatus = async (userId: string): Promise<EmailVerificationStatus> => {
 	const response = await fetchDataAndRedirectIf401({

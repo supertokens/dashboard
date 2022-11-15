@@ -15,13 +15,13 @@
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getUser as getUserApi } from "../../api/user";
-import { deleteUser as deleteUserApi } from "../../api/user/delete";
-import { updateUserEmailVerificationStatus } from "../../api/user/email/verify";
-import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../api/user/email/verify/token";
-import { updatePassword } from "../../api/user/password/reset";
-import fetchUsers from "../../api/users";
-import fetchCount from "../../api/users/count";
+import { getUser as getUserApi } from "../../../api/user";
+import { deleteUser as deleteUserApi } from "../../../api/user/delete";
+import { updateUserEmailVerificationStatus } from "../../../api/user/email/verify";
+import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../../api/user/email/verify/token";
+import { updatePassword } from "../../../api/user/password/reset";
+import fetchUsers from "../../../api/users";
+import fetchCount from "../../../api/users/count";
 import AuthWrapper from "../../components/authWrapper";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";

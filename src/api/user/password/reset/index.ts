@@ -1,4 +1,4 @@
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../../../utils";
+import { fetchDataAndRedirectIf401, getApiUrl } from "../../../../utils";
 
 export const updatePassword = async (userId: string, newPassword: string) => {
 	const response = await fetchDataAndRedirectIf401({

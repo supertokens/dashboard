@@ -12,8 +12,8 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+import { deleteSessionsForUser } from "../../../api/user/sessions";
 import { formatLongDate, getFormattedLongDateWithoutTime } from "../../../utils";
-import { deleteSessionsForUser } from "../../api/user/sessions";
 import { PlaceholderTableRows } from "../usersListTable/UsersListTable";
 import "./userDetailSessionList.scss";
 

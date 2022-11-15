@@ -36,6 +36,12 @@ $container-width: 829;
 		color: var(--color-secondary-text);
 		font-weight: 500;
 	}
+
+	.metadata-actions {
+		display: flex;
+		flex-direction: row;
+		@include gap-horizontal(16px);
+	}
 }
 
 .metadata-content-container {

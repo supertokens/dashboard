@@ -13,8 +13,8 @@
  * under the License.
  */
 
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
-import { UserWithRecipeId } from "../../pages/usersList/types";
+import { UserWithRecipeId } from "../../ui/pages/usersList/types";
+import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
 
 export const getUser = async (userId: string, recipeId: string): Promise<UserWithRecipeId | undefined> => {
 	const response = await fetchDataAndRedirectIf401({

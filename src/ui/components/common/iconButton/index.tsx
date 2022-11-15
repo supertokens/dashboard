@@ -5,9 +5,10 @@ export type IconButtonProps = {
 	icon: string;
 	text: string;
 	tint: string;
+	onClick: () => void | Promise<void>;
 };
 
-const IconButton: React.FC<IconButtonProps> = ({ size, icon, text, tint }: IconButtonProps) => {
+const IconButton: React.FC<IconButtonProps> = ({ size, icon, text, tint, onClick }: IconButtonProps) => {
 	const getClassNameForFont = (): string => {
 		if (size === "small") {
 			return "text-small";
@@ -35,7 +36,9 @@ const IconButton: React.FC<IconButtonProps> = ({ size, icon, text, tint }: IconB
 	const imageDimension = getImageDimension();
 
 	return (
-		<div className="button flat link button-root">
+		<div
+			className="button flat link button-root"
+			onClick={onClick}>
 			<img
 				src={icon}
 				width={imageDimension}

@@ -1,4 +1,4 @@
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../../../utils";
+import { fetchDataAndRedirectIf401, getApiUrl } from "../../../../utils";
 
 export const sendUserEmailVerification = async (userId: string) => {
 	const response = await fetchDataAndRedirectIf401({

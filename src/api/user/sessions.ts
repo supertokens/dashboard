@@ -1,5 +1,5 @@
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
-import { SessionInfo } from "../../components/userDetail/userDetailSessionList";
+import { SessionInfo } from "../../ui/components/userDetail/userDetailSessionList";
+import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
 
 export const getSessionsForUser = async (userId: string): Promise<SessionInfo[] | undefined> => {
 	const response = await fetchDataAndRedirectIf401({

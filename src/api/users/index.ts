@@ -13,9 +13,9 @@
  * under the License.
  */
 
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
-import { LIST_DEFAULT_LIMIT } from "../../components/usersListTable/UsersListTable";
-import { UserPaginationList } from "../../pages/usersList/types";
+import { LIST_DEFAULT_LIMIT } from "../../ui/components/usersListTable/UsersListTable";
+import { UserPaginationList } from "../../ui/pages/usersList/types";
+import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
 
 export const fetchUsers = async (param?: { paginationToken?: string; limit?: number }) => {
 	const response = await fetchDataAndRedirectIf401({

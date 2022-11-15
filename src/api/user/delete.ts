@@ -1,4 +1,4 @@
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
+import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
 
 export const deleteUser = async (userId: string): Promise<{ status: "OK" } | undefined> => {
 	const response = await fetchDataAndRedirectIf401({

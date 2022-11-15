@@ -14,11 +14,11 @@
  */
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { getUser, updateUserInformation, UpdateUserInformationResponse } from "../../../api/user";
+import { getUserEmailVerificationStatus } from "../../../api/user/email/verify";
+import { getUserMetaData } from "../../../api/user/metadata";
+import { getSessionsForUser } from "../../../api/user/sessions";
 import { getImageUrl } from "../../../utils";
-import { getUser, updateUserInformation, UpdateUserInformationResponse } from "../../api/user";
-import { getUserEmailVerificationStatus } from "../../api/user/email/verify";
-import { getUserMetaData } from "../../api/user/metadata";
-import { getSessionsForUser } from "../../api/user/sessions";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { EmailVerificationStatus, UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
@@ -153,7 +153,12 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				emailVerificationStatus={emailVerificationStatus}
 				{...props}
 			/>
-			<UserMetaDataSection metadata={userMetaData} />
+			<UserMetaDataSection
+				metadata={userMetaData}
+				userId={user}
+				refetchData={refetchAllData}
+			/>
+
 			<UserDetailsSessionList
 				sessionList={sessionList}
 				refetchData={refetchAllData}

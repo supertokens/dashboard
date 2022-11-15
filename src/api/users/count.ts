@@ -13,8 +13,8 @@
  * under the License.
  */
 
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
-import { UserListCount } from "../../pages/usersList/types";
+import { UserListCount } from "../../ui/pages/usersList/types";
+import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
 
 export const fetchCount = async () => {
 	const response = await fetchDataAndRedirectIf401({

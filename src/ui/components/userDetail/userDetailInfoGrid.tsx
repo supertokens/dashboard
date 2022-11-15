@@ -1,11 +1,10 @@
 import { FC, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { UpdateUserInformationResponse } from "../../../api/user";
 import { formatLongDate, getImageUrl } from "../../../utils";
-import { UpdateUserInformationResponse } from "../../api/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import {
 	EmailVerificationStatus,
 	FEATURE_NOT_ENABLED_TEXT,
-	UserProps,
 	UserThirdParty,
 	UserWithRecipeId,
 } from "../../pages/usersList/types";
@@ -35,7 +34,7 @@ type UserDetailInfoGridItemProps = {
 	tooltip?: ReactNode;
 };
 
-type UserDetailInfoGridHeaderProps = UserProps & {
+type UserDetailInfoGridHeaderProps = {
 	onSave: () => void;
 	onEdit: () => void;
 	onCancel: () => void;
@@ -113,7 +112,7 @@ export const UserDetailInfoGridItem: FC<UserDetailInfoGridItemProps> = ({ label,
 	);
 };
 
-const UserDetailInfoGridHeader: FC<UserDetailInfoGridHeaderProps> = ({
+export const UserDetailInfoGridHeader: FC<UserDetailInfoGridHeaderProps> = ({
 	onSave,
 	onEdit,
 	onCancel,
