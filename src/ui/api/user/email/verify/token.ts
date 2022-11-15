@@ -4,7 +4,11 @@ export const sendUserEmailVerification = async (userId: string) => {
 	const response = await fetchDataAndRedirectIf401({
 		url: getApiUrl("/api/user/email/verify/token"),
 		method: "POST",
-		query: { userId },
+		config: {
+			body: JSON.stringify({
+				userId,
+			}),
+		},
 	});
 	return response?.ok;
 };

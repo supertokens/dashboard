@@ -171,8 +171,8 @@ export const formatLongDate = (date: number | Date) => {
 	}
 
 	const meridiem = hour < 12 ? "am" : "pm";
-	return `${day}${ordinal(day)} ${months[date.getMonth()]} ${yearToDisplay}${delimiter}
-  ${(hour % 12 || 12).toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")} ${meridiem}`;
+	return `${day}${ordinal(day)} ${months[date.getMonth()]}${yearToDisplay}${delimiter}
+${(hour % 12 || 12).toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")} ${meridiem}`;
 };
 
 export const getFormattedLongDateWithoutTime = (date: number | Date) => {

@@ -23,7 +23,7 @@ import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import "./userDetailForm.scss";
 import { UserDisplayName } from "./userDetailHeader";
 
-type PasswordChangeCallback = (password?: string) => void;
+type PasswordChangeCallback = (password?: string) => Promise<void>;
 
 type UserDetailChangePasswordFormProps = {
 	onPasswordChange: PasswordChangeCallback;
@@ -48,12 +48,12 @@ export const getUserChangePasswordPopupProps = (props: UserDetailChangePasswordP
 	const { onPasswordChange } = props;
 	const closeModalRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
 
-	const onModalClose = (password?: string) => {
+	const onModalClose = async (password?: string) => {
 		if (closeModalRef.current !== undefined) {
 			closeModalRef.current();
 		}
 		if (password !== undefined) {
-			onPasswordChange(password);
+			await onPasswordChange(password);
 		}
 	};
 
@@ -181,7 +181,7 @@ export const getUpdateUserToast = (isSuccessfull: boolean) => {
 	return {
 		iconImage: getImageUrl(isSuccessfull ? "checkmark.svg" : "form-field-error-icon.svg"),
 		toastType: isSuccessfull ? "info" : "error",
-		children: <>{isSuccessfull ? "Information updated successfully!" : "Information is not updated"}</>,
+		children: <>{isSuccessfull ? "User information updated successfully" : "Failed to update user information"}</>,
 	} as ToastNotificationProps;
 };
 

@@ -747,8 +747,8 @@ paths:
                                 userId:
                                     type: string
                                 data:
-                                    type: object
-                                    default: {}
+                                    type: string
+                                    default: "{}"
             responses:
                 200:
                     description: Success

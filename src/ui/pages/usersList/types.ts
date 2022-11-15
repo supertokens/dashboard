@@ -60,7 +60,7 @@ export type UserFeatureStatus = {
 
 export type UserProps = { user: UserWithRecipeId };
 
-export const FEATURE_NOT_ENABLED_TEXT = "FEATURE_NOT_ENABLED";
+export const FEATURE_NOT_ENABLED_TEXT = "FEATURE_NOT_ENABLED_ERROR";
 
 export type EmailVerificationStatus =
 	| {

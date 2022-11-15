@@ -15,46 +15,27 @@
 import HighlightJS from "highlight.js";
 import TSHighlight from "highlight.js/lib/languages/typescript";
 import "highlight.js/scss/dark.scss";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getImageUrl } from "../../../utils";
-import { getUserMetaData } from "../../api/user/metadata";
 import IconButton from "../common/iconButton";
 import "./userMetaDataSection.scss";
 
 export type UserMetaDataSectionProps = {
-	userId: string;
+	metadata: string | undefined;
 };
 
-export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({ userId }: UserMetaDataSectionProps) => {
-	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
-
-	const fetchUserMetaData = useCallback(async () => {
-		const metaDataResponse = await getUserMetaData(userId);
-
-		if (metaDataResponse === "FEATURE_NOT_ENABLED") {
-			setUserMetaData("FEATURE_NOT_ENABLED");
-		} else if (metaDataResponse !== undefined) {
-			setUserMetaData(JSON.stringify(metaDataResponse));
-		} else {
-			setUserMetaData("{}");
-		}
-	}, []);
-
-	useEffect(() => {
-		void fetchUserMetaData();
-	}, [fetchUserMetaData]);
-
+export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({ metadata }: UserMetaDataSectionProps) => {
 	useEffect(() => {
 		HighlightJS.registerLanguage("typescript", TSHighlight);
 		HighlightJS.initHighlightingOnLoad();
 	}, []);
 
 	const renderContent = () => {
-		if (userMetaData === undefined) {
+		if (metadata === undefined) {
 			return "Loading...";
 		}
 
-		const highlightedCode = HighlightJS.highlight(userMetaData, {
+		const highlightedCode = HighlightJS.highlight(metadata, {
 			language: "typescript",
 		});
 

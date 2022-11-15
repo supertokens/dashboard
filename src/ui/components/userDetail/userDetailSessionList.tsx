@@ -12,36 +12,31 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useCallback, useEffect, useState } from "react";
 import { formatLongDate, getFormattedLongDateWithoutTime } from "../../../utils";
-import { getSessionsForUser } from "../../api/user/sessions";
+import { deleteSessionsForUser } from "../../api/user/sessions";
 import { PlaceholderTableRows } from "../usersListTable/UsersListTable";
 import "./userDetailSessionList.scss";
 
 export type UserDetailsSessionListProps = {
-	userId: string;
+	sessionList: SessionInfo[] | undefined;
+	refetchData: () => Promise<void>;
 };
 
 export const UserDetailsSessionList: React.FC<UserDetailsSessionListProps> = ({
-	userId,
+	sessionList,
+	refetchData,
 }: UserDetailsSessionListProps) => {
-	const [sessionList, setSessionList] = useState<SessionInfo[] | undefined>(undefined);
+	const sessionCountText = sessionList === undefined ? "" : `(TOTAL NO OF SESSIONS: ${sessionList.length})`;
 
-	const fetchSession = useCallback(async () => {
-		let response = await getSessionsForUser(userId);
-
-		if (response === undefined) {
-			response = [];
+	const revokeAllSessions = async () => {
+		if (sessionList === undefined) {
+			return;
 		}
 
-		setSessionList(response);
-	}, []);
-
-	useEffect(() => {
-		void fetchSession();
-	}, [fetchSession]);
-
-	const sessionCountText = sessionList === undefined ? "" : `(TOTAL NO OF SESSIONS: ${sessionList.length})`;
+		const allSessionHandles: string[] = sessionList.map((item) => item.sessionHandle);
+		await deleteSessionsForUser(allSessionHandles);
+		await refetchData();
+	};
 
 	return (
 		<div className="panel no-padding-horizontal">
@@ -50,7 +45,11 @@ export const UserDetailsSessionList: React.FC<UserDetailsSessionListProps> = ({
 					<span className="header-primary">
 						SESSION INFORMATION <span className="header-secondary">{sessionCountText}</span>
 					</span>
-					<div className="button button-error">Revoke all sessions</div>
+					<div
+						className="button button-error"
+						onClick={revokeAllSessions}>
+						Revoke all sessions
+					</div>
 				</div>
 				<div className="table-container">
 					<table className="table">
@@ -80,12 +79,13 @@ export const UserDetailsSessionList: React.FC<UserDetailsSessionListProps> = ({
 											sessionHandle={session.sessionHandle}
 											expiry={session.expiry}
 											timeCreated={session.timeCreated}
+											refetchData={refetchData}
 										/>
 									);
 								})}
 
 							{sessionList !== undefined && sessionList.length === 0 && (
-								<tr className="session-row">
+								<tr className="session-row empty-row">
 									<td>No data</td>
 								</tr>
 							)}
@@ -103,7 +103,16 @@ export type SessionInfo = {
 	expiry: number;
 };
 
-const UserDetailsSessionListItem: React.FC<SessionInfo> = ({ sessionHandle, timeCreated, expiry }: SessionInfo) => {
+type UserDetailsSessionListItemProps = SessionInfo & {
+	refetchData: () => Promise<void>;
+};
+
+const UserDetailsSessionListItem: React.FC<UserDetailsSessionListItemProps> = ({
+	sessionHandle,
+	timeCreated,
+	expiry,
+	refetchData,
+}: UserDetailsSessionListItemProps) => {
 	// Strip session handle to use 9 before and 12 after ellipsis
 	let _sessionhandle = sessionHandle;
 
@@ -117,6 +126,11 @@ const UserDetailsSessionListItem: React.FC<SessionInfo> = ({ sessionHandle, time
 	const createdDate = getFormattedLongDateWithoutTime(timeCreated);
 	const expiresDate = formatLongDate(expiry);
 
+	const revokeSession = async () => {
+		await deleteSessionsForUser([sessionHandle]);
+		await refetchData();
+	};
+
 	return (
 		<tr className="session-row with-data">
 			<td className="w30">
@@ -125,7 +139,11 @@ const UserDetailsSessionListItem: React.FC<SessionInfo> = ({ sessionHandle, time
 			<td>{createdDate}</td>
 			<td>{expiresDate}</td>
 			<td>
-				<div className="button button-error-outline">Revoke</div>
+				<div
+					className="button button-error-outline"
+					onClick={revokeSession}>
+					Revoke
+				</div>
 			</td>
 		</tr>
 	);

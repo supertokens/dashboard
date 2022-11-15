@@ -22,3 +22,17 @@ export const getSessionsForUser = async (userId: string): Promise<SessionInfo[] 
 
 	return undefined;
 };
+
+export const deleteSessionsForUser = async (sessionHandles: string[]): Promise<void> => {
+	await fetchDataAndRedirectIf401({
+		url: getApiUrl("/api/user/sessions"),
+		method: "POST",
+		config: {
+			body: JSON.stringify({
+				sessionHandles,
+			}),
+		},
+	});
+
+	return;
+};

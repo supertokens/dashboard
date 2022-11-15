@@ -1,9 +1,9 @@
 import { fetchDataAndRedirectIf401, getApiUrl } from "../../../utils";
 
-export const getUserMetaData = async (userId: string): Promise<string | any> => {
+export const deleteUser = async (userId: string): Promise<{ status: "OK" } | undefined> => {
 	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl("/api/user/metadata"),
-		method: "GET",
+		url: getApiUrl("/api/user"),
+		method: "DELETE",
 		query: {
 			userId,
 		},
@@ -12,15 +12,11 @@ export const getUserMetaData = async (userId: string): Promise<string | any> => 
 	if (response.ok) {
 		const body = await response.json();
 
-		if (body.status === "FEATURE_NOT_ENABLED_ERROR") {
-			return "FEATURE_NOT_ENABLED_ERROR";
-		}
-
 		if (body.status !== "OK") {
 			return undefined;
 		}
 
-		return body.data;
+		return body;
 	}
 
 	return undefined;

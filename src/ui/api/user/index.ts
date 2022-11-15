@@ -33,29 +33,55 @@ export const getUser = async (userId: string, recipeId: string): Promise<UserWit
 			return undefined;
 		}
 
-		return body.user;
+		return body;
 	}
 
 	return undefined;
 };
 
-export const updateUser = async (userId: string, updatedData: UserWithRecipeId) => {
+export type UpdateUserInformationResponse =
+	| {
+			status: "OK" | "EMAIL_ALREADY_EXISTS_ERROR" | "PHONE_ALREADY_EXISTS_ERROR";
+	  }
+	| {
+			status: "INVALID_EMAIL_ERROR" | "INVALID_PHONE_ERROR";
+			error: string;
+	  };
+
+export const updateUserInformation = async ({
+	userId,
+	recipeId,
+	email,
+	phone,
+	firstName,
+	lastName,
+}: {
+	userId: string;
+	recipeId: string;
+	email?: string;
+	phone?: string;
+	firstName?: string;
+	lastName?: string;
+}): Promise<UpdateUserInformationResponse> => {
+	const emailToSend = email === undefined ? "" : email;
+	const phoneToSend = phone === undefined ? "" : phone;
+	const firstNameToSend = firstName === undefined ? "" : firstName;
+	const lastNameToSend = lastName === undefined ? "" : lastName;
+
 	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl(`/api/user/${userId}`),
+		url: getApiUrl("/api/user"),
 		method: "PUT",
 		config: {
-			body: JSON.stringify(updatedData),
+			body: JSON.stringify({
+				recipeId,
+				userId,
+				phone: phoneToSend,
+				email: emailToSend,
+				firstName: firstNameToSend,
+				lastName: lastNameToSend,
+			}),
 		},
 	});
-	return response?.ok;
-};
 
-export const deleteUser = async (userId: string) => {
-	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl(`/api/user/${userId}`),
-		method: "DELETE",
-	});
-	return response?.ok;
+	return await response.json();
 };
-
-export default updateUser;

@@ -13,15 +13,20 @@
  * under the License.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { getImageUrl } from "../../../utils";
-import { getUser } from "../../api/user";
-import { UserWithRecipeId } from "../../pages/usersList/types";
+import { getUser, updateUserInformation, UpdateUserInformationResponse } from "../../api/user";
+import { getUserEmailVerificationStatus } from "../../api/user/email/verify";
+import { getUserMetaData } from "../../api/user/metadata";
+import { getSessionsForUser } from "../../api/user/sessions";
+import { PopupContentContext } from "../../contexts/PopupContentContext";
+import { EmailVerificationStatus, UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import "./userDetail.scss";
+import { getUpdateUserToast } from "./userDetailForm";
 import UserDetailHeader from "./userDetailHeader";
-import UserDetailInfoGrid from "./userDetailInfoGrid";
-import { UserDetailsSessionList } from "./userDetailSessionList";
+import UserDetailInfoGrid, { isEmailVerificationApplicable } from "./userDetailInfoGrid";
+import { SessionInfo, UserDetailsSessionList } from "./userDetailSessionList";
 import { UserMetaDataSection } from "./userMetaDataSection";
 
 export type UserDetailProps = {
@@ -29,15 +34,19 @@ export type UserDetailProps = {
 	recipeId: string;
 	onBackButtonClicked: () => void;
 	onDeleteCallback: OnSelectUserFunction;
-	onUpdateCallback: (userId: string, updatedValue: UserWithRecipeId) => void;
 	onSendEmailVerificationCallback: (user: UserWithRecipeId) => Promise<boolean>;
 	onUpdateEmailVerificationStatusCallback: (userId: string, isVerified: boolean) => Promise<boolean>;
-	onChangePasswordCallback: (userId: string, newPassword: string) => void;
+	onChangePasswordCallback: (userId: string, newPassword: string) => Promise<void>;
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { onBackButtonClicked, user, recipeId } = props;
 	const [userDetail, setUserDetail] = useState<UserWithRecipeId | undefined>(undefined);
+	const [sessionList, setSessionList] = useState<SessionInfo[] | undefined>(undefined);
+	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
+	const [emailVerificationStatus, setEmailVerificationStatus] = useState<EmailVerificationStatus | undefined>(
+		undefined
+	);
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user, recipeId);
@@ -47,6 +56,74 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	useEffect(() => {
 		void loadUserDetail();
 	}, [loadUserDetail]);
+
+	const { showToast } = useContext(PopupContentContext);
+
+	const updateUser = useCallback(
+		async (userId: string, data: UserWithRecipeId): Promise<UpdateUserInformationResponse> => {
+			const userInfoResponse = await updateUserInformation({
+				userId,
+				recipeId: data.recipeId,
+				email: data.user.email,
+				phone: data.recipeId === "passwordless" ? data.user.phoneNumber : "",
+				firstName: data.user.firstName,
+				lastName: data.user.lastName,
+			});
+			showToast(getUpdateUserToast(userInfoResponse.status === "OK"));
+			return userInfoResponse;
+		},
+		[showToast]
+	);
+
+	const fetchUserMetaData = useCallback(async () => {
+		const metaDataResponse = await getUserMetaData(user);
+
+		if (metaDataResponse === "FEATURE_NOT_ENABLED_ERROR") {
+			setUserMetaData("Feature Not Enabled");
+		} else if (metaDataResponse !== undefined) {
+			setUserMetaData(JSON.stringify(metaDataResponse));
+		} else {
+			setUserMetaData("{}");
+		}
+	}, []);
+
+	useEffect(() => {
+		void fetchUserMetaData();
+	}, [fetchUserMetaData]);
+
+	const fetchSession = useCallback(async () => {
+		let response = await getSessionsForUser(user);
+
+		if (response === undefined) {
+			response = [];
+		}
+
+		setSessionList(response);
+	}, []);
+
+	useEffect(() => {
+		void fetchSession();
+	}, [fetchSession]);
+
+	const fetchEmailVerificationStatus = useCallback(async () => {
+		if (!isEmailVerificationApplicable(recipeId)) {
+			return;
+		}
+
+		const response: EmailVerificationStatus = await getUserEmailVerificationStatus(user);
+		setEmailVerificationStatus(response);
+	}, []);
+
+	useEffect(() => {
+		void fetchEmailVerificationStatus();
+	}, [fetchEmailVerificationStatus]);
+
+	const refetchAllData = async () => {
+		await loadUserDetail();
+		await fetchUserMetaData();
+		await fetchSession();
+		await fetchEmailVerificationStatus();
+	};
 
 	if (userDetail === undefined) {
 		return <></>;
@@ -71,10 +148,16 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 			/>
 			<UserDetailInfoGrid
 				userDetail={userDetail}
+				refetchData={refetchAllData}
+				onUpdateCallback={updateUser}
+				emailVerificationStatus={emailVerificationStatus}
 				{...props}
 			/>
-			<UserMetaDataSection userId={user} />
-			<UserDetailsSessionList userId={user} />
+			<UserMetaDataSection metadata={userMetaData} />
+			<UserDetailsSessionList
+				sessionList={sessionList}
+				refetchData={refetchAllData}
+			/>
 		</div>
 	);
 };

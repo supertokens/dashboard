@@ -147,6 +147,10 @@ $container-width: 829;
 				margin-left: 34px;
 				margin-right: 34px;
 
+				&.empty-row {
+					display: flex;
+				}
+
 				&.with-data {
 					td {
 						font-weight: 400;

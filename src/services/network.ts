@@ -30,6 +30,10 @@ export default class NetworkManager {
 			return this.get(url, query, config);
 		}
 
+		if (method === "DELETE") {
+			return this.delete(url, query, config);
+		}
+
 		return fetch(new URL(url), {
 			...config,
 			method,
@@ -51,5 +55,25 @@ export default class NetworkManager {
 		}
 
 		return fetch(_url, config);
+	}
+
+	private static async delete(url: string, query?: { [key: string]: string }, config?: RequestInit) {
+		const _url: URL = new URL(url);
+
+		// Add query params to URL
+		if (query !== undefined) {
+			Object.keys(query).forEach((key) => {
+				_url.searchParams.append(key, query[key]);
+			});
+		}
+
+		return fetch(_url, {
+			...config,
+			method: "DELETE",
+			headers: {
+				...config?.headers,
+				"Content-Type": "application/json",
+			},
+		});
 	}
 }

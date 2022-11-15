@@ -15,7 +15,8 @@
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { deleteUser as deleteUserApi, getUser as getUserApi, updateUser as updateUserApi } from "../../api/user";
+import { getUser as getUserApi } from "../../api/user";
+import { deleteUser as deleteUserApi } from "../../api/user/delete";
 import { updateUserEmailVerificationStatus } from "../../api/user/email/verify";
 import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../api/user/email/verify/token";
 import { updatePassword } from "../../api/user/password/reset";
@@ -32,7 +33,6 @@ import {
 	getEmailVerifiedToast,
 	getSendEmailVerificationToast,
 	getUpdatePasswordToast,
-	getUpdateUserToast,
 } from "../../components/userDetail/userDetailForm";
 import UsersListTable, {
 	LIST_DEFAULT_LIMIT,
@@ -224,30 +224,14 @@ export const UserListPage = () => {
 		}
 	}, []);
 
-	const updateUser = useCallback(
-		async (userId: string, data: UserWithRecipeId) => {
-			const updateSucceed = (await updateUserApi(userId, data)) === true;
-			if (updateSucceed) {
-				// load the latest user data from API
-				// await getUser(userId);
-			} else {
-				// reset the user data from the memory
-				// it uses three dots,
-				// otherwise the original source of selectedUser will be modified along with the state changes
-				// setSelectedUser(selectedUser !== undefined ? { ...selectedUser } : undefined);
-			}
-			showToast(getUpdateUserToast(updateSucceed));
-		},
-		[selectedUser, showToast, getUser]
-	);
-
 	const deleteUser = useCallback(
 		async (userId: string) => {
-			const deleteSucceed = (await deleteUserApi(userId)) === true;
-			if (deleteSucceed) {
+			const deleteSucceed = await deleteUserApi(userId);
+			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
+			if (didSucceed) {
 				backToList();
 			}
-			showToast(getDeleteUserToast(deleteSucceed));
+			showToast(getDeleteUserToast(didSucceed));
 		},
 		[backToList, showToast]
 	);
@@ -328,7 +312,6 @@ export const UserListPage = () => {
 					recipeId={selectedRecipeId}
 					user={selectedUser}
 					onBackButtonClicked={backToList}
-					onUpdateCallback={updateUser}
 					onDeleteCallback={({ user: { id } }) => deleteUser(id)}
 					onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
 					onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
