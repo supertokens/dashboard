@@ -42,6 +42,10 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 		HighlightJS.initHighlightingOnLoad();
 	}, []);
 
+	useEffect(() => {
+		setMetaDataForEditing(metadata);
+	}, [metadata]);
+
 	const renderMetaDataContent = () => {
 		if (metadata === undefined) {
 			return "Loading...";
@@ -86,6 +90,7 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 
 	const onSave = async () => {
 		try {
+			setMetaDataUpdateError(undefined);
 			await updateUserMetaData(userId, metadataForEditing === undefined ? "" : metadataForEditing);
 			await refetchData();
 			setIsEditing(false);
