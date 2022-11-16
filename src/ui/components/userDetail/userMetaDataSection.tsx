@@ -19,7 +19,6 @@ import { useEffect, useState } from "react";
 import { updateUserMetaData } from "../../../api/user/metadata";
 import { getImageUrl } from "../../../utils";
 import IconButton from "../common/iconButton";
-import InputField from "../inputField/InputField";
 import "./userMetaDataSection.scss";
 
 export type UserMetaDataSectionProps = {
@@ -67,15 +66,25 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 		if (isEditing && metadata !== undefined) {
 			return (
 				<div className="metadata-edit-container">
-					<InputField
-						name="metadata"
-						type="text"
-						value={metadataForEditing}
-						error={metaDataUpdateError}
-						handleChange={({ target: { value } }) => {
+					<textarea
+						name={"metadata"}
+						defaultValue={metadataForEditing}
+						className="metadata-edit-box"
+						onChange={({ target: { value } }) => {
 							setMetaDataForEditing(value);
 						}}
+						key={metadata}
 					/>
+					{metaDataUpdateError !== undefined && (
+						<div className="input-field-error block-small block-error">
+							<img
+								className="input-field-error-icon"
+								src={getImageUrl("form-field-error-icon.svg")}
+								alt="Error in field"
+							/>
+							<p className="text-small text-error">{metaDataUpdateError}</p>
+						</div>
+					)}
 				</div>
 			);
 		}

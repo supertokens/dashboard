@@ -27,6 +27,7 @@ export const getUserMetaData = async (userId: string): Promise<string | any> => 
 };
 
 export const updateUserMetaData = async (userId: string, data: string) => {
+	data = data.replaceAll("\n", "");
 	const response = await fetchDataAndRedirectIf401({
 		url: getApiUrl("/api/user/metadata"),
 		method: "PUT",

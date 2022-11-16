@@ -61,3 +61,14 @@ $container-width: 829;
 		line-height: 21px;
 	}
 }
+
+.metadata-edit-box {
+	margin-top: 24px;
+	width: 100%;
+	min-height: 200px;
+	padding: 4px;
+	background-color: var(--color-window-bg);
+	border-radius: 6px;
+	border: none;
+	border: 1px solid rgb(224, 224, 224);
+}
