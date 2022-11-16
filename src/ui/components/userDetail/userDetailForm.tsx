@@ -13,8 +13,10 @@
  * under the License.
  */
 
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
+import { updatePassword } from "../../../api/user/password/reset";
 import { getImageUrl } from "../../../utils";
+import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { UserProps } from "../../pages/usersList/types";
 import InputField from "../inputField/InputField";
 import { LayoutModalProps } from "../layout/layoutModal";
@@ -27,6 +29,7 @@ type PasswordChangeCallback = (password?: string) => Promise<void>;
 
 type UserDetailChangePasswordFormProps = {
 	onPasswordChange: PasswordChangeCallback;
+	userId: string;
 };
 
 type UserDeleteConfirmationProps = UserProps & { onConfirmed: (isConfirmed: boolean) => void };
@@ -34,30 +37,24 @@ type UserDeleteConfirmationProps = UserProps & { onConfirmed: (isConfirmed: bool
 type UserDeleteConfirmationTriggerProps = UserProps & { onDeleteCallback: OnSelectUserFunction };
 
 export type UserDetailChangePasswordPopupProps = Omit<LayoutModalProps, "modalContent"> & {
-	onPasswordChange: PasswordChangeCallback;
-};
-
-const PASSWORD_MIN_LENGTH = 6;
-const getPasswordError = (password: string) => {
-	if (password.length < PASSWORD_MIN_LENGTH) {
-		return `Password should have at least ${PASSWORD_MIN_LENGTH} characters`;
-	}
+	userId: string;
 };
 
 export const getUserChangePasswordPopupProps = (props: UserDetailChangePasswordPopupProps) => {
-	const { onPasswordChange } = props;
 	const closeModalRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
 
 	const onModalClose = async (password?: string) => {
 		if (closeModalRef.current !== undefined) {
 			closeModalRef.current();
 		}
-		if (password !== undefined) {
-			await onPasswordChange(password);
-		}
 	};
 
-	const modalContent = <UserDetailChangePasswordForm onPasswordChange={onModalClose} />;
+	const modalContent = (
+		<UserDetailChangePasswordForm
+			onPasswordChange={onModalClose}
+			userId={props.userId}
+		/>
+	);
 
 	return {
 		...props,
@@ -70,15 +67,34 @@ export const getUserChangePasswordPopupProps = (props: UserDetailChangePasswordP
 export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps> = (
 	props: UserDetailChangePasswordFormProps
 ) => {
-	const { onPasswordChange } = props;
+	const { onPasswordChange, userId } = props;
 	const [password, setPassword] = useState<string>();
 	const [repeatPassword, setRepeatPassword] = useState<string>();
+	const [apiError, setApiError] = useState<string | undefined>(undefined);
+	const { showToast } = useContext(PopupContentContext);
 
 	const isPasswordMatch = password === repeatPassword;
-	const passwordError = password !== undefined ? getPasswordError(password) : undefined;
-	const isSaveDisabled = Boolean(
-		password === undefined || passwordError || !isPasswordMatch || repeatPassword === undefined
-	);
+
+	const onSave = async () => {
+		if (password === undefined) {
+			return;
+		}
+
+		const response = await updatePassword(userId, password);
+
+		if (response.status === "INVALID_PASSWORD_ERROR") {
+			setApiError(response.error);
+		} else {
+			showToast(getUpdatePasswordToast(true));
+			await onPasswordChange();
+		}
+	};
+
+	const onCancel = async () => {
+		setPassword(undefined);
+		setRepeatPassword(undefined);
+		await onPasswordChange();
+	};
 
 	return (
 		<>
@@ -89,7 +105,7 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 					label="Password"
 					isRequired={true}
 					hideColon={true}
-					error={passwordError}
+					error={apiError}
 					handleChange={({ target: { value } }) => setPassword(value)}
 				/>
 				<InputField
@@ -104,13 +120,13 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 				<div className="user-detail-form__actions">
 					<button
 						className="button outline"
-						onClick={() => onPasswordChange()}>
+						onClick={onCancel}>
 						Cancel
 					</button>
 					<button
 						className="button"
-						disabled={isSaveDisabled}
-						onClick={() => onPasswordChange(password)}>
+						disabled={false}
+						onClick={onSave}>
 						Save
 					</button>
 				</div>
@@ -213,6 +229,6 @@ export const getUpdatePasswordToast = (isSuccessfull: boolean) => {
 	return {
 		iconImage: getImageUrl(isSuccessfull ? "checkmark-green.svg" : "form-field-error-icon.svg"),
 		toastType: isSuccessfull ? "success" : "error",
-		children: <>{isSuccessfull ? "Password is updated" : "Password is failed to update"}</>,
+		children: <>{isSuccessfull ? "Password updated" : "Failed to update password"}</>,
 	} as ToastNotificationProps;
 };

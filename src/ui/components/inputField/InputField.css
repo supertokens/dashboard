@@ -75,6 +75,10 @@
 .input-field-error-icon {
 	height: 16px;
 	width: 16px;
-	margin-right: 4px;
+	margin-right: 8px;
 	margin-bottom: 2px;
+}
+
+.input-field-error-text {
+	line-height: normal !important;
 }

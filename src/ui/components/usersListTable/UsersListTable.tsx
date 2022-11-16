@@ -133,11 +133,7 @@ const UserTableRow: React.FC<
 		() =>
 			showModal(
 				getUserChangePasswordPopupProps({
-					onPasswordChange: async (password) => {
-						if (password !== undefined) {
-							await onChangePasswordCallback(user.user.id, password);
-						}
-					},
+					userId: user.user.id,
 				})
 			),
 		[showModal, user.user.id, onChangePasswordCallback]

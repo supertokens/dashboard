@@ -322,7 +322,12 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	);
 
 	const openChangePasswordModal = useCallback(
-		() => showModal(getUserChangePasswordPopupProps({ onPasswordChange: handleChangePassword })),
+		() =>
+			showModal(
+				getUserChangePasswordPopupProps({
+					userId: userDetail.user.id,
+				})
+			),
 		[showModal, handleChangePassword]
 	);
 

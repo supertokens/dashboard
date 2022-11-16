@@ -90,7 +90,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 						src={getImageUrl("form-field-error-icon.svg")}
 						alt="Error in field"
 					/>
-					<p className="text-small text-error">{props.error}</p>
+					<p className="input-field-error-text text-small text-error">{props.error}</p>
 				</div>
 			)}
 		</div>

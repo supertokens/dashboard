@@ -19,7 +19,6 @@ import { getUser as getUserApi } from "../../../api/user";
 import { deleteUser as deleteUserApi } from "../../../api/user/delete";
 import { updateUserEmailVerificationStatus } from "../../../api/user/email/verify";
 import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../../api/user/email/verify/token";
-import { updatePassword } from "../../../api/user/password/reset";
 import fetchUsers from "../../../api/users";
 import fetchCount from "../../../api/users/count";
 import AuthWrapper from "../../components/authWrapper";
@@ -32,7 +31,6 @@ import {
 	getEmailUnVerifiedToast,
 	getEmailVerifiedToast,
 	getSendEmailVerificationToast,
-	getUpdatePasswordToast,
 } from "../../components/userDetail/userDetailForm";
 import UsersListTable, {
 	LIST_DEFAULT_LIMIT,
@@ -238,8 +236,8 @@ export const UserListPage = () => {
 
 	const changePassword = useCallback(
 		async (userId: string, newPassword: string) => {
-			const updateSucceed = await updatePassword(userId, newPassword);
-			showToast(getUpdatePasswordToast(updateSucceed));
+			// const response = await updatePassword(userId, newPassword);
+			// showToast(getUpdatePasswordToast(respo));
 		},
 		[showToast]
 	);

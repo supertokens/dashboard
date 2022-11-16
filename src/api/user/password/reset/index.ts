@@ -1,6 +1,15 @@
 import { fetchDataAndRedirectIf401, getApiUrl } from "../../../../utils";
 
-export const updatePassword = async (userId: string, newPassword: string) => {
+type UpdatePasswordResponse =
+	| {
+			status: "OK";
+	  }
+	| {
+			status: "INVALID_PASSWORD_ERROR";
+			error: string;
+	  };
+
+export const updatePassword = async (userId: string, newPassword: string): Promise<UpdatePasswordResponse> => {
 	const response = await fetchDataAndRedirectIf401({
 		url: getApiUrl("/api/user/password"),
 		method: "PUT",
@@ -12,5 +21,5 @@ export const updatePassword = async (userId: string, newPassword: string) => {
 			}),
 		},
 	});
-	return response?.ok;
+	return await response.json();
 };
