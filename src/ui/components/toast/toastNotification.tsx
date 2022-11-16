@@ -14,10 +14,10 @@
  */
 
 import { FC, useContext } from "react";
+import { ReactComponent as CloseIcon } from "../../../assets/close-icon.svg";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import Toast, { ToastProps } from "./toast";
 import "./toastNotification.scss";
-import { ReactComponent as CloseIcon } from "../../../assets/close-icon.svg";
 
 export type ToastNotificationProps = Omit<ToastProps, "contentAfterDisappear"> & {
 	iconImage: string;
@@ -27,9 +27,15 @@ export type ToastNotificationProps = Omit<ToastProps, "contentAfterDisappear"> &
 export const ToastNotification: FC<ToastNotificationProps> = (props: ToastNotificationProps) => {
 	const { iconImage, toastType, children, duration, onDisappear } = props;
 
+	let _duration = 3000;
+
+	if (duration !== undefined) {
+		_duration = duration;
+	}
+
 	return (
 		<Toast
-			duration={duration}
+			duration={_duration}
 			onDisappear={onDisappear}>
 			<div className={`notification notification-${toastType}`}>
 				<span className="notification__icon">
