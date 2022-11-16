@@ -64,7 +64,8 @@ $container-width: 829;
 
 .metadata-edit-box {
 	margin-top: 24px;
-	width: 100%;
+	min-width: 100%;
+	max-width: 100%;
 	min-height: 200px;
 	padding: 4px;
 	background-color: var(--color-window-bg);
