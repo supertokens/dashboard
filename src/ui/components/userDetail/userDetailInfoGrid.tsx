@@ -219,9 +219,9 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 
 	const onSave = useCallback(async () => {
 		const response = await onUpdateCallback(userDetail.user.id, userState);
-		await refetchData();
 
 		if (response.status === "OK") {
+			await refetchData();
 			setIsEditing(false);
 		} else {
 			if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
@@ -261,7 +261,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		}
 
 		return undefined;
-	}, [email, userDetail.user.email, isEditing])();
+	}, [email, userDetail.user.email, isEditing, emailErrorFromAPI])();
 
 	// validate phone if `isEditing=true`
 	const phoneNumber = recipeId === "passwordless" ? userState.user.phoneNumber : undefined;
@@ -271,8 +271,12 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 			return;
 		}
 
+		if (phoneErrorFromAPI !== undefined) {
+			return phoneErrorFromAPI;
+		}
+
 		return undefined;
-	}, [phoneNumber, phoneNumberProps, isEditing])();
+	}, [phoneNumber, phoneNumberProps, isEditing, phoneErrorFromAPI])();
 
 	const phone = isEditing ? (
 		<PhoneNumberInput
@@ -307,6 +311,8 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const saveDisabled = emailError !== undefined || phoneNumberError !== undefined;
 
 	const handleCancelSave = useCallback(() => {
+		setEmailErrorFromAPI(undefined);
+		setPhoneErrorFromAPI(undefined);
 		setIsEditing(false);
 		setUserState(userDetail);
 	}, [userDetail]);

@@ -20,7 +20,12 @@ import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "../userDetail/userDetail";
-import { getUserChangePasswordPopupProps, getUserDeleteConfirmationProps } from "../userDetail/userDetailForm";
+import {
+	getUserChangeEmailPopupProps,
+	getUserChangePasswordPopupProps,
+	getUserChangePhonePopupProps,
+	getUserDeleteConfirmationProps,
+} from "../userDetail/userDetailForm";
 import UserRowMenu, { UserRowMenuItemProps } from "./UserRowMenu";
 import "./UsersListTable.scss";
 
@@ -139,6 +144,27 @@ const UserTableRow: React.FC<
 		[showModal, user.user.id, onChangePasswordCallback]
 	);
 
+	const openChangeEmailModal = useCallback(
+		(recipeId: "emailpassword" | "passwordless") =>
+			showModal(
+				getUserChangeEmailPopupProps({
+					userId: user.user.id,
+					recipeId,
+				})
+			),
+		[showModal, user.user.id, onChangePasswordCallback]
+	);
+
+	const openChangePhoneModal = useCallback(
+		() =>
+			showModal(
+				getUserChangePhonePopupProps({
+					userId: user.user.id,
+				})
+			),
+		[showModal, user.user.id, onChangePasswordCallback]
+	);
+
 	const openDeleteConfirmation = useCallback(
 		() =>
 			showModal(
@@ -171,7 +197,7 @@ const UserTableRow: React.FC<
 
 			menuItems.push({
 				onClick: () => {
-					/* TODO */
+					openChangeEmailModal("emailpassword");
 				},
 				text: "Change Email",
 				imageUrl: "mail.svg",
@@ -183,7 +209,7 @@ const UserTableRow: React.FC<
 		if (user.recipeId === "passwordless" && user.user.email !== undefined) {
 			menuItems.push({
 				onClick: () => {
-					/* TODO */
+					openChangeEmailModal("passwordless");
 				},
 				text: "Change Email",
 				imageUrl: "mail.svg",
@@ -193,16 +219,16 @@ const UserTableRow: React.FC<
 		}
 
 		if (user.recipeId === "passwordless" && user.user.phoneNumber !== undefined) {
-			menuItems.push({
-				onClick: () => {
-					/* TODO */
-				},
-				text: "Change Phone Number",
-				// TODO: Need an icon for phone
-				imageUrl: "mail.svg",
-				hoverImageUrl: "mail-opened.svg",
-				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
-			});
+			// menuItems.push({
+			// 	onClick: () => {
+			// 		openChangePhoneModal();
+			// 	},
+			// 	text: "Change Phone Number",
+			// 	// TODO: Need an icon for phone
+			// 	imageUrl: "mail.svg",
+			// 	hoverImageUrl: "mail-opened.svg",
+			// 	disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
+			// });
 		}
 
 		menuItems.push({

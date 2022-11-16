@@ -254,7 +254,16 @@ export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberIn
 				inputComponent={
 					PhoneNumberTextField // use custom component because the default one always show country calling code in the text field
 				}></PhoneInputWithCountrySelect>
-			{isTouched && error !== undefined && <div className="block-small block-error">{error}</div>}
+			{isTouched && error !== undefined && (
+				<div className="input-field-error block-small block-error">
+					<img
+						className="input-field-error-icon"
+						src={getImageUrl("form-field-error-icon.svg")}
+						alt="Error in field"
+					/>
+					<p className="input-field-error-text text-small text-error">{error}</p>
+				</div>
+			)}
 		</>
 	);
 };

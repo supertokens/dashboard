@@ -14,12 +14,14 @@
  */
 
 import { FC, useContext, useState } from "react";
+import { updateUserInformation } from "../../../api/user";
 import { updatePassword } from "../../../api/user/password/reset";
 import { getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { UserProps } from "../../pages/usersList/types";
 import InputField from "../inputField/InputField";
 import { LayoutModalProps } from "../layout/layoutModal";
+import { PhoneNumberInput } from "../phoneNumber/PhoneNumberInput";
 import { ToastNotificationProps } from "../toast/toastNotification";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import "./userDetailForm.scss";
@@ -32,12 +34,81 @@ type UserDetailChangePasswordFormProps = {
 	userId: string;
 };
 
+type UserDetailChangeEmailFormProps = {
+	onEmailChange: PasswordChangeCallback;
+	userId: string;
+	recipeId: "emailpassword" | "passwordless";
+};
+
+type UserDetailChangePhoneFormProps = {
+	onPhoneChange: PasswordChangeCallback;
+	userId: string;
+};
+
 type UserDeleteConfirmationProps = UserProps & { onConfirmed: (isConfirmed: boolean) => void };
 
 type UserDeleteConfirmationTriggerProps = UserProps & { onDeleteCallback: OnSelectUserFunction };
 
 export type UserDetailChangePasswordPopupProps = Omit<LayoutModalProps, "modalContent"> & {
 	userId: string;
+};
+
+export type UserDetailChangeEmailPopupProps = Omit<LayoutModalProps, "modalContent"> & {
+	userId: string;
+	recipeId: "emailpassword" | "passwordless";
+};
+
+export type UserDetailChangePhonePopupProps = Omit<LayoutModalProps, "modalContent"> & {
+	userId: string;
+};
+
+export const getUserChangeEmailPopupProps = (props: UserDetailChangeEmailPopupProps) => {
+	const closeModalRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
+
+	const onModalClose = async (password?: string) => {
+		if (closeModalRef.current !== undefined) {
+			closeModalRef.current();
+		}
+	};
+
+	const modalContent = (
+		<UserDetailChangeEmailForm
+			onEmailChange={onModalClose}
+			userId={props.userId}
+			recipeId={props.recipeId}
+		/>
+	);
+
+	return {
+		...props,
+		header: <h2 className="user-detail-form__header">Change Email</h2>,
+		modalContent: modalContent,
+		closeCallbackRef: closeModalRef,
+	} as LayoutModalProps;
+};
+
+export const getUserChangePhonePopupProps = (props: UserDetailChangePhonePopupProps) => {
+	const closeModalRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
+
+	const onModalClose = async (password?: string) => {
+		if (closeModalRef.current !== undefined) {
+			closeModalRef.current();
+		}
+	};
+
+	const modalContent = (
+		<UserDetailChangePhoneForm
+			onPhoneChange={onModalClose}
+			userId={props.userId}
+		/>
+	);
+
+	return {
+		...props,
+		header: <h2 className="user-detail-form__header">Change Phone Number</h2>,
+		modalContent: modalContent,
+		closeCallbackRef: closeModalRef,
+	} as LayoutModalProps;
 };
 
 export const getUserChangePasswordPopupProps = (props: UserDetailChangePasswordPopupProps) => {
@@ -62,6 +133,158 @@ export const getUserChangePasswordPopupProps = (props: UserDetailChangePasswordP
 		modalContent: modalContent,
 		closeCallbackRef: closeModalRef,
 	} as LayoutModalProps;
+};
+
+export const UserDetailChangePhoneForm: FC<UserDetailChangePhoneFormProps> = (
+	props: UserDetailChangePhoneFormProps
+) => {
+	const { onPhoneChange, userId } = props;
+	const [phone, setPhone] = useState<string>();
+	const [repeatPhone, setRepeatPhone] = useState<string>();
+	const [apiError, setApiError] = useState<string | undefined>(undefined);
+	const { showToast } = useContext(PopupContentContext);
+
+	const isPhoneMatch = phone === repeatPhone;
+
+	const onSave = async () => {
+		if (phone === undefined) {
+			return;
+		}
+
+		const response = await updateUserInformation({
+			userId,
+			phone,
+			recipeId: "passwordless",
+		});
+
+		if (response.status === "INVALID_EMAIL_ERROR") {
+			setApiError(response.error);
+		} else if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
+			setApiError("A user with this email already exists");
+		} else {
+			showToast(getUpdatePasswordToast(true));
+			await onPhoneChange();
+		}
+	};
+
+	const onCancel = async () => {
+		setPhone(undefined);
+		setRepeatPhone(undefined);
+		await onPhoneChange();
+	};
+
+	return (
+		<>
+			<div className="user-detail-form">
+				<label
+					htmlFor={"Phone Number"}
+					className="text-small input-label">
+					{"Phone number"}
+					<span className="text-error input-label-required">*</span>
+					{":"}
+				</label>
+				<PhoneNumberInput
+					name="phone"
+					value={phone}
+					error={apiError}
+					isRequired={true}
+					onChange={(phoneNumber) => {
+						setPhone(phoneNumber);
+					}}
+				/>
+				<div className="user-detail-form__actions">
+					<button
+						className="button outline"
+						onClick={onCancel}>
+						Cancel
+					</button>
+					<button
+						className="button"
+						disabled={false}
+						onClick={onSave}>
+						Save
+					</button>
+				</div>
+			</div>
+		</>
+	);
+};
+
+export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
+	props: UserDetailChangeEmailFormProps
+) => {
+	const { onEmailChange, userId, recipeId } = props;
+	const [email, setEmail] = useState<string>();
+	const [repeatEmail, setRepeatEmail] = useState<string>();
+	const [apiError, setApiError] = useState<string | undefined>(undefined);
+	const { showToast } = useContext(PopupContentContext);
+
+	const isEmailMatch = email === repeatEmail;
+
+	const onSave = async () => {
+		if (email === undefined) {
+			return;
+		}
+
+		const response = await updateUserInformation({
+			userId,
+			email,
+			recipeId,
+		});
+
+		if (response.status === "INVALID_EMAIL_ERROR") {
+			setApiError(response.error);
+		} else if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
+			setApiError("A user with this email already exists");
+		} else {
+			showToast(getUpdatePasswordToast(true));
+			await onEmailChange();
+		}
+	};
+
+	const onCancel = async () => {
+		setEmail(undefined);
+		setRepeatEmail(undefined);
+		await onEmailChange();
+	};
+
+	return (
+		<>
+			<div className="user-detail-form">
+				<InputField
+					name="email"
+					type="email"
+					label="Email"
+					isRequired={true}
+					hideColon={true}
+					error={apiError}
+					handleChange={({ target: { value } }) => setEmail(value)}
+				/>
+				<InputField
+					name="repeatEmail"
+					type="email"
+					label="Confirm Email"
+					isRequired={true}
+					hideColon={true}
+					error={repeatEmail !== undefined && !isEmailMatch ? "Email does not match" : undefined}
+					handleChange={({ target: { value } }) => setRepeatEmail(value)}
+				/>
+				<div className="user-detail-form__actions">
+					<button
+						className="button outline"
+						onClick={onCancel}>
+						Cancel
+					</button>
+					<button
+						className="button"
+						disabled={false}
+						onClick={onSave}>
+						Save
+					</button>
+				</div>
+			</div>
+		</>
+	);
 };
 
 export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps> = (
@@ -230,5 +453,13 @@ export const getUpdatePasswordToast = (isSuccessfull: boolean) => {
 		iconImage: getImageUrl(isSuccessfull ? "checkmark-green.svg" : "form-field-error-icon.svg"),
 		toastType: isSuccessfull ? "success" : "error",
 		children: <>{isSuccessfull ? "Password updated" : "Failed to update password"}</>,
+	} as ToastNotificationProps;
+};
+
+export const getUpdateEmailToast = (isSuccessfull: boolean) => {
+	return {
+		iconImage: getImageUrl(isSuccessfull ? "checkmark-green.svg" : "form-field-error-icon.svg"),
+		toastType: isSuccessfull ? "success" : "error",
+		children: <>{isSuccessfull ? "Email updated" : "Failed to update email"}</>,
 	} as ToastNotificationProps;
 };
