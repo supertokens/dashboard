@@ -25,7 +25,6 @@ import { PhoneNumberInput } from "../phoneNumber/PhoneNumberInput";
 import { ToastNotificationProps } from "../toast/toastNotification";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import "./userDetailForm.scss";
-import { UserDisplayName } from "./userDetailHeader";
 
 type PasswordChangeCallback = (password?: string) => Promise<void>;
 
@@ -359,16 +358,45 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 };
 
 export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, onConfirmed }) => {
+	const [inputValue, setInputValue] = useState<string>("");
+	const [showError, shouldShowError] = useState(false);
+
+	let informationToEnter = "Confirm";
+	let inputType = "following information";
+
+	if (user.user.email !== undefined) {
+		informationToEnter = user.user.email;
+		inputType = "user's email id";
+	}
+
+	if (user.recipeId === "passwordless" && user.user.phoneNumber !== undefined) {
+		informationToEnter = user.user.phoneNumber;
+		inputType = "user's phone number";
+	}
+
+	const onDeletePressed = () => {
+		if (informationToEnter !== inputValue) {
+			shouldShowError(true);
+			return;
+		}
+
+		onConfirmed(true);
+	};
+
 	return (
 		<div className="user-detail-form">
 			<p>
-				Are you sure you want to delete user “
-				<b>
-					<UserDisplayName user={user} />
-				</b>
-				”?
+				To delete the user, please confirm by typing the {inputType}: <span>{informationToEnter}</span> below
 			</p>
-			<p> This action is irreversible.</p>
+			<div className="user-delete-input-container">
+				<InputField
+					type="text"
+					name="input"
+					error={showError ? "Incorrect entry" : undefined}
+					value={inputValue}
+					handleChange={({ target: { value } }) => setInputValue(value)}
+				/>
+			</div>
 			<div className="user-detail-form__actions">
 				<button
 					className="button outline"
@@ -377,8 +405,9 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 				</button>
 				<button
 					className="button button-error"
-					onClick={() => onConfirmed(true)}>
-					Yes, Delete
+					onClick={onDeletePressed}
+					disabled={inputValue === ""}>
+					Delete Forever
 				</button>
 			</div>
 		</div>

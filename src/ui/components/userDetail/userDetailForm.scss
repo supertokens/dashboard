@@ -36,11 +36,20 @@
 	}
 	p {
 		font-size: 14px;
-		line-height: 2em;
+		line-height: 24px;
+
+		span {
+			color: #ed344e;
+			font-weight: bold;
+		}
 	}
 }
 
 .phone-input {
 	margin-top: 12px;
 	margin-bottom: 8px;
+}
+
+.user-delete-input-container {
+	margin-top: 8px;
 }
