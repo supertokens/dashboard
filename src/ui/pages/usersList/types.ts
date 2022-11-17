@@ -51,3 +51,22 @@ export type UserThirdParty = User & {
 		userId: string;
 	};
 };
+
+export type UserFeatureStatus = {
+	firstName: boolean;
+	lastName: boolean;
+	emailVerification: boolean;
+};
+
+export type UserProps = { user: UserWithRecipeId };
+
+export const FEATURE_NOT_ENABLED_TEXT = "FEATURE_NOT_ENABLED_ERROR";
+
+export type EmailVerificationStatus =
+	| {
+			status: typeof FEATURE_NOT_ENABLED_TEXT;
+	  }
+	| {
+			status: "OK";
+			isVerified: boolean;
+	  };

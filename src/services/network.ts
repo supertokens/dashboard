@@ -30,7 +30,18 @@ export default class NetworkManager {
 			return this.get(url, query, config);
 		}
 
-		return this.post(url, config);
+		if (method === "DELETE") {
+			return this.delete(url, query, config);
+		}
+
+		return fetch(new URL(url), {
+			...config,
+			method,
+			headers: {
+				...config?.headers,
+				"Content-Type": "application/json",
+			},
+		});
 	}
 
 	private static async get(url: string, query?: { [key: string]: string }, config?: RequestInit) {
@@ -46,10 +57,19 @@ export default class NetworkManager {
 		return fetch(_url, config);
 	}
 
-	private static async post(url: string, config?: RequestInit) {
-		return fetch(new URL(url), {
+	private static async delete(url: string, query?: { [key: string]: string }, config?: RequestInit) {
+		const _url: URL = new URL(url);
+
+		// Add query params to URL
+		if (query !== undefined) {
+			Object.keys(query).forEach((key) => {
+				_url.searchParams.append(key, query[key]);
+			});
+		}
+
+		return fetch(_url, {
 			...config,
-			method: "POST",
+			method: "DELETE",
 			headers: {
 				...config?.headers,
 				"Content-Type": "application/json",

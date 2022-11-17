@@ -20,25 +20,34 @@ import { getDashboardAppBasePath } from "./utils";
 // This is to make sure that images are packed in the build folder
 import "./images";
 import ErrorBoundary from "./ui/components/errorboundary";
+import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
 import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
+import { ToastNotificationContainer } from "./ui/components/toast/toastNotification";
+import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
 
 function App() {
 	return (
 		<>
 			<SafeAreaView />
 			<ErrorBoundary>
-				<Router basename={getDashboardAppBasePath()}>
-					<Routes>
-						<Route
-							path="/"
-							element={<UsersListPage />}
-						/>
-						<Route
-							path="*"
-							element={<UsersListPage />}
-						/>
-					</Routes>
-				</Router>
+				<PopupContentContextProvider>
+					<>
+						<Router basename={getDashboardAppBasePath()}>
+							<Routes>
+								<Route
+									path="/"
+									element={<UsersListPage />}
+								/>
+								<Route
+									path="*"
+									element={<UsersListPage />}
+								/>
+							</Routes>
+						</Router>
+						<ToastNotificationContainer />
+						<LayoutModalContainer />
+					</>
+				</PopupContentContextProvider>
 			</ErrorBoundary>
 		</>
 	);

@@ -13,19 +13,17 @@
  * under the License.
  */
 
-import { StorageKeys, UNAUTHORISED_STATUS } from "./constants";
-import NetworkManager from "./services/network";
-import { localStorageHandler } from "./services/storage";
-import { HttpMethod } from "./types";
+import { useEffect } from "react";
+import { StorageKeys, UNAUTHORISED_STATUS } from "../constants";
+import NetworkManager from "../services/network";
+import { localStorageHandler } from "../services/storage";
+import { HttpMethod } from "../types";
 
 export function getStaticBasePath(): string {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return (window as any).staticBasePath;
 }
 
 export function getDashboardAppBasePath(): string {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-
 	return (window as any).dashboardAppPath;
 }
 
@@ -104,18 +102,13 @@ export const fetchData = async ({
 };
 
 // Language Utils
-const getLanguage = () => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const navigatorWithAnyType = navigator as any;
-	return (
-		navigatorWithAnyType.userLanguage ||
-		(navigator.languages && navigator.languages.length && navigator.languages[0]) ||
-		navigator.language ||
-		navigatorWithAnyType.browserLanguage ||
-		navigatorWithAnyType.systemLanguage ||
-		"en"
-	);
-};
+const getLanguage = () =>
+	(navigator as any).userLanguage ||
+	(navigator.languages && navigator.languages.length && navigator.languages[0]) ||
+	navigator.language ||
+	(navigator as any).browserLanguage ||
+	(navigator as any).systemLanguage ||
+	"en";
 
 // Number Utils
 
@@ -168,10 +161,35 @@ export const formatLongDate = (date: number | Date) => {
 	const delimiter = ",";
 	const day = date.getDate();
 	const hour = date.getHours();
-	const yearDisplay = substractDate(date, new Date()) >= DATE_DISPLAY_YEAR_LIMIT ? ` ${date.getFullYear()}` : "";
+
+	const currentYear = new Date().getFullYear();
+
+	let yearToDisplay = "";
+
+	if (currentYear !== date.getFullYear()) {
+		yearToDisplay = "" + date.getFullYear();
+	}
+
 	const meridiem = hour < 12 ? "am" : "pm";
-	return `${day}${ordinal(day)} ${months[date.getMonth()]}${yearDisplay}${delimiter}
-  ${(hour % 12 || 12).toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")} ${meridiem}`;
+	return `${day}${ordinal(day)} ${months[date.getMonth()]}${yearToDisplay}${delimiter}
+${(hour % 12 || 12).toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")} ${meridiem}`;
+};
+
+export const getFormattedLongDateWithoutTime = (date: number | Date) => {
+	if (typeof date === "number") {
+		date = new Date(date);
+	}
+	const day = date.getDate();
+
+	const currentYear = new Date().getFullYear();
+
+	let yearToDisplay = "";
+
+	if (currentYear !== date.getFullYear()) {
+		yearToDisplay = "" + date.getFullYear();
+	}
+
+	return `${day}${ordinal(day)} ${months[date.getMonth()]} ${yearToDisplay}`;
 };
 
 const DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
@@ -182,4 +200,30 @@ const DAY_IN_MILISECONDS = 1000 * 60 * 60 * 24;
 export const substractDate = (date1: Date, date2: Date) => {
 	const diff = date2.getTime() - date1.getTime();
 	return diff / DAY_IN_MILISECONDS;
+};
+
+/** Layout Utils */
+
+export const isMobile = () => /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+/**
+ * Hook that alerts clicks outside of the passed ref
+ */
+export const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () => void) => {
+	useEffect(() => {
+		/**
+		 * Alert if clicked on outside of element
+		 */
+		const handleClickOutside = (event: MouseEvent) => {
+			if (ref.current && event.target !== null && !ref.current.contains(event.target as Node)) {
+				callback();
+			}
+		};
+		// Bind the event listener
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			// Unbind the event listener on clean up
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [ref, callback]);
 };

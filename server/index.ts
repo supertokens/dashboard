@@ -19,6 +19,11 @@ import morgan from "morgan";
 import SuperTokens from "supertokens-node";
 import { errorHandler, middleware } from "supertokens-node/framework/express";
 import Dashboard from "supertokens-node/lib/build/recipe/dashboard/recipe";
+import EmailPassword from "supertokens-node/recipe/emailpassword";
+import EmailVerification from "supertokens-node/recipe/emailverification";
+import Passwordless from "supertokens-node/recipe/passwordless";
+import Session from "supertokens-node/recipe/session";
+import ThirdParty from "supertokens-node/recipe/thirdparty";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
 
 const websiteDomain = "http://localhost:3000";
@@ -52,6 +57,26 @@ SuperTokens.init({
 			},
 		}),
 		UserMetaData.init(),
+		// These are initialised so that functionailty works in the node SDK
+		EmailPassword.init(),
+		Passwordless.init({
+			contactMethod: "EMAIL_OR_PHONE",
+			flowType: "USER_INPUT_CODE_AND_MAGIC_LINK",
+		}),
+		ThirdParty.init({
+			signInAndUpFeature: {
+				providers: [
+					ThirdParty.Google({
+						clientId: "1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
+						clientSecret: "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",
+					}),
+				],
+			},
+		}),
+		EmailVerification.init({
+			mode: "REQUIRED",
+		}),
+		Session.init(),
 	],
 });
 

@@ -11,6 +11,7 @@
 	"html.format.indentInnerHtml": true,
 	"editor.tabCompletion": "on",
 	"editor.tabSize": 4,
+	"editor.useTabStops": true,
 	"editor.trimAutoWhitespace": true,
 	"editor.formatOnSave": true,
 	"editor.codeActionsOnSave": {
@@ -20,8 +21,6 @@
 		"**/.DS_Store": true,
 		"**/.git": true,
 		"dist": true,
-		"node_modules": true,
-		"build": true,
 		"debug": true,
 		"cypress/integration/examples": true
 	},

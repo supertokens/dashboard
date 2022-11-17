@@ -13,15 +13,29 @@
  * under the License.
  */
 
-import React from "react";
+import React, { useCallback, useContext } from "react";
 
 import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
+import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
+import { UserDetailProps } from "../userDetail/userDetail";
+import {
+	getUserChangeEmailPopupProps,
+	getUserChangePasswordPopupProps,
+	getUserChangePhonePopupProps,
+	getUserDeleteConfirmationProps,
+} from "../userDetail/userDetailForm";
+import UserRowMenu, { UserRowMenuItemProps } from "./UserRowMenu";
 import "./UsersListTable.scss";
 
-const USER_TABLE_COLUMNS_COUNT = 3;
+const USER_TABLE_COLUMNS_COUNT = 4;
 export const LIST_DEFAULT_LIMIT = 10;
+
+export type OnSelectUserFunction = (user: UserWithRecipeId) => void;
+
+export type UserRowActionProps = Pick<UserDetailProps, "onDeleteCallback" | "onChangePasswordCallback">;
+
 type UserListProps = {
 	users: UserWithRecipeId[];
 	count: number;
@@ -30,12 +44,14 @@ type UserListProps = {
 	limit?: number;
 	offset?: number;
 	errorOffsets?: number[];
-	goToNext?: (token: string) => unknown;
-	offsetChange?: (offset: number) => unknown;
-};
+	goToNext?: (token: string) => void;
+	offsetChange?: (offset: number) => void;
+	onSelect: OnSelectUserFunction;
+	onEmailChanged: () => Promise<void>;
+} & UserRowActionProps;
 
 const UsersListTable: React.FC<UserListProps> = (props) => {
-	const { users, limit, offset, isLoading, errorOffsets } = {
+	const { users, limit, offset, isLoading, errorOffsets, onSelect, onChangePasswordCallback, onDeleteCallback } = {
 		offset: 0,
 		limit: LIST_DEFAULT_LIMIT,
 		...props,
@@ -50,6 +66,7 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 						<th>User</th>
 						<th>Auth Method</th>
 						<th>Time joined</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody className="text-small">
@@ -64,7 +81,13 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 						(errorOffsets?.includes(offset) ? (
 							<ErrorRow colSpan={USER_TABLE_COLUMNS_COUNT} /> // show rows when it is not loading from API
 						) : (
-							<UserTableRows displayedUsers={displayedUsers} />
+							<UserTableRows
+								users={displayedUsers}
+								onSelect={onSelect}
+								onChangePasswordCallback={onChangePasswordCallback}
+								onDeleteCallback={onDeleteCallback}
+								onEmailChanged={props.onEmailChanged}
+							/>
 						))}
 				</tbody>
 			</table>
@@ -81,13 +104,26 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 };
 
 // Table Rows Section
-const UserTableRows = ({ displayedUsers }: { displayedUsers: UserWithRecipeId[] }) => {
+const UserTableRows = ({
+	users,
+	onSelect,
+	onChangePasswordCallback,
+	onDeleteCallback,
+	onEmailChanged,
+}: Pick<UserListProps, "users" | "onSelect"> &
+	UserRowActionProps & {
+		onEmailChanged: () => Promise<void>;
+	}) => {
 	return (
 		<>
-			{displayedUsers.map((user, index) => (
+			{users.map((user) => (
 				<UserTableRow
+					onEmailChanged={onEmailChanged}
 					user={user}
-					key={index}
+					key={user.user.id}
+					onSelect={onSelect}
+					onChangePasswordCallback={onChangePasswordCallback}
+					onDeleteCallback={onDeleteCallback}
 				/>
 			))}
 		</>
@@ -95,14 +131,134 @@ const UserTableRows = ({ displayedUsers }: { displayedUsers: UserWithRecipeId[] 
 };
 
 // Single Row Section
-const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number }> = (props) => {
-	const { user, index } = props;
+const UserTableRow: React.FC<
+	{
+		user: UserWithRecipeId;
+		index?: number;
+		onSelect: OnSelectUserFunction;
+		onEmailChanged: () => Promise<void>;
+	} & UserRowActionProps
+> = (props) => {
+	const { user, index, onSelect, onChangePasswordCallback, onDeleteCallback } = props;
+	const { showModal } = useContext(PopupContentContext);
+
+	const openChangePasswordModal = useCallback(
+		() =>
+			showModal(
+				getUserChangePasswordPopupProps({
+					userId: user.user.id,
+				})
+			),
+		[showModal, user.user.id, onChangePasswordCallback]
+	);
+
+	const openChangeEmailModal = useCallback(
+		(recipeId: "emailpassword" | "passwordless") =>
+			showModal(
+				getUserChangeEmailPopupProps({
+					userId: user.user.id,
+					recipeId,
+					onEmailChanged: props.onEmailChanged,
+				})
+			),
+		[showModal, user.user.id, onChangePasswordCallback]
+	);
+
+	const openChangePhoneModal = useCallback(
+		() =>
+			showModal(
+				getUserChangePhonePopupProps({
+					userId: user.user.id,
+				})
+			),
+		[showModal, user.user.id, onChangePasswordCallback]
+	);
+
+	const openDeleteConfirmation = useCallback(
+		() =>
+			showModal(
+				getUserDeleteConfirmationProps({
+					onDeleteCallback,
+					user,
+				})
+			),
+		[user, onDeleteCallback, showModal]
+	);
+
+	const getMenuItems = (): UserRowMenuItemProps[] => {
+		const menuItems: UserRowMenuItemProps[] = [
+			{
+				onClick: () => onSelect(user),
+				text: "View Details",
+				imageUrl: "people.svg",
+				hoverImageUrl: "people-opened.svg",
+			},
+		];
+
+		if (user.recipeId === "emailpassword") {
+			menuItems.push({
+				onClick: openChangePasswordModal,
+				text: "Change Password",
+				imageUrl: "lock.svg",
+				hoverImageUrl: "lock-opened.svg",
+				disabled: (user: UserWithRecipeId) => user.recipeId !== "emailpassword",
+			});
+
+			menuItems.push({
+				onClick: () => {
+					openChangeEmailModal("emailpassword");
+				},
+				text: "Change Email",
+				imageUrl: "mail.svg",
+				hoverImageUrl: "mail-opened.svg",
+				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
+			});
+		}
+
+		if (user.recipeId === "passwordless") {
+			menuItems.push({
+				onClick: () => {
+					openChangeEmailModal("passwordless");
+				},
+				text: "Change Email",
+				imageUrl: "mail.svg",
+				hoverImageUrl: "mail-opened.svg",
+				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
+			});
+		}
+
+		if (user.recipeId === "passwordless" && user.user.phoneNumber !== undefined) {
+			// menuItems.push({
+			// 	onClick: () => {
+			// 		openChangePhoneModal();
+			// 	},
+			// 	text: "Change Phone Number",
+			// 	// TODO: Need an icon for phone
+			// 	imageUrl: "mail.svg",
+			// 	hoverImageUrl: "mail-opened.svg",
+			// 	disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
+			// });
+		}
+
+		menuItems.push({
+			onClick: openDeleteConfirmation,
+			text: "Delete user",
+			imageUrl: "trash.svg",
+			hoverImageUrl: "trash-opened.svg",
+		});
+
+		return menuItems;
+	};
+
 	return (
 		<tr
 			key={index}
 			className="user-row">
 			<td>
-				<UserInfo user={user} />
+				<UserInfo
+					user={user}
+					onSelect={onSelect}
+				/>
 			</td>
 			<td>
 				<UserRecipePill user={user} />
@@ -110,17 +266,24 @@ const UserTableRow: React.FC<{ user: UserWithRecipeId; index?: number }> = (prop
 			<td>
 				<UserDate user={user} />
 			</td>
+			<td>
+				<UserRowMenu
+					menuItems={getMenuItems()}
+					user={user}
+				/>
+			</td>
 		</tr>
 	);
 };
 
-const UserInfo = ({ user }: { user: UserWithRecipeId }) => {
+const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSelectUserFunction }) => {
 	const { firstName, lastName, email } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 	return (
 		<div className="user-info">
 			<div
+				onClick={() => onSelect(user)}
 				className="main"
 				title={name || email}>
 				{name || email || (phone && <PhoneDisplay phone={phone} />)}
@@ -141,7 +304,7 @@ const UserInfo = ({ user }: { user: UserWithRecipeId }) => {
 	);
 };
 
-const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
+export const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
 	const thirdpartyId = user.recipeId === "thirdparty" && user.user.thirdParty.id;
 	return (
 		<div className={`pill ${user.recipeId} ${thirdpartyId}`}>
@@ -259,7 +422,7 @@ const ErrorRow = ({ colSpan }: { colSpan: number }) => {
 	);
 };
 
-const PlaceholderTableRows = (props: { rowCount: number; colSpan: number; className?: string }) => {
+export const PlaceholderTableRows = (props: { rowCount: number; colSpan: number; className?: string }) => {
 	const { colSpan, rowCount, className } = props;
 	return (
 		<>

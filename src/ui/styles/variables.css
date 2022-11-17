@@ -31,16 +31,21 @@ body {
 	--color-error-bg: rgb(253, 240, 241);
 	--color-info-shadow: rgba(158, 37, 38, 0.16);
 	--color-info-bg: rgb(235, 245, 255);
+	--color-success-bg: rgb(241, 250, 247);
+	--color-success-shadow: rgba(4, 84, 62, 0.16);
+	--color-link: rgb(0, 122, 255);
 
 	/* Border Colors */
 	--color-border: rgb(229, 229, 229);
 	--color-border-error: rgb(239, 121, 119);
 	--color-border-info: rgb(151, 189, 250);
+	--color-border-success: rgb(73, 200, 153);
 
 	/* Text Colors */
 	--color-secondary-text: rgb(110, 106, 101); /* Below title, table headers, placeholders etc */
 	--color-error: rgb(158, 37, 38);
 	--color-info: rgb(31, 90, 219);
+	--color-success: rgb(4, 84, 62);
 
 	/* Recipe Pill Colors */
 	--color-emailpassword-bg: rgb(221, 252, 247);
@@ -59,4 +64,24 @@ body {
 	--color-apple-text: rgb(11, 28, 69);
 	--color-custom-provider-bg: rgb(228, 224, 255);
 	--color-custom-provider-text: rgb(84, 37, 176);
+
+	/* Color for Copy-Box */
+	--color-copy-box: rgb(83, 101, 121);
+	--color-copy-box-bg: rgb(240, 244, 247);
+	--color-copy-box-shadow: rgba(83, 101, 121, 0.2);
+
+	/* Button color */
+	--color-button-error: rgb(237, 52, 78);
+	--color-button-error-border: rgb(222, 35, 61);
+
+	/* Z-index value for different of popup element */
+	--z-index-inline-popup: 1;
+	--z-index-modal-popup: 10;
+}
+
+*[data-theme="dark"] {
+	--color-black: rgb(255, 255, 255);
+	--color-white: rgb(34, 34, 34);
+	--color-window-bg: rgb(74, 74, 74);
+	--color-secondary-text: rgb(221, 221, 221);
 }
