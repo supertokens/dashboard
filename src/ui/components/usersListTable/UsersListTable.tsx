@@ -295,7 +295,7 @@ const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSele
 	);
 };
 
-const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
+export const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
 	const thirdpartyId = user.recipeId === "thirdparty" && user.user.thirdParty.id;
 	return (
 		<div className={`pill ${user.recipeId} ${thirdpartyId}`}>

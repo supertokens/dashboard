@@ -14,6 +14,7 @@ import { LayoutPanel } from "../layout/layoutPanel";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { PhoneNumberInput } from "../phoneNumber/PhoneNumberInput";
 import TooltipContainer from "../tooltip/tooltip";
+import { UserRecipePill } from "../usersListTable/UsersListTable";
 import { UserDetailNameField } from "./components/nameField/nameField";
 import { UserDetailProps } from "./userDetail";
 import { getUserChangePasswordPopupProps } from "./userDetailForm";
@@ -50,7 +51,11 @@ export const isEmailVerificationApplicable = (recipeId: string, email: string | 
 
 export const NameTooltip: FC<{ fieldName: string }> = ({ fieldName }) => (
 	<>
-		<p className="center">
+		<p>
+			This information is fetched using the <span className="block-snippet-small">{fieldName}</span> key from the
+			meta data set for this user.
+			<br />
+			<br />
 			To change this information, please add / change <span className="block-snippet-small">{fieldName}</span> key
 			using our usermetadata feature.
 		</p>
@@ -422,6 +427,10 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 								NON_APPLICABLE_TEXT
 							)
 						}
+					/>
+					<UserDetailInfoGridItem
+						label="Auth Method"
+						body={<UserRecipePill user={userDetail} />}
 					/>
 				</div>
 			</LayoutPanel>
