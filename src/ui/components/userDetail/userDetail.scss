@@ -113,6 +113,7 @@ $container-width: 829;
 				width: 100%;
 				@include text-ellipsis(100%);
 				white-space: normal;
+				overflow: visible;
 			}
 			&__guide {
 				display: inline-flex;

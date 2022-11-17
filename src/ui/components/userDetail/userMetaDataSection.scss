@@ -53,12 +53,14 @@ $container-width: 829;
 	padding-bottom: 15px;
 	background: #0d2e4e;
 	border-radius: 6px;
+	white-space: pre;
 
 	.hljs {
 		background: #0d2e4e;
 		font-weight: 400;
 		font-size: 13px;
 		line-height: 21px;
+		padding: 0px !important;
 	}
 }
 

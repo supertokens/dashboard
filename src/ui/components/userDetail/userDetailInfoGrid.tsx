@@ -310,7 +310,11 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 				handleChange={({ target: { value } }) => updateUserDataState({ email: value })}
 			/>
 		) : (
-			email
+			<>
+				<span className="user-detail__provider-box__user-id">
+					<CopyText>{email || ""}</CopyText>
+				</span>
+			</>
 		);
 
 	const saveDisabled = emailError !== undefined || phoneNumberError !== undefined;

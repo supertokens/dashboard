@@ -45,12 +45,16 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 		setMetaDataForEditing(metadata);
 	}, [metadata]);
 
+	const getFormattedMetaData = (_metadata: string): string => {
+		return JSON.stringify(JSON.parse(_metadata), null, 4);
+	};
+
 	const renderMetaDataContent = () => {
 		if (metadata === undefined) {
 			return "Loading...";
 		}
 
-		const highlightedCode = HighlightJS.highlight(metadata, {
+		const highlightedCode = HighlightJS.highlight(getFormattedMetaData(metadata), {
 			language: "typescript",
 		});
 
