@@ -14,7 +14,7 @@
  */
 import HighlightJS from "highlight.js";
 import TSHighlight from "highlight.js/lib/languages/typescript";
-import "highlight.js/scss/dark.scss";
+import "highlight.js/scss/an-old-hope.scss";
 import { useEffect, useState } from "react";
 import { updateUserMetaData } from "../../../api/user/metadata";
 import { getImageUrl } from "../../../utils";
