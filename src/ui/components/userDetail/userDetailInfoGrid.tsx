@@ -44,8 +44,8 @@ type UserDetailInfoGridHeaderProps = {
 
 const NON_APPLICABLE_TEXT = "N/A";
 
-export const isEmailVerificationApplicable = (recipeId: string) => {
-	return recipeId === "emailpassword" || recipeId === "thirdparty";
+export const isEmailVerificationApplicable = (recipeId: string, email: string | undefined) => {
+	return email !== undefined;
 };
 
 export const NameTooltip: FC<{ fieldName: string }> = ({ fieldName }) => (
@@ -157,15 +157,11 @@ export const EmailVerifiedField: FC<EmailVerifiedFieldProps> = (props: EmailVeri
 	const { user, isEditing, setVerificationStatus, sendVerification } = props;
 	const { recipeId } = user;
 
-	const isApplicable = isEmailVerificationApplicable(recipeId);
+	const isApplicable = isEmailVerificationApplicable(recipeId, user.user.email);
 
 	const setEmailVerificationStatusCallback = async () => {
 		await setVerificationStatus(!isVerified);
 	};
-
-	if (!isApplicable) {
-		return <>{NON_APPLICABLE_TEXT}</>;
-	}
 
 	if (props.emailVerificationStatus === undefined) {
 		return <>Loading...</>;
@@ -174,6 +170,10 @@ export const EmailVerifiedField: FC<EmailVerifiedFieldProps> = (props: EmailVeri
 	const { status } = props.emailVerificationStatus;
 	if (status === FEATURE_NOT_ENABLED_TEXT) {
 		return <>Feature not enabled</>;
+	}
+
+	if (!isApplicable) {
+		return <>{NON_APPLICABLE_TEXT}</>;
 	}
 
 	const { isVerified } = props.emailVerificationStatus;

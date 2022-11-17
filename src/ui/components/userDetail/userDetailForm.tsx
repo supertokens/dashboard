@@ -160,7 +160,7 @@ export const UserDetailChangePhoneForm: FC<UserDetailChangePhoneFormProps> = (
 		if (response.status === "INVALID_EMAIL_ERROR") {
 			setApiError(response.error);
 		} else if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
-			setApiError("A user with this email already exists");
+			setApiError("A user with this phone already exists");
 		} else {
 			showToast(getUpdatePasswordToast(true));
 			await onPhoneChange();
@@ -237,7 +237,7 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 		} else if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
 			setApiError("A user with this email already exists");
 		} else {
-			showToast(getUpdatePasswordToast(true));
+			showToast(getUpdateEmailToast(true));
 			await onEmailChange();
 		}
 	};
@@ -254,7 +254,7 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 				<InputField
 					name="email"
 					type="email"
-					label="Email"
+					label="New Email"
 					isRequired={true}
 					hideColon={true}
 					error={apiError}
@@ -325,7 +325,7 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 				<InputField
 					name="password"
 					type="password"
-					label="Password"
+					label="New Password"
 					isRequired={true}
 					hideColon={true}
 					error={apiError}

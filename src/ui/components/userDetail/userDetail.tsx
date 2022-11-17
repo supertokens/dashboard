@@ -25,7 +25,7 @@ import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import "./userDetail.scss";
 import { getUpdateUserToast } from "./userDetailForm";
 import UserDetailHeader from "./userDetailHeader";
-import UserDetailInfoGrid, { isEmailVerificationApplicable } from "./userDetailInfoGrid";
+import UserDetailInfoGrid from "./userDetailInfoGrid";
 import { SessionInfo, UserDetailsSessionList } from "./userDetailSessionList";
 import { UserMetaDataSection } from "./userMetaDataSection";
 
@@ -106,11 +106,8 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	}, [fetchSession]);
 
 	const fetchEmailVerificationStatus = useCallback(async () => {
-		if (!isEmailVerificationApplicable(recipeId)) {
-			return;
-		}
-
 		const response: EmailVerificationStatus = await getUserEmailVerificationStatus(user);
+
 		setEmailVerificationStatus(response);
 	}, []);
 

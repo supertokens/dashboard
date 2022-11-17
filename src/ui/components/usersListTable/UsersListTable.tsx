@@ -206,7 +206,7 @@ const UserTableRow: React.FC<
 			});
 		}
 
-		if (user.recipeId === "passwordless" && user.user.email !== undefined) {
+		if (user.recipeId === "passwordless") {
 			menuItems.push({
 				onClick: () => {
 					openChangeEmailModal("passwordless");
