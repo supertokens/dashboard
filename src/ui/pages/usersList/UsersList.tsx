@@ -147,6 +147,10 @@ export const UsersList: React.FC<UserListProps> = ({
 		}
 	}, [reloadRef, loadOffset, offset]);
 
+	const onEmailChanged = async () => {
+		await loadOffset(offset);
+	};
+
 	return (
 		<div
 			className="users-list"
@@ -180,6 +184,7 @@ export const UsersList: React.FC<UserListProps> = ({
 						onSelect={onSelect}
 						onChangePasswordCallback={onChangePasswordCallback}
 						onDeleteCallback={onDeleteCallback}
+						onEmailChanged={onEmailChanged}
 					/>
 				)}
 			</div>

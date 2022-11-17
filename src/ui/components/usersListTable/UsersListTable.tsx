@@ -47,6 +47,7 @@ type UserListProps = {
 	goToNext?: (token: string) => void;
 	offsetChange?: (offset: number) => void;
 	onSelect: OnSelectUserFunction;
+	onEmailChanged: () => Promise<void>;
 } & UserRowActionProps;
 
 const UsersListTable: React.FC<UserListProps> = (props) => {
@@ -85,6 +86,7 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 								onSelect={onSelect}
 								onChangePasswordCallback={onChangePasswordCallback}
 								onDeleteCallback={onDeleteCallback}
+								onEmailChanged={props.onEmailChanged}
 							/>
 						))}
 				</tbody>
@@ -107,11 +109,16 @@ const UserTableRows = ({
 	onSelect,
 	onChangePasswordCallback,
 	onDeleteCallback,
-}: Pick<UserListProps, "users" | "onSelect"> & UserRowActionProps) => {
+	onEmailChanged,
+}: Pick<UserListProps, "users" | "onSelect"> &
+	UserRowActionProps & {
+		onEmailChanged: () => Promise<void>;
+	}) => {
 	return (
 		<>
 			{users.map((user) => (
 				<UserTableRow
+					onEmailChanged={onEmailChanged}
 					user={user}
 					key={user.user.id}
 					onSelect={onSelect}
@@ -129,6 +136,7 @@ const UserTableRow: React.FC<
 		user: UserWithRecipeId;
 		index?: number;
 		onSelect: OnSelectUserFunction;
+		onEmailChanged: () => Promise<void>;
 	} & UserRowActionProps
 > = (props) => {
 	const { user, index, onSelect, onChangePasswordCallback, onDeleteCallback } = props;
@@ -150,6 +158,7 @@ const UserTableRow: React.FC<
 				getUserChangeEmailPopupProps({
 					userId: user.user.id,
 					recipeId,
+					onEmailChanged: props.onEmailChanged,
 				})
 			),
 		[showModal, user.user.id, onChangePasswordCallback]

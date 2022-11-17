@@ -34,7 +34,7 @@ type UserDetailChangePasswordFormProps = {
 };
 
 type UserDetailChangeEmailFormProps = {
-	onEmailChange: PasswordChangeCallback;
+	onEmailChange: (success: boolean) => Promise<void>;
 	userId: string;
 	recipeId: "emailpassword" | "passwordless";
 };
@@ -55,6 +55,7 @@ export type UserDetailChangePasswordPopupProps = Omit<LayoutModalProps, "modalCo
 export type UserDetailChangeEmailPopupProps = Omit<LayoutModalProps, "modalContent"> & {
 	userId: string;
 	recipeId: "emailpassword" | "passwordless";
+	onEmailChanged: () => Promise<void>;
 };
 
 export type UserDetailChangePhonePopupProps = Omit<LayoutModalProps, "modalContent"> & {
@@ -64,7 +65,11 @@ export type UserDetailChangePhonePopupProps = Omit<LayoutModalProps, "modalConte
 export const getUserChangeEmailPopupProps = (props: UserDetailChangeEmailPopupProps) => {
 	const closeModalRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
 
-	const onModalClose = async (password?: string) => {
+	const onModalClose = async (success: boolean) => {
+		if (success) {
+			await props.onEmailChanged();
+		}
+
 		if (closeModalRef.current !== undefined) {
 			closeModalRef.current();
 		}
@@ -237,14 +242,14 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 			setApiError("A user with this email already exists");
 		} else {
 			showToast(getUpdateEmailToast(true));
-			await onEmailChange();
+			await onEmailChange(true);
 		}
 	};
 
 	const onCancel = async () => {
 		setEmail(undefined);
 		setRepeatEmail(undefined);
-		await onEmailChange();
+		await onEmailChange(false);
 	};
 
 	return (
