@@ -58,6 +58,7 @@ const Auth: React.FC<{
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		setApiKeyFieldError("");
 
 		if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
 			void validateKey();
@@ -69,7 +70,6 @@ const Auth: React.FC<{
 	const handleApiKeyFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.target;
 		setApiKey(value);
-		setApiKeyFieldError("");
 	};
 	const backgroundUrlVars = {
 		"--auth-background": `url("${getImageUrl("auth-background.png")}")`,
