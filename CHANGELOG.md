@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.2.1] - 2022-11-18
+
+### Fixed
+
+-   Fixed an issue where user details would fail to load because of user meta data not being enabled
+
 ## [0.2.0] - 2022-11-17
 
 ### Features
