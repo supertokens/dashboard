@@ -46,6 +46,10 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 	}, [metadata]);
 
 	const getFormattedMetaData = (_metadata: string): string => {
+		if (_metadata === "Feature Not Enabled") {
+			return _metadata;
+		}
+
 		return JSON.stringify(JSON.parse(_metadata), null, 4);
 	};
 
