@@ -1,0 +1,55 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+@import "../../styles/mixin.scss";
+
+.user-detail-form {
+	.input-field-container:not(:last-of-type) {
+		margin-bottom: 24px;
+	}
+	&__header {
+		font-size: 24px;
+	}
+	&__actions {
+		display: flex;
+		justify-content: flex-end;
+		@include gap-horizontal(24px);
+		button {
+			justify-content: center;
+			font-weight: normal;
+			padding-top: 10px;
+			padding-bottom: 10px;
+			padding-right: 16px;
+			padding-left: 16px;
+		}
+	}
+	p {
+		font-size: 14px;
+		line-height: 24px;
+
+		span {
+			color: #ed344e;
+			font-weight: bold;
+		}
+	}
+}
+
+.phone-input {
+	margin-top: 12px;
+	margin-bottom: 8px;
+}
+
+.user-delete-input-container {
+	margin-top: 8px;
+}

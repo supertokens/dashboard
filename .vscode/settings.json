@@ -1,0 +1,36 @@
+{
+	"eslint.packageManager": "npm",
+	"eslint.options": {
+		"extensions": [".ts", ".tsx", ".html"]
+	},
+	"eslint.lintTask.options": "--ext .ts, .tsx",
+	"eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html"],
+	"editor.rulers": [120],
+	"html.format.wrapLineLength": 120,
+	"html.format.extraLiners": "",
+	"html.format.indentInnerHtml": true,
+	"editor.tabCompletion": "on",
+	"editor.tabSize": 4,
+	"editor.useTabStops": true,
+	"editor.trimAutoWhitespace": true,
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": true
+	},
+	"files.exclude": {
+		"**/.DS_Store": true,
+		"**/.git": true,
+		"dist": true,
+		"debug": true,
+		"cypress/integration/examples": true
+	},
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+	"typescript.preferences.quoteStyle": "double",
+	"json.format.enable": true,
+	"json.format.keepLines": true,
+	"html.format.enable": false,
+	"typescript.format.semicolons": "insert"
+}

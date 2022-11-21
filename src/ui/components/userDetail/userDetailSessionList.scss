@@ -1,0 +1,196 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+@import "../../styles/mixin.scss";
+$container-padding-horizontal: 40;
+$container-width: 829;
+
+.panel {
+	&.no-padding-horizontal {
+		padding-left: 0px !important;
+		padding-right: 0px !important;
+	}
+}
+
+.content-container {
+	width: 100%;
+	padding-top: 24px;
+	padding-bottom: 24px;
+
+	.header {
+		padding-left: 34px;
+		padding-right: 34px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		color: var(--color-secondary-text);
+
+		@media only screen and (max-width: 600px) {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.header-primary {
+			font-weight: 500;
+			font-size: 14px;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+
+			@media only screen and (max-width: 600px) {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+		}
+
+		.header-secondary {
+			font-weight: 400;
+			font-size: 12px;
+			margin-left: 4px;
+
+			@media only screen and (max-width: 600px) {
+				margin-left: 0px;
+				margin-top: 2px;
+			}
+		}
+
+		.button-error {
+			font-weight: 500;
+
+			@media only screen and (max-width: 600px) {
+				margin-top: 12px;
+			}
+		}
+	}
+
+	.table-container {
+		display: block;
+		width: 100%;
+		max-width: 100%;
+		overflow-x: scroll;
+		margin-top: 18px;
+		height: fit-content;
+	}
+
+	.table {
+		display: table;
+		width: 100%;
+		max-width: 100%;
+		border-spacing: 0px;
+		border-collapse: collapse;
+
+		.thead {
+			color: var(--color-black);
+			text-transform: uppercase;
+			font-size: 12px;
+			line-height: 14px;
+
+			.head-row {
+				border-bottom: 1px solid var(--color-border);
+				border-top: 1px solid var(--color-border);
+				padding-left: 34px;
+				padding-right: 34px;
+				padding-top: 15px;
+				padding-bottom: 15px;
+				background: #fafafa;
+
+				th {
+					font-weight: 500;
+					text-align: center;
+					white-space: nowrap;
+					padding-top: 15px;
+					padding-bottom: 15px;
+					padding-left: 35px;
+					padding-right: 35px;
+				}
+
+				th:last-child {
+					padding-right: 34px;
+				}
+
+				.w30 {
+					text-align: left;
+					padding-left: 34px;
+				}
+			}
+		}
+
+		tbody {
+			padding-left: 34px;
+			padding-right: 34px;
+
+			.placeholder {
+				display: flex;
+			}
+
+			.session-info {
+				display: flex;
+				width: 100%;
+				margin-left: 34px;
+				margin-right: 34px;
+			}
+
+			.session-row {
+				margin-top: 29px;
+				margin-left: 34px;
+				margin-right: 34px;
+
+				&.empty-row {
+					display: flex;
+				}
+
+				&.with-data {
+					td {
+						font-weight: 400;
+						text-align: center;
+						width: calc(70% / 3);
+						font-size: 14px;
+						color: var(--color-secondary-text);
+						height: 1px;
+						min-height: 28px;
+						padding-left: 35px;
+						padding-right: 35px;
+						white-space: nowrap;
+						padding-top: 29px;
+
+						span {
+							display: flex;
+							padding-left: 8px;
+							padding-right: 8px;
+							padding-top: 7px;
+							padding-bottom: 7px;
+							background-color: var(--color-copy-box-bg);
+							width: fit-content;
+							border-radius: 4px;
+						}
+
+						.button-error-outline {
+							display: block;
+						}
+					}
+
+					td:last-child {
+						padding-right: 34px;
+					}
+
+					.w30 {
+						padding-left: 34px;
+						text-align: left;
+					}
+				}
+			}
+		}
+	}
+}

@@ -13,41 +13,60 @@
  * under the License.
  */
 
-import { HttpApiBaseResponse } from '../../../types'
+import { HttpApiBaseResponse } from "../../../types";
 
-export type UserListCount = HttpApiBaseResponse & { count: number }
+export type UserListCount = HttpApiBaseResponse & { count: number };
 export type UserPaginationList = HttpApiBaseResponse & {
-  nextPaginationToken?: string
-  users: UserWithRecipeId[]
-}
+	nextPaginationToken?: string;
+	users: UserWithRecipeId[];
+};
 
 // Users Models
-export type EmailPasswordRecipeId = 'emailpassword'
-export type ThirdPartyRecipeId = 'thirdparty'
-export type PasswordlessRecipeId = 'passwordless'
+export type EmailPasswordRecipeId = "emailpassword";
+export type ThirdPartyRecipeId = "thirdparty";
+export type PasswordlessRecipeId = "passwordless";
 
-export type UserRecipeType = EmailPasswordRecipeId | ThirdPartyRecipeId | PasswordlessRecipeId
+export type UserRecipeType = EmailPasswordRecipeId | ThirdPartyRecipeId | PasswordlessRecipeId;
 
 export type UserWithRecipeId =
-  | { recipeId: EmailPasswordRecipeId; user: UserEmailPassword }
-  | { recipeId: PasswordlessRecipeId; user: UserPasswordLess }
-  | { recipeId: ThirdPartyRecipeId; user: UserThirdParty }
+	| { recipeId: EmailPasswordRecipeId; user: UserEmailPassword }
+	| { recipeId: PasswordlessRecipeId; user: UserPasswordLess }
+	| { recipeId: ThirdPartyRecipeId; user: UserThirdParty };
 
 export type User = {
-  id: string
-  email?: string
-  timeJoined: number
-  firstName?: string
-  lastName?: string
-}
+	id: string;
+	email?: string;
+	timeJoined: number;
+	firstName?: string;
+	lastName?: string;
+};
 
-export type UserEmailPassword = User
+export type UserEmailPassword = User;
 
-export type UserPasswordLess = User & { phoneNumber?: string }
+export type UserPasswordLess = User & { phoneNumber?: string };
 
 export type UserThirdParty = User & {
-  thirdParty: {
-    id: 'google' | 'github' | 'apple' | 'facebook' | string
-    userId: string
-  }
-}
+	thirdParty: {
+		id: "google" | "github" | "apple" | "facebook" | string;
+		userId: string;
+	};
+};
+
+export type UserFeatureStatus = {
+	firstName: boolean;
+	lastName: boolean;
+	emailVerification: boolean;
+};
+
+export type UserProps = { user: UserWithRecipeId };
+
+export const FEATURE_NOT_ENABLED_TEXT = "FEATURE_NOT_ENABLED_ERROR";
+
+export type EmailVerificationStatus =
+	| {
+			status: typeof FEATURE_NOT_ENABLED_TEXT;
+	  }
+	| {
+			status: "OK";
+			isVerified: boolean;
+	  };

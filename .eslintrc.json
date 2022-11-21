@@ -1,0 +1,91 @@
+{
+	"$schema": "https://json.schemastore.org/eslintrc.json",
+	"env": {
+		"browser": true,
+		"es2021": true
+	},
+	"plugins": ["react", "@typescript-eslint", "@typescript-eslint/tslint"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:react/recommended",
+		"plugin:react-hooks/recommended"
+	],
+
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"project": "tsconfig.json",
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": "latest",
+		"sourceType": "module"
+	},
+	"rules": {
+		"no-eval": "error",
+		"no-trailing-spaces": "error",
+		"no-unsafe-finally": "error",
+		"no-var": "error",
+		"spaced-comment": [
+			"error",
+			"always",
+			{
+				"markers": ["/"]
+			}
+		],
+		"lines-around-comment": ["off"],
+		"indent": "off",
+		"no-empty": ["error", { "allowEmptyCatch": true }],
+		"no-console": ["error", { "allow": ["info", "error", "warn"] }],
+		"brace-style": ["error", "1tbs"],
+		"no-whitespace-before-property": "error",
+		"@typescript-eslint/no-var-requires": "off",
+		"typescript-eslint/indent": "off", // Prettier takes care of indentation.
+		"@typescript-eslint/member-delimiter-style": [
+			"error",
+			{
+				"multiline": {
+					"delimiter": "semi",
+					"requireLast": true
+				},
+				"singleline": {
+					"delimiter": "semi",
+					"requireLast": false
+				}
+			}
+		],
+		"@typescript-eslint/prefer-namespace-keyword": "error",
+		"@typescript-eslint/quotes": ["error", "double"],
+		"@typescript-eslint/semi": ["error", "always"],
+		"@typescript-eslint/type-annotation-spacing": "error",
+		"@typescript-eslint/no-floating-promises": "error",
+		"@typescript-eslint/triple-slash-reference": "warn",
+		"@typescript-eslint/tslint/config": [
+			"error",
+			{
+				"rules": {
+					"whitespace": [
+						true,
+						"check-branch",
+						"check-decl",
+						"check-operator",
+						"check-separator",
+						"check-type"
+					]
+				}
+			}
+		],
+		"react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
+		"react/react-in-jsx-scope": "off",
+		"react/no-unescaped-entities": "off",
+		"no-mixed-spaces-and-tabs": "off"
+	},
+	"overrides": [
+		{
+			"files": ["**/*,ts", "**/*.tsx"],
+			"rules": {
+				"@typescript-eslint/no-explicit-any": "error"
+			}
+		}
+	]
+}

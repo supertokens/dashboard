@@ -12,63 +12,73 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
- 
- .input-field-container {
-  display: flex;
-  flex-flow: column;
-  margin-bottom: 24px;
+
+.input-field-container {
+	display: flex;
+	flex-flow: column;
+	margin-bottom: 24px;
 }
 
 .input-label {
-  color: var(--color-secondary-text);
-  font-weight: 500;
-  margin-bottom: 12px;
+	color: var(--color-secondary-text);
+	font-weight: 500;
+	margin-bottom: 12px;
+}
+
+.input-label-required {
+	color: var(--color-error);
+	margin: 0px 4px;
 }
 
 .input-field-inset {
-  display: flex;
-  align-items: center;
-  border: 1px solid rgb(224, 224, 224);
-  border-radius: 6px;
-  outline: none;
+	display: flex;
+	align-items: center;
+	border: 1px solid rgb(224, 224, 224);
+	border-radius: 6px;
+	outline: none;
 }
 
 .input-field {
-  flex: 1;
-  font-family: inherit;
-  display: block;
-  padding: 8px 12px 8px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
+	flex: 1;
+	font-family: inherit;
+	display: block;
+	padding: 8px 12px 8px;
+	border-radius: 6px;
+	border: none;
+	outline: none;
 }
 
-.input-field-inset-focused, .input-field-inset:active {
-  border-color: var(--color-primary);
-  box-shadow: 0px 0px 0px 2px var(--color-primary-opacity-40);
+.input-field-inset-focused,
+.input-field-inset:active {
+	border-color: var(--color-primary);
+	box-shadow: 0px 0px 0px 2px var(--color-primary-opacity-40);
 }
 
 .input-field-inset-error-state,
 .input-field-inset-error-state:focus,
 .input-field-inset-error-state:active {
-  border-color: var(--color-error);
-  box-shadow: 0px 0px 0px 2px var(--color-error-shadow);
+	border-color: var(--color-error);
+	box-shadow: 0px 0px 0px 2px var(--color-error-shadow);
 }
 
 .input-field-suffix .icon {
-  cursor: pointer;
-  padding: 8px 12px 8px 0px;
+	cursor: pointer;
+	padding: 8px 12px 8px 0px;
 }
 
 .input-field-error {
-  display: flex;
-  align-items: center;
-  margin-top: 8pt;
+	display: flex;
+	align-items: center;
+	margin-top: 8pt;
 }
 
 .input-field-error-icon {
-  height: 16px;
-  width: 16px;
-  margin-right: 4px;
-  margin-bottom: 2px;
+	height: 16px;
+	width: 16px;
+	margin-right: 8px;
+	margin-bottom: 2px;
+}
+
+.input-field-error-text {
+	line-height: normal !important;
 }
