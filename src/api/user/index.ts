@@ -63,10 +63,14 @@ export const updateUserInformation = async ({
 	firstName?: string;
 	lastName?: string;
 }): Promise<UpdateUserInformationResponse> => {
-	const emailToSend = email === undefined ? "" : email;
+	let emailToSend = email === undefined ? "" : email;
 	const phoneToSend = phone === undefined ? "" : phone;
 	const firstNameToSend = firstName === undefined ? "" : firstName;
 	const lastNameToSend = lastName === undefined ? "" : lastName;
+
+	if (recipeId === "thirdparty") {
+		emailToSend = "";
+	}
 
 	const response = await fetchDataAndRedirectIf401({
 		url: getApiUrl("/api/user"),
