@@ -80,6 +80,10 @@ github.com/supertokens/supertokens-golang v0.9.9-0.20221124092622-6728dc48a001 h
 github.com/supertokens/supertokens-golang v0.9.9-0.20221124092622-6728dc48a001/go.mod h1:GtnhBUpE3LgIWRQbGP1aWwh34aDiUPo/hRUSy4Haf+w=
 github.com/supertokens/supertokens-golang v0.9.9-0.20221124093641-5775e53a2f9d h1:fBsI5vc40Hi5m1NealE7HpLWeoC5Hn19awQgfqHY3m0=
 github.com/supertokens/supertokens-golang v0.9.9-0.20221124093641-5775e53a2f9d/go.mod h1:GtnhBUpE3LgIWRQbGP1aWwh34aDiUPo/hRUSy4Haf+w=
+github.com/supertokens/supertokens-golang v0.9.9-0.20221128055111-28526078f74e h1:fAHYNQcqYPGbse+Wba5QRoYBCFujDple7gCGWEpJSP8=
+github.com/supertokens/supertokens-golang v0.9.9-0.20221128055111-28526078f74e/go.mod h1:GtnhBUpE3LgIWRQbGP1aWwh34aDiUPo/hRUSy4Haf+w=
+github.com/supertokens/supertokens-golang v0.9.9-0.20221128061618-ae87bd74f9b8 h1:Q7SCGQ/5ry6u0ygylNK/bJOnqbV/drH+tt4b5HcY1J0=
+github.com/supertokens/supertokens-golang v0.9.9-0.20221128061618-ae87bd74f9b8/go.mod h1:GtnhBUpE3LgIWRQbGP1aWwh34aDiUPo/hRUSy4Haf+w=
 github.com/twilio/twilio-go v0.26.0 h1:wFW4oTe3/LKt6bvByP7eio8JsjtaLHjMQKOUEzQry7U=
 github.com/twilio/twilio-go v0.26.0/go.mod h1:lz62Hopu4vicpQ056H5TJ0JE4AP0rS3sQ35/ejmgOwE=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
