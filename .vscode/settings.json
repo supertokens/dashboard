@@ -32,5 +32,6 @@
 	"json.format.enable": true,
 	"json.format.keepLines": true,
 	"html.format.enable": false,
-	"typescript.format.semicolons": "insert"
+	"typescript.format.semicolons": "insert",
+	"python.analysis.typeCheckingMode": "off"
 }

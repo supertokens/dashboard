@@ -47,7 +47,19 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 export const UserDisplayName: FC<UserProps> = ({ user }) => {
 	const { firstName, lastName, email } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
-	const fullName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+
+	let firstNameToUse = firstName ?? "";
+	let lastNameToUse = lastName ?? "";
+
+	if (firstNameToUse === "FEATURE_NOT_ENABLED") {
+		firstNameToUse = "";
+	}
+
+	if (lastNameToUse === "FEATURE_NOT_ENABLED") {
+		lastNameToUse = "";
+	}
+
+	const fullName = `${firstNameToUse} ${lastNameToUse}`.trim();
 
 	return <span>{fullName || email || phone}</span>;
 };

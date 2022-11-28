@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.2.4] - 2022-11-28
+
+-   Fixed an issue where the user's name would render incorrectly
+
 ## [0.2.3] - 2022-11-18
 
 -   Fixed an issue where updating user information for third party recipe users would fail
