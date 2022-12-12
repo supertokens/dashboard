@@ -34,8 +34,23 @@ export default class NetworkManager {
 			return this.delete(url, query, config);
 		}
 
+		/**
+		 * If the user's backend has a validation for the request body being missing, it is
+		 * possible that it will fail for some of the dashboard requests (for example api
+		 * key validation).
+		 *
+		 * This ensures that a body is always sent to the server even if the API itself does
+		 * not consume it
+		 */
+		let bodyToUse: BodyInit = JSON.stringify({});
+
+		if (config !== undefined && config.body !== null && config.body !== undefined) {
+			bodyToUse = config.body;
+		}
+
 		return fetch(new URL(url), {
 			...config,
+			body: bodyToUse,
 			method,
 			headers: {
 				...config?.headers,
