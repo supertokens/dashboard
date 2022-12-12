@@ -122,3 +122,4 @@ You can now access the production build of the dashboard on `http://localhost:30
     -   Dashboard changes that involve adding new features and do not require backend SDK changes will increment the Z version
     -   UI changes that modify existing features or are fixes or enhancements increment the Z version
     -   X version changes should be reserved for overhauls of the entire dashboard
+-   After making a change, if it is important for the changes to reflect immediately for a patch release you can use https://purge.jsdelivr.net/gh/supertokens/dashboard@vX.Y/build/static/js/bundle.js to purge jsdelivr cache. Make sure to change `X.Y` with the version you want to purge the cache for.
