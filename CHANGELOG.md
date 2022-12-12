@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.2.5] - 2022-12-12
+
+-   Adds an empty request body for all APIs by default to prevent body validation failures (https://github.com/supertokens/dashboard/issues/59)
+
 ## [0.2.4] - 2022-11-28
 
 -   Fixed an issue where the user's name would render incorrectly
