@@ -123,7 +123,16 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	};
 
 	if (userDetail === undefined) {
-		return <></>;
+		return (
+			<div className="user-detail center-children">
+				<p className="subtitle">User could not be found</p>
+				<span
+					className="back-button"
+					onClick={onBackButtonClicked}>
+					Back
+				</span>
+			</div>
+		);
 	}
 
 	return (
