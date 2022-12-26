@@ -13,4 +13,4 @@
  * under the License.
  */
 
-export const package_version = "0.2.6";
+export const package_version = "0.3.0";

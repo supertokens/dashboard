@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
-## [0.2.6] - 2022-12-12
+## [0.3.06] - 2022-12-26
 
 -   Fixes an issue with user details if the user does not exist
 
