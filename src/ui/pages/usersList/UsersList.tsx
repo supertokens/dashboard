@@ -15,7 +15,6 @@
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getUser as getUserApi } from "../../../api/user";
 import { deleteUser as deleteUserApi } from "../../../api/user/delete";
 import { updateUserEmailVerificationStatus } from "../../../api/user/email/verify";
 import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../../api/user/email/verify/token";
@@ -218,13 +217,6 @@ export const UserListPage = () => {
 		);
 		void reloadListRef.current?.();
 		setSelectedUser(undefined);
-	}, []);
-
-	const getUser = useCallback(async (userId: string, recipeId: string) => {
-		const data = await getUserApi(userId, recipeId);
-		if (data !== undefined) {
-			setSelectedUser(data.user.id);
-		}
 	}, []);
 
 	const deleteUser = useCallback(

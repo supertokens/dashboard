@@ -18,6 +18,7 @@ import { StorageKeys, UNAUTHORISED_STATUS } from "../constants";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
 import { HttpMethod } from "../types";
+import { UserRecipeType } from "../ui/pages/usersList/types";
 
 export function getStaticBasePath(): string {
 	return (window as any).staticBasePath;
@@ -226,4 +227,16 @@ export const useClickOutside = (ref: React.RefObject<HTMLElement>, callback: () 
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, [ref, callback]);
+};
+
+export const getRecipeNameFromid = (id: UserRecipeType): string => {
+	if (id === "emailpassword") {
+		return "Email Password";
+	}
+
+	if (id === "passwordless") {
+		return "Passwordless";
+	}
+
+	return "Third Party";
 };

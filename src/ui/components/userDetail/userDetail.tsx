@@ -14,13 +14,13 @@
  */
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { getUser, updateUserInformation, UpdateUserInformationResponse } from "../../../api/user";
+import { getUser, GetUserInfoResult, updateUserInformation, UpdateUserInformationResponse } from "../../../api/user";
 import { getUserEmailVerificationStatus } from "../../../api/user/email/verify";
 import { getUserMetaData } from "../../../api/user/metadata";
 import { getSessionsForUser } from "../../../api/user/sessions";
-import { getImageUrl } from "../../../utils";
+import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { EmailVerificationStatus, UserWithRecipeId } from "../../pages/usersList/types";
+import { EmailVerificationStatus, UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import "./userDetail.scss";
 import { getUpdateUserToast } from "./userDetailForm";
@@ -41,7 +41,7 @@ export type UserDetailProps = {
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { onBackButtonClicked, user, recipeId } = props;
-	const [userDetail, setUserDetail] = useState<UserWithRecipeId | undefined>(undefined);
+	const [userDetail, setUserDetail] = useState<GetUserInfoResult | undefined>(undefined);
 	const [sessionList, setSessionList] = useState<SessionInfo[] | undefined>(undefined);
 	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
 	const [emailVerificationStatus, setEmailVerificationStatus] = useState<EmailVerificationStatus | undefined>(
@@ -123,9 +123,28 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	};
 
 	if (userDetail === undefined) {
+		return <></>;
+	}
+
+	if (userDetail.status === "NO_USER_FOUND_ERROR") {
 		return (
 			<div className="user-detail center-children">
 				<p className="subtitle">User could not be found</p>
+				<span
+					className="back-button"
+					onClick={onBackButtonClicked}>
+					Back
+				</span>
+			</div>
+		);
+	}
+
+	if (userDetail.status === "RECIPE_NOT_INITIALISED") {
+		const recipeName = getRecipeNameFromid(recipeId as UserRecipeType);
+
+		return (
+			<div className="user-detail center-children">
+				<p className="subtitle">{`${recipeName} recipe has not been initialised`}</p>
 				<span
 					className="back-button"
 					onClick={onBackButtonClicked}>
@@ -149,11 +168,11 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				</button>
 			</div>
 			<UserDetailHeader
-				userDetail={userDetail}
+				userDetail={userDetail.user}
 				{...props}
 			/>
 			<UserDetailInfoGrid
-				userDetail={userDetail}
+				userDetail={userDetail.user}
 				refetchData={refetchAllData}
 				onUpdateCallback={updateUser}
 				emailVerificationStatus={emailVerificationStatus}
