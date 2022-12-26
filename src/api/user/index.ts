@@ -16,7 +16,19 @@
 import { UserWithRecipeId } from "../../ui/pages/usersList/types";
 import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
 
-export const getUser = async (userId: string, recipeId: string): Promise<UserWithRecipeId | undefined> => {
+export type GetUserInfoResult =
+	| {
+			status: "NO_USER_FOUND_ERROR";
+	  }
+	| {
+			status: "RECIPE_NOT_INITIALISED";
+	  }
+	| {
+			status: "OK";
+			user: UserWithRecipeId;
+	  };
+
+export const getUser = async (userId: string, recipeId: string): Promise<GetUserInfoResult> => {
 	const response = await fetchDataAndRedirectIf401({
 		url: getApiUrl("/api/user"),
 		method: "GET",
@@ -29,14 +41,27 @@ export const getUser = async (userId: string, recipeId: string): Promise<UserWit
 	if (response.ok) {
 		const body = await response.json();
 
-		if (body.status !== "OK") {
-			return undefined;
+		if (body.status === "NO_USER_FOUND_ERROR") {
+			return {
+				status: "NO_USER_FOUND_ERROR",
+			};
 		}
 
-		return body;
+		if (body.status === "RECIPE_NOT_INITIALISED") {
+			return {
+				status: "RECIPE_NOT_INITIALISED",
+			};
+		}
+
+		return {
+			status: "OK",
+			user: body,
+		};
 	}
 
-	return undefined;
+	return {
+		status: "NO_USER_FOUND_ERROR",
+	};
 };
 
 export type UpdateUserInformationResponse =

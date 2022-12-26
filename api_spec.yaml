@@ -321,6 +321,11 @@ paths:
                                           status:
                                               type: string
                                               default: "NO_USER_FOUND_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "RECIPE_NOT_INITIALISED"
                 400:
                     description: error code 400
                     content:

@@ -23,6 +23,24 @@ $container-width: 829;
 	padding: 72px #{$container-padding-horizontal}px 48px;
 	max-width: 100vw;
 
+	&.center-children {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		.subtitle {
+			font-size: 16px;
+			line-height: 26px;
+		}
+
+		.back-button {
+			margin-top: 16px;
+			color: var(--color-link);
+			cursor: pointer;
+		}
+	}
+
 	&__header {
 		margin-top: 40px;
 		display: flex;
