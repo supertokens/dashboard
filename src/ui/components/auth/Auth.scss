@@ -14,33 +14,107 @@
  */
 
 .auth-container {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  align-items: center;
-  background-position: top center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-image: var(--auth-background-portrait);
-  @media only screen and (min-width: 600px) {
-    background-image: var(--auth-background);
-  }
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	background-position: top center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-image: var(--auth-background-portrait);
+	@media only screen and (min-width: 600px) {
+		background-image: var(--auth-background);
+	}
 }
 
 .auth-container .block-container {
-  max-width: 320px;
-  margin: 32px auto;
-  @media only screen and (min-width: 600px) {
-    max-width: 416px;
-  }
+	max-width: 320px;
+	margin: 32px auto;
+	@media only screen and (min-width: 600px) {
+		max-width: 416px;
+	}
 }
 
-.auth-container .text-title {
-  margin-bottom: 8px;
+.auth-container {
+	.text-title {
+		margin-bottom: 8px;
+	}
+
+	label {
+		font-size: 14px;
+		font-weight: 500;
+		margin-block-end: 7px;
+		display: inline-block;
+	}
 }
 
-.auth-container > * > p {
-  margin-bottom: 16px;
+.block-container {
+	hr {
+		margin-block: 24px;
+		border-bottom: none;
+		border-top: 1px solid rgb(221, 221, 221);
+	}
+
+	.link {
+		color: var(--color-link);
+		cursor: pointer;
+
+		&.add-new-user {
+			text-decoration: underline;
+		}
+	}
+}
+
+form .input-field-inset:not(.input-field-inset-focused) input {
+	background-color: var(--color-input-unfocused);
+}
+
+.cta-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	.secondary-cta-btn {
+		font-family: inherit;
+		font-size: 14px;
+
+		&.forgot-btn {
+			text-decoration: underline;
+		}
+	}
+}
+
+.command-container {
+	margin-block: 24px 18px;
+	display: flex;
+	padding-block: 6px;
+	padding-inline: 8px 4px;
+	column-gap: 12px;
+	border: 1px solid var(--color-border-command);
+	border-radius: 6px;
+
+	.clipboard-btn-container {
+		height: fit-content;
+		padding: 5px;
+		border-radius: 50%;
+		transition: 0.1s all ease-in-out;
+
+		&:hover {
+			background: lightgray;
+		}
+
+		.clipboard-icon {
+			cursor: pointer;
+			width: 12px;
+		}
+	}
+
+	code.command {
+		word-break: break-all;
+		font-size: 13px;
+		line-height: 1.6;
+		color: var(--color-command);
+	}
 }

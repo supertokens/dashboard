@@ -14,63 +14,44 @@
  */
 
 import React, { useState } from "react";
-import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
-import { localStorageHandler } from "../../../services/storage";
-import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
+import { getImageUrl } from "../../../utils";
 import { Footer, LOGO_ICON_LIGHT } from "../footer/footer";
-import InputField from "../inputField/InputField";
 import SafeAreaView from "../safeAreaView/SafeAreaView";
+import SignIn from "./SignInContent";
+import SignUpOrResetPassword from "./SignUpOrResetPasswordContent";
+import { type ContentMode } from "./types";
 
 import "./Auth.scss";
+
+const INITIAL_CONTENT_TO_SHOW: ContentMode = "sign-in";
 
 const Auth: React.FC<{
 	onSuccess: () => void;
 }> = (props) => {
-	const [apiKey, setApiKey] = useState("");
-	const [apiKeyFieldError, setApiKeyFieldError] = useState("");
-	const [loading, setIsLoading] = useState<boolean>(false);
+	const [contentMode, setContentMode] = useState<ContentMode>(INITIAL_CONTENT_TO_SHOW);
 
-	const validateKey = async () => {
-		setIsLoading(true);
-		const response = await fetchData({
-			url: getApiUrl("/api/key/validate"),
-			method: "POST",
-			config: {
-				headers: {
-					authorization: `Bearer ${apiKey}`,
-				},
-			},
-		});
-
-		const body = await response.json();
-
-		if (response.status === 200 && body.status === "OK") {
-			localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
-			props.onSuccess();
-		} else if (response.status === UNAUTHORISED_STATUS) {
-			setApiKeyFieldError("Invalid API Key");
-		} else {
-			setApiKeyFieldError("Something went wrong");
-		}
-
-		setIsLoading(false);
-	};
-
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setApiKeyFieldError("");
-
-		if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
-			void validateKey();
-		} else {
-			setApiKeyFieldError("API Key field cannot be empty");
+	const getContentToRender = () => {
+		switch (contentMode) {
+			case "sign-in":
+				return (
+					<SignIn
+						onForgotPasswordBtnClick={() => setContentMode("forgot-password")}
+						onSuccess={props.onSuccess}
+					/>
+				);
+			case "forgot-password":
+			case "sign-up":
+				return (
+					<SignUpOrResetPassword
+						onBack={() => setContentMode(INITIAL_CONTENT_TO_SHOW)}
+						contentMode={contentMode}
+					/>
+				);
+			default:
+				return null;
 		}
 	};
 
-	const handleApiKeyFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { value } = e.target;
-		setApiKey(value);
-	};
 	const backgroundUrlVars = {
 		"--auth-background": `url("${getImageUrl("auth-background.png")}")`,
 		"--auth-background-portrait": `url("${getImageUrl("auth-background-portrait.png")}")`,
@@ -88,33 +69,7 @@ const Auth: React.FC<{
 						src={LOGO_ICON_LIGHT}
 						alt="Auth Page"
 					/>
-					<h2 className="api-key-form-title text-title">Enter your API Key</h2>
-					<p className="text-small text-label">
-						Please enter the API key that you used to connect with your backend
-					</p>
-					<form
-						className="api-key-form"
-						onSubmit={handleSubmit}>
-						<InputField
-							handleChange={handleApiKeyFieldChange}
-							name="apiKey"
-							type="password"
-							error={apiKeyFieldError}
-							value={apiKey}
-							placeholder="Your API Key"
-						/>
-
-						<button
-							className="button"
-							type="submit"
-							disabled={loading}>
-							<span>Continue</span>{" "}
-							<img
-								src={getImageUrl("right_arrow_icon.svg")}
-								alt="Auth Page"
-							/>
-						</button>
-					</form>
+					{getContentToRender()}
 				</div>
 			</div>
 			<Footer

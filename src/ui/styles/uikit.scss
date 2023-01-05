@@ -419,3 +419,11 @@ button.link,
 .center {
 	text-align: center;
 }
+
+$fontWeights: 400, 500, 600, 700;
+
+@each $weight in $fontWeights {
+	.bold-#{$weight} {
+		font-weight: $weight !important;
+	}
+}
