@@ -98,7 +98,7 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 					tooltipWidth={65}
 					trigger="click"
 					tooltip={"Copied!"}
-					position="right">
+					position="bottom">
 					<div
 						onClick={copyClickHandler}
 						role={"button"}
