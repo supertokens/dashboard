@@ -88,7 +88,7 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 			<p className="text-small text-label">{subtitle}</p>
 			<div className="command-container">
 				<code
-					className="command bold-400"
+					className="command with-thin-scrollbar bold-400"
 					dangerouslySetInnerHTML={{
 						__html: highlightedCode.value,
 					}}
