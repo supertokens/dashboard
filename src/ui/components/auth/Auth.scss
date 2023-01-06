@@ -60,8 +60,7 @@
 	.link {
 		color: var(--color-link);
 		cursor: pointer;
-
-		&.add-new-user {
+		&:hover {
 			text-decoration: underline;
 		}
 	}
@@ -84,6 +83,10 @@ form .input-field-inset:not(.input-field-inset-focused) input {
 			text-decoration: underline;
 		}
 	}
+
+	img.back-chevron {
+		margin-inline-end: 6px;
+	}
 }
 
 .command-container {
@@ -96,25 +99,37 @@ form .input-field-inset:not(.input-field-inset-focused) input {
 	border-radius: 6px;
 
 	.clipboard-btn-container {
-		height: fit-content;
-		padding: 5px;
+		height: 24px;
+		min-width: 24px;
 		border-radius: 50%;
 		transition: 0.1s all ease-in-out;
+		cursor: pointer;
 
 		&:hover {
-			background: lightgray;
+			background: rgba(217, 217, 217, 0.6);
 		}
 
 		.clipboard-icon {
-			cursor: pointer;
 			width: 12px;
+			height: 14px;
 		}
 	}
 
 	code.command {
-		word-break: break-all;
+		word-break: break-word;
 		font-size: 13px;
 		line-height: 1.6;
 		color: var(--color-command);
+		flex: 1;
+		.hljs-string {
+			color: inherit;
+		}
+	}
+
+	.tooltip-container {
+		height: fit-content;
+		.tooltip-container__popup {
+			padding: 3px 8px;
+		}
 	}
 }

@@ -1,3 +1,17 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
 import React, { useState } from "react";
 import { UNAUTHORISED_STATUS } from "../../../constants";
 import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
@@ -5,10 +19,15 @@ import InputField from "../inputField/InputField";
 
 interface SignInContentProps {
 	onSuccess: () => void;
+	onCreateNewUserClick: () => void;
 	onForgotPasswordBtnClick: () => void;
 }
 
-const SignInContent: React.FC<SignInContentProps> = ({ onSuccess, onForgotPasswordBtnClick }): JSX.Element => {
+const SignInContent: React.FC<SignInContentProps> = ({
+	onSuccess,
+	onCreateNewUserClick,
+	onForgotPasswordBtnClick,
+}): JSX.Element => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const [email, setEmail] = useState("");
@@ -65,7 +84,13 @@ const SignInContent: React.FC<SignInContentProps> = ({ onSuccess, onForgotPasswo
 		<div>
 			<h2 className="api-key-form-title text-title">Sign In</h2>
 			<p className="text-small text-label">
-				More members required? <span className="add-new-user link">Add a new user</span>
+				More members required?{" "}
+				<span
+					role={"button"}
+					onClick={onCreateNewUserClick}
+					className="add-new-user link">
+					Add a new user
+				</span>
 			</p>
 
 			<hr />

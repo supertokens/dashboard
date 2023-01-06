@@ -395,7 +395,7 @@ button.link,
 		&.popup_right::before {
 			border-right-color: var(--color-white);
 			border-left: none;
-			left: 0px;
+			left: 0.5px;
 			top: 50%;
 			transform: translateX(-100%) translateY(-50%);
 		}
@@ -418,6 +418,16 @@ button.link,
 
 .center {
 	text-align: center;
+}
+
+.flex-center-x {
+	display: flex;
+	justify-content: center;
+}
+
+.flex-center-y {
+	display: flex;
+	align-items: center;
 }
 
 $fontWeights: 400, 500, 600, 700;

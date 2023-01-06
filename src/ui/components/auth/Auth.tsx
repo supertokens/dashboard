@@ -35,6 +35,7 @@ const Auth: React.FC<{
 			case "sign-in":
 				return (
 					<SignIn
+						onCreateNewUserClick={() => setContentMode("sign-up")}
 						onForgotPasswordBtnClick={() => setContentMode("forgot-password")}
 						onSuccess={props.onSuccess}
 					/>

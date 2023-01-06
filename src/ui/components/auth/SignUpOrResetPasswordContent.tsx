@@ -1,15 +1,47 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+import HighlightJS from "highlight.js";
+import BashHighlight from "highlight.js/lib/languages/bash";
+import { useEffect, useState } from "react";
 import { getImageUrl } from "../../../utils";
+import TooltipContainer from "../tooltip/tooltip";
 import { ContentMode } from "./types";
 
 interface ISignUpOrResetPasswordContentProps {
 	contentMode: Exclude<ContentMode, "sign-in">;
 	onBack: () => void;
 }
-
 const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps> = ({
 	contentMode,
 	onBack,
 }: ISignUpOrResetPasswordContentProps): JSX.Element => {
+	const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
+
+	useEffect(() => {
+		HighlightJS.registerLanguage("bash", BashHighlight);
+		HighlightJS.initHighlightingOnLoad();
+	});
+
+	useEffect(() => {
+		if (showCopiedTooltip) {
+			setTimeout(() => {
+				setShowCopiedTooltip(false);
+			}, 1000);
+		}
+	}, [showCopiedTooltip]);
+
 	const getTextContent = () => {
 		switch (contentMode) {
 			case "sign-up":
@@ -27,60 +59,82 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 		}
 	};
 
-	const getBottomCTAContent = () => {
-		switch (contentMode) {
-			case "sign-up":
-				break;
-			case "forgot-password":
-				break;
-			default:
-				break;
-		}
-	};
-
 	const { title, subtitle } = getTextContent();
 
-	const command =
-		"https://1ac25a511cec847d6570cjdf1ac25a511cec847d6570cb1ac25a511cec847d6570cb1ac25a511cec847d6570cb1ac25a511cec847d6570cb1ac25a511cec847";
+	const command = `curl --location --request POST 'http://localhost:3567/recipe/user/passwordhash/import' \
+		--header 'api-key: <API_KEY(if configured)>' \
+		--header 'Content-Type: application/json' \
+		--data-raw '{
+			"email": "johndoe@example.com",
+			"passwordHash": "$argon2d$v=19$m=12,t=3,p=1$NWd0eGp4ZW91b3IwMDAwMA$57jcfXF19MyiUXSjkVBpEQ"
+		}'`;
 
 	const copyClickHandler = async () => {
 		try {
 			await navigator.clipboard.writeText(command);
+			setShowCopiedTooltip(true);
 		} catch (error) {
 			throw Error("failed to copy the command");
 		}
 	};
+
+	const highlightedCode = HighlightJS.highlight(command, {
+		language: "bash",
+	});
 
 	return (
 		<section>
 			<h2 className="api-key-form-title text-title">{title}</h2>
 			<p className="text-small text-label">{subtitle}</p>
 			<div className="command-container">
-				<code className="command bold-400">{command}</code>
-				<div className="clipboard-btn-container">
-					<img
+				<code
+					className="command bold-400"
+					dangerouslySetInnerHTML={{
+						__html: highlightedCode.value,
+					}}
+				/>
+				<TooltipContainer
+					showTooltip={showCopiedTooltip}
+					tooltipWidth={65}
+					trigger="click"
+					tooltip={"Copied!"}
+					position="right">
+					<div
 						onClick={copyClickHandler}
 						role={"button"}
-						className="clipboard-icon"
-						alt="Copy to clipboard"
-						src={getImageUrl("copy.svg")}
-					/>
-				</div>
+						className="clipboard-btn-container flex-center-x flex-center-y">
+						<img
+							className="clipboard-icon"
+							alt="Copy to clipboard"
+							src={getImageUrl("copy.svg")}
+						/>
+					</div>
+				</TooltipContainer>
 			</div>
 			<div className="cta-container">
 				<div />
-
-				<span>Account exists ? Sign In</span>
-				<button
-					className="flat secondary-cta-btn bold-400"
-					onClick={onBack}>
-					{" "}
-					<img
-						alt="Go back"
-						src={getImageUrl("chevron-left.svg")}
-					/>{" "}
-					Back
-				</button>
+				{contentMode === "sign-up" ? (
+					<span className="text-small text-label">
+						Account exists?{" "}
+						<span
+							className="link"
+							role={"button"}
+							onClick={onBack}>
+							Sign In
+						</span>
+					</span>
+				) : (
+					<button
+						className="flat secondary-cta-btn bold-400"
+						onClick={onBack}>
+						<img
+							alt="Go back"
+							className="back-chevron"
+							src={getImageUrl("chevron-left.svg")}
+						/>
+						Back
+					</button>
+				)}
 			</div>
 		</section>
 	);
