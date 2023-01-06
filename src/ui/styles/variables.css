@@ -34,6 +34,7 @@ body {
 	--color-success-bg: rgb(241, 250, 247);
 	--color-success-shadow: rgba(4, 84, 62, 0.16);
 	--color-link: rgb(0, 122, 255);
+	--color-badge-bg: rgba(255, 242, 202);
 
 	/* Border Colors */
 	--color-border: rgb(229, 229, 229);
@@ -46,6 +47,7 @@ body {
 	--color-error: rgb(158, 37, 38);
 	--color-info: rgb(31, 90, 219);
 	--color-success: rgb(4, 84, 62);
+	--color-badge: rgba(220, 141, 13);
 
 	/* Recipe Pill Colors */
 	--color-emailpassword-bg: rgb(221, 252, 247);

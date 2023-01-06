@@ -159,7 +159,9 @@ export const UsersList: React.FC<UserListProps> = ({
 				src={LOGO_ICON_LIGHT}
 				alt="Auth Page"
 			/>
-			<h1 className="users-list-title">User Management</h1>
+			<h1 className="users-list-title">
+				User Management <span className="pill paid-feature-badge">Beta</span>
+			</h1>
 			<p className="text-small users-list-subtitle">
 				One place to manage all your users, revoke access and edit information according to your needs.
 			</p>
