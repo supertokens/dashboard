@@ -65,6 +65,13 @@ const SignInContent: React.FC<SignInContentProps> = ({
 		e.preventDefault();
 		// setApiKeyFieldError("");
 
+		if (!email) {
+			setEmailError("Email cannot be empty");
+		}
+		if (!password) {
+			setPasswordError("Password cannot be empty");
+		}
+
 		// if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
 		// 	void validateKey();
 		// } else {

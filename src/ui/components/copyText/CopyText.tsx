@@ -19,10 +19,11 @@ import Toast, { TOAST_DEFAULT_DURATION } from "../toast/toast";
 import "./CopyText.scss";
 
 type CopyTextProps = {
+	showChild?: boolean;
 	children: string;
 };
 
-export const CopyText: React.FC<CopyTextProps> = ({ children }: CopyTextProps) => {
+export const CopyText: React.FC<CopyTextProps> = ({ showChild = true, children }: CopyTextProps) => {
 	const alertWidth = 80;
 	const copyBoxRef = useRef<HTMLDivElement>(null);
 	const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -64,7 +65,7 @@ export const CopyText: React.FC<CopyTextProps> = ({ children }: CopyTextProps) =
 			ref={copyBoxRef}
 			className={`copy-text ${isCopied ? "copy-text-copied" : ""}`}
 			onMouseEnter={() => setIsCopied(false)}>
-			<span className="copy-text-text">{children}</span>
+			{showChild && <span className="copy-text-text">{children}</span>}
 			<span
 				className="copy-text-action"
 				onClick={copyClick}>

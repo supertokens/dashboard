@@ -395,7 +395,7 @@ button.link,
 		&.popup_right::before {
 			border-right-color: var(--color-white);
 			border-left: none;
-			left: 0.5px;
+			left: 0;
 			top: 50%;
 			transform: translateX(-100%) translateY(-50%);
 		}

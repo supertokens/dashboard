@@ -23,8 +23,6 @@ type TooltipProps = TooltipBaseProps & {
 	trigger?: TooltipTrigger;
 	/** Tooltip content */
 	tooltip: ReactNode;
-	/** Control the tooltip's visibility from the parent */
-	showTooltip?: boolean;
 };
 
 /** The element that will pop out when the `TooltipContainer` is receiving  `TooltipTrigger`*/
@@ -55,10 +53,6 @@ export const TooltipContainer: FC<TooltipProps> = (props) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const { trigger = "hover", children, tooltip, position, tooltipWidth = DEFAULT_TOOLTIP_WIDTH } = props;
 	const [isTooltipShown, setIsTooltipShown] = useState<boolean>(false);
-
-	useEffect(() => {
-		setIsTooltipShown(Boolean(props.showTooltip));
-	}, [props.showTooltip]);
 
 	const handleTooltipTrigger = useCallback(
 		(triggerType: TooltipTrigger) => {

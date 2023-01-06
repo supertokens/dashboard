@@ -16,7 +16,7 @@ import HighlightJS from "highlight.js";
 import BashHighlight from "highlight.js/lib/languages/bash";
 import { useEffect, useState } from "react";
 import { getImageUrl } from "../../../utils";
-import TooltipContainer from "../tooltip/tooltip";
+import CopyText from "../copyText/CopyText";
 import { ContentMode } from "./types";
 
 interface ISignUpOrResetPasswordContentProps {
@@ -93,23 +93,9 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 						__html: highlightedCode.value,
 					}}
 				/>
-				<TooltipContainer
-					showTooltip={showCopiedTooltip}
-					tooltipWidth={65}
-					trigger="click"
-					tooltip={"Copied!"}
-					position="bottom">
-					<div
-						onClick={copyClickHandler}
-						role={"button"}
-						className="clipboard-btn-container flex-center-x flex-center-y">
-						<img
-							className="clipboard-icon"
-							alt="Copy to clipboard"
-							src={getImageUrl("copy.svg")}
-						/>
-					</div>
-				</TooltipContainer>
+				<div>
+					<CopyText showChild={false}>{command}</CopyText>
+				</div>
 			</div>
 			<div className="cta-container">
 				<div />

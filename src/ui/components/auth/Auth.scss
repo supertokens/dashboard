@@ -13,6 +13,8 @@
  * under the License.
  */
 
+@import "../../styles/mixin.scss";
+
 .auth-container {
 	height: 100vh;
 	width: 100vw;
@@ -94,7 +96,7 @@ form .input-field-inset:not(.input-field-inset-focused) input {
 	display: flex;
 	padding-block: 6px;
 	padding-inline: 8px 4px;
-	column-gap: 12px;
+	@include gap-horizontal(12px);
 	border: 1px solid var(--color-border-command);
 	border-radius: 6px;
 
