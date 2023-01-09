@@ -13,6 +13,7 @@
  * under the License.
  */
 
+import { getImageUrl } from "../../../utils";
 import "./footer.scss";
 
 export type FooterProps = {
@@ -22,14 +23,10 @@ export type FooterProps = {
 	size?: "normal" | "large";
 };
 
-export const LOGO_DARK =
-	"https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_full_logo_dark_theme.svg";
-export const LOGO_LIGHT =
-	"https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_icon_light_theme.svg";
-export const LOGO_ICON_LIGHT =
-	"https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_full_logo_light_theme.svg";
-export const LOGO_ICON_DARK =
-	"https://raw.githubusercontent.com/supertokens/supertokens-logo/master/logo/ST_icon_dark_theme.svg";
+export const LOGO_DARK = getImageUrl("ST_full_logo_dark_theme.svg");
+export const LOGO_LIGHT = getImageUrl("ST_icon_light_theme.svg");
+export const LOGO_ICON_LIGHT = getImageUrl("ST_full_logo_light_theme.svg");
+export const LOGO_ICON_DARK = getImageUrl("ST_icon_dark_theme.svg");
 
 export const Footer = ({ horizontalAlignment, verticalAlignment, colorMode, size }: FooterProps) => {
 	return (
