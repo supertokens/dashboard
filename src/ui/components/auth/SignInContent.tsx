@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UNAUTHORISED_STATUS } from "../../../constants";
 import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
 import InputField from "../inputField/InputField";
@@ -29,9 +29,11 @@ const SignInContent: React.FC<SignInContentProps> = ({
 	onForgotPasswordBtnClick,
 }): JSX.Element => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+
 	const [emailError, setEmailError] = useState("");
 	const [passwordError, setPasswordError] = useState("");
 
@@ -61,17 +63,23 @@ const SignInContent: React.FC<SignInContentProps> = ({
 		setIsLoading(false);
 	};
 
+	const checkValuesForErrors = () => {
+		setEmailError(email ? "" : "Email cannot be empty");
+		setPasswordError(password ? "" : "Password cannot be empty");
+	};
+
+	useEffect(() => {
+		checkValuesForErrors();
+	}, [email, password]);
+
+	const hasErrors = emailError || passwordError;
+
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// setApiKeyFieldError("");
+		setUserTriedToSubmit(true);
+		checkValuesForErrors();
 
-		if (!email) {
-			setEmailError("Email cannot be empty");
-		}
-		if (!password) {
-			setPasswordError("Password cannot be empty");
-		}
-
+		if (hasErrors) return;
 		// if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
 		// 	void validateKey();
 		// } else {
@@ -113,6 +121,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					error={emailError}
 					value={email}
 					placeholder=""
+					forceShowError={userTriedToSubmit}
 				/>
 
 				<label>Password</label>
@@ -121,6 +130,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					name="password"
 					type="password"
 					error={passwordError}
+					forceShowError={userTriedToSubmit}
 					value={password}
 					placeholder=""
 				/>
