@@ -240,3 +240,7 @@ export const getRecipeNameFromid = (id: UserRecipeType): string => {
 
 	return "Third Party";
 };
+
+export const obfuscateString = (str: string) => str.replace(/\w/g, "X");
+export const obfuscatePhone = (phoneNumberStr: string, replacementChar = "9") =>
+	phoneNumberStr.replace(/\d/g, replacementChar);

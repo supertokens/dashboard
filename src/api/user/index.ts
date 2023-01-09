@@ -14,7 +14,7 @@
  */
 
 import { UserWithRecipeId } from "../../ui/pages/usersList/types";
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
+import { fetchDataAndRedirectIf401, getApiUrl, obfuscatePhone } from "../../utils";
 
 export type GetUserInfoResult =
 	| {
@@ -51,6 +51,13 @@ export const getUser = async (userId: string, recipeId: string): Promise<GetUser
 			return {
 				status: "RECIPE_NOT_INITIALISED",
 			};
+		}
+
+		if (body?.user?.phoneNumber) {
+			body.user.phoneNumber = obfuscatePhone(body.user.phoneNumber);
+		}
+		if (body?.user?.email) {
+			body.user.email = "johndoe@supertokens.com";
 		}
 
 		return {

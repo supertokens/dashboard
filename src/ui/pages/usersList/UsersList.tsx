@@ -21,6 +21,7 @@ import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../..
 import fetchUsers from "../../../api/users";
 import fetchCount from "../../../api/users/count";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
+import { obfuscatePhone } from "../../../utils";
 import AuthWrapper from "../../components/authWrapper";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
@@ -104,6 +105,14 @@ export const UsersList: React.FC<UserListProps> = ({
 				() => undefined
 			);
 			if (data) {
+				// obfuscate the user details (like email address and phone numbers);
+				data.users.forEach((userData) => {
+					if (userData?.user?.email) userData.user.email = "johndoe@supertokens.com";
+					if ("phoneNumber" in userData.user && userData.user?.phoneNumber)
+						userData.user.phoneNumber = obfuscatePhone(userData.user.phoneNumber);
+					return userData;
+				});
+
 				// store the users and pagination token
 				const { users: responseUsers, nextPaginationToken } = data;
 				setUsers(insertUsersAtOffset(responseUsers, paramOffset));
