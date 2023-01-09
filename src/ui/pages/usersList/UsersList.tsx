@@ -20,6 +20,7 @@ import { updateUserEmailVerificationStatus } from "../../../api/user/email/verif
 import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../../api/user/email/verify/token";
 import fetchUsers from "../../../api/users";
 import fetchCount from "../../../api/users/count";
+import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
 import AuthWrapper from "../../components/authWrapper";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
@@ -66,7 +67,6 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [offset, setOffset] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
-	const [connectionURI, setConnectionURI] = useState<string>();
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
 
 	const insertUsersAtOffset = useCallback(
@@ -136,8 +136,6 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	useEffect(() => {
 		void loadCount();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		setConnectionURI((window as any).connectionURI);
 	}, [loadCount]);
 
 	useEffect(() => {
@@ -145,6 +143,8 @@ export const UsersList: React.FC<UserListProps> = ({
 			reloadRef.current = () => loadOffset(offset);
 		}
 	}, [reloadRef, loadOffset, offset]);
+
+	const { connectionURI } = useAppEnvContext();
 
 	const onEmailChanged = async () => {
 		await loadOffset(offset);
@@ -304,30 +304,36 @@ export const UserListPage = () => {
 
 	return (
 		<AuthWrapper>
-			{isSelectedUserNotEmpty && selectedRecipeId !== undefined && (
-				<UserDetail
-					recipeId={selectedRecipeId}
-					user={selectedUser}
-					onBackButtonClicked={backToList}
-					onDeleteCallback={({ user: { id } }) => deleteUser(id)}
-					onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
-					onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
+			<AppEnvContextProvider
+				connectionURI={
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(window as any).connectionURI
+				}>
+				{isSelectedUserNotEmpty && selectedRecipeId !== undefined && (
+					<UserDetail
+						recipeId={selectedRecipeId}
+						user={selectedUser}
+						onBackButtonClicked={backToList}
+						onDeleteCallback={({ user: { id } }) => deleteUser(id)}
+						onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
+						onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
+						onChangePasswordCallback={changePassword}
+					/>
+				)}
+				<UsersList
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					onSelect={onUserSelected}
+					css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
+					reloadRef={reloadListRef}
 					onChangePasswordCallback={changePassword}
+					onDeleteCallback={({ user: { id } }) => deleteUser(id)}
 				/>
-			)}
-			<UsersList
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				onSelect={onUserSelected}
-				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
-				reloadRef={reloadListRef}
-				onChangePasswordCallback={changePassword}
-				onDeleteCallback={({ user: { id } }) => deleteUser(id)}
-			/>
-			<Footer
-				colorMode="dark"
-				horizontalAlignment="center"
-				verticalAlignment="center"
-			/>
+				<Footer
+					colorMode="dark"
+					horizontalAlignment="center"
+					verticalAlignment="center"
+				/>
+			</AppEnvContextProvider>
 		</AuthWrapper>
 	);
 };
