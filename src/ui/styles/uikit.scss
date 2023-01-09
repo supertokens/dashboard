@@ -395,7 +395,7 @@ button.link,
 		&.popup_right::before {
 			border-right-color: var(--color-white);
 			border-left: none;
-			left: 0px;
+			left: 0;
 			top: 50%;
 			transform: translateX(-100%) translateY(-50%);
 		}
@@ -418,4 +418,31 @@ button.link,
 
 .center {
 	text-align: center;
+}
+
+.flex-center-x {
+	display: flex;
+	justify-content: center;
+}
+
+.flex-center-y {
+	display: flex;
+	align-items: center;
+}
+
+.with-thin-scrollbar {
+	&::-webkit-scrollbar {
+		width: 5px;
+	}
+	&::-webkit-scrollbar-thumb {
+		box-shadow: inset 0 0 6px var(--color-loader-placeholder-bg);
+	}
+}
+
+$fontWeights: 400, 500, 600, 700;
+
+@each $weight in $fontWeights {
+	.bold-#{$weight} {
+		font-weight: $weight !important;
+	}
 }
