@@ -13,7 +13,7 @@
  * under the License.
  */
 import React, { useEffect, useState } from "react";
-import { UNAUTHORISED_STATUS } from "../../../constants";
+import { HTTPStatusCodes } from "../../../constants";
 import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
 import { validateEmail } from "../../../utils/form";
 import InputField from "../inputField/InputField";
@@ -44,11 +44,11 @@ const SignInContent: React.FC<SignInContentProps> = ({
 		email: "",
 		password: "",
 	});
+	const [serverValidationError, setServerValidationError] = useState("");
 
-	const validateKey = async () => {
-		setIsLoading(true);
+	const validateCredentials = async () => {
 		const response = await fetchData({
-			url: getApiUrl("/api/key/validate"),
+			url: getApiUrl("/api/sample/validate"),
 			method: "POST",
 			config: {
 				headers: {
@@ -56,19 +56,14 @@ const SignInContent: React.FC<SignInContentProps> = ({
 				},
 			},
 		});
-
 		const body = await response.json();
-
-		if (response.status === 200 && body.status === "OK") {
-			// localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
+		if (response.status === HTTPStatusCodes.OK && body.status === "OK") {
 			onSuccess();
-		} else if (response.status === UNAUTHORISED_STATUS) {
-			// setApiKeyFieldError("Invalid API Key");
+		} else if (response.status === HTTPStatusCodes.UNAUTHORIZED) {
+			setServerValidationError("Incorrect email and password combination");
 		} else {
-			// setApiKeyFieldError("Something went wrong");
+			setServerValidationError("Something went wrong");
 		}
-
-		setIsLoading(false);
 	};
 
 	const checkValuesForErrors = () => {
@@ -83,25 +78,31 @@ const SignInContent: React.FC<SignInContentProps> = ({
 		return Object.values(_errors).some((error) => error);
 	};
 
+	const clearErrors = (key: keyof IErrorObject) => {
+		setErrors({ ...errors, [key]: "" });
+		setServerValidationError("");
+	};
+
 	useEffect(() => {
-		if (email && errors.email) setErrors({ ...errors, email: "" });
+		if (email && errors.email) clearErrors("email");
 	}, [email]);
 
 	useEffect(() => {
-		if (password && errors.password) setErrors({ ...errors, password: "" });
+		if (password && errors.password) clearErrors("password");
 	}, [password]);
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		setIsLoading(true);
+		setServerValidationError("");
 		setUserTriedToSubmit(true);
 		const hasErrors = checkValuesForErrors();
-		if (hasErrors) return;
-		window.alert("Continuing...");
-		// if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
-		// 	void validateKey();
-		// } else {
-		// 	setApiKeyFieldError("API Key field cannot be empty");
-		// }
+		if (hasErrors) {
+			setIsLoading(false);
+			return;
+		}
+		await validateCredentials();
+		setIsLoading(false);
 	};
 
 	const handleEmailFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,6 +125,12 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					Add a new user
 				</span>
 			</p>
+
+			{serverValidationError && (
+				<div className="input-field-error block-small block-error error-response-container">
+					{serverValidationError}
+				</div>
+			)}
 
 			<hr />
 
@@ -166,8 +173,9 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					</button>
 
 					<button
+						disabled={isLoading}
 						onClick={onForgotPasswordBtnClick}
-						className="flat secondary-cta-btn  forgot-btn bold-400"
+						className="flat secondary-cta-btn forgot-btn bold-400"
 						role="button">
 						Forgot Password?
 					</button>

@@ -72,6 +72,10 @@ form .input-field-inset:not(.input-field-inset-focused) input {
 	background-color: var(--color-input-unfocused);
 }
 
+.error-response-container {
+	font-size: 14px;
+}
+
 .cta-container {
 	display: flex;
 	align-items: center;
@@ -80,7 +84,6 @@ form .input-field-inset:not(.input-field-inset-focused) input {
 	.secondary-cta-btn {
 		font-family: inherit;
 		font-size: 14px;
-
 		&.forgot-btn {
 			text-decoration: underline;
 		}
