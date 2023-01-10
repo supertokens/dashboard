@@ -57,10 +57,9 @@ const SignInContent: React.FC<SignInContentProps> = ({
 			},
 		});
 		const body = await response.json();
-		if (response.status === HTTPStatusCodes.OK && body.status === "OK") {
-			onSuccess();
-		} else if (response.status === HTTPStatusCodes.UNAUTHORIZED) {
-			setServerValidationError("Incorrect email and password combination");
+		if (response.status === HTTPStatusCodes.OK) {
+			if (body.status === "OK") onSuccess();
+			else setServerValidationError("Incorrect email and password combination");
 		} else {
 			setServerValidationError("Something went wrong");
 		}
