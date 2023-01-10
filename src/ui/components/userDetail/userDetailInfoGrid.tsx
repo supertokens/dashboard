@@ -11,6 +11,7 @@ import {
 import CopyText from "../copyText/CopyText";
 import InputField from "../inputField/InputField";
 import { LayoutPanel } from "../layout/layoutPanel";
+import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { PhoneNumberInput } from "../phoneNumber/PhoneNumberInput";
 import TooltipContainer from "../tooltip/tooltip";
 import { UserRecipePill } from "../usersListTable/UsersListTable";
@@ -295,9 +296,9 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 				updateUserDataState({ phoneNumber });
 			}}
 		/>
-	) : (
-		phoneNumber
-	);
+	) : phoneNumber !== undefined ? (
+		<PhoneDisplay phone={phoneNumber} />
+	) : undefined;
 
 	const emailGridContent =
 		isEditing && (recipeId === "emailpassword" || recipeId === "passwordless") ? (

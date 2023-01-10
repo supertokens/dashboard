@@ -18,6 +18,7 @@ import React, { useCallback, useContext } from "react";
 import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
+import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "../userDetail/userDetail";
 import {
 	getUserChangeEmailPopupProps,
@@ -285,7 +286,7 @@ const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSele
 				onClick={() => onSelect(user)}
 				className="main"
 				title={name || email}>
-				{name || email || phone}
+				{name || email || (phone && <PhoneDisplay phone={phone} />)}
 			</div>
 			{email && name && (
 				<div
@@ -294,7 +295,11 @@ const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSele
 					{email}
 				</div>
 			)}
-			{phone && (name || email) && <div className="phone">{phone}</div>}
+			{phone && (name || email) && (
+				<div className="phone">
+					<PhoneDisplay phone={phone} />
+				</div>
+			)}
 		</div>
 	);
 };

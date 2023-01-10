@@ -14,9 +14,12 @@
  */
 
 import { format, parsePhoneNumberFromString } from "libphonenumber-js";
+import { useAppEnvContext } from "../../contexts/AppEnvContext";
 import "./PhoneNumber.scss";
 
 export const PhoneDisplay = ({ phone }: { phone: string }) => {
+	const { isDemoConnectionURI } = useAppEnvContext();
+	if (isDemoConnectionURI) return <>{phone}</>;
 	const { country, countryCallingCode } = parsePhoneNumberFromString(phone) || {};
 	return (
 		<>
