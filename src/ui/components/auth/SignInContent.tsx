@@ -15,12 +15,18 @@
 import React, { useEffect, useState } from "react";
 import { UNAUTHORISED_STATUS } from "../../../constants";
 import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
+import { validateEmail } from "../../../utils/form";
 import InputField from "../inputField/InputField";
 
 interface SignInContentProps {
 	onSuccess: () => void;
 	onCreateNewUserClick: () => void;
 	onForgotPasswordBtnClick: () => void;
+}
+
+interface IErrorObject {
+	email: string;
+	password: string;
 }
 
 const SignInContent: React.FC<SignInContentProps> = ({
@@ -34,8 +40,10 @@ const SignInContent: React.FC<SignInContentProps> = ({
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-	const [emailError, setEmailError] = useState("");
-	const [passwordError, setPasswordError] = useState("");
+	const [errors, setErrors] = useState<IErrorObject>({
+		email: "",
+		password: "",
+	});
 
 	const validateKey = async () => {
 		setIsLoading(true);
@@ -64,22 +72,31 @@ const SignInContent: React.FC<SignInContentProps> = ({
 	};
 
 	const checkValuesForErrors = () => {
-		setEmailError(email ? "" : "Email cannot be empty");
-		setPasswordError(password ? "" : "Password cannot be empty");
+		const _errors = {
+			email: "",
+			password: "",
+		};
+		if (!email) _errors.email = "Email cannot be empty";
+		if (!password) _errors.password = "Password cannot be empty";
+		if (!validateEmail(email)) _errors.email = "Email is invalid";
+		setErrors(_errors);
+		return Object.values(_errors).some((error) => error);
 	};
 
 	useEffect(() => {
-		checkValuesForErrors();
-	}, [email, password]);
+		if (email && errors.email) setErrors({ ...errors, email: "" });
+	}, [email]);
 
-	const hasErrors = emailError || passwordError;
+	useEffect(() => {
+		if (password && errors.password) setErrors({ ...errors, password: "" });
+	}, [password]);
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setUserTriedToSubmit(true);
-		checkValuesForErrors();
-
+		const hasErrors = checkValuesForErrors();
 		if (hasErrors) return;
+		window.alert("Continuing...");
 		// if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
 		// 	void validateKey();
 		// } else {
@@ -111,6 +128,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 			<hr />
 
 			<form
+				noValidate
 				className="api-key-form"
 				onSubmit={handleSubmit}>
 				<label>Email</label>
@@ -118,7 +136,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					handleChange={handleEmailFieldChange}
 					name="email"
 					type="email"
-					error={emailError}
+					error={errors.email}
 					value={email}
 					placeholder=""
 					forceShowError={userTriedToSubmit}
@@ -129,7 +147,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					handleChange={handlePasswordFieldChange}
 					name="password"
 					type="password"
-					error={passwordError}
+					error={errors.password}
 					forceShowError={userTriedToSubmit}
 					value={password}
 					placeholder=""
