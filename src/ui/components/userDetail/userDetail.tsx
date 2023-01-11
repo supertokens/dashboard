@@ -14,10 +14,10 @@
  */
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { getUser, GetUserInfoResult, updateUserInformation, UpdateUserInformationResponse } from "../../../api/user";
+import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
 import useVerifyUserEmail from "../../../api/user/email/verify";
-import { getUserMetaData } from "../../../api/user/metadata";
-import { getSessionsForUser } from "../../../api/user/sessions";
+import useMetadataService from "../../../api/user/metadata";
+import useSessionsForUserService from "../../../api/user/sessions";
 import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { EmailVerificationStatus, UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
@@ -48,7 +48,11 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		undefined
 	);
 
+	const { getUser, updateUserInformation } = useUserService();
+
 	const { getUserEmailVerificationStatus } = useVerifyUserEmail();
+	const { getUserMetaData } = useMetadataService();
+	const { getSessionsForUser } = useSessionsForUserService();
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user, recipeId);

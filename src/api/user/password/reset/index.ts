@@ -1,4 +1,4 @@
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../../../utils";
+import { getApiUrl, useFetchData } from "../../../../utils";
 
 type UpdatePasswordResponse =
 	| {
@@ -9,17 +9,26 @@ type UpdatePasswordResponse =
 			error: string;
 	  };
 
-export const updatePassword = async (userId: string, newPassword: string): Promise<UpdatePasswordResponse> => {
-	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl("/api/user/password"),
-		method: "PUT",
-		query: { userId },
-		config: {
-			body: JSON.stringify({
-				userId,
-				newPassword,
-			}),
-		},
-	});
-	return await response.json();
+const usePasswordResetService = () => {
+	const fetchData = useFetchData();
+
+	const updatePassword = async (userId: string, newPassword: string): Promise<UpdatePasswordResponse> => {
+		const response = await fetchData({
+			url: getApiUrl("/api/user/password"),
+			method: "PUT",
+			query: { userId },
+			config: {
+				body: JSON.stringify({
+					userId,
+					newPassword,
+				}),
+			},
+			redirectionCodes: [401],
+		});
+		return await response.json();
+	};
+
+	return { updatePassword };
 };
+
+export default usePasswordResetService;
