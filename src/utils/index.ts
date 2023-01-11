@@ -85,7 +85,8 @@ export const useFetchData = () => {
 		return response;
 	};
 
-	if (statusCode > 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
+	// TODO: Instead of writing the number, use the HTTPStatusCode from the other PR when it's merged
+	if (statusCode >= 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
 
 	return fetchData;
 };
