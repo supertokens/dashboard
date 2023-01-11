@@ -16,7 +16,7 @@
 import React, { useState } from "react";
 import { StorageKeys, UNAUTHORISED_STATUS } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
-import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
+import { getApiUrl, getImageUrl, useFetchData } from "../../../utils";
 import { Footer, LOGO_ICON_LIGHT } from "../footer/footer";
 import InputField from "../inputField/InputField";
 import SafeAreaView from "../safeAreaView/SafeAreaView";
@@ -29,6 +29,7 @@ const Auth: React.FC<{
 	const [apiKey, setApiKey] = useState("");
 	const [apiKeyFieldError, setApiKeyFieldError] = useState("");
 	const [loading, setIsLoading] = useState<boolean>(false);
+	const fetchData = useFetchData();
 
 	const validateKey = async () => {
 		setIsLoading(true);
@@ -52,7 +53,6 @@ const Auth: React.FC<{
 		} else {
 			setApiKeyFieldError("Something went wrong");
 		}
-
 		setIsLoading(false);
 	};
 

@@ -16,9 +16,9 @@
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { deleteUser as deleteUserApi } from "../../../api/user/delete";
-import { updateUserEmailVerificationStatus } from "../../../api/user/email/verify";
+import useVerifyEmail from "../../../api/user/email/verify";
 import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../../api/user/email/verify/token";
-import fetchUsers from "../../../api/users";
+import useFetchUsers from "../../../api/users";
 import fetchCount from "../../../api/users/count";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
 import { obfuscatePhone } from "../../../utils";
@@ -69,6 +69,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
+	const fetchUsers = useFetchUsers();
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: UserWithRecipeId[], paramOffset?: number) => {
@@ -215,6 +216,8 @@ export const UserListPage = () => {
 	const reloadListRef: UserListPropsReloadRef = useRef();
 
 	const { showToast } = useContext(PopupContentContext);
+
+	const { updateUserEmailVerificationStatus } = useVerifyEmail();
 
 	const backToList = useCallback(() => {
 		navigate(

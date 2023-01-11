@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StorageKeys, UNAUTHORISED_STATUS } from "../constants";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
@@ -76,7 +76,6 @@ export const fetchData = async ({
 	config?: RequestInit;
 }) => {
 	const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
-
 	let additionalHeaders: { [key: string]: string } = {};
 
 	if (apiKeyInStorage !== undefined) {
@@ -100,6 +99,56 @@ export const fetchData = async ({
 	});
 
 	return response;
+};
+
+interface IFetchDataArgs {
+	url: string;
+	method: HttpMethod;
+	query?: { [key: string]: string };
+	config?: RequestInit;
+	redirectionCodes?: number[];
+}
+
+export const useFetchData = () => {
+	const [statusCode, setStatusCode] = useState<number>(0);
+
+	const fetchData = async ({ url, method, query, config, redirectionCodes }: IFetchDataArgs) => {
+		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
+
+		let additionalHeaders: { [key: string]: string } = {};
+
+		if (apiKeyInStorage !== undefined) {
+			additionalHeaders = {
+				...additionalHeaders,
+				authorization: `Bearer ${apiKeyInStorage}`,
+			};
+		}
+
+		const response: Response = await NetworkManager.doRequest({
+			url,
+			method,
+			query,
+			config: {
+				...config,
+				headers: {
+					...config?.headers,
+					...additionalHeaders,
+				},
+			},
+		});
+
+		if (redirectionCodes && redirectionCodes.includes(response.status)) {
+			// TODO: Update with newer redirection / log out rules upon endpoint integration
+			window.localStorage.removeItem(StorageKeys.API_KEY);
+			window.location.reload;
+		}
+		setStatusCode(response.status);
+		return response;
+	};
+
+	if (statusCode > 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
+
+	return fetchData;
 };
 
 // Language Utils

@@ -15,15 +15,20 @@
 
 import { LIST_DEFAULT_LIMIT } from "../../ui/components/usersListTable/UsersListTable";
 import { UserPaginationList } from "../../ui/pages/usersList/types";
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
+import { getApiUrl, useFetchData } from "../../utils";
 
-export const fetchUsers = async (param?: { paginationToken?: string; limit?: number }) => {
-	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl("/api/users"),
-		method: "GET",
-		query: { ...param, limit: `${param?.limit ?? LIST_DEFAULT_LIMIT}` },
-	});
-	return response.ok ? ((await response?.json()) as UserPaginationList) : undefined;
+export const useFetchUsers = () => {
+	const fetchData = useFetchData();
+	const fetchUsers = async (param?: { paginationToken?: string; limit?: number }) => {
+		const response = await fetchData({
+			url: getApiUrl("/api/users"),
+			method: "GET",
+			query: { ...param, limit: `${param?.limit ?? LIST_DEFAULT_LIMIT}` },
+			redirectionCodes: [401],
+		});
+		return response.ok ? ((await response?.json()) as UserPaginationList) : undefined;
+	};
+	return fetchUsers;
 };
 
-export default fetchUsers;
+export default useFetchUsers;

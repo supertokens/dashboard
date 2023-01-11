@@ -15,7 +15,7 @@
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { getUser, GetUserInfoResult, updateUserInformation, UpdateUserInformationResponse } from "../../../api/user";
-import { getUserEmailVerificationStatus } from "../../../api/user/email/verify";
+import useVerifyUserEmail from "../../../api/user/email/verify";
 import { getUserMetaData } from "../../../api/user/metadata";
 import { getSessionsForUser } from "../../../api/user/sessions";
 import { getImageUrl, getRecipeNameFromid } from "../../../utils";
@@ -47,6 +47,8 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [emailVerificationStatus, setEmailVerificationStatus] = useState<EmailVerificationStatus | undefined>(
 		undefined
 	);
+
+	const { getUserEmailVerificationStatus } = useVerifyUserEmail();
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user, recipeId);
