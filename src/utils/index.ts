@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { StorageKeys, UNAUTHORISED_STATUS } from "../constants";
+import { StorageKeys } from "../constants";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
 import { HttpMethod } from "../types";
@@ -39,67 +39,6 @@ export function getApiUrl(path: string): string {
 
 	return window.location.origin + getDashboardAppBasePath() + path;
 }
-
-export const fetchDataAndRedirectIf401 = async ({
-	url,
-	method,
-	query,
-	config,
-}: {
-	url: string;
-	method: HttpMethod;
-	query?: { [key: string]: string };
-	config?: RequestInit;
-}) => {
-	const response = await fetchData({ url, method, query, config });
-
-	if (response.status === UNAUTHORISED_STATUS) {
-		window.localStorage.removeItem(StorageKeys.API_KEY);
-		/**
-		 * After clearing API key from storage, reloading will result in the auth form being visible
-		 */
-		window.location.reload();
-	}
-
-	return response;
-};
-
-export const fetchData = async ({
-	url,
-	method,
-	query,
-	config,
-}: {
-	url: string;
-	method: HttpMethod;
-	query?: { [key: string]: string };
-	config?: RequestInit;
-}) => {
-	const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
-	let additionalHeaders: { [key: string]: string } = {};
-
-	if (apiKeyInStorage !== undefined) {
-		additionalHeaders = {
-			...additionalHeaders,
-			authorization: `Bearer ${apiKeyInStorage}`,
-		};
-	}
-
-	const response: Response = await NetworkManager.doRequest({
-		url,
-		method,
-		query,
-		config: {
-			...config,
-			headers: {
-				...config?.headers,
-				...additionalHeaders,
-			},
-		},
-	});
-
-	return response;
-};
 
 interface IFetchDataArgs {
 	url: string;
