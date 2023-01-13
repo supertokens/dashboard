@@ -12,9 +12,10 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState } from "react";
-import { UNAUTHORISED_STATUS } from "../../../constants";
+import React, { useEffect, useState } from "react";
+import { HTTPStatusCodes } from "../../../constants";
 import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
+import { validateEmail } from "../../../utils/form";
 import InputField from "../inputField/InputField";
 
 interface SignInContentProps {
@@ -23,22 +24,32 @@ interface SignInContentProps {
 	onForgotPasswordBtnClick: () => void;
 }
 
+interface IErrorObject {
+	email: string;
+	password: string;
+}
+
 const SignInContent: React.FC<SignInContentProps> = ({
 	onSuccess,
 	onCreateNewUserClick,
 	onForgotPasswordBtnClick,
 }): JSX.Element => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [emailError, setEmailError] = useState("");
-	const [passwordError, setPasswordError] = useState("");
 
-	const validateKey = async () => {
-		setIsLoading(true);
+	const [errors, setErrors] = useState<IErrorObject>({
+		email: "",
+		password: "",
+	});
+	const [serverValidationError, setServerValidationError] = useState("");
+
+	const validateCredentials = async () => {
+		// TODO: Integrate with the proper API
 		const response = await fetchData({
-			url: getApiUrl("/api/key/validate"),
+			url: getApiUrl("/api/sample/validate"),
 			method: "POST",
 			config: {
 				headers: {
@@ -46,37 +57,53 @@ const SignInContent: React.FC<SignInContentProps> = ({
 				},
 			},
 		});
-
 		const body = await response.json();
-
-		if (response.status === 200 && body.status === "OK") {
-			// localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
-			onSuccess();
-		} else if (response.status === UNAUTHORISED_STATUS) {
-			// setApiKeyFieldError("Invalid API Key");
+		if (response.status === HTTPStatusCodes.OK) {
+			if (body.status === "OK") onSuccess();
+			// TODO: Set the error message the same as what was returned from the server
+			else setServerValidationError("Incorrect email and password combination");
 		} else {
-			// setApiKeyFieldError("Something went wrong");
+			setServerValidationError("Something went wrong");
 		}
-
-		setIsLoading(false);
 	};
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const checkValuesForErrors = () => {
+		const _errors: IErrorObject = {
+			email: "",
+			password: "",
+		};
+		if (!email) _errors.email = "Email cannot be empty";
+		if (!password) _errors.password = "Password cannot be empty";
+		if (!validateEmail(email)) _errors.email = "Email is invalid";
+		setErrors(_errors);
+		return Object.values(_errors).some((error) => error);
+	};
+
+	const clearErrors = (key: keyof IErrorObject) => {
+		setErrors({ ...errors, [key]: "" });
+		setServerValidationError("");
+	};
+
+	useEffect(() => {
+		if (email && errors.email) clearErrors("email");
+	}, [email]);
+
+	useEffect(() => {
+		if (password && errors.password) clearErrors("password");
+	}, [password]);
+
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// setApiKeyFieldError("");
-
-		if (!email) {
-			setEmailError("Email cannot be empty");
+		setIsLoading(true);
+		setServerValidationError("");
+		setUserTriedToSubmit(true);
+		const hasErrors = checkValuesForErrors();
+		if (hasErrors) {
+			setIsLoading(false);
+			return;
 		}
-		if (!password) {
-			setPasswordError("Password cannot be empty");
-		}
-
-		// if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
-		// 	void validateKey();
-		// } else {
-		// 	setApiKeyFieldError("API Key field cannot be empty");
-		// }
+		await validateCredentials();
+		setIsLoading(false);
 	};
 
 	const handleEmailFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,9 +127,16 @@ const SignInContent: React.FC<SignInContentProps> = ({
 				</span>
 			</p>
 
+			{serverValidationError && (
+				<div className="input-field-error block-small block-error error-response-container">
+					{serverValidationError}
+				</div>
+			)}
+
 			<hr />
 
 			<form
+				noValidate
 				className="api-key-form"
 				onSubmit={handleSubmit}>
 				<label>Email</label>
@@ -110,9 +144,10 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					handleChange={handleEmailFieldChange}
 					name="email"
 					type="email"
-					error={emailError}
+					error={errors.email}
 					value={email}
 					placeholder=""
+					forceShowError={userTriedToSubmit}
 				/>
 
 				<label>Password</label>
@@ -120,7 +155,8 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					handleChange={handlePasswordFieldChange}
 					name="password"
 					type="password"
-					error={passwordError}
+					error={errors.password}
+					forceShowError={userTriedToSubmit}
 					value={password}
 					placeholder=""
 				/>
@@ -138,8 +174,9 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					</button>
 
 					<button
+						disabled={isLoading}
 						onClick={onForgotPasswordBtnClick}
-						className="flat secondary-cta-btn  forgot-btn bold-400"
+						className="flat secondary-cta-btn forgot-btn bold-400"
 						role="button">
 						Forgot Password?
 					</button>

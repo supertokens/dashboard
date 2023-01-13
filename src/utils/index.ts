@@ -14,7 +14,7 @@
  */
 
 import { useEffect } from "react";
-import { StorageKeys, UNAUTHORISED_STATUS } from "../constants";
+import { HTTPStatusCodes, StorageKeys } from "../constants";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
 import { HttpMethod } from "../types";
@@ -53,7 +53,7 @@ export const fetchDataAndRedirectIf401 = async ({
 }) => {
 	const response = await fetchData({ url, method, query, config });
 
-	if (response.status === UNAUTHORISED_STATUS) {
+	if (response.status === HTTPStatusCodes.UNAUTHORIZED) {
 		window.localStorage.removeItem(StorageKeys.API_KEY);
 		/**
 		 * After clearing API key from storage, reloading will result in the auth form being visible
