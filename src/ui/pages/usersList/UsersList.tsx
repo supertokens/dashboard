@@ -220,7 +220,7 @@ export const UserListPage = () => {
 	const { showToast } = useContext(PopupContentContext);
 
 	const { updateUserEmailVerificationStatus } = useVerifyEmailService();
-	const { deleteUser: deleteUserApi } = useDeleteUser();
+	const { deleteUser } = useDeleteUser();
 	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
 
 	const backToList = useCallback(() => {
@@ -237,9 +237,9 @@ export const UserListPage = () => {
 		setSelectedUser(undefined);
 	}, []);
 
-	const deleteUser = useCallback(
+	const onUserDelete = useCallback(
 		async (userId: string) => {
-			const deleteSucceed = await deleteUserApi(userId);
+			const deleteSucceed = await deleteUser(userId);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			if (didSucceed) {
 				backToList();
@@ -330,7 +330,7 @@ export const UserListPage = () => {
 						recipeId={selectedRecipeId}
 						user={selectedUser}
 						onBackButtonClicked={backToList}
-						onDeleteCallback={({ user: { id } }) => deleteUser(id)}
+						onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
 						onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
 						onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
 						onChangePasswordCallback={changePassword}
@@ -342,7 +342,7 @@ export const UserListPage = () => {
 					css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
 					reloadRef={reloadListRef}
 					onChangePasswordCallback={changePassword}
-					onDeleteCallback={({ user: { id } }) => deleteUser(id)}
+					onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
 				/>
 				<Footer
 					colorMode="dark"
