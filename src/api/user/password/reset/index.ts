@@ -23,7 +23,7 @@ const usePasswordResetService = () => {
 					newPassword,
 				}),
 			},
-			redirectionCodes: [401],
+			shouldRedirect: true,
 		});
 		return await response.json();
 	};

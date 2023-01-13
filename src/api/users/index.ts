@@ -24,7 +24,7 @@ export const useFetchUsersService = () => {
 			url: getApiUrl("/api/users"),
 			method: "GET",
 			query: { ...param, limit: `${param?.limit ?? LIST_DEFAULT_LIMIT}` },
-			redirectionCodes: [401],
+			shouldRedirect: true,
 		});
 		return response.ok ? ((await response?.json()) as UserPaginationList) : undefined;
 	};

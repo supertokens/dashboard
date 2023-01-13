@@ -45,13 +45,13 @@ interface IFetchDataArgs {
 	method: HttpMethod;
 	query?: { [key: string]: string };
 	config?: RequestInit;
-	redirectionCodes?: number[];
+	shouldRedirect?: boolean;
 }
 
 export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 
-	const fetchData = async ({ url, method, query, config, redirectionCodes }: IFetchDataArgs) => {
+	const fetchData = async ({ url, method, query, config, shouldRedirect }: IFetchDataArgs) => {
 		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
 
 		let additionalHeaders: { [key: string]: string } = {};
@@ -76,7 +76,7 @@ export const useFetchData = () => {
 			},
 		});
 
-		if (redirectionCodes && redirectionCodes.includes(response.status)) {
+		if (shouldRedirect && 401 === response.status) {
 			// TODO: Update with newer redirection / log out rules upon endpoint integration
 			window.localStorage.removeItem(StorageKeys.API_KEY);
 			window.location.reload;

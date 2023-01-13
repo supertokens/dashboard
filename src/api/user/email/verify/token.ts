@@ -12,7 +12,7 @@ const useVerifyUserTokenService = () => {
 					userId,
 				}),
 			},
-			redirectionCodes: [401],
+			shouldRedirect: true,
 		});
 		return response?.ok;
 	};

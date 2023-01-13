@@ -11,7 +11,7 @@ const useSessionsForUserService = () => {
 			query: {
 				userId,
 			},
-			redirectionCodes: [401],
+			shouldRedirect: true,
 		});
 
 		if (response.ok) {
@@ -36,7 +36,7 @@ const useSessionsForUserService = () => {
 					sessionHandles,
 				}),
 			},
-			redirectionCodes: [401],
+			shouldRedirect: true,
 		});
 
 		return;

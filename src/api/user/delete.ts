@@ -10,7 +10,7 @@ const useDeleteUser = () => {
 			query: {
 				userId,
 			},
-			redirectionCodes: [401],
+			shouldRedirect: true,
 		});
 
 		if (response.ok) {

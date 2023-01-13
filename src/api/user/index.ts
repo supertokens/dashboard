@@ -48,7 +48,7 @@ export const useUserService = () => {
 				userId,
 				recipeId,
 			},
-			redirectionCodes: [401],
+			shouldRedirect: true,
 		});
 
 		if (response.ok) {
@@ -121,7 +121,7 @@ export const useUserService = () => {
 					lastName: lastNameToSend,
 				}),
 			},
-			redirectionCodes: [401],
+			shouldRedirect: true,
 		});
 
 		return await response.json();
