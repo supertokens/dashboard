@@ -47,6 +47,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 	const [serverValidationError, setServerValidationError] = useState("");
 
 	const validateCredentials = async () => {
+		// TODO: Integrate with the proper API
 		const response = await fetchData({
 			url: getApiUrl("/api/sample/validate"),
 			method: "POST",
@@ -59,6 +60,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 		const body = await response.json();
 		if (response.status === HTTPStatusCodes.OK) {
 			if (body.status === "OK") onSuccess();
+			// TODO: Set the error message the same as what was returned from the server
 			else setServerValidationError("Incorrect email and password combination");
 		} else {
 			setServerValidationError("Something went wrong");
@@ -66,7 +68,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 	};
 
 	const checkValuesForErrors = () => {
-		const _errors = {
+		const _errors: IErrorObject = {
 			email: "",
 			password: "",
 		};
