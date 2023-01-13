@@ -10,7 +10,6 @@ const useMetadataService = () => {
 			query: {
 				userId,
 			},
-			shouldRedirect: true,
 		});
 
 		if (response.ok) {
@@ -41,7 +40,6 @@ const useMetadataService = () => {
 					data,
 				}),
 			},
-			shouldRedirect: true,
 		});
 
 		if (response.status === 200) {

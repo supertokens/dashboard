@@ -51,7 +51,7 @@ interface IFetchDataArgs {
 export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 
-	const fetchData = async ({ url, method, query, config, shouldRedirect }: IFetchDataArgs) => {
+	const fetchData = async ({ url, method, query, config, shouldRedirect = true }: IFetchDataArgs) => {
 		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
 
 		let additionalHeaders: { [key: string]: string } = {};

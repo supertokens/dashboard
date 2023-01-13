@@ -12,7 +12,6 @@ const useVerifyUserTokenService = () => {
 					userId,
 				}),
 			},
-			shouldRedirect: true,
 		});
 		return response?.ok;
 	};

@@ -23,7 +23,6 @@ const usePasswordResetService = () => {
 					newPassword,
 				}),
 			},
-			shouldRedirect: true,
 		});
 		return await response.json();
 	};

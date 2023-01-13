@@ -23,7 +23,6 @@ const useFetchCount = () => {
 		const response = await fetchData({
 			url: getApiUrl("/api/users/count"),
 			method: "GET",
-			shouldRedirect: true,
 		});
 
 		return response.ok ? ((await response?.json()) as UserListCount) : undefined;

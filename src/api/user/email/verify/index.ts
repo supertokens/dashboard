@@ -9,7 +9,6 @@ const useVerifyUserEmail = () => {
 			url: getApiUrl("/api/user/email/verify"),
 			method: "GET",
 			query: { userId },
-			shouldRedirect: true,
 		});
 
 		const body = await response.json();
@@ -23,7 +22,6 @@ const useVerifyUserEmail = () => {
 			config: {
 				body: JSON.stringify({ verified: isEmailVerified, userId }),
 			},
-			shouldRedirect: true,
 		});
 		return response?.ok;
 	};

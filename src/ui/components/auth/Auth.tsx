@@ -41,6 +41,7 @@ const Auth: React.FC<{
 					authorization: `Bearer ${apiKey}`,
 				},
 			},
+			shouldRedirect: false,
 		});
 
 		const body = await response.json();

@@ -48,7 +48,6 @@ export const useUserService = () => {
 				userId,
 				recipeId,
 			},
-			shouldRedirect: true,
 		});
 
 		if (response.ok) {
@@ -121,7 +120,6 @@ export const useUserService = () => {
 					lastName: lastNameToSend,
 				}),
 			},
-			shouldRedirect: true,
 		});
 
 		return await response.json();
