@@ -1,5 +1,9 @@
 import { getApiUrl, useFetchData } from "../../../../utils";
 
+interface IUsePasswordResetService {
+	updatePassword: (userId: string, newPassword: string) => Promise<UpdatePasswordResponse>;
+}
+
 type UpdatePasswordResponse =
 	| {
 			status: "OK";
@@ -9,7 +13,7 @@ type UpdatePasswordResponse =
 			error: string;
 	  };
 
-const usePasswordResetService = () => {
+const usePasswordResetService = (): IUsePasswordResetService => {
 	const fetchData = useFetchData();
 
 	const updatePassword = async (userId: string, newPassword: string): Promise<UpdatePasswordResponse> => {

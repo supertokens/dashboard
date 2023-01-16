@@ -15,7 +15,7 @@
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import useDeleteUser from "../../../api/user/delete";
+import useDeleteUserService from "../../../api/user/delete";
 import useVerifyEmailService from "../../../api/user/email/verify";
 import useVerifyUserTokenService from "../../../api/user/email/verify/token";
 import useFetchUsersService from "../../../api/users";
@@ -220,7 +220,7 @@ export const UserListPage = () => {
 	const { showToast } = useContext(PopupContentContext);
 
 	const { updateUserEmailVerificationStatus } = useVerifyEmailService();
-	const { deleteUser } = useDeleteUser();
+	const { deleteUser } = useDeleteUserService();
 	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
 
 	const backToList = useCallback(() => {

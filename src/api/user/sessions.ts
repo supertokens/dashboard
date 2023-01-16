@@ -1,7 +1,12 @@
 import { SessionInfo } from "../../ui/components/userDetail/userDetailSessionList";
 import { getApiUrl, useFetchData } from "../../utils";
 
-const useSessionsForUserService = () => {
+interface IUseSessionsForUserService {
+	getSessionsForUser: (userId: string) => Promise<SessionInfo[] | undefined>;
+	deleteSessionsForUser: (sessionHandles: string[]) => Promise<void>;
+}
+
+const useSessionsForUserService = (): IUseSessionsForUserService => {
 	const fetchData = useFetchData();
 
 	const getSessionsForUser = async (userId: string): Promise<SessionInfo[] | undefined> => {

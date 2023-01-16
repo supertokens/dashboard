@@ -1,6 +1,10 @@
 import { getApiUrl, useFetchData } from "../../../../utils";
 
-const useVerifyUserTokenService = () => {
+interface IUseVerifyUserTokenService {
+	sendUserEmailVerification: (userId: string) => Promise<boolean>;
+}
+
+const useVerifyUserTokenService = (): IUseVerifyUserTokenService => {
 	const fetchData = useFetchData();
 
 	const sendUserEmailVerification = async (userId: string) => {

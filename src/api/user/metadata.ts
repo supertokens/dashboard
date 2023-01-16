@@ -1,6 +1,11 @@
 import { getApiUrl, useFetchData } from "../../utils";
 
-const useMetadataService = () => {
+interface IUseMetadataService {
+	getUserMetaData: (userId: string) => Promise<string | any>;
+	updateUserMetaData: (userId: string, data: string) => Promise<any>;
+}
+
+const useMetadataService = (): IUseMetadataService => {
 	const fetchData = useFetchData();
 
 	const getUserMetaData = async (userId: string): Promise<string | any> => {

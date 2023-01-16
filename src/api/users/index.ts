@@ -17,7 +17,11 @@ import { LIST_DEFAULT_LIMIT } from "../../ui/components/usersListTable/UsersList
 import { UserPaginationList } from "../../ui/pages/usersList/types";
 import { getApiUrl, useFetchData } from "../../utils";
 
-export const useFetchUsersService = () => {
+interface IUseFetchUsersService {
+	fetchUsers: (param?: { paginationToken?: string; limit?: number }) => Promise<UserPaginationList | undefined>;
+}
+
+export const useFetchUsersService = (): IUseFetchUsersService => {
 	const fetchData = useFetchData();
 	const fetchUsers = async (param?: { paginationToken?: string; limit?: number }) => {
 		const response = await fetchData({

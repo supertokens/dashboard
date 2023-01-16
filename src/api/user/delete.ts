@@ -1,6 +1,12 @@
 import { getApiUrl, useFetchData } from "../../utils";
 
-const useDeleteUser = () => {
+type TDeleteUserResponse = Promise<{ status: "OK" } | undefined>;
+
+interface IUseDeleteUserService {
+	deleteUser: (userId: string) => TDeleteUserResponse;
+}
+
+const useDeleteUserService = (): IUseDeleteUserService => {
 	const fetchData = useFetchData();
 
 	const deleteUser = async (userId: string): Promise<{ status: "OK" } | undefined> => {
@@ -30,4 +36,4 @@ const useDeleteUser = () => {
 	};
 };
 
-export default useDeleteUser;
+export default useDeleteUserService;

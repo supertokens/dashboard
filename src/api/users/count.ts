@@ -16,7 +16,11 @@
 import { UserListCount } from "../../ui/pages/usersList/types";
 import { getApiUrl, useFetchData } from "../../utils";
 
-const useFetchCount = () => {
+interface IUseFetchCountService {
+	fetchCount: () => Promise<UserListCount | undefined>;
+}
+
+const useFetchCountService = (): IUseFetchCountService => {
 	const fetchData = useFetchData();
 
 	const fetchCount = async () => {
@@ -33,4 +37,4 @@ const useFetchCount = () => {
 	};
 };
 
-export default useFetchCount;
+export default useFetchCountService;

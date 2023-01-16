@@ -16,6 +16,20 @@
 import { UserWithRecipeId } from "../../ui/pages/usersList/types";
 import { getApiUrl, obfuscatePhone, useFetchData } from "../../utils";
 
+interface IUseUserService {
+	updateUserInformation: (args: IUpdateUserInformationArgs) => Promise<UpdateUserInformationResponse>;
+	getUser: (userId: string, recipeId: string) => Promise<GetUserInfoResult>;
+}
+
+interface IUpdateUserInformationArgs {
+	userId: string;
+	recipeId: string;
+	email?: string;
+	phone?: string;
+	firstName?: string;
+	lastName?: string;
+}
+
 export type GetUserInfoResult =
 	| {
 			status: "NO_USER_FOUND_ERROR";
@@ -37,7 +51,7 @@ export type UpdateUserInformationResponse =
 			error: string;
 	  };
 
-export const useUserService = () => {
+export const useUserService = (): IUseUserService => {
 	const fetchData = useFetchData();
 
 	const getUser = async (userId: string, recipeId: string): Promise<GetUserInfoResult> => {
@@ -90,14 +104,7 @@ export const useUserService = () => {
 		phone,
 		firstName,
 		lastName,
-	}: {
-		userId: string;
-		recipeId: string;
-		email?: string;
-		phone?: string;
-		firstName?: string;
-		lastName?: string;
-	}): Promise<UpdateUserInformationResponse> => {
+	}: IUpdateUserInformationArgs): Promise<UpdateUserInformationResponse> => {
 		let emailToSend = email === undefined ? "" : email;
 		const phoneToSend = phone === undefined ? "" : phone;
 		const firstNameToSend = firstName === undefined ? "" : firstName;

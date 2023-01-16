@@ -1,7 +1,12 @@
 import { EmailVerificationStatus } from "../../../../ui/pages/usersList/types";
 import { getApiUrl, useFetchData } from "../../../../utils";
 
-const useVerifyUserEmail = () => {
+interface IUseVerifyUserEmailService {
+	getUserEmailVerificationStatus: (userId: string) => Promise<EmailVerificationStatus>;
+	updateUserEmailVerificationStatus: (userId: string, isEmailVerified: boolean) => Promise<boolean>;
+}
+
+const useVerifyUserEmail = (): IUseVerifyUserEmailService => {
 	const fetchData = useFetchData();
 
 	const getUserEmailVerificationStatus = async (userId: string): Promise<EmailVerificationStatus> => {
