@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { deleteSessionsForUser } from "../../../api/user/sessions";
+import useSessionsForUserService from "../../../api/user/sessions";
 import { formatLongDate, getFormattedLongDateWithoutTime } from "../../../utils";
 import { PlaceholderTableRows } from "../usersListTable/UsersListTable";
 import "./userDetailSessionList.scss";
@@ -27,7 +27,7 @@ export const UserDetailsSessionList: React.FC<UserDetailsSessionListProps> = ({
 	refetchData,
 }: UserDetailsSessionListProps) => {
 	const sessionCountText = sessionList === undefined ? "" : `(TOTAL NO OF SESSIONS: ${sessionList.length})`;
-
+	const { deleteSessionsForUser } = useSessionsForUserService();
 	const revokeAllSessions = async () => {
 		if (sessionList === undefined) {
 			return;
@@ -115,6 +115,8 @@ const UserDetailsSessionListItem: React.FC<UserDetailsSessionListItemProps> = ({
 }: UserDetailsSessionListItemProps) => {
 	// Strip session handle to use 9 before and 12 after ellipsis
 	let _sessionhandle = sessionHandle;
+
+	const { deleteSessionsForUser } = useSessionsForUserService();
 
 	if (sessionHandle.length > 24) {
 		const leading = sessionHandle.substring(0, 9);

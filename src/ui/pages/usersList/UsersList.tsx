@@ -15,11 +15,11 @@
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { deleteUser as deleteUserApi } from "../../../api/user/delete";
-import { updateUserEmailVerificationStatus } from "../../../api/user/email/verify";
-import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../../api/user/email/verify/token";
-import fetchUsers from "../../../api/users";
-import fetchCount from "../../../api/users/count";
+import useDeleteUserService from "../../../api/user/delete";
+import useVerifyEmailService from "../../../api/user/email/verify";
+import useVerifyUserTokenService from "../../../api/user/email/verify/token";
+import useFetchUsersService from "../../../api/users";
+import useFetchCount from "../../../api/users/count";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
 import { obfuscatePhone } from "../../../utils";
 import AuthWrapper from "../../components/authWrapper";
@@ -69,6 +69,9 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
+	const { fetchUsers } = useFetchUsersService();
+
+	const { fetchCount } = useFetchCount();
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: UserWithRecipeId[], paramOffset?: number) => {
@@ -216,6 +219,10 @@ export const UserListPage = () => {
 
 	const { showToast } = useContext(PopupContentContext);
 
+	const { updateUserEmailVerificationStatus } = useVerifyEmailService();
+	const { deleteUser } = useDeleteUserService();
+	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
+
 	const backToList = useCallback(() => {
 		navigate(
 			{
@@ -230,9 +237,9 @@ export const UserListPage = () => {
 		setSelectedUser(undefined);
 	}, []);
 
-	const deleteUser = useCallback(
+	const onUserDelete = useCallback(
 		async (userId: string) => {
-			const deleteSucceed = await deleteUserApi(userId);
+			const deleteSucceed = await deleteUser(userId);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			if (didSucceed) {
 				backToList();
@@ -323,7 +330,7 @@ export const UserListPage = () => {
 						recipeId={selectedRecipeId}
 						user={selectedUser}
 						onBackButtonClicked={backToList}
-						onDeleteCallback={({ user: { id } }) => deleteUser(id)}
+						onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
 						onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
 						onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
 						onChangePasswordCallback={changePassword}
@@ -335,7 +342,7 @@ export const UserListPage = () => {
 					css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
 					reloadRef={reloadListRef}
 					onChangePasswordCallback={changePassword}
-					onDeleteCallback={({ user: { id } }) => deleteUser(id)}
+					onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
 				/>
 				<Footer
 					colorMode="dark"

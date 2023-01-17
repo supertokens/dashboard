@@ -1,23 +1,39 @@
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
+import { getApiUrl, useFetchData } from "../../utils";
 
-export const deleteUser = async (userId: string): Promise<{ status: "OK" } | undefined> => {
-	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl("/api/user"),
-		method: "DELETE",
-		query: {
-			userId,
-		},
-	});
+type TDeleteUserResponse = Promise<{ status: "OK" } | undefined>;
 
-	if (response.ok) {
-		const body = await response.json();
+interface IUseDeleteUserService {
+	deleteUser: (userId: string) => TDeleteUserResponse;
+}
 
-		if (body.status !== "OK") {
-			return undefined;
+const useDeleteUserService = (): IUseDeleteUserService => {
+	const fetchData = useFetchData();
+
+	const deleteUser = async (userId: string): Promise<{ status: "OK" } | undefined> => {
+		const response = await fetchData({
+			url: getApiUrl("/api/user"),
+			method: "DELETE",
+			query: {
+				userId,
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+
+			if (body.status !== "OK") {
+				return undefined;
+			}
+
+			return body;
 		}
 
-		return body;
-	}
+		return undefined;
+	};
 
-	return undefined;
+	return {
+		deleteUser,
+	};
 };
+
+export default useDeleteUserService;
