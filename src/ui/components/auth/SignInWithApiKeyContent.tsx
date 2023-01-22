@@ -1,24 +1,53 @@
 import { useState } from "react";
-import { getImageUrl } from "../../../utils";
+import { HTTPStatusCodes, StorageKeys } from "../../../constants";
+import { localStorageHandler } from "../../../services/storage";
+import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
 import InputField from "../inputField/InputField";
 
-const SignInWithApiKeyContent = () => {
+interface SignInWithApiKeyContentProps {
+	onSuccess: () => void;
+}
+
+const SignInWithApiKeyContent = (props: SignInWithApiKeyContentProps) => {
 	const [apiKeyFieldError, setApiKeyFieldError] = useState("");
 	const [apiKey, setApiKey] = useState("");
-	const [loading, setLoading] = useState(false);
+	const [loading, setIsLoading] = useState<boolean>(false);
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+	const validateKey = async () => {
+		setIsLoading(true);
+		const response = await fetchData({
+			url: getApiUrl("/api/key/validate"),
+			method: "POST",
+			config: {
+				headers: {
+					authorization: `Bearer ${apiKey}`,
+				},
+			},
+		});
+
+		const body = await response.json();
+
+		if (response.status === 200 && body.status === "OK") {
+			localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
+			props.onSuccess();
+		} else if (response.status === HTTPStatusCodes.UNAUTHORIZED) {
+			setApiKeyFieldError("Invalid API Key");
+		} else {
+			setApiKeyFieldError("Something went wrong");
+		}
+
+		setIsLoading(false);
+	};
+
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// setIsLoading(true);
-		// setServerValidationError("");
-		// setUserTriedToSubmit(true);
-		// const hasErrors = checkValuesForErrors();
-		// if (hasErrors) {
-		// 	setIsLoading(false);
-		// 	return;
-		// }
-		// await validateCredentials();
-		// setIsLoading(false);
+		setApiKeyFieldError("");
+
+		if (apiKey !== null && apiKey !== undefined && apiKey.length > 0) {
+			void validateKey();
+		} else {
+			setApiKeyFieldError("API Key field cannot be empty");
+		}
 	};
 
 	const handleApiKeyFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -42,18 +42,14 @@ const Auth: React.FC<{
 		switch (contentMode) {
 			case "api-sign-in":
 			case "sign-in":
-				return <SignInContentWrapper contentMode={contentMode} onCreateNewUserClick={() => setContentMode("sign-up")}
-					onForgotPasswordBtnClick={() => setContentMode("forgot-password")}
-					onSuccess={props.onSuccess} />;
-			// return <SignInWithApiContent />;
-			// case "sign-in":
-			// 	return (
-			// 		<SignIn
-			// 			onCreateNewUserClick={() => setContentMode("sign-up")}
-			// 			onForgotPasswordBtnClick={() => setContentMode("forgot-password")}
-			// 			onSuccess={props.onSuccess}
-			// 		/>
-			// 	);
+				return (
+					<SignInContentWrapper
+						contentMode={contentMode}
+						onCreateNewUserClick={() => setContentMode("sign-up")}
+						onForgotPasswordBtnClick={() => setContentMode("forgot-password")}
+						onSuccess={props.onSuccess}
+					/>
+				);
 			case "forgot-password":
 			case "sign-up":
 				return (
