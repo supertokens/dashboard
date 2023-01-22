@@ -17,14 +17,13 @@ import React, { useState } from "react";
 import { getImageUrl } from "../../../utils";
 import { Footer, LOGO_ICON_LIGHT } from "../footer/footer";
 import SafeAreaView from "../safeAreaView/SafeAreaView";
-import SignIn from "./SignInContent";
-import SignInWithApiContent from "./SignInWithApiKeyContent";
+import SignInContentWrapper from "./SignInContentWrapper";
 import SignUpOrResetPassword from "./SignUpOrResetPasswordContent";
 import { type ContentMode } from "./types";
 
 import "./Auth.scss";
 
-const INITIAL_CONTENT_TO_SHOW: ContentMode = "sign-in";
+// const INITIAL_CONTENT_TO_SHOW: ContentMode = "sign-in";
 
 const getInitialContentMode = (): ContentMode => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,20 +41,24 @@ const Auth: React.FC<{
 	const getContentToRender = () => {
 		switch (contentMode) {
 			case "api-sign-in":
-				return <SignInWithApiContent />;
 			case "sign-in":
-				return (
-					<SignIn
-						onCreateNewUserClick={() => setContentMode("sign-up")}
-						onForgotPasswordBtnClick={() => setContentMode("forgot-password")}
-						onSuccess={props.onSuccess}
-					/>
-				);
+				return <SignInContentWrapper contentMode={contentMode} onCreateNewUserClick={() => setContentMode("sign-up")}
+					onForgotPasswordBtnClick={() => setContentMode("forgot-password")}
+					onSuccess={props.onSuccess} />;
+			// return <SignInWithApiContent />;
+			// case "sign-in":
+			// 	return (
+			// 		<SignIn
+			// 			onCreateNewUserClick={() => setContentMode("sign-up")}
+			// 			onForgotPasswordBtnClick={() => setContentMode("forgot-password")}
+			// 			onSuccess={props.onSuccess}
+			// 		/>
+			// 	);
 			case "forgot-password":
 			case "sign-up":
 				return (
 					<SignUpOrResetPassword
-						onBack={() => setContentMode(INITIAL_CONTENT_TO_SHOW)}
+						onBack={() => setContentMode(getInitialContentMode())}
 						contentMode={contentMode}
 					/>
 				);
