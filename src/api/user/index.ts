@@ -14,7 +14,21 @@
  */
 
 import { UserWithRecipeId } from "../../ui/pages/usersList/types";
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
+import { getApiUrl, obfuscatePhone, useFetchData } from "../../utils";
+
+interface IUseUserService {
+	updateUserInformation: (args: IUpdateUserInformationArgs) => Promise<UpdateUserInformationResponse>;
+	getUser: (userId: string, recipeId: string) => Promise<GetUserInfoResult>;
+}
+
+interface IUpdateUserInformationArgs {
+	userId: string;
+	recipeId: string;
+	email?: string;
+	phone?: string;
+	firstName?: string;
+	lastName?: string;
+}
 
 export type GetUserInfoResult =
 	| {
@@ -28,42 +42,6 @@ export type GetUserInfoResult =
 			user: UserWithRecipeId;
 	  };
 
-export const getUser = async (userId: string, recipeId: string): Promise<GetUserInfoResult> => {
-	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl("/api/user"),
-		method: "GET",
-		query: {
-			userId,
-			recipeId,
-		},
-	});
-
-	if (response.ok) {
-		const body = await response.json();
-
-		if (body.status === "NO_USER_FOUND_ERROR") {
-			return {
-				status: "NO_USER_FOUND_ERROR",
-			};
-		}
-
-		if (body.status === "RECIPE_NOT_INITIALISED") {
-			return {
-				status: "RECIPE_NOT_INITIALISED",
-			};
-		}
-
-		return {
-			status: "OK",
-			user: body,
-		};
-	}
-
-	return {
-		status: "NO_USER_FOUND_ERROR",
-	};
-};
-
 export type UpdateUserInformationResponse =
 	| {
 			status: "OK" | "EMAIL_ALREADY_EXISTS_ERROR" | "PHONE_ALREADY_EXISTS_ERROR";
@@ -73,44 +51,91 @@ export type UpdateUserInformationResponse =
 			error: string;
 	  };
 
-export const updateUserInformation = async ({
-	userId,
-	recipeId,
-	email,
-	phone,
-	firstName,
-	lastName,
-}: {
-	userId: string;
-	recipeId: string;
-	email?: string;
-	phone?: string;
-	firstName?: string;
-	lastName?: string;
-}): Promise<UpdateUserInformationResponse> => {
-	let emailToSend = email === undefined ? "" : email;
-	const phoneToSend = phone === undefined ? "" : phone;
-	const firstNameToSend = firstName === undefined ? "" : firstName;
-	const lastNameToSend = lastName === undefined ? "" : lastName;
+export const useUserService = (): IUseUserService => {
+	const fetchData = useFetchData();
 
-	if (recipeId === "thirdparty") {
-		emailToSend = "";
-	}
-
-	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl("/api/user"),
-		method: "PUT",
-		config: {
-			body: JSON.stringify({
-				recipeId,
+	const getUser = async (userId: string, recipeId: string): Promise<GetUserInfoResult> => {
+		const response = await fetchData({
+			url: getApiUrl("/api/user"),
+			method: "GET",
+			query: {
 				userId,
-				phone: phoneToSend,
-				email: emailToSend,
-				firstName: firstNameToSend,
-				lastName: lastNameToSend,
-			}),
-		},
-	});
+				recipeId,
+			},
+		});
 
-	return await response.json();
+		if (response.ok) {
+			const body = await response.json();
+
+			if (body.status === "NO_USER_FOUND_ERROR") {
+				return {
+					status: "NO_USER_FOUND_ERROR",
+				};
+			}
+
+			if (body.status === "RECIPE_NOT_INITIALISED") {
+				return {
+					status: "RECIPE_NOT_INITIALISED",
+				};
+			}
+
+			if (body?.user?.phoneNumber) {
+				body.user.phoneNumber = obfuscatePhone(body.user.phoneNumber);
+			}
+			if (body?.user?.email) {
+				body.user.email = "johndoe@supertokens.com";
+			}
+
+			return {
+				status: "OK",
+				user: body,
+			};
+		}
+
+		return {
+			status: "NO_USER_FOUND_ERROR",
+		};
+	};
+
+	const updateUserInformation = async ({
+		userId,
+		recipeId,
+		email,
+		phone,
+		firstName,
+		lastName,
+	}: IUpdateUserInformationArgs): Promise<UpdateUserInformationResponse> => {
+		let emailToSend = email === undefined ? "" : email;
+		const phoneToSend = phone === undefined ? "" : phone;
+		const firstNameToSend = firstName === undefined ? "" : firstName;
+		const lastNameToSend = lastName === undefined ? "" : lastName;
+
+		if (recipeId === "thirdparty") {
+			emailToSend = "";
+		}
+
+		const response = await fetchData({
+			url: getApiUrl("/api/user"),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					recipeId,
+					userId,
+					phone: phoneToSend,
+					email: emailToSend,
+					firstName: firstNameToSend,
+					lastName: lastNameToSend,
+				}),
+			},
+		});
+
+		return await response.json();
+	};
+
+	return {
+		updateUserInformation,
+		getUser,
+	};
 };
+
+export default useUserService;

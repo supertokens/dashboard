@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { HTTPStatusCodes, StorageKeys } from "../constants";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
@@ -40,66 +40,55 @@ export function getApiUrl(path: string): string {
 	return window.location.origin + getDashboardAppBasePath() + path;
 }
 
-export const fetchDataAndRedirectIf401 = async ({
-	url,
-	method,
-	query,
-	config,
-}: {
+interface IFetchDataArgs {
 	url: string;
 	method: HttpMethod;
 	query?: { [key: string]: string };
 	config?: RequestInit;
-}) => {
-	const response = await fetchData({ url, method, query, config });
+	shouldRedirect?: boolean;
+}
 
-	if (response.status === HTTPStatusCodes.UNAUTHORIZED) {
-		window.localStorage.removeItem(StorageKeys.API_KEY);
-		/**
-		 * After clearing API key from storage, reloading will result in the auth form being visible
-		 */
-		window.location.reload();
-	}
+export const useFetchData = () => {
+	const [statusCode, setStatusCode] = useState<number>(0);
 
-	return response;
-};
+	const fetchData = async ({ url, method, query, config, shouldRedirect = true }: IFetchDataArgs) => {
+		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
 
-export const fetchData = async ({
-	url,
-	method,
-	query,
-	config,
-}: {
-	url: string;
-	method: HttpMethod;
-	query?: { [key: string]: string };
-	config?: RequestInit;
-}) => {
-	const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
+		let additionalHeaders: { [key: string]: string } = {};
 
-	let additionalHeaders: { [key: string]: string } = {};
-
-	if (apiKeyInStorage !== undefined) {
-		additionalHeaders = {
-			...additionalHeaders,
-			authorization: `Bearer ${apiKeyInStorage}`,
-		};
-	}
-
-	const response: Response = await NetworkManager.doRequest({
-		url,
-		method,
-		query,
-		config: {
-			...config,
-			headers: {
-				...config?.headers,
+		if (apiKeyInStorage !== undefined) {
+			additionalHeaders = {
 				...additionalHeaders,
-			},
-		},
-	});
+				authorization: `Bearer ${apiKeyInStorage}`,
+			};
+		}
 
-	return response;
+		const response: Response = await NetworkManager.doRequest({
+			url,
+			method,
+			query,
+			config: {
+				...config,
+				headers: {
+					...config?.headers,
+					...additionalHeaders,
+				},
+			},
+		});
+
+		if (shouldRedirect && HTTPStatusCodes.UNAUTHORIZED === response.status) {
+			// TODO: Update with newer redirection / log out rules upon endpoint integration
+			window.localStorage.removeItem(StorageKeys.API_KEY);
+			window.location.reload;
+		}
+		setStatusCode(response.status);
+		return response;
+	};
+
+	// TODO: Instead of writing the number, use the HTTPStatusCode from the other PR when it's merged
+	if (statusCode >= 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
+
+	return fetchData;
 };
 
 // Language Utils
@@ -240,3 +229,7 @@ export const getRecipeNameFromid = (id: UserRecipeType): string => {
 
 	return "Third Party";
 };
+
+export const obfuscateString = (str: string) => str.replace(/\w/g, "X");
+export const obfuscatePhone = (phoneNumberStr: string, replacementChar = "9") =>
+	phoneNumberStr.replace(/\d/g, replacementChar);

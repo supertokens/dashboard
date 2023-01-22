@@ -127,7 +127,6 @@ $container-width: 829;
 				width: 100%;
 			}
 			&__body {
-				font-weight: 600;
 				width: 100%;
 				@include text-ellipsis(100%);
 				white-space: normal;

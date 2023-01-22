@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { HTTPStatusCodes, StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
-import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
+import { getApiUrl, getImageUrl, useFetchData } from "../../../utils";
 import InputField from "../inputField/InputField";
 
 interface SignInWithApiKeyContentProps {
@@ -12,6 +12,7 @@ const SignInWithApiKeyContent = (props: SignInWithApiKeyContentProps) => {
 	const [apiKeyFieldError, setApiKeyFieldError] = useState("");
 	const [apiKey, setApiKey] = useState("");
 	const [loading, setIsLoading] = useState<boolean>(false);
+	const fetchData = useFetchData();
 
 	const validateKey = async () => {
 		setIsLoading(true);

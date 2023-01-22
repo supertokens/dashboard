@@ -14,7 +14,7 @@
  */
 import React, { useEffect, useState } from "react";
 import { HTTPStatusCodes } from "../../../constants";
-import { fetchData, getApiUrl, getImageUrl } from "../../../utils";
+import { getApiUrl, getImageUrl, useFetchData } from "../../../utils";
 import { validateEmail } from "../../../utils/form";
 import InputField from "../inputField/InputField";
 
@@ -36,6 +36,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 }): JSX.Element => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
+	const fetchData = useFetchData();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");

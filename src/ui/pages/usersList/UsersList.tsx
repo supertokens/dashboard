@@ -15,11 +15,13 @@
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { deleteUser as deleteUserApi } from "../../../api/user/delete";
-import { updateUserEmailVerificationStatus } from "../../../api/user/email/verify";
-import { sendUserEmailVerification as sendUserEmailVerificationApi } from "../../../api/user/email/verify/token";
-import fetchUsers from "../../../api/users";
-import fetchCount from "../../../api/users/count";
+import useDeleteUserService from "../../../api/user/delete";
+import useVerifyEmailService from "../../../api/user/email/verify";
+import useVerifyUserTokenService from "../../../api/user/email/verify/token";
+import useFetchUsersService from "../../../api/users";
+import useFetchCount from "../../../api/users/count";
+import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
+import { obfuscatePhone } from "../../../utils";
 import AuthWrapper from "../../components/authWrapper";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
@@ -66,8 +68,10 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [offset, setOffset] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
-	const [connectionURI, setConnectionURI] = useState<string>();
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
+	const { fetchUsers } = useFetchUsersService();
+
+	const { fetchCount } = useFetchCount();
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: UserWithRecipeId[], paramOffset?: number) => {
@@ -104,6 +108,14 @@ export const UsersList: React.FC<UserListProps> = ({
 				() => undefined
 			);
 			if (data) {
+				// obfuscate the user details (like email address and phone numbers);
+				data.users.forEach((userData) => {
+					if (userData?.user?.email) userData.user.email = "johndoe@supertokens.com";
+					if ("phoneNumber" in userData.user && userData.user?.phoneNumber)
+						userData.user.phoneNumber = obfuscatePhone(userData.user.phoneNumber);
+					return userData;
+				});
+
 				// store the users and pagination token
 				const { users: responseUsers, nextPaginationToken } = data;
 				setUsers(insertUsersAtOffset(responseUsers, paramOffset));
@@ -136,8 +148,6 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	useEffect(() => {
 		void loadCount();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		setConnectionURI((window as any).connectionURI);
 	}, [loadCount]);
 
 	useEffect(() => {
@@ -145,6 +155,8 @@ export const UsersList: React.FC<UserListProps> = ({
 			reloadRef.current = () => loadOffset(offset);
 		}
 	}, [reloadRef, loadOffset, offset]);
+
+	const { connectionURI } = useAppEnvContext();
 
 	const onEmailChanged = async () => {
 		await loadOffset(offset);
@@ -159,7 +171,9 @@ export const UsersList: React.FC<UserListProps> = ({
 				src={LOGO_ICON_LIGHT}
 				alt="Auth Page"
 			/>
-			<h1 className="users-list-title">User Management</h1>
+			<h1 className="users-list-title">
+				User Management <span className="pill paid-feature-badge">Beta</span>
+			</h1>
 			<p className="text-small users-list-subtitle">
 				One place to manage all your users, revoke access and edit information according to your needs.
 			</p>
@@ -205,6 +219,10 @@ export const UserListPage = () => {
 
 	const { showToast } = useContext(PopupContentContext);
 
+	const { updateUserEmailVerificationStatus } = useVerifyEmailService();
+	const { deleteUser } = useDeleteUserService();
+	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
+
 	const backToList = useCallback(() => {
 		navigate(
 			{
@@ -219,9 +237,9 @@ export const UserListPage = () => {
 		setSelectedUser(undefined);
 	}, []);
 
-	const deleteUser = useCallback(
+	const onUserDelete = useCallback(
 		async (userId: string) => {
-			const deleteSucceed = await deleteUserApi(userId);
+			const deleteSucceed = await deleteUser(userId);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			if (didSucceed) {
 				backToList();
@@ -302,30 +320,36 @@ export const UserListPage = () => {
 
 	return (
 		<AuthWrapper>
-			{isSelectedUserNotEmpty && selectedRecipeId !== undefined && (
-				<UserDetail
-					recipeId={selectedRecipeId}
-					user={selectedUser}
-					onBackButtonClicked={backToList}
-					onDeleteCallback={({ user: { id } }) => deleteUser(id)}
-					onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
-					onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
+			<AppEnvContextProvider
+				connectionURI={
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(window as any).connectionURI
+				}>
+				{isSelectedUserNotEmpty && selectedRecipeId !== undefined && (
+					<UserDetail
+						recipeId={selectedRecipeId}
+						user={selectedUser}
+						onBackButtonClicked={backToList}
+						onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
+						onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
+						onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
+						onChangePasswordCallback={changePassword}
+					/>
+				)}
+				<UsersList
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					onSelect={onUserSelected}
+					css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
+					reloadRef={reloadListRef}
 					onChangePasswordCallback={changePassword}
+					onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
 				/>
-			)}
-			<UsersList
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				onSelect={onUserSelected}
-				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
-				reloadRef={reloadListRef}
-				onChangePasswordCallback={changePassword}
-				onDeleteCallback={({ user: { id } }) => deleteUser(id)}
-			/>
-			<Footer
-				colorMode="dark"
-				horizontalAlignment="center"
-				verticalAlignment="center"
-			/>
+				<Footer
+					colorMode="dark"
+					horizontalAlignment="center"
+					verticalAlignment="center"
+				/>
+			</AppEnvContextProvider>
 		</AuthWrapper>
 	);
 };

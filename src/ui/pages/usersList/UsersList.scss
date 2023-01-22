@@ -29,6 +29,17 @@ $container-width: 829;
 	font-weight: 500;
 }
 
+.users-list-title .pill.paid-feature-badge {
+	display: inline-block;
+	line-height: 1.1;
+	font-size: 14px;
+	background-color: var(--color-badge-bg);
+	color: var(--color-badge);
+	border-radius: 6px;
+	margin-top: 0;
+	vertical-align: middle;
+}
+
 .users-list-subtitle {
 	color: var(--color-secondary-text);
 	margin-bottom: 48px;
