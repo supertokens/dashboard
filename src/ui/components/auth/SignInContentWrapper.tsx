@@ -2,17 +2,16 @@ import SignIn from "./SignInContent";
 import SignInWithApiKeyContent from "./SignInWithApiKeyContent";
 
 interface SignInContentWrapperProps {
-	contentMode: "sign-in" | "api-sign-in";
 	onSuccess: () => void;
 	onCreateNewUserClick: () => void;
 	onForgotPasswordBtnClick: () => void;
 }
 
-const SignInContentWrapper: React.FC<SignInContentWrapperProps> = ({
-	contentMode,
-	...props
-}: SignInContentWrapperProps) => {
-	if (contentMode === "sign-in") {
+const SignInContentWrapper: React.FC<SignInContentWrapperProps> = ({ ...props }: SignInContentWrapperProps) => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const authMode = (window as any).authMode; // for now, either "api-key" or "username-password"
+
+	if (authMode === "username-password") {
 		return <SignIn {...props} />;
 	}
 
