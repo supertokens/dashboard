@@ -18,6 +18,7 @@ import { getImageUrl } from "../../../utils";
 import { Footer, LOGO_ICON_LIGHT } from "../footer/footer";
 import SafeAreaView from "../safeAreaView/SafeAreaView";
 import SignIn from "./SignInContent";
+import SignInWithApiContent from "./SignInWithApiKeyContent";
 import SignUpOrResetPassword from "./SignUpOrResetPasswordContent";
 import { type ContentMode } from "./types";
 
@@ -25,13 +26,23 @@ import "./Auth.scss";
 
 const INITIAL_CONTENT_TO_SHOW: ContentMode = "sign-in";
 
+const getInitialContentMode = (): ContentMode => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	if ((window as any).authMode) {
+		return "api-sign-in";
+	}
+	return "sign-in";
+};
+
 const Auth: React.FC<{
 	onSuccess: () => void;
 }> = (props) => {
-	const [contentMode, setContentMode] = useState<ContentMode>(INITIAL_CONTENT_TO_SHOW);
+	const [contentMode, setContentMode] = useState<ContentMode>(getInitialContentMode());
 
 	const getContentToRender = () => {
 		switch (contentMode) {
+			case "api-sign-in":
+				return <SignInWithApiContent />;
 			case "sign-in":
 				return (
 					<SignIn
