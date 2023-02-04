@@ -50,12 +50,13 @@ const SignInContent: React.FC<SignInContentProps> = ({
 	const validateCredentials = async () => {
 		// TODO: Integrate with the proper API
 		const response = await fetchData({
-			url: getApiUrl("/api/sample/validate"),
+			url: getApiUrl("/api/signin"),
 			method: "POST",
 			config: {
-				headers: {
-					// authorization: `Bearer ${apiKey}`,
-				},
+				body: JSON.stringify({
+					email,
+					password,
+				}),
 			},
 		});
 		const body = await response.json();
