@@ -11,7 +11,7 @@ const SignInContentWrapper: React.FC<SignInContentWrapperProps> = ({ ...props }:
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const authMode = (window as any).authMode; // for now, either "api-key" or "username-password"
 
-	if (authMode === "username-password") {
+	if (authMode === "email-password") {
 		return <SignIn {...props} />;
 	}
 
