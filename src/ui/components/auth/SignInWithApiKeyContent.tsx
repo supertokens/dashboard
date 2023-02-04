@@ -29,7 +29,7 @@ const SignInWithApiKeyContent = (props: SignInWithApiKeyContentProps) => {
 		const body = await response.json();
 
 		if (response.status === 200 && body.status === "OK") {
-			localStorageHandler.setItem(StorageKeys.API_KEY, apiKey);
+			localStorageHandler.setItem(StorageKeys.AUTH_KEY, apiKey);
 			props.onSuccess();
 		} else if (response.status === HTTPStatusCodes.UNAUTHORIZED) {
 			setApiKeyFieldError("Invalid API Key");

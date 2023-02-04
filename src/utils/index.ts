@@ -52,7 +52,7 @@ export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 
 	const fetchData = async ({ url, method, query, config, shouldRedirect = true }: IFetchDataArgs) => {
-		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
+		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.AUTH_KEY);
 
 		let additionalHeaders: { [key: string]: string } = {};
 
@@ -78,7 +78,7 @@ export const useFetchData = () => {
 
 		if (shouldRedirect && HTTPStatusCodes.UNAUTHORIZED === response.status) {
 			// TODO: Update with newer redirection / log out rules upon endpoint integration
-			window.localStorage.removeItem(StorageKeys.API_KEY);
+			window.localStorage.removeItem(StorageKeys.AUTH_KEY);
 			window.location.reload;
 		}
 		setStatusCode(response.status);
