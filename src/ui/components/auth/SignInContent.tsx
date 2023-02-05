@@ -13,7 +13,8 @@
  * under the License.
  */
 import React, { useEffect, useState } from "react";
-import { HTTPStatusCodes } from "../../../constants";
+import { HTTPStatusCodes, StorageKeys } from "../../../constants";
+import { localStorageHandler } from "../../../services/storage";
 import { getApiUrl, getImageUrl, useFetchData } from "../../../utils";
 import { validateEmail } from "../../../utils/form";
 import InputField from "../inputField/InputField";
@@ -61,9 +62,11 @@ const SignInContent: React.FC<SignInContentProps> = ({
 		});
 		const body = await response.json();
 		if (response.status === HTTPStatusCodes.OK) {
-			if (body.status === "OK") onSuccess();
+			if (body.status === "OK") {
+				localStorageHandler.setItem(StorageKeys.AUTH_KEY, body.token);
+				onSuccess();
+			} else setServerValidationError("Incorrect email and password combination");
 			// TODO: Set the error message the same as what was returned from the server
-			else setServerValidationError("Incorrect email and password combination");
 		} else {
 			setServerValidationError("Something went wrong");
 		}
