@@ -6,12 +6,44 @@ info:
     description: Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
 
 tags:
+    - name: "User Validation"
+      description: APIs for validating user autherntication & authorization
     - name: "User Management"
       description: APIs for user management features
     - name: "User Details"
       description: APIs for fetching and modifying information specific to one user
 
 paths:
+    /signin:
+        post:
+            tags:
+                - User Validation
+            summary: Login via email and password
+            operationId: signinViaEmailPassword
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                password:
+                                    type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    token:
+                                        type: string
+                                        example: "ZmE3YTA4ND...OzE2MjM5MTgwMzIyMzE="
     /users:
         get:
             tags:
