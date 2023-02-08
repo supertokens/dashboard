@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.3.3] - 2023-02-07
+
+-   Added build files to ensure the previous version becomes effective.
+
+## [0.3.2] - 2023-02-05
+
+-   Imported the static logo from the folders instead of fetching it from githubusercontent (which is unaccessible for some Indian ISP's, resulting in broken images).
+
 ## [0.3.1] - 2023-01-06
 
 -   Add a banner to indicate beta status
