@@ -49,7 +49,6 @@ const SignInContent: React.FC<SignInContentProps> = ({
 	const [serverValidationError, setServerValidationError] = useState("");
 
 	const validateCredentials = async () => {
-		// TODO: Integrate with the proper API
 		const response = await fetchData({
 			url: getApiUrl("/api/signin"),
 			method: "POST",
