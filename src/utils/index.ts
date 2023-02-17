@@ -48,7 +48,7 @@ interface IFetchDataArgs {
 	shouldRedirect?: boolean;
 }
 
-export const useFetchData = () => {
+export const useFetchData = (options?: { skipErrorBoundary?: boolean }) => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 
 	const fetchData = async ({ url, method, query, config, shouldRedirect = true }: IFetchDataArgs) => {
@@ -86,7 +86,7 @@ export const useFetchData = () => {
 	};
 
 	// TODO: Instead of writing the number, use the HTTPStatusCode from the other PR when it's merged
-	if (statusCode >= 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
+	if (!options?.skipErrorBoundary && statusCode >= 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
 
 	return fetchData;
 };
