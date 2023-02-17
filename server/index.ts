@@ -52,6 +52,7 @@ SuperTokens.init({
 						getDashboardBundleLocation: async function () {
 							return "http://localhost:3000";
 						},
+						shouldAllowAccess: async () => true,
 					};
 				},
 			},
