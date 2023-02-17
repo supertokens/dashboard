@@ -63,7 +63,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 		const body = await response.json();
 		if (response.status === HTTPStatusCodes.OK) {
 			if (body.status === "OK") {
-				localStorageHandler.setItem(StorageKeys.AUTH_KEY, body.token);
+				localStorageHandler.setItem(StorageKeys.AUTH_KEY, body.sessionId);
 				onSuccess();
 			} else setServerValidationError("Incorrect email and password combination");
 			// TODO: Set the error message the same as what was returned from the server
