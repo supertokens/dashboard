@@ -12,7 +12,7 @@ const SignInWithApiKeyContent = (props: SignInWithApiKeyContentProps) => {
 	const [apiKeyFieldError, setApiKeyFieldError] = useState("");
 	const [apiKey, setApiKey] = useState("");
 	const [loading, setIsLoading] = useState<boolean>(false);
-	const fetchData = useFetchData({ skipErrorBoundary: true });
+	const fetchData = useFetchData({ bypassErrorBoundary: true });
 
 	const validateKey = async () => {
 		setIsLoading(true);

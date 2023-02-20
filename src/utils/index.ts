@@ -48,7 +48,7 @@ interface IFetchDataArgs {
 	shouldRedirect?: boolean;
 }
 
-export const useFetchData = (options?: { skipErrorBoundary?: boolean }) => {
+export const useFetchData = (options?: { bypassErrorBoundary?: boolean }) => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 
 	const fetchData = async ({ url, method, query, config, shouldRedirect = true }: IFetchDataArgs) => {
@@ -85,7 +85,7 @@ export const useFetchData = (options?: { skipErrorBoundary?: boolean }) => {
 		return response;
 	};
 
-	if (!options?.skipErrorBoundary && statusCode >= 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
+	if (!options?.bypassErrorBoundary && statusCode >= 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
 
 	return fetchData;
 };

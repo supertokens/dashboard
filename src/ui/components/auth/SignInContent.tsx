@@ -37,7 +37,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 }): JSX.Element => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
-	const fetchData = useFetchData({ skipErrorBoundary: true });
+	const fetchData = useFetchData({ bypassErrorBoundary: true });
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
