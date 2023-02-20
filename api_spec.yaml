@@ -17,7 +17,7 @@ paths:
     /signin:
         post:
             tags:
-                - User Validation
+                - User Authentication
             summary: Login via email and password
             operationId: signinViaEmailPassword
             requestBody:

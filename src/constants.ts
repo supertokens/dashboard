@@ -14,7 +14,7 @@
  */
 
 export class StorageKeys {
-	static AUTH_KEY = "auth-key";
+	static AUTH_KEY = "auth-token";
 }
 
 // Add types as required
