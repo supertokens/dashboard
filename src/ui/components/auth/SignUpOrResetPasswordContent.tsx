@@ -23,6 +23,22 @@ interface ISignUpOrResetPasswordContentProps {
 	contentMode: Exclude<ContentMode, "sign-in">;
 	onBack: () => void;
 }
+
+interface IContentForMode {
+	title: string;
+	subtitle: string;
+	endpoint: string;
+	method: string;
+	rawData: string;
+}
+
+const commonHeaders = `
+--header 'rid: dashboard' \
+--header 'api-key: YOUR-API-KEY' \
+--header 'cdi-version: 2.18' \
+--header 'Content-Type: application/json' \
+`;
+
 const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps> = ({
 	contentMode,
 	onBack,
@@ -42,41 +58,47 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 		}
 	}, [showCopiedTooltip]);
 
-	const getTextContent = () => {
+	const getContentForMode = (): IContentForMode => {
 		switch (contentMode) {
 			case "sign-up":
 				return {
 					title: "Sign Up",
 					subtitle: "Insert the below command in your backend configuration to create a new user",
+					endpoint: "/recipe/dashboard/user",
+					method: "POST",
+					// eslint-disable-next-line @typescript-eslint/quotes
+					rawData: `
+					"email": "johndoe@supertokens.com",
+					"password": "YOUR_PASSWORD"
+					`,
 				};
 			case "forgot-password":
 				return {
 					title: "Reset your password",
 					subtitle: "Run the below command in your terminal",
+					endpoint: "/recipe/dashboard/user",
+					method: "PUT",
+					// eslint-disable-next-line @typescript-eslint/quotes
+					rawData: `
+					"email": "johndoe@supertokens.com",
+					"newPassword": "YOUR_NEW_PASSWORD"
+					`,
 				};
 			default:
 				throw Error("No content found for the prop!");
 		}
 	};
 
-	const { title, subtitle } = getTextContent();
+	const { title, subtitle, endpoint, method, rawData } = getContentForMode();
 
-	const command = `curl --location --request POST 'http://localhost:3567/recipe/user/passwordhash/import' \
-		--header 'api-key: <API_KEY(if configured)>' \
-		--header 'Content-Type: application/json' \
+	const command = `curl --location --request ${method} '${
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(window as any).connectionURI
+	}/${endpoint}' \
+		${commonHeaders}
 		--data-raw '{
-			"email": "johndoe@example.com",
-			"passwordHash": "$argon2d$v=19$m=12,t=3,p=1$NWd0eGp4ZW91b3IwMDAwMA$57jcfXF19MyiUXSjkVBpEQ"
+			${rawData}
 		}'`;
-
-	const copyClickHandler = async () => {
-		try {
-			await navigator.clipboard.writeText(command);
-			setShowCopiedTooltip(true);
-		} catch (error) {
-			throw Error("failed to copy the command");
-		}
-	};
 
 	const highlightedCode = HighlightJS.highlight(command, {
 		language: "bash",
