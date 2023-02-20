@@ -6,7 +6,7 @@ info:
     description: Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
 
 tags:
-    - name: "User Validation"
+    - name: "User Authentication"
       description: APIs for validating user autherntication & authorization
     - name: "User Management"
       description: APIs for user management features
@@ -71,7 +71,17 @@ paths:
                                               default: "USER_LIMIT_REACHED_ERROR"
                                           message:
                                               type: string
-
+    /verify:
+        post:
+            tags:
+                - User Authentication
+            summary: Login via API Key
+            operationId: signinViaAPIKey
+            responses:
+                200:
+                    description: Success
+                401:
+                    description: Unauthorized access
     /users:
         get:
             tags:
