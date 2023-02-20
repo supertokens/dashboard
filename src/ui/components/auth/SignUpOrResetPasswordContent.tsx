@@ -35,7 +35,7 @@ interface IContentForMode {
 const commonHeaders = `
 --header 'rid: dashboard' \
 --header 'api-key: YOUR-API-KEY' \
---header 'cdi-version: 2.18' \
+--header 'cdi-version: SUPERTOKENS-CORE-API-VERSION-HERE' \
 --header 'Content-Type: application/json' \
 `;
 
