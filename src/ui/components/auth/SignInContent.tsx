@@ -65,8 +65,8 @@ const SignInContent: React.FC<SignInContentProps> = ({
 			onSuccess();
 		}
 		if (response.status === HTTPStatusCodes.UNAUTHORIZED) {
-			if (body.status === "USER_SUSPENDED_ERROR") {
-				setServerValidationError("The user has been suspended");
+			if (["USER_SUSPENDED_ERROR", "USER_LIMIT_REACHED_ERROR"].includes(body.status)) {
+				setServerValidationError(body.message);
 			} else {
 				setServerValidationError("Incorrect email and password combination");
 			}
