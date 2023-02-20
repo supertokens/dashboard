@@ -41,9 +41,19 @@ paths:
                                     status:
                                         type: string
                                         default: "OK"
-                                    token:
+                                    sessionId:
                                         type: string
-                                        example: "ZmE3YTA4ND...OzE2MjM5MTgwMzIyMzE="
+                                        example: "5ebe4237-308f-47a8-b823-344b5372ee8f"
+                401:
+                    description: Unauthorized access
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: "INVALID_CREDENTIALS_ERROR"
     /users:
         get:
             tags:
