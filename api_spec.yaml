@@ -49,11 +49,29 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    status:
-                                        type: string
-                                        example: "INVALID_CREDENTIALS_ERROR"
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INVALID_CREDENTIALS_ERROR"
+                                          message:
+                                              type: string
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "USER_SUSPENDED_ERROR"
+                                          message:
+                                              type: string
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "USER_LIMIT_REACHED_ERROR"
+                                          message:
+                                              type: string
+
     /users:
         get:
             tags:
