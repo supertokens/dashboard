@@ -33,9 +33,9 @@ interface IContentForMode {
 }
 
 const commonHeaders = `
---header 'rid: dashboard' \
---header 'api-key: <YOUR-API-KEY>' \
---header 'Content-Type: application/json'
+--header 'rid: dashboard' \\
+--header 'api-key: <YOUR-API-KEY>' \\
+--header 'Content-Type: application/json' \\
 `;
 
 const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps> = ({
@@ -87,7 +87,9 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 	const command = `curl --location --request ${method} '${
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(window as any).connectionURI
-	}${endpoint}' ${commonHeaders.trim()} --data-raw '{${rawData}}'`;
+	}${endpoint}' \\
+${commonHeaders.trim()}
+--data-raw '{${rawData}}'`;
 
 	const highlightedCode = HighlightJS.highlight(command, {
 		language: "bash",
