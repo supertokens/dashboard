@@ -62,7 +62,7 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 			case "sign-up":
 				return {
 					title: "Sign Up",
-					subtitle: "Insert the below command in your backend configuration to create a new user",
+					subtitle: "Run the below command in your terminal",
 					endpoint: "/recipe/dashboard/user",
 					method: "POST",
 					// eslint-disable-next-line @typescript-eslint/quotes

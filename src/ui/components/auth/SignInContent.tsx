@@ -66,9 +66,13 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					localStorageHandler.setItem(StorageKeys.AUTH_KEY, body.sessionId);
 					onSuccess();
 					break;
-				case "USER_SUSPENDED_ERROR":
 				case "USER_LIMIT_REACHED_ERROR":
 					setServerValidationError(body.message);
+					break;
+				case "USER_SUSPENDED_ERROR":
+					setServerValidationError(
+						"User is currently suspended. Please sign in with another account, or reactivate the SuperTokens core license key."
+					);
 					break;
 				default:
 					setServerValidationError("Incorrect email and password combination");
@@ -130,7 +134,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 		<div>
 			<h2 className="api-key-form-title text-title">Sign In</h2>
 			<p className="text-small text-label">
-				More members required?{" "}
+				Not registered yet?{" "}
 				<span
 					role={"button"}
 					onClick={onCreateNewUserClick}
