@@ -7,7 +7,7 @@ info:
 
 tags:
     - name: "User Authentication"
-      description: APIs for validating user autherntication & authorization
+      description: APIs for validating user authentication & authorization
     - name: "User Management"
       description: APIs for user management features
     - name: "User Details"
@@ -80,6 +80,23 @@ paths:
             responses:
                 200:
                     description: Success
+    /signout:
+        post:
+            tags:
+                - User Authentication
+            summary: Log out the user
+            operationId: signOut
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
                 401:
                     description: Unauthorized access
     /users:
