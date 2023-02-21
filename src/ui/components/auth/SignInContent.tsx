@@ -37,7 +37,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 }): JSX.Element => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
-	const fetchData = useFetchData({ bypassErrorBoundary: true });
+	const fetchData = useFetchData();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -60,15 +60,19 @@ const SignInContent: React.FC<SignInContentProps> = ({
 			},
 		});
 		const body = await response.json();
-		if (response.status === HTTPStatusCodes.OK && body.status === "OK") {
-			localStorageHandler.setItem(StorageKeys.AUTH_KEY, body.sessionId);
-			onSuccess();
-		}
-		if (response.status === HTTPStatusCodes.UNAUTHORIZED) {
-			if (["USER_SUSPENDED_ERROR", "USER_LIMIT_REACHED_ERROR"].includes(body.status)) {
-				setServerValidationError(body.message);
-			} else {
-				setServerValidationError("Incorrect email and password combination");
+		if (response.status === HTTPStatusCodes.OK) {
+			switch (body.status) {
+				case "OK":
+					localStorageHandler.setItem(StorageKeys.AUTH_KEY, body.sessionId);
+					onSuccess();
+					break;
+				case "USER_SUSPENDED_ERROR":
+				case "USER_LIMIT_REACHED_ERROR":
+					setServerValidationError(body.message);
+					break;
+				default:
+					setServerValidationError("Incorrect email and password combination");
+					break;
 			}
 		} else {
 			setServerValidationError("Something went wrong");

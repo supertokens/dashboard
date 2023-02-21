@@ -48,7 +48,7 @@ interface IFetchDataArgs {
 	shouldRedirect?: boolean;
 }
 
-export const useFetchData = (options?: { bypassErrorBoundary?: boolean }) => {
+export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 
 	const fetchData = async ({ url, method, query, config, shouldRedirect = true }: IFetchDataArgs) => {
@@ -75,17 +75,17 @@ export const useFetchData = (options?: { bypassErrorBoundary?: boolean }) => {
 				},
 			},
 		});
-
-		if (shouldRedirect && HTTPStatusCodes.UNAUTHORIZED === response.status) {
-			// TODO: Update with newer redirection / log out rules upon endpoint integration
+		const logoutAndRedirect = shouldRedirect && HTTPStatusCodes.UNAUTHORIZED === response.status;
+		if (logoutAndRedirect) {
 			window.localStorage.removeItem(StorageKeys.AUTH_KEY);
-			window.location.reload;
+			window.location.reload();
+		} else {
+			setStatusCode(response.status);
 		}
-		setStatusCode(response.status);
 		return response;
 	};
 
-	if (!options?.bypassErrorBoundary && statusCode >= 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
+	if (statusCode >= 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
 
 	return fetchData;
 };

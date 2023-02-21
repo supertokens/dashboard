@@ -34,9 +34,7 @@ interface IContentForMode {
 
 const commonHeaders = `
 --header 'rid: dashboard' \
---header 'api-key: YOUR-API-KEY' \
---header 'cdi-version: YOUR-SUPERTOKENS-CORE-API-VERSION-HERE' \
---header 'cdi-version: 2.18' \
+--header 'api-key: <YOUR-API-KEY>' \
 --header 'Content-Type: application/json'
 `;
 
@@ -68,7 +66,7 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 					endpoint: "/recipe/dashboard/user",
 					method: "POST",
 					// eslint-disable-next-line @typescript-eslint/quotes
-					rawData: `"email": "johndoe@supertokens.com","password": "YOUR_PASSWORD"`,
+					rawData: `"email": "<YOUR_EMAIL>","password": "<YOUR_PASSWORD>"`,
 				};
 			case "forgot-password":
 				return {
@@ -77,7 +75,7 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 					endpoint: "/recipe/dashboard/user",
 					method: "PUT",
 					// eslint-disable-next-line @typescript-eslint/quotes
-					rawData: `"email": "johndoe@supertokens.com","newPassword": "YOUR_NEW_PASSWORD"`,
+					rawData: `"email": "<YOUR_EMAIL>","newPassword": "<YOUR_NEW_PASSWORD>"`,
 				};
 			default:
 				throw Error("No content found for the prop!");
