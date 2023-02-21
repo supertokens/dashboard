@@ -19,6 +19,8 @@ import { getDashboardAppBasePath } from "./utils";
 
 // This is to make sure that images are packed in the build folder
 import "./images";
+import SignOutBtn from "./ui/components/auth/SignOutBtn";
+import AuthWrapper from "./ui/components/authWrapper";
 import ErrorBoundary from "./ui/components/errorboundary";
 import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
 import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
@@ -31,8 +33,9 @@ function App() {
 			<SafeAreaView />
 			<ErrorBoundary>
 				<PopupContentContextProvider>
-					<>
+					<AuthWrapper>
 						<Router basename={getDashboardAppBasePath()}>
+							<SignOutBtn />
 							<Routes>
 								<Route
 									path="/"
@@ -46,7 +49,7 @@ function App() {
 						</Router>
 						<ToastNotificationContainer />
 						<LayoutModalContainer />
-					</>
+					</AuthWrapper>
 				</PopupContentContextProvider>
 			</ErrorBoundary>
 		</>

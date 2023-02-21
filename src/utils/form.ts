@@ -18,7 +18,11 @@
 import { isValidPhoneNumber } from "libphonenumber-js";
 
 export const validateEmail = (email: string) => {
-	return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+	// We use the same regex as the backend SDK
+	// https://github.com/supertokens/supertokens-node/blob/master/lib/ts/recipe/emailpassword/utils.ts#L250
+	const regexPatternForEmail =
+		"((^<>()[].,;:@]+(.^<>()[].,;:@]+)*)|(.+))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$";
+	return new RegExp(regexPatternForEmail).test(email);
 };
 
 export const isNotEmpty = (value: any) => {
