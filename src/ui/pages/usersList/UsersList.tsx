@@ -22,7 +22,6 @@ import useFetchUsersService from "../../../api/users";
 import useFetchCount from "../../../api/users/count";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
 import { obfuscatePhone } from "../../../utils";
-import AuthWrapper from "../../components/authWrapper";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
@@ -319,38 +318,36 @@ export const UserListPage = () => {
 	};
 
 	return (
-		<AuthWrapper>
-			<AppEnvContextProvider
-				connectionURI={
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					(window as any).connectionURI
-				}>
-				{isSelectedUserNotEmpty && selectedRecipeId !== undefined && (
-					<UserDetail
-						recipeId={selectedRecipeId}
-						user={selectedUser}
-						onBackButtonClicked={backToList}
-						onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
-						onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
-						onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
-						onChangePasswordCallback={changePassword}
-					/>
-				)}
-				<UsersList
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					onSelect={onUserSelected}
-					css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
-					reloadRef={reloadListRef}
-					onChangePasswordCallback={changePassword}
+		<AppEnvContextProvider
+			connectionURI={
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(window as any).connectionURI
+			}>
+			{isSelectedUserNotEmpty && selectedRecipeId !== undefined && (
+				<UserDetail
+					recipeId={selectedRecipeId}
+					user={selectedUser}
+					onBackButtonClicked={backToList}
 					onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
+					onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
+					onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
+					onChangePasswordCallback={changePassword}
 				/>
-				<Footer
-					colorMode="dark"
-					horizontalAlignment="center"
-					verticalAlignment="center"
-				/>
-			</AppEnvContextProvider>
-		</AuthWrapper>
+			)}
+			<UsersList
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				onSelect={onUserSelected}
+				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
+				reloadRef={reloadListRef}
+				onChangePasswordCallback={changePassword}
+				onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
+			/>
+			<Footer
+				colorMode="dark"
+				horizontalAlignment="center"
+				verticalAlignment="center"
+			/>
+		</AppEnvContextProvider>
 	);
 };
 

@@ -14,7 +14,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { StorageKeys } from "../constants";
+import { HTTPStatusCodes, StorageKeys } from "../constants";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
 import { HttpMethod } from "../types";
@@ -52,7 +52,7 @@ export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 
 	const fetchData = async ({ url, method, query, config, shouldRedirect = true }: IFetchDataArgs) => {
-		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.API_KEY);
+		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.AUTH_KEY);
 
 		let additionalHeaders: { [key: string]: string } = {};
 
@@ -75,17 +75,16 @@ export const useFetchData = () => {
 				},
 			},
 		});
-
-		if (shouldRedirect && 401 === response.status) {
-			// TODO: Update with newer redirection / log out rules upon endpoint integration
-			window.localStorage.removeItem(StorageKeys.API_KEY);
-			window.location.reload;
+		const logoutAndRedirect = shouldRedirect && HTTPStatusCodes.UNAUTHORIZED === response.status;
+		if (logoutAndRedirect) {
+			window.localStorage.removeItem(StorageKeys.AUTH_KEY);
+			window.location.reload();
+		} else {
+			setStatusCode(response.status);
 		}
-		setStatusCode(response.status);
 		return response;
 	};
 
-	// TODO: Instead of writing the number, use the HTTPStatusCode from the other PR when it's merged
 	if (statusCode >= 300) throw Error(`Error: ${statusCode}. Some error Occurred`);
 
 	return fetchData;
@@ -233,3 +232,8 @@ export const getRecipeNameFromid = (id: UserRecipeType): string => {
 export const obfuscateString = (str: string) => str.replace(/\w/g, "X");
 export const obfuscatePhone = (phoneNumberStr: string, replacementChar = "9") =>
 	phoneNumberStr.replace(/\d/g, replacementChar);
+
+export const getAuthMode = (): "api-key" | "email-password" => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return (window as any).authMode; // for now, either "api-key" or "email-password"
+};
