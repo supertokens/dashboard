@@ -8,7 +8,7 @@ const useAuth = () => {
 	const logout = async () => {
 		const response = await fetchData({
 			url: getApiUrl("/api/signout"),
-			method: "DELETE",
+			method: "POST",
 		});
 		const body = await response.json();
 		if (body.status === "OK") {

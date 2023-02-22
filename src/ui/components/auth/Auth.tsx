@@ -63,7 +63,7 @@ const Auth: React.FC<{
 			<div
 				className="page-container auth-container"
 				style={backgroundUrlVars}>
-				<div className="block-container block-large">
+				<div className={"block-container block-large " + contentMode}>
 					<img
 						className="title-image-smaller"
 						src={LOGO_ICON_LIGHT}

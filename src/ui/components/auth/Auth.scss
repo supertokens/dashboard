@@ -36,8 +36,19 @@
 	max-width: 320px;
 	margin: 32px auto;
 
+	&.sign-up,
+	&.forgot-password {
+		max-width: 460px;
+	}
+
 	@media only screen and (min-width: 600px) {
 		max-width: 416px;
+
+		&.sign-up,
+		&.forgot-password {
+			max-width: 760px;
+			width: max(600px, 41vw);
+		}
 	}
 }
 
@@ -110,6 +121,7 @@ form .input-field-inset:not(.input-field-inset-focused) input {
 	@include gap-horizontal(12px);
 	border: 1px solid var(--color-border-command);
 	border-radius: 6px;
+	white-space: break-spaces;
 
 	.clipboard-btn-container {
 		height: 24px;
