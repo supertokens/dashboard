@@ -13,9 +13,10 @@
  * under the License.
  */
 import React, { useEffect, useState } from "react";
+import useAuthService from "../../../api";
 import { HTTPStatusCodes, StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
-import { getApiUrl, getImageUrl, useFetchData } from "../../../utils";
+import { getImageUrl } from "../../../utils";
 import { validateEmail } from "../../../utils/form";
 import InputField from "../inputField/InputField";
 
@@ -37,7 +38,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 }): JSX.Element => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
-	const fetchData = useFetchData();
+	const { signIn } = useAuthService();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -49,16 +50,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 	const [serverValidationError, setServerValidationError] = useState("");
 
 	const validateCredentials = async () => {
-		const response = await fetchData({
-			url: getApiUrl("/api/signin"),
-			method: "POST",
-			config: {
-				body: JSON.stringify({
-					email,
-					password,
-				}),
-			},
-		});
+		const response = await signIn({ email, password });
 		const body = await response.json();
 		if (response.status === HTTPStatusCodes.OK) {
 			switch (body.status) {

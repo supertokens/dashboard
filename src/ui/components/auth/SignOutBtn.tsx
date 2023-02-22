@@ -1,7 +1,7 @@
-import useAuth from "../../../api/auth";
+import useAuthService from "../../../api";
 import "./SignOutBtn.scss";
 const SignOutBtn = () => {
-	const { logout } = useAuth();
+	const { logout } = useAuthService();
 	return (
 		<button
 			id="sign-out-btn"
