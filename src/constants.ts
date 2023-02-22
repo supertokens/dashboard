@@ -14,7 +14,13 @@
  */
 
 export class StorageKeys {
-	static API_KEY = "api-key";
+	static AUTH_KEY = "auth-token";
 }
 
-export const UNAUTHORISED_STATUS = 401;
+// Add types as required
+export enum HTTPStatusCodes {
+	OK = 200,
+	BAD_REQUEST = 400,
+	UNAUTHORIZED = 401,
+	NOT_FOUND = 404,
+}

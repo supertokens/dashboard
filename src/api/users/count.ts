@@ -14,15 +14,27 @@
  */
 
 import { UserListCount } from "../../ui/pages/usersList/types";
-import { fetchDataAndRedirectIf401, getApiUrl } from "../../utils";
+import { getApiUrl, useFetchData } from "../../utils";
 
-export const fetchCount = async () => {
-	const response = await fetchDataAndRedirectIf401({
-		url: getApiUrl("/api/users/count"),
-		method: "GET",
-	});
+interface IUseFetchCountService {
+	fetchCount: () => Promise<UserListCount | undefined>;
+}
 
-	return response.ok ? ((await response?.json()) as UserListCount) : undefined;
+const useFetchCountService = (): IUseFetchCountService => {
+	const fetchData = useFetchData();
+
+	const fetchCount = async () => {
+		const response = await fetchData({
+			url: getApiUrl("/api/users/count"),
+			method: "GET",
+		});
+
+		return response.ok ? ((await response?.json()) as UserListCount) : undefined;
+	};
+
+	return {
+		fetchCount,
+	};
 };
 
-export default fetchCount;
+export default useFetchCountService;

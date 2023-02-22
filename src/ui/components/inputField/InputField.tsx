@@ -26,6 +26,7 @@ export type InputFieldPropTypes = {
 	error?: string;
 	isRequired?: boolean;
 	hideColon?: boolean;
+	forceShowError?: boolean;
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 };
 
@@ -45,6 +46,8 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 		[handleChange]
 	);
 
+	const showError = props.error && (isTouched || props.forceShowError);
+
 	return (
 		<div className="input-field-container">
 			{props.label && (
@@ -58,7 +61,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 			)}
 			<div
 				className={`input-field-inset ${isFocused ? "input-field-inset-focused" : ""} ${
-					props.error && isTouched ? "input-field-inset-error-state" : ""
+					showError ? "input-field-inset-error-state" : ""
 				}`}>
 				<input
 					type={props.type === "password" && showPassword ? "text" : props.type}
@@ -67,9 +70,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					defaultValue={props.value}
 					onFocus={() => setIsFocused(true)}
 					onBlur={() => setIsFocused(false)}
-					className={`text-small text-black input-field ${
-						props.error && isTouched ? "input-field-error-state" : ""
-					}`}
+					className={`text-small text-black input-field ${showError ? "input-field-error-state" : ""}`}
 					placeholder={props.placeholder}
 				/>
 				<div className="input-field-suffix">
@@ -83,7 +84,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					)}
 				</div>
 			</div>
-			{props.error && isTouched && (
+			{showError && (
 				<div className="input-field-error block-small block-error">
 					<img
 						className="input-field-error-icon"

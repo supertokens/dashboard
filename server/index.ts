@@ -44,7 +44,6 @@ SuperTokens.init({
 	},
 	recipeList: [
 		Dashboard.init({
-			apiKey: "someapikey",
 			override: {
 				functions: (original) => {
 					return {

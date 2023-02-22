@@ -14,8 +14,8 @@
  */
 
 import { FC, useContext, useState } from "react";
-import { updateUserInformation } from "../../../api/user";
-import { updatePassword } from "../../../api/user/password/reset";
+import { useUserService } from "../../../api/user";
+import usePasswordResetService from "../../../api/user/password/reset";
 import { getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { UserProps } from "../../pages/usersList/types";
@@ -147,6 +147,7 @@ export const UserDetailChangePhoneForm: FC<UserDetailChangePhoneFormProps> = (
 	const [repeatPhone, setRepeatPhone] = useState<string>();
 	const [apiError, setApiError] = useState<string | undefined>(undefined);
 	const { showToast } = useContext(PopupContentContext);
+	const { updateUserInformation } = useUserService();
 
 	const isPhoneMatch = phone === repeatPhone;
 
@@ -222,6 +223,7 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 	const [repeatEmail, setRepeatEmail] = useState<string>();
 	const [apiError, setApiError] = useState<string | undefined>(undefined);
 	const { showToast } = useContext(PopupContentContext);
+	const { updateUserInformation } = useUserService();
 
 	const isEmailMatch = email === repeatEmail;
 
@@ -299,6 +301,7 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 	const [repeatPassword, setRepeatPassword] = useState<string>();
 	const [apiError, setApiError] = useState<string | undefined>(undefined);
 	const { showToast } = useContext(PopupContentContext);
+	const { updatePassword } = usePasswordResetService();
 
 	const isPasswordMatch = password === repeatPassword;
 

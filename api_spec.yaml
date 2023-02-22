@@ -6,12 +6,99 @@ info:
     description: Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
 
 tags:
+    - name: "User Authentication"
+      description: APIs for validating user authentication & authorization
     - name: "User Management"
       description: APIs for user management features
     - name: "User Details"
       description: APIs for fetching and modifying information specific to one user
 
 paths:
+    /signin:
+        post:
+            tags:
+                - User Authentication
+            summary: Login via email and password
+            operationId: signinViaEmailPassword
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                password:
+                                    type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    sessionId:
+                                        type: string
+                                        example: "5ebe4237-308f-47a8-b823-344b5372ee8f"
+                401:
+                    description: Unauthorized access
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INVALID_CREDENTIALS_ERROR"
+                                          message:
+                                              type: string
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "USER_SUSPENDED_ERROR"
+                                          message:
+                                              type: string
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "USER_LIMIT_REACHED_ERROR"
+                                          message:
+                                              type: string
+    /verify:
+        post:
+            tags:
+                - User Authentication
+            summary: Login via API Key
+            operationId: signinViaAPIKey
+            responses:
+                200:
+                    description: Success
+    /signout:
+        post:
+            tags:
+                - User Authentication
+            summary: Log out the user
+            operationId: signOut
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                401:
+                    description: Unauthorized access
     /users:
         get:
             tags:
