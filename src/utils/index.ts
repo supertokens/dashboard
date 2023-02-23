@@ -40,6 +40,16 @@ export function getApiUrl(path: string): string {
 	return window.location.origin + getDashboardAppBasePath() + path;
 }
 
+export function getConnectionUri() {
+	return (window as any).connectionURI;
+}
+
+const DEMO_CONNECTION_URIS = ["try.supertokens.io", "try.supertokens.com"];
+
+export const isUsingDemoConnectionUri = (connectionURI: string) => {
+	return DEMO_CONNECTION_URIS.some((domains) => connectionURI.includes(domains));
+};
+
 interface IFetchDataArgs {
 	url: string;
 	method: HttpMethod;

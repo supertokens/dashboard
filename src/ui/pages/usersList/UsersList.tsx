@@ -21,7 +21,7 @@ import useVerifyUserTokenService from "../../../api/user/email/verify/token";
 import useFetchUsersService from "../../../api/users";
 import useFetchCount from "../../../api/users/count";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
-import { obfuscatePhone } from "../../../utils";
+import { getConnectionUri, isUsingDemoConnectionUri, obfuscatePhone } from "../../../utils";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
@@ -107,13 +107,15 @@ export const UsersList: React.FC<UserListProps> = ({
 				() => undefined
 			);
 			if (data) {
-				// obfuscate the user details (like email address and phone numbers);
-				data.users.forEach((userData) => {
-					if (userData?.user?.email) userData.user.email = "johndoe@supertokens.com";
-					if ("phoneNumber" in userData.user && userData.user?.phoneNumber)
-						userData.user.phoneNumber = obfuscatePhone(userData.user.phoneNumber);
-					return userData;
-				});
+				if (isUsingDemoConnectionUri(getConnectionUri())) {
+					// obfuscate the user details (like email address and phone numbers);
+					data.users.forEach((userData) => {
+						if (userData?.user?.email) userData.user.email = "johndoe@supertokens.com";
+						if ("phoneNumber" in userData.user && userData.user?.phoneNumber)
+							userData.user.phoneNumber = obfuscatePhone(userData.user.phoneNumber);
+						return userData;
+					});
+				}
 
 				// store the users and pagination token
 				const { users: responseUsers, nextPaginationToken } = data;
