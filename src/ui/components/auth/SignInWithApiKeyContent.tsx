@@ -57,7 +57,7 @@ const SignInWithApiKeyContent = (props: SignInWithApiKeyContentProps) => {
 
 	return (
 		<div>
-			<h2 className="api-key-form-title text-title">Enter your API Key</h2>
+			<h2 className="api-key-form-title text-title">User Management Dashboard</h2>
 			<p className="text-small text-label">Please enter the API key that you used to connect with your backend</p>
 			<form
 				className="api-key-form"
