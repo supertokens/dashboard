@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.4.2] - 2023-02-22
+
+-   Removes logic where user's email and phone was obfuscated if the demo core connection uri was used
+-   Changes the title on the sign in page
+
 ## [0.4.1] - 2023-02-22
 
 -   Fixes an issue where user's emails and phones were obfuscated
