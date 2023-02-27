@@ -36,20 +36,15 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    status:
-                                        type: string
-                                        default: "OK"
-                                    sessionId:
-                                        type: string
-                                        example: "5ebe4237-308f-47a8-b823-344b5372ee8f"
-                401:
-                    description: Unauthorized access
-                    content:
-                        application/json:
-                            schema:
                                 oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          sessionId:
+                                              type: string
+                                              example: "5ebe4237-308f-47a8-b823-344b5372ee8f"
                                     - type: object
                                       properties:
                                           status:
@@ -64,22 +59,30 @@ paths:
                                               default: "USER_SUSPENDED_ERROR"
                                           message:
                                               type: string
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "USER_LIMIT_REACHED_ERROR"
-                                          message:
-                                              type: string
-    /verify:
-        post:
-            tags:
-                - User Authentication
-            summary: Login via API Key
-            operationId: signinViaAPIKey
-            responses:
-                200:
-                    description: Success
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
     /signout:
         post:
             tags:
@@ -99,6 +102,22 @@ paths:
                                         default: "OK"
                 401:
                     description: Unauthorized access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
     /users:
         get:
             tags:
