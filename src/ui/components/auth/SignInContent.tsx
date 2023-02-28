@@ -124,7 +124,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 
 	return (
 		<div>
-			<h2 className="api-key-form-title text-title">Sign In</h2>
+			<h2 className="api-key-form-title text-title">User Management Dashboard</h2>
 			<p className="text-small text-label">
 				Not registered yet?{" "}
 				<span

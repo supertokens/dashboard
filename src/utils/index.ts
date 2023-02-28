@@ -239,10 +239,6 @@ export const getRecipeNameFromid = (id: UserRecipeType): string => {
 	return "Third Party";
 };
 
-export const obfuscateString = (str: string) => str.replace(/\w/g, "X");
-export const obfuscatePhone = (phoneNumberStr: string, replacementChar = "9") =>
-	phoneNumberStr.replace(/\d/g, replacementChar);
-
 export const getAuthMode = (): "api-key" | "email-password" => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return (window as any).authMode; // for now, either "api-key" or "email-password"

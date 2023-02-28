@@ -14,7 +14,7 @@
  */
 
 import { UserWithRecipeId } from "../../ui/pages/usersList/types";
-import { getApiUrl, getConnectionUri, isUsingDemoConnectionUri, obfuscatePhone, useFetchData } from "../../utils";
+import { getApiUrl, useFetchData } from "../../utils";
 
 interface IUseUserService {
 	updateUserInformation: (args: IUpdateUserInformationArgs) => Promise<UpdateUserInformationResponse>;
@@ -77,15 +77,6 @@ export const useUserService = (): IUseUserService => {
 				return {
 					status: "RECIPE_NOT_INITIALISED",
 				};
-			}
-
-			if (isUsingDemoConnectionUri(getConnectionUri())) {
-				if (body?.user?.phoneNumber) {
-					body.user.phoneNumber = obfuscatePhone(body.user.phoneNumber);
-				}
-				if (body?.user?.email) {
-					body.user.email = "johndoe@supertokens.com";
-				}
 			}
 
 			return {
