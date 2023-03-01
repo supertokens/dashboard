@@ -24,6 +24,7 @@ const SignInWithApiKeyContent = (props: SignInWithApiKeyContentProps) => {
 					authorization: `Bearer ${apiKey}`,
 				},
 			},
+			shouldRedirectOnUnauthorised: false,
 		});
 
 		const body = await response.json();
