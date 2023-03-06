@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.4.3] - 2023-03-06
+
+-   Fixes an issue where entering an incorrect API key would refresh the page
+
 ## [0.4.2] - 2023-02-27
 
 -   Removes logic where user's email and phone was obfuscated if the demo core connection uri was used
