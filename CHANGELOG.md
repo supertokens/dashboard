@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.4.4] - 2023-03-08
+
+-   General aesthetic fixes for the dashboard UI
+
 ## [0.4.3] - 2023-03-06
 
 -   Fixes an issue where entering an incorrect API key would refresh the page
