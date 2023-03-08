@@ -21,9 +21,9 @@
 
 /* classes for layout panel */
 .panel {
-	padding: 0px 34px;
+	padding: 0px 40px;
 	background-color: var(--color-white);
-	border-radius: 6px;
+	border-radius: 12px;
 	box-shadow: 0 0 6px var(--color-shadow);
 	display: block;
 	max-width: 100%;
@@ -52,6 +52,7 @@
 	}
 	&__body {
 		padding: 24px 0px;
+		padding-bottom: 18px;
 	}
 }
 
