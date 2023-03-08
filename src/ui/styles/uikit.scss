@@ -249,6 +249,15 @@ button.button-error {
 	@include gap-horizontal(8px);
 	border: none;
 	font-size: inherit;
+	transition: background-color 0.3s;
+
+	&:disabled {
+		background-color: var(--color-button-error-disabled);
+	}
+
+	&:hover {
+		background-color: var(--color-button-error-hover);
+	}
 }
 
 .button.button-error-outline,
@@ -263,6 +272,15 @@ button.button-error-outline {
 	@include gap-horizontal(8px);
 	font-size: inherit;
 	box-shadow: none;
+	transition: background-color 0.3s;
+
+	&:disabled {
+		border-color: var(--color-button-error-disabled);
+	}
+
+	&:hover {
+		background-color: var(--color-button-outline-hover);
+	}
 }
 
 .button.outline,
@@ -271,10 +289,11 @@ button.outline {
 	box-shadow: none;
 	color: var(--color-secondary-text);
 	border-color: var(--color-secondary-text);
+	transition: background-color 0.3s;
+	font-weight: 500 !important;
 	&:hover {
-		background-color: var(--color-secondary-text);
+		background-color: var(--color-button-outline-hover);
 		box-shadow: inherit;
-		color: var(--color-white);
 	}
 }
 
@@ -285,7 +304,7 @@ button.link,
 	&:not(.flat) {
 		border-color: var(--color-link);
 		&:hover {
-			background-color: var(--color-link);
+			background-color: var(--color-button-outline-hover);
 		}
 	}
 }

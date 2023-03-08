@@ -135,7 +135,7 @@ const UserDetailsSessionListItem: React.FC<UserDetailsSessionListItemProps> = ({
 
 	return (
 		<tr className="session-row with-data">
-			<td className="w30">
+			<td className="w30 session-id">
 				<span>{_sessionhandle}</span>
 			</td>
 			<td>{createdDate}</td>

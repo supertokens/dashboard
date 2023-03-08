@@ -79,6 +79,8 @@ body {
 	/* Button color */
 	--color-button-error: rgb(237, 52, 78);
 	--color-button-error-border: rgb(222, 35, 61);
+	--color-button-error-disabled: rgb(221, 221, 221);
+	--color-button-error-hover: rgb(222, 35, 61);
 
 	/* Z-index value for different of popup element */
 	--z-index-inline-popup: 1;
@@ -86,6 +88,7 @@ body {
 
 	--color-popup-item-hover: rgb(240, 240, 240);
 	--color-popup-item-delete-hover: rgba(222, 35, 61, 0.12);
+	--color-button-outline-hover: rgb(250, 250, 250);
 }
 
 *[data-theme="dark"] {

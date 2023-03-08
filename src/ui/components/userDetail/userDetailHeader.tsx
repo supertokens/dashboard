@@ -111,7 +111,6 @@ export const UserDetailHeader: React.FC<UserDetailHeaderProps> = ({
 			<div className="user-detail__header__action">
 				<button
 					className="button button-error"
-					style={{ fontWeight: "normal" }}
 					onClick={openDeleteConfirmation}>
 					Delete
 				</button>
