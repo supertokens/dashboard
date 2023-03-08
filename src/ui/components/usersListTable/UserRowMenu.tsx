@@ -59,6 +59,13 @@ export const UserRowMenu: FC<UserRowMenuProps> = ({ user, menuItems }) => {
 					<img
 						src={getImageUrl("chevron-down.svg")}
 						alt="Open user detail"
+						className="img-normal"
+					/>
+
+					<img
+						src={getImageUrl("chevron-up-selected.svg")}
+						alt="Open user detail"
+						className="img-hover"
 					/>
 				</button>
 				<div className="user-row-select-popup">

@@ -96,7 +96,9 @@ $container-width: 829;
 				display: inline-flex;
 				overflow: hidden;
 				max-width: 290px;
-				font-size: 13px;
+				font-size: 14px;
+				font-family: "Source Code Pro";
+				font-weight: 500;
 			}
 		}
 		&__action {
@@ -133,6 +135,7 @@ $container-width: 829;
 				overflow: visible;
 			}
 			&__guide {
+				cursor: pointer;
 				display: inline-flex;
 				align-items: center;
 				justify-content: center;

@@ -179,6 +179,11 @@ $container-width: 829;
 						.button-error-outline {
 							display: block;
 						}
+
+						&.session-id {
+							font-family: "Source Code Pro";
+							font-weight: 500;
+						}
 					}
 
 					td:last-child {
