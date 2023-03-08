@@ -25,6 +25,7 @@ import "./assets/checkmark.svg";
 import "./assets/chevron-down.svg";
 import "./assets/chevron-left.svg";
 import "./assets/chevron-right.svg";
+import "./assets/chevron-up-selected.svg";
 import "./assets/close.svg";
 import "./assets/copy.svg";
 import "./assets/delete.svg";

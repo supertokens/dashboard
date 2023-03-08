@@ -245,6 +245,7 @@ const UserTableRow: React.FC<
 			text: "Delete user",
 			imageUrl: "trash.svg",
 			hoverImageUrl: "trash-opened.svg",
+			className: "delete",
 		});
 
 		return menuItems;

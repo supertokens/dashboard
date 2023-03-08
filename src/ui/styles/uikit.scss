@@ -290,6 +290,14 @@ button.link,
 	}
 }
 
+.footer {
+	a {
+		&:hover {
+			background-color: transparent;
+		}
+	}
+}
+
 /* classes for font sizes */
 .text-title {
 	font-size: 24px;
