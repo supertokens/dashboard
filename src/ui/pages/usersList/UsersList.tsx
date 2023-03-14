@@ -26,8 +26,8 @@ import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/Ap
 import { getApiUrl, getAuthMode, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
-import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
+import Search from "../../components/search";
 import UserDetail from "../../components/userDetail/userDetail";
 import {
 	getDeleteUserToast,
@@ -208,7 +208,9 @@ export const UsersList: React.FC<UserListProps> = ({
 				One place to manage all your users, revoke access and edit information according to your needs.
 			</p>
 
-			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
+			{/* {connectionURI && <InfoConnection connectionURI={connectionURI} />} */}
+
+			<Search />
 
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (

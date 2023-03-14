@@ -21,6 +21,7 @@
 import "./assets/auth-background-portrait.png";
 import "./assets/auth-background.png";
 import "./assets/checkmark-green.svg";
+import "./assets/checkmark-yellow.svg";
 import "./assets/checkmark.svg";
 import "./assets/chevron-down.svg";
 import "./assets/chevron-left.svg";
@@ -50,6 +51,7 @@ import "./assets/provider-facebook.svg";
 import "./assets/provider-github.svg";
 import "./assets/provider-google.svg";
 import "./assets/right_arrow_icon.svg";
+import "./assets/search.png";
 import "./assets/star_sparkle.svg";
 import "./assets/ST_full_logo_dark_theme.svg";
 import "./assets/ST_full_logo_light_theme.svg";
