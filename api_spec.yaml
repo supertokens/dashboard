@@ -12,6 +12,8 @@ tags:
       description: APIs for user management features
     - name: "User Details"
       description: APIs for fetching and modifying information specific to one user
+    - name: "Search"
+      description: APIs for search
 
 paths:
     /signin:
@@ -122,6 +124,7 @@ paths:
         get:
             tags:
                 - User Management
+                - Search
             summary: Get a list of all users. This API is paginated
             operationId: getUsersPaginated
             parameters:
@@ -150,6 +153,12 @@ paths:
                       enum:
                           - "ASC"
                           - "DESC"
+                - name: <search_tag>
+                  description: Various tags(Email, provider, etc.) to filter users by key values pairs, also supports multiple values separated by ';'
+                  required: false
+                  in: query
+                  schema:
+                      type: string
             responses:
                 200:
                     description: Success
@@ -1086,6 +1095,24 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
+    /search/tags:
+        get:
+            tags:
+                - Search
+            summary: Request to get all search tags supported
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    tags:
+                                        type: array
+                                        items:
+                                            type: string
+
 servers:
     # Added by API Auto Mocking Plugin
     - description: SwaggerHub API Auto Mocking
