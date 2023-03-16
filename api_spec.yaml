@@ -154,7 +154,7 @@ paths:
                           - "ASC"
                           - "DESC"
                 - name: <search_tag>
-                  description: Various tags(Email, provider, etc.) to filter users by key values pairs, also supports multiple values separated by ';'
+                  description: refer to the search tags API to know what tags to use
                   required: false
                   in: query
                   schema:
