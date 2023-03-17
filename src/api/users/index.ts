@@ -18,16 +18,21 @@ import { UserPaginationList } from "../../ui/pages/usersList/types";
 import { getApiUrl, useFetchData } from "../../utils";
 
 interface IUseFetchUsersService {
-	fetchUsers: (param?: { paginationToken?: string; limit?: number }) => Promise<UserPaginationList | undefined>;
+	fetchUsers: (
+		param?: { paginationToken?: string; limit?: number },
+		search?: object
+	) => Promise<UserPaginationList | undefined>;
 }
 
 export const useFetchUsersService = (): IUseFetchUsersService => {
 	const fetchData = useFetchData();
-	const fetchUsers = async (param?: { paginationToken?: string; limit?: number }) => {
+	const fetchUsers = async (param?: { paginationToken?: string; limit?: number }, search?: object) => {
+		// eslint-disable-next-line no-console
+		console.log({ ...search }, search);
 		const response = await fetchData({
 			url: getApiUrl("/api/users"),
 			method: "GET",
-			query: { ...param, limit: `${param?.limit ?? LIST_DEFAULT_LIMIT}` },
+			query: { ...param, limit: `${param?.limit ?? LIST_DEFAULT_LIMIT}`, ...search },
 		});
 		return response.ok ? ((await response?.json()) as UserPaginationList) : undefined;
 	};

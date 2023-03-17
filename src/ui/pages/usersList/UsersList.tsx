@@ -26,6 +26,7 @@ import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/Ap
 import { getApiUrl, getAuthMode, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
+import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
 import Search from "../../components/search";
 import UserDetail from "../../components/userDetail/userDetail";
@@ -104,14 +105,19 @@ export const UsersList: React.FC<UserListProps> = ({
 	);
 
 	const loadUsers = useCallback(
-		async (paginationToken?: string) => {
+		async (paginationToken?: string, search?: object) => {
 			const paramOffset = getOffsetByPaginationToken(paginationToken) ?? offset;
 			setLoading(true);
 			const nextOffset = paramOffset + limit;
 
-			const data = await (paginationToken ? fetchUsers({ paginationToken }) : fetchUsers()).catch(
-				() => undefined
-			);
+			const data = await (paginationToken
+				? search
+					? fetchUsers({ paginationToken }, search)
+					: fetchUsers({ paginationToken })
+				: search
+				? fetchUsers(undefined, search)
+				: fetchUsers()
+			).catch(() => undefined);
 			if (data) {
 				// store the users and pagination token
 				const { users: responseUsers, nextPaginationToken } = data;
@@ -208,9 +214,9 @@ export const UsersList: React.FC<UserListProps> = ({
 				One place to manage all your users, revoke access and edit information according to your needs.
 			</p>
 
-			{/* {connectionURI && <InfoConnection connectionURI={connectionURI} />} */}
+			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
 
-			<Search />
+			<Search onSearch={loadUsers} />
 
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (

@@ -17,6 +17,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { getImageUrl } from "../../../utils";
 import "./search.scss";
 
+import { useFetchSearchTags } from "../../../api/search/searchTags";
+
 const searchIcon = getImageUrl("search.png");
 const chevron = getImageUrl("chevron-down.svg");
 const deleteIcon = getImageUrl("close.svg");
@@ -27,34 +29,67 @@ type SearchType = {
 	value: string;
 };
 
+type searchProp = {
+	onSearch: (paginationToken?: string, search?: object) => Promise<void>;
+};
+
 type action = "chn" | "del";
 
-const Search: React.FC<object> = (props) => {
+const tagToText = (tag: string) => {
+	switch (tag) {
+		case "email":
+			return "Email";
+		case "phone":
+			return "Phone Number";
+		case "recipe":
+			return "Auth Method";
+		case "provider":
+			return "Auth Provider";
+	}
+};
+
+const Search: React.FC<searchProp> = (props: searchProp) => {
 	const [active, setActive] = useState<boolean>(false);
 	const [searches, setSearches] = useState<SearchType[] | []>([]);
 	const [tags, setTags] = useState<string[] | []>([]);
-	const getTags = () => ["Email", "Phone Number", "Auth Method", "Auth Provider"];
+	const [defaulTag, setDefaultTag] = useState<string>("email");
+	const { fetchSearchTags } = useFetchSearchTags();
 	useEffect(() => {
-		setTags(getTags());
+		const asyncEffect = async () => {
+			const resp = await fetchSearchTags();
+			setTags(resp?.tags ?? []);
+			if (resp?.tags.includes("email")) {
+				setDefaultTag("email");
+			} else {
+				setDefaultTag(resp?.tags[0] ?? "");
+			}
+		};
+		asyncEffect().catch(console.error);
 	}, []);
 
 	const getSearchResult = useCallback(
-		(searches: SearchType[]) => {
-			// eslint-disable-next-line no-console
-			console.log("hi", searches);
+		async (searches: SearchType[]) => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const tempQueryMap: any = {};
+			searches.forEach((el) => {
+				if (el.tag in tempQueryMap) {
+					const temp = tempQueryMap[el.tag] + ";" + el.value;
+					tempQueryMap[el.tag] = temp;
+				} else {
+					tempQueryMap[el.tag] = el.value;
+				}
+			});
+			await props.onSearch(undefined, tempQueryMap);
 		},
 		[searches]
 	);
 
 	// useEffect to call everytime searches change
 	useEffect(() => {
-		if (searches.length !== 0) getSearchResult(searches);
+		if (searches.length !== 0) getSearchResult(searches).catch(console.error);
 	}, [searches, getSearchResult]);
 
 	const updateEntry = (action: action, data: SearchType, index: number) => {
-		// eslint-disable-next-line no-console
-		console.log(action, data);
-
 		switch (action) {
 			case "chn": {
 				const temp = [...searches];
@@ -72,7 +107,7 @@ const Search: React.FC<object> = (props) => {
 	const search = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === "Enter") {
 			e.preventDefault();
-			setSearches([...searches, { tag: "Email", value: e.target.value }]);
+			setSearches([...searches, { tag: defaulTag, value: e.target.value }]);
 			e.target.value = "";
 		}
 	};
@@ -142,7 +177,7 @@ const TagDropdown = (props: { selected: string; tags: string[]; onUpdate: (data:
 			<div
 				onClick={() => setOpen(!open)}
 				className={`tag_dropdown__selector ${open ? "active" : ""}`}>
-				<div>{props.selected}</div>
+				<div>{tagToText(props.selected)}</div>
 				<img
 					src={chevron}
 					alt="chevron"
@@ -156,8 +191,11 @@ const TagDropdown = (props: { selected: string; tags: string[]; onUpdate: (data:
 					{props.tags.map((el, ind) => (
 						<li
 							key={ind}
-							onClick={() => props.onUpdate(el)}>
-							{el}
+							onClick={() => {
+								props.onUpdate(el);
+								setOpen(false);
+							}}>
+							{tagToText(el)}
 							{el === props.selected && <img src={checkmark} />}
 						</li>
 					))}
