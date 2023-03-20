@@ -20,6 +20,11 @@
 				margin-right: 10px;
 				margin-bottom: 3px;
 			}
+
+			&:last-child {
+				cursor: pointer;
+				height: 22px;
+			}
 		}
 
 		&.active {
@@ -137,6 +142,15 @@
 
 				&:hover {
 					background: #f0f0f0;
+				}
+
+				span {
+					display: flex;
+					align-items: baseline;
+					& img {
+						margin-right: 11px;
+						height: 15px;
+					}
 				}
 			}
 		}

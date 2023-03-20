@@ -13,13 +13,14 @@
  * under the License.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "../../../utils";
 import "./search.scss";
 
 import { useFetchSearchTags } from "../../../api/search/searchTags";
 
 const searchIcon = getImageUrl("search.png");
+const clearIcon = getImageUrl("clear.svg");
 const chevron = getImageUrl("chevron-down.svg");
 const deleteIcon = getImageUrl("close.svg");
 const checkmark = getImageUrl("checkmark-yellow.svg");
@@ -48,11 +49,25 @@ const tagToText = (tag: string) => {
 	}
 };
 
+const tagToImg = (tag: string) => {
+	switch (tag) {
+		case "email":
+			return getImageUrl("email.svg");
+		case "phone":
+			return getImageUrl("phone-no.svg");
+		case "recipe":
+			return getImageUrl("auth-method.svg");
+		case "provider":
+			return getImageUrl("auth-provider.svg");
+	}
+};
+
 const Search: React.FC<searchProp> = (props: searchProp) => {
 	const [active, setActive] = useState<boolean>(false);
 	const [searches, setSearches] = useState<SearchType[] | []>([]);
 	const [tags, setTags] = useState<string[] | []>([]);
 	const [defaulTag, setDefaultTag] = useState<string>("email");
+	const searchRef = useRef<HTMLInputElement>(null);
 	const { fetchSearchTags } = useFetchSearchTags();
 	useEffect(() => {
 		const asyncEffect = async () => {
@@ -124,11 +139,13 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 					onFocus={() => setActive(true)}
 					onBlur={() => setActive(false)}
 					onKeyDown={(e) => search(e)}
+					ref={searchRef}
 				/>
-				{active && (
+				{(active || (searchRef.current && searchRef.current.value)) && (
 					<img
-						src={searchIcon}
+						src={clearIcon}
 						alt=""
+						onClick={() => (searchRef.current ? (searchRef.current.value = "") : "")}
 					/>
 				)}
 			</div>
@@ -195,7 +212,13 @@ const TagDropdown = (props: { selected: string; tags: string[]; onUpdate: (data:
 								props.onUpdate(el);
 								setOpen(false);
 							}}>
-							{tagToText(el)}
+							<span>
+								<img
+									src={tagToImg(el)}
+									alt=""
+								/>
+								{tagToText(el)}
+							</span>
 							{el === props.selected && <img src={checkmark} />}
 						</li>
 					))}
