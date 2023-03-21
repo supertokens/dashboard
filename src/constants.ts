@@ -15,6 +15,7 @@
 
 export class StorageKeys {
 	static AUTH_KEY = "auth-token";
+	static EMAIL = "email";
 }
 
 // Add types as required

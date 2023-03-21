@@ -20,7 +20,11 @@ import useVerifyEmailService from "../../../api/user/email/verify";
 import useVerifyUserTokenService from "../../../api/user/email/verify/token";
 import useFetchUsersService from "../../../api/users";
 import useFetchCount from "../../../api/users/count";
+import { StorageKeys } from "../../../constants";
+import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
+import { getApiUrl, useFetchData } from "../../../utils";
+import { package_version } from "../../../version";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
@@ -53,6 +57,8 @@ type UserListProps = {
 
 type NextPaginationTokenByOffset = Record<number, string | undefined>;
 
+let isAnalyticsFired = false;
+
 export const UsersList: React.FC<UserListProps> = ({
 	onSelect,
 	css,
@@ -70,6 +76,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const { fetchUsers } = useFetchUsersService();
 
 	const { fetchCount } = useFetchCount();
+	const fetchData = useFetchData();
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: UserWithRecipeId[], paramOffset?: number) => {
@@ -120,12 +127,39 @@ export const UsersList: React.FC<UserListProps> = ({
 		[offset, errorOffsets, limit, paginationTokenByOffset, insertUsersAtOffset, getOffsetByPaginationToken]
 	);
 
+	const fireAnalyticsEvent = async () => {
+		if (isAnalyticsFired) {
+			return;
+		}
+
+		isAnalyticsFired = true;
+
+		try {
+			const email = localStorageHandler.getItem(StorageKeys.EMAIL);
+
+			await fetchData({
+				url: getApiUrl("/api/analytics"),
+				method: "POST",
+				config: {
+					body: JSON.stringify({
+						email,
+						dashboardVersion: package_version,
+					}),
+				},
+			});
+		} catch (_) {
+			// ignored
+		}
+	};
+
 	const loadCount = useCallback(async () => {
 		setLoading(true);
 		const [countResult] = await Promise.all([fetchCount().catch(() => undefined), loadUsers()]);
 		if (countResult) {
 			setCount(countResult.count);
+			void fireAnalyticsEvent();
 		}
+
 		setLoading(false);
 	}, []);
 
