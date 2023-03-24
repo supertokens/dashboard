@@ -25,7 +25,15 @@ export default function AuthWrapper(props: { children: any }) {
 
 	useEffect(() => {
 		const apiKey = localStorageHandler.getItem(StorageKeys.AUTH_KEY);
-		setShouldShowAuthForm(apiKey === undefined);
+		const email = localStorageHandler.getItem(StorageKeys.EMAIL);
+		const _shouldShowAuthForm = apiKey === undefined || email === undefined;
+
+		if (_shouldShowAuthForm) {
+			localStorageHandler.removeItem(StorageKeys.AUTH_KEY);
+			localStorageHandler.removeItem(StorageKeys.EMAIL);
+		}
+
+		setShouldShowAuthForm(_shouldShowAuthForm);
 		setIsLoading(false);
 	}, []);
 
