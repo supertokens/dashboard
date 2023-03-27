@@ -23,7 +23,7 @@ import useFetchCount from "../../../api/users/count";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
-import { getApiUrl, useFetchData } from "../../../utils";
+import { getApiUrl, getAuthMode, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
@@ -135,7 +135,11 @@ export const UsersList: React.FC<UserListProps> = ({
 		isAnalyticsFired = true;
 
 		try {
-			const email = localStorageHandler.getItem(StorageKeys.EMAIL);
+			let email: string | undefined = "apikey@example.com";
+
+			if (getAuthMode() === "email-password") {
+				email = localStorageHandler.getItem(StorageKeys.EMAIL);
+			}
 
 			await fetchData({
 				url: getApiUrl("/api/analytics"),
