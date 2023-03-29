@@ -16,17 +16,3 @@
 // HTTP requests & responses related
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 export type HttpApiBaseResponse = { status: "OK" | string };
-export type AnalyticsAPIResponse = {
-	status: "OK";
-	data?: {
-		websiteDomain: string;
-		websiteBasePath: string;
-		apiDomain: string;
-		apiBasePath: string;
-		appName: string;
-		backendSDKName: string;
-		backendSDKVersion: string;
-		telemetryId: string | undefined;
-		numberOfUsers: number | undefined;
-	};
-};
