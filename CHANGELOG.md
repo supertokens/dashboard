@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.5.0] - 2023-03-29
+
+-   Adds telemetry to the dashboard
+
 ## [0.4.5] - 2023-03-10
 
 -   Fixes an issue where notifications would appear behind the sign out button
