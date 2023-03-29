@@ -37,7 +37,7 @@ SuperTokens.init({
 		connectionURI: "https://try.supertokens.com",
 	},
 	appInfo: {
-		appName: "Dashboard Dev",
+		appName: "Dashboard Dev Node",
 		apiDomain: "http://localhost:3001",
 		websiteDomain,
 		apiBasePath: "/auth",

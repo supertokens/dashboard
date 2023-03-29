@@ -56,12 +56,20 @@ interface IFetchDataArgs {
 	query?: { [key: string]: string };
 	config?: RequestInit;
 	shouldRedirectOnUnauthorised?: boolean;
+	ignoreErrors?: boolean;
 }
 
 export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 
-	const fetchData = async ({ url, method, query, config, shouldRedirectOnUnauthorised = true }: IFetchDataArgs) => {
+	const fetchData = async ({
+		url,
+		method,
+		query,
+		config,
+		shouldRedirectOnUnauthorised = true,
+		ignoreErrors = false,
+	}: IFetchDataArgs) => {
 		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.AUTH_KEY);
 
 		let additionalHeaders: { [key: string]: string } = {};
@@ -90,7 +98,7 @@ export const useFetchData = () => {
 			window.localStorage.removeItem(StorageKeys.AUTH_KEY);
 			window.location.reload();
 		} else {
-			setStatusCode(response.status);
+			setStatusCode(ignoreErrors ? 200 : response.status);
 		}
 		return response;
 	};
@@ -98,6 +106,7 @@ export const useFetchData = () => {
 	if (statusCode < 300 || statusCode === HTTPStatusCodes.UNAUTHORIZED) {
 		return fetchData;
 	}
+
 	throw Error(`Error: ${statusCode}. Some error Occurred`);
 };
 

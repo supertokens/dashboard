@@ -150,6 +150,8 @@ export const UsersList: React.FC<UserListProps> = ({
 						dashboardVersion: package_version,
 					}),
 				},
+				// We dont want to trigger the error boundary if this API fails
+				ignoreErrors: true,
 			});
 		} catch (_) {
 			// ignored
