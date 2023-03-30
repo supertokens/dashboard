@@ -37,7 +37,7 @@ SuperTokens.init({
 		connectionURI: "https://try.supertokens.com",
 	},
 	appInfo: {
-		appName: "Dashboard Dev",
+		appName: "Dashboard Dev Node",
 		apiDomain: "http://localhost:3001",
 		websiteDomain,
 		apiBasePath: "/auth",
@@ -45,7 +45,6 @@ SuperTokens.init({
 	recipeList: [
 		Dashboard.init({
 			// Keep this so that the dev server uses api key based login
-			apiKey: "someapikey",
 			override: {
 				functions: (original) => {
 					return {

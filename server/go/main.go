@@ -24,12 +24,12 @@ func main() {
 			ConnectionURI: "https://try.supertokens.com",
 		},
 		AppInfo: supertokens.AppInfo{
-			AppName:       "Dashboard Dev",
+			AppName:       "Dashboard Dev Go",
 			WebsiteDomain: "localhost:3000",
 			APIDomain:     "localhost:3001",
 		},
 		RecipeList: []supertokens.Recipe{
-			dashboard.Init(dashboardmodels.TypeInput{
+			dashboard.Init(&dashboardmodels.TypeInput{
 				ApiKey: "someapikey",
 				Override: &dashboardmodels.OverrideStruct{
 					Functions: func(originalImplementation dashboardmodels.RecipeInterface) dashboardmodels.RecipeInterface {

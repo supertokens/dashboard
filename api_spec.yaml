@@ -12,6 +12,8 @@ tags:
       description: APIs for user management features
     - name: "User Details"
       description: APIs for fetching and modifying information specific to one user
+    - name: "Telemetry"
+      description: APIs related to recording telemetry from the dashboard
 
 paths:
     /signin:
@@ -1053,6 +1055,64 @@ paths:
                                     type: array
                                     items:
                                         type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+    /api/analytics:
+        post:
+            tags:
+                - Telemetry
+            summary: Signals the backend SDK to send telemetry to SuperTokens
+            operationId: telemetryAnalyticsPost
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                    example: johndoe@supertokens.com
+                                dashboardVersion:
+                                    type: string
+                                    example: 0.1.2
             responses:
                 200:
                     description: Success
