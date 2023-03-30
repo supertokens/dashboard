@@ -124,34 +124,47 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 		}
 	};
 	const search = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.target.value === "") return;
 		if (e.key === "Enter") {
 			e.preventDefault();
 			setSearches([...searches, { tag: defaulTag, value: e.target.value }]);
 			e.target.value = "";
 		}
 	};
+
+	const searchButton = () => {
+		setSearches([...searches, { tag: defaulTag, value: searchRef.current?.value ?? "" }]);
+	};
+
 	return (
 		<div className="search">
-			<div className={`search__input_wrapper ${active && "active"}`}>
-				<img
-					src={searchIcon}
-					alt=""
-				/>
-				<input
-					type="text"
-					placeholder="Search"
-					onFocus={() => setActive(true)}
-					onBlur={() => setActive(false)}
-					onKeyDown={(e) => search(e)}
-					ref={searchRef}
-				/>
-				{(active || (searchRef.current && searchRef.current.value)) && (
+			<div>
+				<div className={`search__input_wrapper ${active && "active"}`}>
 					<img
-						src={clearIcon}
+						src={searchIcon}
 						alt=""
-						onClick={() => (searchRef.current ? (searchRef.current.value = "") : "")}
 					/>
-				)}
+					<input
+						type="text"
+						placeholder="Search"
+						onFocus={() => setActive(true)}
+						onBlur={() => setActive(false)}
+						onKeyDown={(e) => search(e)}
+						ref={searchRef}
+					/>
+					{(active || (searchRef.current && searchRef.current.value)) && (
+						<img
+							src={clearIcon}
+							alt=""
+							onClick={() => (searchRef.current ? (searchRef.current.value = "") : "")}
+						/>
+					)}
+				</div>
+				<button
+					onClick={searchButton}
+					id="search-btn">
+					Search
+				</button>
 			</div>
 			<div className="search__entries">
 				{searches.map((el, index) => (

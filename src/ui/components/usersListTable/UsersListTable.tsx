@@ -111,7 +111,7 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 						limit={limit}
 					/>
 				)}
-				{!pagination && users.length + " users"}
+				{!pagination && users.length + " results"}
 			</div>
 		</div>
 	);

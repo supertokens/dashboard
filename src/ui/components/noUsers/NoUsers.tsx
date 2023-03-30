@@ -27,12 +27,15 @@ const NoUsers = (props: { isSearch: boolean }) => {
 			/>
 
 			<p className="no-users-title">
-				Currently, you don't have any users {props.isSearch && "matching the search items."}
+				{!props.isSearch && "Currently, you don't have any users."}
+				{props.isSearch && " No search results."}
 			</p>
-			<p className="no-users-subtitle text-small">
-				If you are using just the session management feature of SuperTokens, your users will not appear in this
-				list.
-			</p>
+			{!props.isSearch && (
+				<p className="no-users-subtitle text-small">
+					If you are using just the session management feature of SuperTokens, your users will not appear in
+					this list.
+				</p>
+			)}
 		</div>
 	);
 };
