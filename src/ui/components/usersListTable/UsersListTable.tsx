@@ -48,10 +48,21 @@ type UserListProps = {
 	offsetChange?: (offset: number) => void;
 	onSelect: OnSelectUserFunction;
 	onEmailChanged: () => Promise<void>;
+	pagination: boolean;
 } & UserRowActionProps;
 
 const UsersListTable: React.FC<UserListProps> = (props) => {
-	const { users, limit, offset, isLoading, errorOffsets, onSelect, onChangePasswordCallback, onDeleteCallback } = {
+	const {
+		users,
+		limit,
+		offset,
+		isLoading,
+		errorOffsets,
+		pagination,
+		onSelect,
+		onChangePasswordCallback,
+		onDeleteCallback,
+	} = {
 		offset: 0,
 		limit: LIST_DEFAULT_LIMIT,
 		...props,
@@ -93,11 +104,14 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 			</table>
 
 			<div className="user-list-footer">
-				<UserListPagination
-					{...props}
-					offset={offset}
-					limit={limit}
-				/>
+				{pagination && (
+					<UserListPagination
+						{...props}
+						offset={offset}
+						limit={limit}
+					/>
+				)}
+				{!pagination && users.length + " users"}
 			</div>
 		</div>
 	);

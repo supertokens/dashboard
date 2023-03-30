@@ -13,13 +13,11 @@
  * under the License.
  */
 
-import React from "react";
-
 import { getImageUrl } from "../../../utils";
 
 import "./NoUsers.css";
 
-const NoUsers = () => {
+const NoUsers = (props: { isSearch: boolean }) => {
 	return (
 		<div className="no-users">
 			<img
@@ -28,8 +26,9 @@ const NoUsers = () => {
 				className="no-users-image"
 			/>
 
-			<p className="no-users-title">Currently, you don't have any users</p>
-			<p className="no-users-subtitle text-small">Once added, all users will be found here</p>
+			<p className="no-users-title">
+				Currently, you don't have any users {props.isSearch && "matching the search items."}
+			</p>
 			<p className="no-users-subtitle text-small">
 				If you are using just the session management feature of SuperTokens, your users will not appear in this
 				list.

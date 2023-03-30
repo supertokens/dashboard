@@ -73,6 +73,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [offset, setOffset] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
+	const [isSearch, setIsSearch] = useState<boolean>(false);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
 	const { fetchUsers } = useFetchUsersService();
 
@@ -112,10 +113,10 @@ export const UsersList: React.FC<UserListProps> = ({
 
 			const data = await (paginationToken
 				? search
-					? fetchUsers({ paginationToken }, search)
+					? fetchUsers({ paginationToken, limit: 1000 }, search)
 					: fetchUsers({ paginationToken })
 				: search
-				? fetchUsers(undefined, search)
+				? fetchUsers({ limit: 1000 }, search)
 				: fetchUsers()
 			).catch(() => undefined);
 			if (data) {
@@ -124,6 +125,7 @@ export const UsersList: React.FC<UserListProps> = ({
 				setUsers(insertUsersAtOffset(responseUsers, paramOffset));
 				setPaginationTokenByOffset({ ...paginationTokenByOffset, [nextOffset]: nextPaginationToken });
 				setErrorOffsets(errorOffsets.filter((item) => item !== nextOffset));
+				search && setIsSearch(true);
 			} else {
 				setErrorOffsets([paramOffset]);
 			}
@@ -220,14 +222,14 @@ export const UsersList: React.FC<UserListProps> = ({
 
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (
-					<NoUsers />
+					<NoUsers isSearch={isSearch} />
 				) : (
 					<UsersListTable
 						users={users}
 						offset={offset}
-						count={count ?? 0}
+						count={(isSearch ? users.length : count) ?? 0}
 						errorOffsets={errorOffsets}
-						limit={limit}
+						limit={isSearch ? users.length : limit}
 						nextPaginationToken={paginationTokenByOffset[offset + limit]}
 						goToNext={(token) => loadUsers(token)}
 						offsetChange={loadOffset}
@@ -236,6 +238,7 @@ export const UsersList: React.FC<UserListProps> = ({
 						onChangePasswordCallback={onChangePasswordCallback}
 						onDeleteCallback={onDeleteCallback}
 						onEmailChanged={onEmailChanged}
+						pagination={!isSearch}
 					/>
 				)}
 			</div>

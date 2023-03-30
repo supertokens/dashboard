@@ -27,12 +27,22 @@ interface IUseFetchUsersService {
 export const useFetchUsersService = (): IUseFetchUsersService => {
 	const fetchData = useFetchData();
 	const fetchUsers = async (param?: { paginationToken?: string; limit?: number }, search?: object) => {
-		// eslint-disable-next-line no-console
-		console.log({ ...search }, search);
+		let query = {};
+		if (search) {
+			query = { ...search };
+		}
+		if (param && Object.keys(param).includes("paginationToken")) {
+			query = { ...query, paginationToken: param?.paginationToken };
+		}
+		if (param && Object.keys(param).includes("limit")) {
+			query = { ...query, limit: param?.limit };
+		} else {
+			query = { ...query, limit: LIST_DEFAULT_LIMIT };
+		}
 		const response = await fetchData({
 			url: getApiUrl("/api/users"),
 			method: "GET",
-			query: { ...param, limit: `${param?.limit ?? LIST_DEFAULT_LIMIT}`, ...search },
+			query: query,
 		});
 		return response.ok ? ((await response?.json()) as UserPaginationList) : undefined;
 	};

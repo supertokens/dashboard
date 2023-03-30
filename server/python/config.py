@@ -11,7 +11,7 @@ from supertokens_python.recipe.thirdparty import Google
 
 # this is the location of the SuperTokens core.
 supertokens_config = SupertokensConfig(
-    connection_uri="https://try.supertokens.com")
+    connection_uri="http://localhost:3567")
 
 
 app_info = InputAppInfo(

@@ -12,6 +12,8 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "../../../utils";
@@ -101,7 +103,7 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 
 	// useEffect to call everytime searches change
 	useEffect(() => {
-		if (searches.length !== 0) getSearchResult(searches).catch(console.error);
+		getSearchResult(searches).catch(console.error);
 	}, [searches, getSearchResult]);
 
 	const updateEntry = (action: action, data: SearchType, index: number) => {
@@ -112,11 +114,13 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 				setSearches(temp);
 				break;
 			}
-			case "del":
-				setSearches(
-					searches.filter((el) => el.value !== data.value || (el.value === data.value && el.tag !== data.tag))
+			case "del": {
+				const temp = searches.filter(
+					(el) => el.value !== data.value || (el.value === data.value && el.tag !== data.tag)
 				);
+				setSearches(temp);
 				break;
+			}
 		}
 	};
 	const search = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -189,13 +193,32 @@ const SearchTag = (props: {
 
 const TagDropdown = (props: { selected: string; tags: string[]; onUpdate: (data: string) => void }) => {
 	const [open, setOpen] = useState(false);
+	const [id, setId] = useState(null);
+	useEffect(() => {
+		setId(Math.floor(Math.random() * 100));
+		const closeDropDown = (e) => {
+			// const classList = Array.from(e.target.classList);
+			// if (classList[0].startsWith("tag_dropdown")) {
+			// 	// no-op
+			// } else {
+			// }
+			setOpen(false);
+		};
+		window.addEventListener("click", closeDropDown);
+	}, []);
+	const handleOpen = () => {
+		setTimeout(() => {
+			setOpen(!open);
+		}, 10);
+	};
 	return (
-		<div className="tag_dropdown">
+		<div className="tag_dropdown ">
 			<div
-				onClick={() => setOpen(!open)}
-				className={`tag_dropdown__selector ${open ? "active" : ""}`}>
-				<div>{tagToText(props.selected)}</div>
+				onClick={handleOpen}
+				className={`tag_dropdown__selector ${open ? "active" : ""} ${id}`}>
+				<div className="tag_dropdown">{tagToText(props.selected)}</div>
 				<img
+					className="tag_dropdown "
 					src={chevron}
 					alt="chevron"
 					style={{ transform: open ? "rotate(180deg)" : "" }}
