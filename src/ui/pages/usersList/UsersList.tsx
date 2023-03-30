@@ -163,7 +163,6 @@ export const UsersList: React.FC<UserListProps> = ({
 		const [countResult] = await Promise.all([fetchCount().catch(() => undefined), loadUsers()]);
 		if (countResult) {
 			setCount(countResult.count);
-			void fireAnalyticsEvent();
 		}
 
 		setLoading(false);
@@ -178,6 +177,7 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	useEffect(() => {
 		void loadCount();
+		void fireAnalyticsEvent();
 	}, [loadCount]);
 
 	useEffect(() => {
