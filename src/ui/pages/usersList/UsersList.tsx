@@ -81,7 +81,10 @@ export const UsersList: React.FC<UserListProps> = ({
 	const fetchData = useFetchData();
 
 	const insertUsersAtOffset = useCallback(
-		(paramUsers: UserWithRecipeId[], paramOffset?: number) => {
+		(paramUsers: UserWithRecipeId[], paramOffset?: number, isSearch?: boolean) => {
+			if (isSearch) {
+				return [...paramUsers];
+			}
 			if (paramOffset === undefined) {
 				return [...users, ...paramUsers];
 			}
@@ -110,22 +113,34 @@ export const UsersList: React.FC<UserListProps> = ({
 			const paramOffset = getOffsetByPaginationToken(paginationToken) ?? offset;
 			setLoading(true);
 			const nextOffset = paramOffset + limit;
-
-			const data = await (paginationToken
-				? search
-					? fetchUsers({ paginationToken, limit: 1000 }, search)
-					: fetchUsers({ paginationToken })
-				: search
-				? fetchUsers({ limit: 1000 }, search)
-				: fetchUsers()
-			).catch(() => undefined);
+			let data;
+			if (paginationToken !== undefined) {
+				if (search !== undefined && Object.keys(search).length !== 0) {
+					data = await fetchUsers({ paginationToken, limit: 500 }, search).catch(() => undefined);
+					setIsSearch(true);
+				} else {
+					data = await fetchUsers({ paginationToken }).catch(() => undefined);
+					setIsSearch(false);
+				}
+			} else {
+				if (search !== undefined && Object.keys(search).length !== 0) {
+					data = await fetchUsers({ limit: 500 }, search).catch(() => undefined);
+					setIsSearch(true);
+				} else {
+					data = await fetchUsers().catch(() => undefined);
+					setIsSearch(false);
+				}
+			}
 			if (data) {
 				// store the users and pagination token
 				const { users: responseUsers, nextPaginationToken } = data;
-				setUsers(insertUsersAtOffset(responseUsers, paramOffset));
+				if (isSearch) {
+					setUsers(insertUsersAtOffset(responseUsers, paramOffset, true));
+				} else {
+					setUsers(insertUsersAtOffset(responseUsers, paramOffset));
+				}
 				setPaginationTokenByOffset({ ...paginationTokenByOffset, [nextOffset]: nextPaginationToken });
 				setErrorOffsets(errorOffsets.filter((item) => item !== nextOffset));
-				search && setIsSearch(true);
 			} else {
 				setErrorOffsets([paramOffset]);
 			}
