@@ -87,23 +87,16 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 
 	const getSearchResult = useCallback(
 		async (searches: SearchType[]) => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const tempQueryMap: any = {};
+			const tempQueryMap: Record<string, string> = {};
 			searches.forEach((el) => {
-				let value = el.value;
+				let value = el.value.trim();
 
 				if (el.tag === "phone") {
 					const parsed = parsePhoneNumber(el.value);
 
-					if (parsed === undefined) {
-						value = value.trim();
-					} else {
+					if (parsed !== undefined) {
 						value = parsed.format("E.164");
 					}
-				}
-
-				if (el.tag === "email") {
-					value = value.trim();
 				}
 
 				if (el.tag in tempQueryMap) {
