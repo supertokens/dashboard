@@ -28,6 +28,16 @@ export function getDashboardAppBasePath(): string {
 	return (window as any).dashboardAppPath;
 }
 
+export function isSearchEnabled(): boolean {
+	const searchFlag: boolean = (window as any).isSearchEnabled;
+
+	if (searchFlag !== undefined) {
+		return searchFlag;
+	}
+
+	return false;
+}
+
 export function getImageUrl(imageName: string): string {
 	return getStaticBasePath() + "/media/" + imageName;
 }
