@@ -23,11 +23,12 @@ import useFetchCount from "../../../api/users/count";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
-import { getApiUrl, getAuthMode, useFetchData } from "../../../utils";
+import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
+import Search from "../../components/search";
 import UserDetail from "../../components/userDetail/userDetail";
 import {
 	getDeleteUserToast,
@@ -72,6 +73,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [offset, setOffset] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
+	const [isSearch, setIsSearch] = useState<boolean>(false);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
 	const { fetchUsers } = useFetchUsersService();
 
@@ -79,7 +81,10 @@ export const UsersList: React.FC<UserListProps> = ({
 	const fetchData = useFetchData();
 
 	const insertUsersAtOffset = useCallback(
-		(paramUsers: UserWithRecipeId[], paramOffset?: number) => {
+		(paramUsers: UserWithRecipeId[], paramOffset?: number, isSearch?: boolean) => {
+			if (isSearch) {
+				return [...paramUsers];
+			}
 			if (paramOffset === undefined) {
 				return [...users, ...paramUsers];
 			}
@@ -104,18 +109,36 @@ export const UsersList: React.FC<UserListProps> = ({
 	);
 
 	const loadUsers = useCallback(
-		async (paginationToken?: string) => {
+		async (paginationToken?: string, search?: object) => {
 			const paramOffset = getOffsetByPaginationToken(paginationToken) ?? offset;
 			setLoading(true);
 			const nextOffset = paramOffset + limit;
-
-			const data = await (paginationToken ? fetchUsers({ paginationToken }) : fetchUsers()).catch(
-				() => undefined
-			);
+			let data;
+			if (paginationToken !== undefined) {
+				if (search !== undefined && Object.keys(search).length !== 0) {
+					data = await fetchUsers({ paginationToken, limit: 500 }, search).catch(() => undefined);
+					setIsSearch(true);
+				} else {
+					data = await fetchUsers({ paginationToken }).catch(() => undefined);
+					setIsSearch(false);
+				}
+			} else {
+				if (search !== undefined && Object.keys(search).length !== 0) {
+					data = await fetchUsers({ limit: 1000 }, search).catch(() => undefined);
+					setIsSearch(true);
+				} else {
+					data = await fetchUsers().catch(() => undefined);
+					setIsSearch(false);
+				}
+			}
 			if (data) {
 				// store the users and pagination token
 				const { users: responseUsers, nextPaginationToken } = data;
-				setUsers(insertUsersAtOffset(responseUsers, paramOffset));
+				if (isSearch) {
+					setUsers(insertUsersAtOffset(responseUsers, paramOffset, true));
+				} else {
+					setUsers(insertUsersAtOffset(responseUsers, paramOffset));
+				}
 				setPaginationTokenByOffset({ ...paginationTokenByOffset, [nextOffset]: nextPaginationToken });
 				setErrorOffsets(errorOffsets.filter((item) => item !== nextOffset));
 			} else {
@@ -210,16 +233,18 @@ export const UsersList: React.FC<UserListProps> = ({
 
 			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
 
+			{isSearchEnabled() && <Search onSearch={loadUsers} />}
+
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (
-					<NoUsers />
+					<NoUsers isSearch={isSearch} />
 				) : (
 					<UsersListTable
 						users={users}
 						offset={offset}
-						count={count ?? 0}
+						count={(isSearch ? users.length : count) ?? 0}
 						errorOffsets={errorOffsets}
-						limit={limit}
+						limit={isSearch ? users.length : limit}
 						nextPaginationToken={paginationTokenByOffset[offset + limit]}
 						goToNext={(token) => loadUsers(token)}
 						offsetChange={loadOffset}
@@ -228,6 +253,7 @@ export const UsersList: React.FC<UserListProps> = ({
 						onChangePasswordCallback={onChangePasswordCallback}
 						onDeleteCallback={onDeleteCallback}
 						onEmailChanged={onEmailChanged}
+						pagination={!isSearch}
 					/>
 				)}
 			</div>
