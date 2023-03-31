@@ -21,7 +21,7 @@ import (
 func main() {
 	err := supertokens.Init(supertokens.TypeInput{
 		Supertokens: &supertokens.ConnectionInfo{
-			ConnectionURI: "https://try.supertokens.com",
+			ConnectionURI: "localhost:3567",
 		},
 		AppInfo: supertokens.AppInfo{
 			AppName:       "Dashboard Dev Go",
@@ -48,7 +48,7 @@ func main() {
 				SignInAndUpFeature: tpmodels.TypeInputSignInAndUp{
 					Providers: []tpmodels.TypeProvider{
 						thirdparty.Google(tpmodels.GoogleConfig{
-							ClientID: "1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
+							ClientID:     "1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
 							ClientSecret: "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",
 						}),
 					},

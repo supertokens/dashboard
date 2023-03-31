@@ -18,16 +18,31 @@ import { UserPaginationList } from "../../ui/pages/usersList/types";
 import { getApiUrl, useFetchData } from "../../utils";
 
 interface IUseFetchUsersService {
-	fetchUsers: (param?: { paginationToken?: string; limit?: number }) => Promise<UserPaginationList | undefined>;
+	fetchUsers: (
+		param?: { paginationToken?: string; limit?: number },
+		search?: object
+	) => Promise<UserPaginationList | undefined>;
 }
 
 export const useFetchUsersService = (): IUseFetchUsersService => {
 	const fetchData = useFetchData();
-	const fetchUsers = async (param?: { paginationToken?: string; limit?: number }) => {
+	const fetchUsers = async (param?: { paginationToken?: string; limit?: number }, search?: object) => {
+		let query = {};
+		if (search) {
+			query = { ...search };
+		}
+		if (param && Object.keys(param).includes("paginationToken")) {
+			query = { ...query, paginationToken: param?.paginationToken };
+		}
+		if (param && Object.keys(param).includes("limit")) {
+			query = { ...query, limit: param?.limit };
+		} else {
+			query = { ...query, limit: LIST_DEFAULT_LIMIT };
+		}
 		const response = await fetchData({
 			url: getApiUrl("/api/users"),
 			method: "GET",
-			query: { ...param, limit: `${param?.limit ?? LIST_DEFAULT_LIMIT}` },
+			query: query,
 		});
 		return response.ok ? ((await response?.json()) as UserPaginationList) : undefined;
 	};
