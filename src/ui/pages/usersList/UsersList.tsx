@@ -23,7 +23,7 @@ import useFetchCount from "../../../api/users/count";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
-import { getApiUrl, getAuthMode, useFetchData } from "../../../utils";
+import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
@@ -42,8 +42,8 @@ import UsersListTable, {
 	UserRowActionProps,
 } from "../../components/usersListTable/UsersListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { EmailVerificationStatus, UserWithRecipeId } from "./types";
 import "./UsersList.scss";
+import { EmailVerificationStatus, UserWithRecipeId } from "./types";
 
 type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 
@@ -233,7 +233,7 @@ export const UsersList: React.FC<UserListProps> = ({
 
 			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
 
-			<Search onSearch={loadUsers} />
+			{isSearchEnabled() && <Search onSearch={loadUsers} />}
 
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (
