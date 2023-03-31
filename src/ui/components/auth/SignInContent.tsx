@@ -56,6 +56,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 			switch (body.status) {
 				case "OK":
 					localStorageHandler.setItem(StorageKeys.AUTH_KEY, body.sessionId);
+					localStorageHandler.setItem(StorageKeys.EMAIL, email);
 					onSuccess();
 					break;
 				case "USER_LIMIT_REACHED_ERROR":

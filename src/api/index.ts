@@ -13,6 +13,7 @@ const useAuthService = () => {
 		const body = await response.json();
 		if (body.status === "OK") {
 			localStorageHandler.removeItem(StorageKeys.AUTH_KEY);
+			localStorageHandler.removeItem(StorageKeys.EMAIL);
 			window.location.reload();
 		}
 	};
