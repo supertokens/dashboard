@@ -42,8 +42,8 @@ import UsersListTable, {
 	UserRowActionProps,
 } from "../../components/usersListTable/UsersListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import "./UsersList.scss";
 import { EmailVerificationStatus, UserWithRecipeId } from "./types";
+import "./UsersList.scss";
 
 type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 

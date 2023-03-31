@@ -29,10 +29,10 @@ export function getDashboardAppBasePath(): string {
 }
 
 export function isSearchEnabled(): boolean {
-	const searchFlag: boolean = (window as any).isSearchEnabled;
+	const searchFlag = (window as any).isSearchEnabled;
 
 	if (searchFlag !== undefined) {
-		return searchFlag;
+		return searchFlag === "true";
 	}
 
 	return false;
