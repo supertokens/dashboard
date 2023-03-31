@@ -124,7 +124,7 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 		}
 	};
 	const search = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.target.value === "") return;
+		if (e.target.value.trim() === "") return;
 		if (e.key === "Enter") {
 			e.preventDefault();
 			setSearches([...searches, { tag: defaulTag, value: e.target.value }]);
@@ -133,9 +133,9 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 	};
 
 	const searchButton = () => {
-		if(searchRef.current.value === "") return;
+		if (searchRef.current.value.trim() === "") return;
 		setSearches([...searches, { tag: defaulTag, value: searchRef.current?.value ?? "" }]);
-		searchRef.current!.value = ""
+		searchRef.current!.value = "";
 	};
 
 	return (
