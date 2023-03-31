@@ -15,6 +15,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
+import { parsePhoneNumber } from "libphonenumber-js/max";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { getImageUrl } from "../../../utils";
 import "./search.scss";
@@ -89,11 +90,27 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const tempQueryMap: any = {};
 			searches.forEach((el) => {
+				let value = el.value;
+
+				if (el.tag === "phone") {
+					const parsed = parsePhoneNumber(el.value);
+
+					if (parsed === undefined) {
+						value = value.trim();
+					} else {
+						value = parsed.format("E.164");
+					}
+				}
+
+				if (el.tag === "email") {
+					value = value.trim();
+				}
+
 				if (el.tag in tempQueryMap) {
-					const temp = tempQueryMap[el.tag] + ";" + el.value;
+					const temp = tempQueryMap[el.tag] + ";" + value;
 					tempQueryMap[el.tag] = temp;
 				} else {
-					tempQueryMap[el.tag] = el.value;
+					tempQueryMap[el.tag] = value;
 				}
 			});
 			await props.onSearch(undefined, tempQueryMap);
