@@ -29,7 +29,9 @@ export function getDashboardAppBasePath(): string {
 }
 
 export function isSearchEnabled(): boolean {
-	return !!(window as any).isSearchEnabled && ((window as any).isSearchEnabled as boolean);
+	const searchFlag = (window as any).isSearchEnabled;
+	if (searchFlag === undefined) return false;
+	return Boolean(searchFlag);
 }
 
 export function getImageUrl(imageName: string): string {
