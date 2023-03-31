@@ -133,7 +133,9 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 	};
 
 	const searchButton = () => {
+		if(searchRef.current.value === "") return;
 		setSearches([...searches, { tag: defaulTag, value: searchRef.current?.value ?? "" }]);
+		searchRef.current!.value = ""
 	};
 
 	return (
