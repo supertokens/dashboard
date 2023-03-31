@@ -124,7 +124,7 @@ export const UsersList: React.FC<UserListProps> = ({
 				}
 			} else {
 				if (search !== undefined && Object.keys(search).length !== 0) {
-					data = await fetchUsers({ limit: 500 }, search).catch(() => undefined);
+					data = await fetchUsers({ limit: 1000 }, search).catch(() => undefined);
 					setIsSearch(true);
 				} else {
 					data = await fetchUsers().catch(() => undefined);

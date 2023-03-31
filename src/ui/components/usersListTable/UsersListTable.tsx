@@ -114,7 +114,7 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 				<div
 					style={{ fontWeight: 500 }}
 					className="text-small">
-					{!pagination && users.length + " results"}
+					{!pagination && users.length + " result" + (users.length > 1 ? "s" : "")}
 				</div>
 			</div>
 		</div>

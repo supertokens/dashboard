@@ -13,23 +13,27 @@
  * under the License.
  */
 
-import { format, parsePhoneNumberFromString } from "libphonenumber-js";
+import { parsePhoneNumber } from "libphonenumber-js/max";
 import { useAppEnvContext } from "../../contexts/AppEnvContext";
 import "./PhoneNumber.scss";
 
 export const PhoneDisplay = ({ phone }: { phone: string }) => {
 	const { isDemoConnectionURI } = useAppEnvContext();
 	if (isDemoConnectionURI) return <>{phone}</>;
-	const { country, countryCallingCode } = parsePhoneNumberFromString(phone) || {};
+	let finalPhone = phone;
+
+	try {
+		const parsed = parsePhoneNumber(phone) || {};
+		finalPhone = parsed.formatInternational();
+	} catch (_) {
+		// ignored
+	}
+
 	return (
 		<>
-			{country && (
-				<div className="phone-display">
-					<span>
-						+{countryCallingCode} {format(phone, "NATIONAL")}
-					</span>
-				</div>
-			)}
+			<div className="phone-display">
+				<span>{finalPhone}</span>
+			</div>
 		</>
 	);
 };

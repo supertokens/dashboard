@@ -92,10 +92,21 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 				let value = el.value.trim();
 
 				if (el.tag === "phone") {
-					const parsed = parsePhoneNumber(el.value);
+					try {
+						const parsed = parsePhoneNumber(el.value);
 
-					if (parsed !== undefined) {
-						value = parsed.format("E.164");
+						if (parsed !== undefined) {
+							value = parsed.format("E.164");
+						}
+					} catch (e) {
+						let temp = value;
+
+						if (!temp.startsWith("+")) {
+							temp = "+" + temp;
+						}
+
+						temp = temp.replace(/[()\s]/g, "");
+						value = temp;
 					}
 				}
 
