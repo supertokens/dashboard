@@ -299,10 +299,30 @@ const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSele
 	const { firstName, lastName, email } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+	let isClicked = false;
+	let didDrag = false;
+
 	return (
 		<div className="user-info">
 			<div
-				onClick={() => onSelect(user)}
+				onMouseDown={() => {
+					isClicked = true;
+				}}
+				onClick={() => {
+					if (!didDrag) {
+						onSelect(user);
+					} else {
+						didDrag = false;
+					}
+				}}
+				onMouseMove={() => {
+					if (isClicked) {
+						didDrag = true;
+					}
+				}}
+				onMouseUp={() => {
+					isClicked = false;
+				}}
 				className="main"
 				title={name || email}>
 				{name || email || (phone && <PhoneDisplay phone={phone} />)}
