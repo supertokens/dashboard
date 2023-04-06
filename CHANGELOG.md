@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.6.1] - 2023-04-06
+
+-   Fixes an issues where searching from any other page other than first one would result in in-correct results
+
 ## [0.6.0] - 2023-03-31
 
 -   Adds search functionality to the dashboard
