@@ -115,21 +115,11 @@ export const UsersList: React.FC<UserListProps> = ({
 			const nextOffset = paramOffset + limit;
 			let data;
 			if (paginationToken !== undefined) {
-				if (search !== undefined && Object.keys(search).length !== 0) {
-					data = await fetchUsers({ paginationToken, limit: 500 }, search).catch(() => undefined);
-					setIsSearch(true);
-				} else {
-					data = await fetchUsers({ paginationToken }).catch(() => undefined);
-					setIsSearch(false);
-				}
+				data = await fetchUsers({ paginationToken }).catch(() => undefined);
+				setIsSearch(false);
 			} else {
-				if (search !== undefined && Object.keys(search).length !== 0) {
-					data = await fetchUsers({ limit: 1000 }, search).catch(() => undefined);
-					setIsSearch(true);
-				} else {
-					data = await fetchUsers().catch(() => undefined);
-					setIsSearch(false);
-				}
+				data = await fetchUsers({ limit: 1000 }, search).catch(() => undefined);
+				setIsSearch(true);
 			}
 			if (data) {
 				// store the users and pagination token
