@@ -42,8 +42,8 @@ import UsersListTable, {
 	UserRowActionProps,
 } from "../../components/usersListTable/UsersListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { EmailVerificationStatus, UserWithRecipeId } from "./types";
 import "./UsersList.scss";
+import { EmailVerificationStatus, UserWithRecipeId } from "./types";
 
 type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 
@@ -116,6 +116,9 @@ export const UsersList: React.FC<UserListProps> = ({
 			let data;
 			if (paginationToken !== undefined) {
 				data = await fetchUsers({ paginationToken }).catch(() => undefined);
+				setIsSearch(false);
+			} else if (search === undefined || Object.keys(search).length === 0) {
+				data = await fetchUsers().catch(() => undefined);
 				setIsSearch(false);
 			} else {
 				data = await fetchUsers({ limit: 1000 }, search).catch(() => undefined);
