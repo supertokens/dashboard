@@ -42,8 +42,8 @@ import UsersListTable, {
 	UserRowActionProps,
 } from "../../components/usersListTable/UsersListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { EmailVerificationStatus, UserWithRecipeId } from "./types";
 import "./UsersList.scss";
+import { EmailVerificationStatus, UserWithRecipeId } from "./types";
 
 type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 
@@ -115,21 +115,14 @@ export const UsersList: React.FC<UserListProps> = ({
 			const nextOffset = paramOffset + limit;
 			let data;
 			if (paginationToken !== undefined) {
-				if (search !== undefined && Object.keys(search).length !== 0) {
-					data = await fetchUsers({ paginationToken, limit: 500 }, search).catch(() => undefined);
-					setIsSearch(true);
-				} else {
-					data = await fetchUsers({ paginationToken }).catch(() => undefined);
-					setIsSearch(false);
-				}
+				data = await fetchUsers({ paginationToken }).catch(() => undefined);
+				setIsSearch(false);
+			} else if (search === undefined || Object.keys(search).length === 0) {
+				data = await fetchUsers().catch(() => undefined);
+				setIsSearch(false);
 			} else {
-				if (search !== undefined && Object.keys(search).length !== 0) {
-					data = await fetchUsers({ limit: 1000 }, search).catch(() => undefined);
-					setIsSearch(true);
-				} else {
-					data = await fetchUsers().catch(() => undefined);
-					setIsSearch(false);
-				}
+				data = await fetchUsers({ limit: 1000 }, search).catch(() => undefined);
+				setIsSearch(true);
 			}
 			if (data) {
 				// store the users and pagination token
