@@ -110,6 +110,7 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	const loadUsers = useCallback(
 		async (paginationToken?: string, search?: object) => {
+			let localSearch = false;
 			const paramOffset = getOffsetByPaginationToken(paginationToken) ?? offset;
 			setLoading(true);
 			const nextOffset = paramOffset + limit;
@@ -123,12 +124,13 @@ export const UsersList: React.FC<UserListProps> = ({
 			} else {
 				data = await fetchUsers({ limit: 1000 }, search).catch(() => undefined);
 				setIsSearch(true);
+				localSearch = true;
 			}
 			if (data) {
 				// store the users and pagination token
 				const { users: responseUsers, nextPaginationToken } = data;
-				if (isSearch) {
-					setUsers(insertUsersAtOffset(responseUsers, paramOffset, true));
+				if (localSearch) {
+					setUsers(responseUsers);
 				} else {
 					setUsers(insertUsersAtOffset(responseUsers, paramOffset));
 				}
@@ -227,6 +229,7 @@ export const UsersList: React.FC<UserListProps> = ({
 			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
 
 			{isSearchEnabled() && <Search onSearch={loadUsers} />}
+			<Search onSearch={loadUsers} />
 
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (
