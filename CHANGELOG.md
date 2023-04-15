@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.6.3] - 2023-04-115
+
+-   Fixes an issues where search was enabled even for older versions.
+
 ## [0.6.2] - 2023-04-14
 
 -   Fixes an issues where searching from any other page other than first one would result in in-correct results
