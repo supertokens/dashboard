@@ -229,7 +229,6 @@ export const UsersList: React.FC<UserListProps> = ({
 			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
 
 			{isSearchEnabled() && <Search onSearch={loadUsers} />}
-			<Search onSearch={loadUsers} />
 
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (
