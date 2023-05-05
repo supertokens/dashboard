@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.6.4] - 2023-05-05
+
+-   Fixes an issue where the sign in form would not work with auto filled entries
+
 ## [0.6.3] - 2023-04-115
 
 -   Fixes an issues where search was enabled even for older versions.
