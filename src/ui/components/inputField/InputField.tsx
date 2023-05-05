@@ -66,6 +66,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 				<input
 					type={props.type === "password" && showPassword ? "text" : props.type}
 					name={props.name}
+					onChange={onChange}
 					onKeyUp={onChange}
 					defaultValue={props.value}
 					onFocus={() => setIsFocused(true)}
