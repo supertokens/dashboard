@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.6.5] - 2023-05-25
+
+-   Fixes an issue where the user's initial would render as "FF" if the user metadata recipe was not initialised
+
 ## [0.6.4] - 2023-05-05
 
 -   Fixes an issue where the sign in form would not work with auto filled entries
