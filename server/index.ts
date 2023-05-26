@@ -34,7 +34,7 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "http://localhost:3567",
+		connectionURI: "https://try.supertokens.io",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",

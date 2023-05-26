@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.6.6] - 2023-05-26
+
+-   Fixes an issue where updating user meata data would result in an error if the entire field was cleared
+
 ## [0.6.5] - 2023-05-25
 
 -   Fixes an issue where the user's initial would render as "FF" if the user metadata recipe was not initialised

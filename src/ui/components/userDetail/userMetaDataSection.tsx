@@ -110,7 +110,10 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 	const onSave = async () => {
 		try {
 			setMetaDataUpdateError(undefined);
-			await updateUserMetaData(userId, metadataForEditing === undefined ? "" : metadataForEditing);
+			await updateUserMetaData(
+				userId,
+				metadataForEditing === undefined || metadataForEditing === "" ? "{}" : metadataForEditing
+			);
 			await refetchData();
 			setIsEditing(false);
 			// eslint-disable-next-line  @typescript-eslint/no-explicit-any
