@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import UsersListPage from "./ui/pages/usersList/UsersList";
 import { getDashboardAppBasePath } from "./utils";
 
@@ -22,10 +22,12 @@ import "./images";
 import SignOutBtn from "./ui/components/auth/SignOutBtn";
 import AuthWrapper from "./ui/components/authWrapper";
 import ErrorBoundary from "./ui/components/errorboundary";
+import { AccessDeniedModal } from "./ui/components/layout/accessDeniedModal";
 import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
 import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
 import { ToastNotificationContainer } from "./ui/components/toast/toastNotification";
 import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
+import { AccessDeniedContextProvider } from "./ui/contexts/accessDeniedPopup";
 
 function App() {
 	return (
@@ -33,23 +35,26 @@ function App() {
 			<SafeAreaView />
 			<ErrorBoundary>
 				<PopupContentContextProvider>
-					<AuthWrapper>
-						<Router basename={getDashboardAppBasePath()}>
-							<SignOutBtn />
-							<Routes>
-								<Route
-									path="/"
-									element={<UsersListPage />}
-								/>
-								<Route
-									path="*"
-									element={<UsersListPage />}
-								/>
-							</Routes>
-						</Router>
-						<ToastNotificationContainer />
-						<LayoutModalContainer />
-					</AuthWrapper>
+					<AccessDeniedContextProvider>
+						<AuthWrapper>
+							<Router basename={getDashboardAppBasePath()}>
+								<SignOutBtn />
+								<Routes>
+									<Route
+										path="/"
+										element={<UsersListPage />}
+									/>
+									<Route
+										path="*"
+										element={<UsersListPage />}
+									/>
+								</Routes>
+							</Router>
+							<AccessDeniedModal />
+							<ToastNotificationContainer />
+							<LayoutModalContainer />
+						</AuthWrapper>
+					</AccessDeniedContextProvider>
 				</PopupContentContextProvider>
 			</ErrorBoundary>
 		</>

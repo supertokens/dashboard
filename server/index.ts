@@ -44,7 +44,7 @@ SuperTokens.init({
 	},
 	recipeList: [
 		Dashboard.init({
-			// Keep this so that the dev server uses api key based login
+			admins: ["team@supertokens.com"],
 			override: {
 				functions: (original) => {
 					return {

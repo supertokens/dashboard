@@ -18,6 +18,7 @@ import { HTTPStatusCodes, StorageKeys } from "../constants";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
 import { HttpMethod } from "../types";
+import { getAccessDeniedEvent } from "../ui/events/accessDenied";
 import { UserRecipeType } from "../ui/pages/usersList/types";
 
 export function getStaticBasePath(): string {
@@ -71,6 +72,7 @@ interface IFetchDataArgs {
 
 export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
+	const [body, setBody] = useState<any>({});
 
 	const fetchData = async ({
 		url,
@@ -109,11 +111,20 @@ export const useFetchData = () => {
 			window.location.reload();
 		} else {
 			setStatusCode(ignoreErrors ? 200 : response.status);
+			setBody(await response.clone().json());
 		}
 		return response;
 	};
 
 	if (statusCode < 300 || statusCode === HTTPStatusCodes.UNAUTHORIZED) {
+		return fetchData;
+	}
+
+	if (statusCode === 403) {
+		const messageInBody = body.message;
+		window.dispatchEvent(
+			getAccessDeniedEvent(messageInBody === undefined ? "You do not have access to this page" : messageInBody)
+		);
 		return fetchData;
 	}
 
