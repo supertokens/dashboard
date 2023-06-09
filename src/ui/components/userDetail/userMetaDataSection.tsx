@@ -109,6 +109,13 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 
 	const onSave = async () => {
 		try {
+			try {
+				// We json parse here to make sure its a valid JSON so that the API does not need to throw a 400
+				JSON.parse(metadataForEditing || "{}");
+			} catch (_) {
+				// This gets handled in the outer catch block
+				throw new Error("Invalid meta data");
+			}
 			setMetaDataUpdateError(undefined);
 			await updateUserMetaData(
 				userId,
