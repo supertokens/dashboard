@@ -16,6 +16,8 @@ tags:
       description: APIs for search
     - name: "Telemetry"
       description: APIs related to recording telemetry from the dashboard
+    - name: "Multitenancy"
+      description: APIs related to multitenancy
 
 paths:
     /signin:
@@ -1172,6 +1174,44 @@ paths:
                                         type: array
                                         items:
                                             type: string
+
+    /tenants/list:
+        get:
+            tags:
+                - Multitenancy
+            summary: Get all tenants created in the core
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    coreConfig:
+                                        type: object
+                                    tenants:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                tenantId:
+                                                    type: string
+                                                emailPassword:
+                                                    type: object
+                                                    properties:
+                                                        enabled: boolean
+                                                passwordless:
+                                                    type: object
+                                                    properties:
+                                                        enabled: boolean
+                                                thirdParty:
+                                                    type: object
+                                                    properties:
+                                                        enabled: boolean
 
 servers:
     # Added by API Auto Mocking Plugin
