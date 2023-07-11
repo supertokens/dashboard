@@ -13,28 +13,45 @@
  * under the License.
  */
 
-import { UserListCount } from "../../ui/pages/usersList/types";
 import { getApiUrl, useFetchData } from "../../utils";
 
-interface IUseFetchCountService {
-	fetchCount: (tenantid?: string) => Promise<UserListCount | undefined>;
-}
+type TenantsListResponse = {
+	status: "OK";
+	tenants: {
+		tenantId: string;
+		emailPassword: {
+			enabled: boolean;
+		};
+		passwordless: {
+			enabled: boolean;
+		};
+		thirdParty: {
+			enabled: boolean;
+		};
+	}[];
+};
 
-const useFetchCountService = (): IUseFetchCountService => {
+type TenantsListService = {
+	fetchTenants: () => Promise<TenantsListResponse>;
+};
+
+export const useGetTenantsList = (): TenantsListService => {
 	const fetchData = useFetchData();
-
-	const fetchCount = async (tenantId?: string) => {
+	const fetchTenants = async (): Promise<TenantsListResponse> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/users/count", tenantId),
 			method: "GET",
+			url: getApiUrl("/api/tenants/list"),
 		});
 
-		return response.ok ? ((await response?.json()) as UserListCount) : undefined;
+		return response.ok
+			? await response.json()
+			: {
+					status: "OK",
+					tenants: [],
+			  };
 	};
 
 	return {
-		fetchCount,
+		fetchTenants,
 	};
 };
-
-export default useFetchCountService;

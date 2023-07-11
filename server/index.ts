@@ -34,7 +34,8 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "https://try.supertokens.io",
+		connectionURI: "https://st-dev-dfaaa4e0-1be4-11ee-827c-0146616c6bc4.aws.supertokens.io",
+		apiKey: "PhStUSQd4-g278GY28YsfTlOWD",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",
@@ -66,10 +67,18 @@ SuperTokens.init({
 		ThirdParty.init({
 			signInAndUpFeature: {
 				providers: [
-					ThirdParty.Google({
-						clientId: "1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
-						clientSecret: "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",
-					}),
+					{
+						config: {
+							thirdPartyId: "google",
+							clients: [
+								{
+									clientId:
+										"1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
+									clientSecret: "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",
+								},
+							],
+						},
+					},
 				],
 			},
 		}),

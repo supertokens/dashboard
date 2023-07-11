@@ -20,13 +20,18 @@ import { getApiUrl, useFetchData } from "../../utils";
 interface IUseFetchUsersService {
 	fetchUsers: (
 		param?: { paginationToken?: string; limit?: number },
-		search?: object
+		search?: object,
+		tenantId?: string
 	) => Promise<UserPaginationList | undefined>;
 }
 
 export const useFetchUsersService = (): IUseFetchUsersService => {
 	const fetchData = useFetchData();
-	const fetchUsers = async (param?: { paginationToken?: string; limit?: number }, search?: object) => {
+	const fetchUsers = async (
+		param?: { paginationToken?: string; limit?: number },
+		search?: object,
+		tenantId?: string
+	) => {
 		let query = {};
 		if (search) {
 			query = { ...search };
@@ -40,7 +45,7 @@ export const useFetchUsersService = (): IUseFetchUsersService => {
 			query = { ...query, limit: LIST_DEFAULT_LIMIT };
 		}
 		const response = await fetchData({
-			url: getApiUrl("/api/users"),
+			url: getApiUrl("/api/users", tenantId),
 			method: "GET",
 			query: query,
 		});

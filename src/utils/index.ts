@@ -42,12 +42,18 @@ export function getImageUrl(imageName: string): string {
 	return getStaticBasePath() + "/media/" + imageName;
 }
 
-export function getApiUrl(path: string): string {
+export function getApiUrl(path: string, tenantId?: string): string {
 	if (!path.startsWith("/")) {
 		path = "/" + path;
 	}
 
-	return window.location.origin + getDashboardAppBasePath() + path;
+	let dashboardBasePathToUse = getDashboardAppBasePath();
+
+	if (tenantId !== undefined) {
+		dashboardBasePathToUse = dashboardBasePathToUse.replace("/dashboard", `/${tenantId}/dashboard`);
+	}
+
+	return window.location.origin + dashboardBasePathToUse + path;
 }
 
 export function getConnectionUri() {
