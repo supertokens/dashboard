@@ -22,6 +22,7 @@ import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { EmailVerificationStatus, UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
+import { UserTenantsList } from "./tenantList/UserTenantsList";
 import "./userDetail.scss";
 import { getUpdateUserToast } from "./userDetailForm";
 import UserDetailHeader from "./userDetailHeader";
@@ -177,6 +178,9 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				userDetail={userDetail.user}
 				{...props}
 			/>
+
+			<UserTenantsList tenantIds={userDetail.user.user.tenantIds} />
+
 			<UserDetailInfoGrid
 				userDetail={userDetail.user}
 				refetchData={refetchAllData}
