@@ -165,6 +165,7 @@ const UserTableRow: React.FC<
 			showModal(
 				getUserChangePasswordPopupProps({
 					userId: user.user.id,
+					tenantIds: user.user.tenantIds,
 				})
 			),
 		[showModal, user.user.id, onChangePasswordCallback]

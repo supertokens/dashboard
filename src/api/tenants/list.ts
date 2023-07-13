@@ -15,20 +15,22 @@
 
 import { getApiUrl, useFetchData } from "../../utils";
 
+export type Tenant = {
+	tenantId: string;
+	emailPassword: {
+		enabled: boolean;
+	};
+	passwordless: {
+		enabled: boolean;
+	};
+	thirdParty: {
+		enabled: boolean;
+	};
+};
+
 type TenantsListResponse = {
 	status: "OK";
-	tenants: {
-		tenantId: string;
-		emailPassword: {
-			enabled: boolean;
-		};
-		passwordless: {
-			enabled: boolean;
-		};
-		thirdParty: {
-			enabled: boolean;
-		};
-	}[];
+	tenants: Tenant[];
 };
 
 type TenantsListService = {

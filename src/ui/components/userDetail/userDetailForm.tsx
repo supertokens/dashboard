@@ -17,7 +17,9 @@ import { FC, useContext, useState } from "react";
 import { useUserService } from "../../../api/user";
 import usePasswordResetService from "../../../api/user/password/reset";
 import { getImageUrl } from "../../../utils";
+import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
+import { useTenantsListContext } from "../../contexts/TenantsListContext";
 import { UserProps } from "../../pages/usersList/types";
 import InputField from "../inputField/InputField";
 import { LayoutModalProps } from "../layout/layoutModal";
@@ -31,6 +33,7 @@ type PasswordChangeCallback = (password?: string) => Promise<void>;
 type UserDetailChangePasswordFormProps = {
 	onPasswordChange: PasswordChangeCallback;
 	userId: string;
+	tenantIds: string[];
 };
 
 type UserDetailChangeEmailFormProps = {
@@ -50,6 +53,7 @@ type UserDeleteConfirmationTriggerProps = UserProps & { onDeleteCallback: OnSele
 
 export type UserDetailChangePasswordPopupProps = Omit<LayoutModalProps, "modalContent"> & {
 	userId: string;
+	tenantIds: string[];
 };
 
 export type UserDetailChangeEmailPopupProps = Omit<LayoutModalProps, "modalContent"> & {
@@ -128,6 +132,7 @@ export const getUserChangePasswordPopupProps = (props: UserDetailChangePasswordP
 		<UserDetailChangePasswordForm
 			onPasswordChange={onModalClose}
 			userId={props.userId}
+			tenantIds={props.tenantIds}
 		/>
 	);
 
@@ -302,6 +307,7 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 	const [apiError, setApiError] = useState<string | undefined>(undefined);
 	const { showToast } = useContext(PopupContentContext);
 	const { updatePassword } = usePasswordResetService();
+	const { tenantsListFromStore } = useTenantsListContext();
 
 	const isPasswordMatch = password === repeatPassword;
 
@@ -310,7 +316,13 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 			return;
 		}
 
-		const response = await updatePassword(userId, password);
+		const tenants = getTenantsObjectsForIds(tenantsListFromStore ?? [], props.tenantIds);
+		const matchingTenantIds = tenants.filter((_tenant) => _tenant.emailPassword.enabled === true);
+		const response = await updatePassword(
+			userId,
+			password,
+			matchingTenantIds.length > 0 ? matchingTenantIds[0].tenantId : undefined
+		);
 
 		if (response.status === "INVALID_PASSWORD_ERROR") {
 			setApiError(response.error);

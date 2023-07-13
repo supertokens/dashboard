@@ -50,6 +50,7 @@ import UsersListTable, {
 	UserRowActionProps,
 } from "../../components/usersListTable/UsersListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
+import { useTenantsListContext } from "../../contexts/TenantsListContext";
 import "./UsersList.scss";
 import { EmailVerificationStatus, UserWithRecipeId } from "./types";
 
@@ -87,6 +88,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const { fetchCount } = useFetchCount();
 	const { fetchTenants } = useGetTenantsList();
 	const fetchData = useFetchData();
+	const { setTenantsListToStore } = useTenantsListContext();
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: UserWithRecipeId[], paramOffset?: number, isSearch?: boolean) => {
@@ -187,6 +189,8 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	const fetchAndSetCurrentTenant = async () => {
 		const result = await fetchTenants();
+
+		setTenantsListToStore(result.tenants);
 
 		if (result.tenants.length === 0) {
 			return;

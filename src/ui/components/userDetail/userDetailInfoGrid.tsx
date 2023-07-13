@@ -341,6 +341,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 			showModal(
 				getUserChangePasswordPopupProps({
 					userId: userDetail.user.id,
+					tenantIds: userDetail.user.tenantIds,
 				})
 			),
 		[showModal, handleChangePassword]
