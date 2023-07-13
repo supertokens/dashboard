@@ -14,12 +14,15 @@
  */
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { Tenant } from "../../../api/tenants/list";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
 import useVerifyUserEmail from "../../../api/user/email/verify";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
 import { getImageUrl, getRecipeNameFromid } from "../../../utils";
+import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
+import { useTenantsListContext } from "../../contexts/TenantsListContext";
 import { EmailVerificationStatus, UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import { UserTenantsList } from "./tenantList/UserTenantsList";
@@ -58,6 +61,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { getUserEmailVerificationStatus } = useVerifyUserEmail();
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
+	const { tenantsListFromStore } = useTenantsListContext();
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user, recipeId);
@@ -72,6 +76,26 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 	const updateUser = useCallback(
 		async (userId: string, data: UserWithRecipeId): Promise<UpdateUserInformationResponse> => {
+			let tenantId: string | undefined;
+			const tenants: Tenant[] = getTenantsObjectsForIds(tenantsListFromStore ?? [], data.user.tenantIds);
+			let matchingTenants: Tenant[] = [];
+
+			if (data.recipeId === "emailpassword") {
+				matchingTenants = tenants.filter((tenant) => tenant.emailPassword.enabled === true);
+			}
+
+			if (data.recipeId === "passwordless") {
+				matchingTenants = tenants.filter((tenant) => tenant.passwordless.enabled === true);
+			}
+
+			if (data.recipeId === "thirdparty") {
+				matchingTenants = tenants.filter((tenant) => tenant.thirdParty.enabled === true);
+			}
+
+			if (matchingTenants.length > 0) {
+				tenantId = matchingTenants[0].tenantId;
+			}
+
 			const userInfoResponse = await updateUserInformation({
 				userId,
 				recipeId: data.recipeId,
@@ -79,6 +103,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				phone: data.recipeId === "passwordless" ? data.user.phoneNumber : "",
 				firstName: data.user.firstName,
 				lastName: data.user.lastName,
+				tenantId,
 			});
 			showToast(getUpdateUserToast(userInfoResponse.status === "OK"));
 			return userInfoResponse;

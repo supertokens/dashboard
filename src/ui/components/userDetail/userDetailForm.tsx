@@ -14,6 +14,7 @@
  */
 
 import { FC, useContext, useState } from "react";
+import { Tenant } from "../../../api/tenants/list";
 import { useUserService } from "../../../api/user";
 import usePasswordResetService from "../../../api/user/password/reset";
 import { getImageUrl } from "../../../utils";
@@ -40,11 +41,13 @@ type UserDetailChangeEmailFormProps = {
 	onEmailChange: (success: boolean) => Promise<void>;
 	userId: string;
 	recipeId: "emailpassword" | "passwordless";
+	tenantIds: string[];
 };
 
 type UserDetailChangePhoneFormProps = {
 	onPhoneChange: PasswordChangeCallback;
 	userId: string;
+	tenantIds: string[];
 };
 
 type UserDeleteConfirmationProps = UserProps & { onConfirmed: (isConfirmed: boolean) => void };
@@ -60,10 +63,12 @@ export type UserDetailChangeEmailPopupProps = Omit<LayoutModalProps, "modalConte
 	userId: string;
 	recipeId: "emailpassword" | "passwordless";
 	onEmailChanged: () => Promise<void>;
+	tenantIds: string[];
 };
 
 export type UserDetailChangePhonePopupProps = Omit<LayoutModalProps, "modalContent"> & {
 	userId: string;
+	tenantIds: string[];
 };
 
 export const getUserChangeEmailPopupProps = (props: UserDetailChangeEmailPopupProps) => {
@@ -84,6 +89,7 @@ export const getUserChangeEmailPopupProps = (props: UserDetailChangeEmailPopupPr
 			onEmailChange={onModalClose}
 			userId={props.userId}
 			recipeId={props.recipeId}
+			tenantIds={props.tenantIds}
 		/>
 	);
 
@@ -108,6 +114,7 @@ export const getUserChangePhonePopupProps = (props: UserDetailChangePhonePopupPr
 		<UserDetailChangePhoneForm
 			onPhoneChange={onModalClose}
 			userId={props.userId}
+			tenantIds={props.tenantIds}
 		/>
 	);
 
@@ -153,6 +160,7 @@ export const UserDetailChangePhoneForm: FC<UserDetailChangePhoneFormProps> = (
 	const [apiError, setApiError] = useState<string | undefined>(undefined);
 	const { showToast } = useContext(PopupContentContext);
 	const { updateUserInformation } = useUserService();
+	const { tenantsListFromStore } = useTenantsListContext();
 
 	const isPhoneMatch = phone === repeatPhone;
 
@@ -161,10 +169,14 @@ export const UserDetailChangePhoneForm: FC<UserDetailChangePhoneFormProps> = (
 			return;
 		}
 
+		const tenants: Tenant[] = getTenantsObjectsForIds(tenantsListFromStore ?? [], props.tenantIds);
+		const matchingTenants = tenants.filter((tenant) => tenant.passwordless.enabled === true);
+
 		const response = await updateUserInformation({
 			userId,
 			phone,
 			recipeId: "passwordless",
+			tenantId: matchingTenants.length > 0 ? matchingTenants[0].tenantId : undefined,
 		});
 
 		if (response.status === "INVALID_EMAIL_ERROR") {
@@ -229,6 +241,7 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 	const [apiError, setApiError] = useState<string | undefined>(undefined);
 	const { showToast } = useContext(PopupContentContext);
 	const { updateUserInformation } = useUserService();
+	const { tenantsListFromStore } = useTenantsListContext();
 
 	const isEmailMatch = email === repeatEmail;
 
@@ -237,10 +250,27 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 			return;
 		}
 
+		let tenantId: string | undefined;
+		const tenants: Tenant[] = getTenantsObjectsForIds(tenantsListFromStore ?? [], props.tenantIds);
+		let matchingTenants: Tenant[] = [];
+
+		if (recipeId === "emailpassword") {
+			matchingTenants = tenants.filter((tenant) => tenant.emailPassword.enabled === true);
+		}
+
+		if (recipeId === "passwordless") {
+			matchingTenants = tenants.filter((tenant) => tenant.passwordless.enabled === true);
+		}
+
+		if (matchingTenants.length > 0) {
+			tenantId = matchingTenants[0].tenantId;
+		}
+
 		const response = await updateUserInformation({
 			userId,
 			email,
 			recipeId,
+			tenantId,
 		});
 
 		if (response.status === "INVALID_EMAIL_ERROR") {

@@ -178,6 +178,7 @@ const UserTableRow: React.FC<
 					userId: user.user.id,
 					recipeId,
 					onEmailChanged: props.onEmailChanged,
+					tenantIds: user.user.tenantIds,
 				})
 			),
 		[showModal, user.user.id, onChangePasswordCallback]
@@ -188,6 +189,7 @@ const UserTableRow: React.FC<
 			showModal(
 				getUserChangePhonePopupProps({
 					userId: user.user.id,
+					tenantIds: user.user.tenantIds,
 				})
 			),
 		[showModal, user.user.id, onChangePasswordCallback]
