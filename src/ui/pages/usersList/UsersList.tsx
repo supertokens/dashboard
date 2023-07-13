@@ -24,7 +24,14 @@ import useFetchCount from "../../../api/users/count";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
-import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
+import {
+	getApiUrl,
+	getAuthMode,
+	getSelectedTenantId,
+	isSearchEnabled,
+	setSelectedTenantId,
+	useFetchData,
+} from "../../../utils";
 import { package_version } from "../../../version";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
@@ -116,7 +123,7 @@ export const UsersList: React.FC<UserListProps> = ({
 			setLoading(true);
 			const nextOffset = paramOffset + limit;
 			let data;
-			const tenantId = localStorageHandler.getItem(StorageKeys.TENANT_ID);
+			const tenantId = getSelectedTenantId();
 			if (paginationToken !== undefined) {
 				data = await fetchUsers({ paginationToken }, undefined, tenantId).catch(() => undefined);
 				setIsSearch(false);
@@ -185,17 +192,17 @@ export const UsersList: React.FC<UserListProps> = ({
 			return;
 		}
 
-		const tenantInStorage = localStorageHandler.getItem(StorageKeys.TENANT_ID);
+		const tenantInStorage = getSelectedTenantId();
 		let tenantIdToUse: string | undefined;
 
 		if (tenantInStorage === undefined) {
 			tenantIdToUse = result.tenants[0].tenantId;
-			localStorageHandler.setItem(StorageKeys.TENANT_ID, tenantIdToUse);
+			setSelectedTenantId(tenantIdToUse);
 		} else {
 			const filteredTenants = result.tenants.filter((t) => t.tenantId === tenantInStorage);
 			if (filteredTenants.length === 0) {
 				tenantIdToUse = result.tenants[0].tenantId;
-				localStorageHandler.setItem(StorageKeys.TENANT_ID, tenantIdToUse);
+				setSelectedTenantId(tenantIdToUse);
 			} else {
 				tenantIdToUse = filteredTenants[0].tenantId;
 			}
@@ -204,7 +211,7 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	const loadCount = async () => {
 		setLoading(true);
-		const tenantId = localStorageHandler.getItem(StorageKeys.TENANT_ID);
+		const tenantId = getSelectedTenantId();
 		const [countResult] = await Promise.all([fetchCount(tenantId).catch(() => undefined), loadUsers()]);
 		if (countResult) {
 			setCount(countResult.count);
@@ -346,8 +353,8 @@ export const UserListPage = () => {
 	);
 
 	const sendUserEmailVerification = useCallback(
-		async (userId: string) => {
-			const isSend = await sendUserEmailVerificationApi(userId);
+		async (userId: string, tenantId: string | undefined) => {
+			const isSend = await sendUserEmailVerificationApi(userId, tenantId);
 			showToast(getSendEmailVerificationToast(isSend));
 			return isSend;
 		},
@@ -355,8 +362,8 @@ export const UserListPage = () => {
 	);
 
 	const updateEmailVerificationStatus = useCallback(
-		async (userId: string, isVerified: boolean) => {
-			const isUpdated = await updateUserEmailVerificationStatus(userId, isVerified);
+		async (userId: string, isVerified: boolean, tenantId: string | undefined) => {
+			const isUpdated = await updateUserEmailVerificationStatus(userId, isVerified, tenantId);
 			if (isUpdated) {
 				setSelectedUserEmailVerification({ isVerified, status: "OK" });
 			}
@@ -418,8 +425,16 @@ export const UserListPage = () => {
 					user={selectedUser}
 					onBackButtonClicked={backToList}
 					onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
-					onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
-					onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
+					onSendEmailVerificationCallback={({ user: { id, tenantIds } }) => {
+						return sendUserEmailVerification(id, tenantIds.length > 0 ? tenantIds[0] : undefined);
+					}}
+					onUpdateEmailVerificationStatusCallback={(
+						userId: string,
+						isVerified: boolean,
+						tenantId: string | undefined
+					) => {
+						return updateEmailVerificationStatus(userId, isVerified, tenantId);
+					}}
 					onChangePasswordCallback={changePassword}
 				/>
 			)}

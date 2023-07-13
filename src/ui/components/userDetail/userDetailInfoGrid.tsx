@@ -396,7 +396,11 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 								user={userDetail}
 								isEditing={isEditing}
 								setVerificationStatus={async (isVerified) => {
-									await onUpdateEmailVerificationStatusCallback(userDetail.user.id, isVerified);
+									await onUpdateEmailVerificationStatusCallback(
+										userDetail.user.id,
+										isVerified,
+										userDetail.user.tenantIds.length > 0 ? userDetail.user.tenantIds[0] : undefined
+									);
 									await refetchData();
 								}}
 								sendVerification={() => onSendEmailVerificationCallback(userDetail)}

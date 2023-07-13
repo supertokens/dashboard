@@ -36,7 +36,11 @@ export type UserDetailProps = {
 	onBackButtonClicked: () => void;
 	onDeleteCallback: OnSelectUserFunction;
 	onSendEmailVerificationCallback: (user: UserWithRecipeId) => Promise<boolean>;
-	onUpdateEmailVerificationStatusCallback: (userId: string, isVerified: boolean) => Promise<boolean>;
+	onUpdateEmailVerificationStatusCallback: (
+		userId: string,
+		isVerified: boolean,
+		tenantId: string | undefined
+	) => Promise<boolean>;
 	onChangePasswordCallback: (userId: string, newPassword: string) => Promise<void>;
 };
 
