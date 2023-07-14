@@ -24,14 +24,7 @@ import useFetchCount from "../../../api/users/count";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
-import {
-	getApiUrl,
-	getAuthMode,
-	getSelectedTenantId,
-	isSearchEnabled,
-	setSelectedTenantId,
-	useFetchData,
-} from "../../../utils";
+import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
 import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
@@ -88,7 +81,9 @@ export const UsersList: React.FC<UserListProps> = ({
 	const { fetchCount } = useFetchCount();
 	const { fetchTenants } = useGetTenantsList();
 	const fetchData = useFetchData();
-	const { setTenantsListToStore, tenantsListFromStore } = useTenantsListContext();
+	const { setTenantsListToStore, tenantsListFromStore, getSelectedTenant, setSelectedTenant } =
+		useTenantsListContext();
+	const selectedTenant = getSelectedTenant();
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: UserWithRecipeId[], paramOffset?: number, isSearch?: boolean) => {
@@ -125,7 +120,7 @@ export const UsersList: React.FC<UserListProps> = ({
 			setLoading(true);
 			const nextOffset = paramOffset + limit;
 			let data;
-			const tenantId = getSelectedTenantId();
+			const tenantId = getSelectedTenant();
 			if (paginationToken !== undefined) {
 				data = await fetchUsers({ paginationToken }, undefined, tenantId).catch(() => undefined);
 				setIsSearch(false);
@@ -196,17 +191,17 @@ export const UsersList: React.FC<UserListProps> = ({
 			return;
 		}
 
-		const tenantInStorage = getSelectedTenantId();
+		const tenantInStorage = getSelectedTenant();
 		let tenantIdToUse: string | undefined;
 
 		if (tenantInStorage === undefined) {
 			tenantIdToUse = result.tenants[0].tenantId;
-			setSelectedTenantId(tenantIdToUse);
+			setSelectedTenant(tenantIdToUse);
 		} else {
 			const filteredTenants = result.tenants.filter((t) => t.tenantId === tenantInStorage);
 			if (filteredTenants.length === 0) {
 				tenantIdToUse = result.tenants[0].tenantId;
-				setSelectedTenantId(tenantIdToUse);
+				setSelectedTenant(tenantIdToUse);
 			} else {
 				tenantIdToUse = filteredTenants[0].tenantId;
 			}
@@ -215,7 +210,7 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	const loadCount = async () => {
 		setLoading(true);
-		const tenantId = getSelectedTenantId();
+		const tenantId = getSelectedTenant();
 		const [countResult] = await Promise.all([fetchCount(tenantId).catch(() => undefined), loadUsers()]);
 		if (countResult) {
 			setCount(countResult.count);
@@ -253,8 +248,6 @@ export const UsersList: React.FC<UserListProps> = ({
 		await loadOffset(offset);
 	};
 
-	const selectedTenant = getSelectedTenantId();
-
 	return (
 		<div
 			className="users-list"
@@ -278,7 +271,8 @@ export const UsersList: React.FC<UserListProps> = ({
 					className="tenant-list-dropdown"
 					defaultValue={selectedTenant}
 					onChange={(event) => {
-						// console.log(event.target.value);
+						setSelectedTenant(event.target.value);
+						void loadCount();
 					}}>
 					{tenantsListFromStore.map((tenant) => {
 						return (
