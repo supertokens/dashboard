@@ -88,7 +88,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const { fetchCount } = useFetchCount();
 	const { fetchTenants } = useGetTenantsList();
 	const fetchData = useFetchData();
-	const { setTenantsListToStore } = useTenantsListContext();
+	const { setTenantsListToStore, tenantsListFromStore } = useTenantsListContext();
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: UserWithRecipeId[], paramOffset?: number, isSearch?: boolean) => {
@@ -253,6 +253,8 @@ export const UsersList: React.FC<UserListProps> = ({
 		await loadOffset(offset);
 	};
 
+	const selectedTenant = getSelectedTenantId();
+
 	return (
 		<div
 			className="users-list"
@@ -270,6 +272,25 @@ export const UsersList: React.FC<UserListProps> = ({
 			</p>
 
 			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
+
+			{tenantsListFromStore !== undefined && tenantsListFromStore.length > 1 && (
+				<select
+					className="tenant-list-dropdown"
+					defaultValue={selectedTenant}
+					onChange={(event) => {
+						// console.log(event.target.value);
+					}}>
+					{tenantsListFromStore.map((tenant) => {
+						return (
+							<option
+								key={tenant.tenantId}
+								value={tenant.tenantId}>
+								{tenant.tenantId}
+							</option>
+						);
+					})}
+				</select>
+			)}
 
 			{isSearchEnabled() && (
 				<Search

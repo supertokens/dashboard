@@ -58,6 +58,20 @@ $container-width: 829;
 	margin-bottom: 24px;
 }
 
+.tenant-list-dropdown {
+	min-width: 200px;
+	padding-left: 13px;
+	padding-right: 13px;
+	padding-top: 9px;
+	padding-bottom: 9px;
+	border-radius: 6px;
+	border: 1px solid #e5e5e5;
+	background: #fff;
+	margin-bottom: 16px;
+	font-size: 14px;
+	color: #222;
+}
+
 @media only screen and (min-width: #{$container-width + 2 * $container-padding-horizontal}px) {
 	.users-list {
 		width: #{$container-width}px;
