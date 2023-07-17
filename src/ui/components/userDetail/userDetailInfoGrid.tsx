@@ -26,7 +26,15 @@ type UserDetailInfoGridProps = Pick<
 > & {
 	userDetail: UserWithRecipeId;
 	refetchData: () => Promise<void>;
-	onUpdateCallback: (userId: string, updatedValue: UserWithRecipeId) => Promise<UpdateUserInformationResponse>;
+	onUpdateCallback: (
+		userId: string,
+		updatedValue: UserWithRecipeId
+	) => Promise<
+		| UpdateUserInformationResponse
+		| {
+				status: "NO_API_CALLED";
+		  }
+	>;
 	emailVerificationStatus: EmailVerificationStatus | undefined;
 };
 
@@ -227,6 +235,10 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const onSave = useCallback(async () => {
 		showLoadingOverlay();
 		const response = await onUpdateCallback(userDetail.user.id, userState);
+
+		if (response.status === "NO_API_CALLED") {
+			return;
+		}
 
 		if (response.status === "OK") {
 			await refetchData();

@@ -24,6 +24,7 @@ import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useTenantsListContext } from "../../contexts/TenantsListContext";
 import { EmailVerificationStatus, UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
+import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import { UserDetailContextProvider } from "./context/UserDetailContext";
 import { UserTenantsList } from "./tenantList/UserTenantsList";
@@ -64,6 +65,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
 	const { tenantsListFromStore } = useTenantsListContext();
+	const { showModal } = useContext(PopupContentContext);
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user, recipeId);
@@ -77,7 +79,15 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { showToast } = useContext(PopupContentContext);
 
 	const updateUser = useCallback(
-		async (userId: string, data: UserWithRecipeId): Promise<UpdateUserInformationResponse> => {
+		async (
+			userId: string,
+			data: UserWithRecipeId
+		): Promise<
+			| UpdateUserInformationResponse
+			| {
+					status: "NO_API_CALLED";
+			  }
+		> => {
 			let tenantId: string | undefined;
 			const tenants: Tenant[] = getTenantsObjectsForIds(tenantsListFromStore ?? [], data.user.tenantIds);
 			let matchingTenants: Tenant[] = [];
@@ -96,6 +106,19 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 			if (matchingTenants.length > 0) {
 				tenantId = matchingTenants[0].tenantId;
+			}
+
+			if (tenantId === undefined) {
+				setShowLoadingOverlay(false);
+				showModal(
+					getMissingTenantIdModalProps({
+						message: `User does not belong to a tenant that has the ${data.recipeId} recipe enabled`,
+					})
+				);
+
+				return {
+					status: "NO_API_CALLED",
+				};
 			}
 
 			const userInfoResponse = await updateUserInformation({
