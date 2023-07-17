@@ -34,7 +34,7 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "https://st-dev-fba5f030-21fe-11ee-85db-2fcde73daffd.aws.supertokens.io",
+		connectionURI: "https://st-dev-fba5f030-21fe-11ee-85db-2fcde73daffd.aws.supertokens.io/appid-app-1",
 		apiKey: "FimaopoL=zxrcNmUVZoQRwGTZt",
 	},
 	appInfo: {

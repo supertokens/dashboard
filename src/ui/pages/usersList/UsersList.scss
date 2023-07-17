@@ -67,9 +67,20 @@ $container-width: 829;
 	border-radius: 6px;
 	border: 1px solid #e5e5e5;
 	background: #fff;
-	margin-bottom: 16px;
 	font-size: 14px;
 	color: #222;
+}
+
+.tenant-id-container {
+	display: flex;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.tenant-id-title {
+	font-size: 16px;
+	font-weight: 500;
+	margin-right: 8px;
 }
 
 @media only screen and (min-width: #{$container-width + 2 * $container-padding-horizontal}px) {

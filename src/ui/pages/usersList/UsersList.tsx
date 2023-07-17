@@ -267,23 +267,26 @@ export const UsersList: React.FC<UserListProps> = ({
 			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
 
 			{tenantsListFromStore !== undefined && tenantsListFromStore.length > 1 && (
-				<select
-					className="tenant-list-dropdown"
-					defaultValue={selectedTenant}
-					onChange={(event) => {
-						setSelectedTenant(event.target.value);
-						void loadCount();
-					}}>
-					{tenantsListFromStore.map((tenant) => {
-						return (
-							<option
-								key={tenant.tenantId}
-								value={tenant.tenantId}>
-								{tenant.tenantId}
-							</option>
-						);
-					})}
-				</select>
+				<div className="tenant-id-container">
+					<span className="tenant-id-title">Tenant ID:</span>
+					<select
+						className="tenant-list-dropdown"
+						defaultValue={selectedTenant}
+						onChange={(event) => {
+							setSelectedTenant(event.target.value);
+							void loadCount();
+						}}>
+						{tenantsListFromStore.map((tenant) => {
+							return (
+								<option
+									key={tenant.tenantId}
+									value={tenant.tenantId}>
+									{tenant.tenantId}
+								</option>
+							);
+						})}
+					</select>
+				</div>
 			)}
 
 			{isSearchEnabled() && (
