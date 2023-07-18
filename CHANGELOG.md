@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.6.8] - 2023-07-18
+
+-   Refactor logic for making network requests
+
 ## [0.6.7] - 2023-06-29
 
 -   Fixes an issue where trying to update a user's metadata would result in a screen error if the edited meta data was an invalid JSON. The error is now a local error for the meta data section in the case of failures.
