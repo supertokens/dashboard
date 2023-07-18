@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.5.1] - 2023-07-18
+
+-   Refactor logic for making network requests
+
 ## [0.5.0] - 2023-03-29
 
 -   Adds telemetry to the dashboard
