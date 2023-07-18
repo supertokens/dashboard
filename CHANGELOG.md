@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.3.4] - 2023-07-18
+
+-   Refactor logic for making network requests
+
 ## [0.3.3] - 2023-02-07
 
 -   Added build files to ensure the previous version becomes effective.
