@@ -36,6 +36,8 @@ export const UserTenantsList = (props: Props) => {
 						</div>
 					);
 				})}
+
+				{props.tenantIds.length === 0 && <div>No associated tenants</div>}
 			</div>
 		</LayoutPanel>
 	);
