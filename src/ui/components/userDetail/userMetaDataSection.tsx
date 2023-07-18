@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import useMetadataService from "../../../api/user/metadata";
 import { getImageUrl } from "../../../utils";
 import IconButton from "../common/iconButton";
+import { useUserDetailContext } from "./context/UserDetailContext";
 import "./userMetaDataSection.scss";
 
 export type UserMetaDataSectionProps = {
@@ -35,6 +36,7 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 	const [metadataForEditing, setMetaDataForEditing] = useState(metadata);
 	const [metaDataUpdateError, setMetaDataUpdateError] = useState<string | undefined>(undefined);
+	const { showLoadingOverlay, hideLoadingOverlay } = useUserDetailContext();
 
 	const { updateUserMetaData } = useMetadataService();
 
@@ -108,6 +110,7 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 	};
 
 	const onSave = async () => {
+		showLoadingOverlay();
 		try {
 			setMetaDataUpdateError(undefined);
 			await updateUserMetaData(userId, metadataForEditing === undefined ? "" : metadataForEditing);
@@ -122,6 +125,8 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 			}
 
 			setMetaDataUpdateError(errorMessage);
+		} finally {
+			hideLoadingOverlay();
 		}
 	};
 
