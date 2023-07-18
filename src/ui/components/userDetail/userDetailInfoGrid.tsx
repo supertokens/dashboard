@@ -16,6 +16,7 @@ import { PhoneNumberInput } from "../phoneNumber/PhoneNumberInput";
 import TooltipContainer from "../tooltip/tooltip";
 import { UserRecipePill } from "../usersListTable/UsersListTable";
 import { UserDetailNameField } from "./components/nameField/nameField";
+import { useUserDetailContext } from "./context/UserDetailContext";
 import { UserDetailProps } from "./userDetail";
 import { getUserChangePasswordPopupProps } from "./userDetailForm";
 
@@ -221,8 +222,10 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const { recipeId } = userState;
 	const { firstName, lastName, timeJoined, email } = userState.user;
 	const [isEditing, setIsEditing] = useState(false);
+	const { showLoadingOverlay, hideLoadingOverlay } = useUserDetailContext();
 
 	const onSave = useCallback(async () => {
+		showLoadingOverlay();
 		const response = await onUpdateCallback(userDetail.user.id, userState);
 
 		if (response.status === "OK") {
@@ -245,6 +248,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 				setPhoneErrorFromAPI(response.error);
 			}
 		}
+		hideLoadingOverlay();
 	}, [onUpdateCallback, userState, userDetail]);
 
 	const updateUserDataState = useCallback((updatedUser: Partial<UserWithRecipeId["user"]>) => {
