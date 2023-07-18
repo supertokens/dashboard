@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
-## [0.1.4] - 2022-09-26
+## [0.1.4] - 2023-07-18
 
 -   Refactor logic for making network requests
 
