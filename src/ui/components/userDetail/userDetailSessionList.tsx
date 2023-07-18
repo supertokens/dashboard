@@ -15,6 +15,7 @@
 import useSessionsForUserService from "../../../api/user/sessions";
 import { formatLongDate, getFormattedLongDateWithoutTime } from "../../../utils";
 import { PlaceholderTableRows } from "../usersListTable/UsersListTable";
+import { useUserDetailContext } from "./context/UserDetailContext";
 import "./userDetailSessionList.scss";
 
 export type UserDetailsSessionListProps = {
@@ -28,14 +29,20 @@ export const UserDetailsSessionList: React.FC<UserDetailsSessionListProps> = ({
 }: UserDetailsSessionListProps) => {
 	const sessionCountText = sessionList === undefined ? "" : `(TOTAL NO OF SESSIONS: ${sessionList.length})`;
 	const { deleteSessionsForUser } = useSessionsForUserService();
+	const { showLoadingOverlay, hideLoadingOverlay } = useUserDetailContext();
 	const revokeAllSessions = async () => {
-		if (sessionList === undefined) {
-			return;
-		}
+		showLoadingOverlay();
+		try {
+			if (sessionList === undefined) {
+				return;
+			}
 
-		const allSessionHandles: string[] = sessionList.map((item) => item.sessionHandle);
-		await deleteSessionsForUser(allSessionHandles);
-		await refetchData();
+			const allSessionHandles: string[] = sessionList.map((item) => item.sessionHandle);
+			await deleteSessionsForUser(allSessionHandles);
+			await refetchData();
+		} finally {
+			hideLoadingOverlay();
+		}
 	};
 
 	return (
