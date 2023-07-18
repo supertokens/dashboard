@@ -257,7 +257,9 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 					{...props}
 				/>
 
-				<UserTenantsList tenantIds={userDetail.user.user.tenantIds} />
+				{userDetail.user.user.tenantIds.length > 0 && (
+					<UserTenantsList tenantIds={userDetail.user.user.tenantIds} />
+				)}
 
 				<UserDetailInfoGrid
 					userDetail={userDetail.user}
