@@ -58,6 +58,31 @@ $container-width: 829;
 	margin-bottom: 24px;
 }
 
+.tenant-list-dropdown {
+	min-width: 200px;
+	padding-left: 13px;
+	padding-right: 13px;
+	padding-top: 9px;
+	padding-bottom: 9px;
+	border-radius: 6px;
+	border: 1px solid #e5e5e5;
+	background: #fff;
+	font-size: 14px;
+	color: #222;
+}
+
+.tenant-id-container {
+	display: flex;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.tenant-id-title {
+	font-size: 16px;
+	font-weight: 500;
+	margin-right: 8px;
+}
+
 @media only screen and (min-width: #{$container-width + 2 * $container-padding-horizontal}px) {
 	.users-list {
 		width: #{$container-width}px;

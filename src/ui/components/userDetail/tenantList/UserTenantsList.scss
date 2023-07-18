@@ -12,5 +12,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+@import "../../../styles/mixin.scss";
 
-export const package_version = "0.7.0";
+.tenant-pill {
+	padding: 5px 13px;
+	border-radius: 30px;
+	border: 1px solid #9335e4;
+	background: rgba(147, 53, 228, 0.1);
+	max-width: fit-content;
+	color: #9335e4;
+	font-size: 14px;
+}
+
+.tenant-list-container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	row-gap: 16px;
+	column-gap: 16px;
+}

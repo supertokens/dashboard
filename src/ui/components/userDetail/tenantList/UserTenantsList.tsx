@@ -12,5 +12,33 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+import { LayoutPanel } from "../../layout/layoutPanel";
+import "./UserTenantsList.scss";
 
-export const package_version = "0.7.0";
+type Props = {
+	tenantIds: string[];
+};
+
+const Header = () => {
+	return <div className="title">Tenant IDs</div>;
+};
+
+export const UserTenantsList = (props: Props) => {
+	return (
+		<LayoutPanel header={<Header />}>
+			<div className="tenant-list-container">
+				{props.tenantIds.map((tenantId) => {
+					return (
+						<div
+							key={tenantId}
+							className="tenant-pill">
+							{tenantId}
+						</div>
+					);
+				})}
+
+				{props.tenantIds.length === 0 && <div>No associated tenants</div>}
+			</div>
+		</LayoutPanel>
+	);
+};

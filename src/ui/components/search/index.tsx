@@ -35,6 +35,7 @@ type SearchType = {
 
 type searchProp = {
 	onSearch: (paginationToken?: string, search?: object) => Promise<void>;
+	loading: boolean;
 };
 
 type action = "chn" | "del";
@@ -87,6 +88,10 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 
 	const getSearchResult = useCallback(
 		async (searches: SearchType[]) => {
+			if (props.loading) {
+				return;
+			}
+
 			const tempQueryMap: Record<string, string> = {};
 			searches.forEach((el) => {
 				let value = el.value.trim();

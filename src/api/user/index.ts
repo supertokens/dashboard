@@ -24,6 +24,7 @@ interface IUseUserService {
 interface IUpdateUserInformationArgs {
 	userId: string;
 	recipeId: string;
+	tenantId: string | undefined;
 	email?: string;
 	phone?: string;
 	firstName?: string;
@@ -97,6 +98,7 @@ export const useUserService = (): IUseUserService => {
 		phone,
 		firstName,
 		lastName,
+		tenantId,
 	}: IUpdateUserInformationArgs): Promise<UpdateUserInformationResponse> => {
 		let emailToSend = email === undefined ? "" : email;
 		const phoneToSend = phone === undefined ? "" : phone;
@@ -108,7 +110,7 @@ export const useUserService = (): IUseUserService => {
 		}
 
 		const response = await fetchData({
-			url: getApiUrl("/api/user"),
+			url: getApiUrl("/api/user", tenantId),
 			method: "PUT",
 			config: {
 				body: JSON.stringify({

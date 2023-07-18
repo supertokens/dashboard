@@ -42,12 +42,18 @@ export function getImageUrl(imageName: string): string {
 	return getStaticBasePath() + "/media/" + imageName;
 }
 
-export function getApiUrl(path: string): string {
+export function getApiUrl(path: string, tenantId?: string): string {
 	if (!path.startsWith("/")) {
 		path = "/" + path;
 	}
 
-	return window.location.origin + getDashboardAppBasePath() + path;
+	let dashboardBasePathToUse = getDashboardAppBasePath();
+
+	if (tenantId !== undefined) {
+		dashboardBasePathToUse = dashboardBasePathToUse.replace("/dashboard", `/${tenantId}/dashboard`);
+	}
+
+	return window.location.origin + dashboardBasePathToUse + path;
 }
 
 export function getConnectionUri() {
@@ -262,4 +268,12 @@ export const getRecipeNameFromid = (id: UserRecipeType): string => {
 export const getAuthMode = (): "api-key" | "email-password" => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return (window as any).authMode; // for now, either "api-key" or "email-password"
+};
+
+export const setSelectedTenantId = (tenantId: string) => {
+	localStorageHandler.setItem(StorageKeys.TENANT_ID, tenantId);
+};
+
+export const getSelectedTenantId = (): string | undefined => {
+	return localStorageHandler.getItem(StorageKeys.TENANT_ID);
 };

@@ -12,5 +12,8 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+import { Tenant } from "../api/tenants/list";
 
-export const package_version = "0.7.0";
+export function getTenantsObjectsForIds(tenantsFromStore: Tenant[], tenantIds: string[]): Tenant[] {
+	return tenantsFromStore.filter((tenant) => tenantIds.includes(tenant.tenantId));
+}

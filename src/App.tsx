@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import UsersListPage from "./ui/pages/usersList/UsersList";
 import { getDashboardAppBasePath } from "./utils";
 
@@ -26,6 +26,7 @@ import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
 import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
 import { ToastNotificationContainer } from "./ui/components/toast/toastNotification";
 import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
+import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
 
 function App() {
 	return (
@@ -33,23 +34,25 @@ function App() {
 			<SafeAreaView />
 			<ErrorBoundary>
 				<PopupContentContextProvider>
-					<AuthWrapper>
-						<Router basename={getDashboardAppBasePath()}>
-							<SignOutBtn />
-							<Routes>
-								<Route
-									path="/"
-									element={<UsersListPage />}
-								/>
-								<Route
-									path="*"
-									element={<UsersListPage />}
-								/>
-							</Routes>
-						</Router>
-						<ToastNotificationContainer />
-						<LayoutModalContainer />
-					</AuthWrapper>
+					<TenantsListContextProvider>
+						<AuthWrapper>
+							<Router basename={getDashboardAppBasePath()}>
+								<SignOutBtn />
+								<Routes>
+									<Route
+										path="/"
+										element={<UsersListPage />}
+									/>
+									<Route
+										path="*"
+										element={<UsersListPage />}
+									/>
+								</Routes>
+							</Router>
+							<ToastNotificationContainer />
+							<LayoutModalContainer />
+						</AuthWrapper>
+					</TenantsListContextProvider>
 				</PopupContentContextProvider>
 			</ErrorBoundary>
 		</>

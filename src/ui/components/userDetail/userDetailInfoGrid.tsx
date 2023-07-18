@@ -16,6 +16,7 @@ import { PhoneNumberInput } from "../phoneNumber/PhoneNumberInput";
 import TooltipContainer from "../tooltip/tooltip";
 import { UserRecipePill } from "../usersListTable/UsersListTable";
 import { UserDetailNameField } from "./components/nameField/nameField";
+import { useUserDetailContext } from "./context/UserDetailContext";
 import { UserDetailProps } from "./userDetail";
 import { getUserChangePasswordPopupProps } from "./userDetailForm";
 
@@ -25,7 +26,15 @@ type UserDetailInfoGridProps = Pick<
 > & {
 	userDetail: UserWithRecipeId;
 	refetchData: () => Promise<void>;
-	onUpdateCallback: (userId: string, updatedValue: UserWithRecipeId) => Promise<UpdateUserInformationResponse>;
+	onUpdateCallback: (
+		userId: string,
+		updatedValue: UserWithRecipeId
+	) => Promise<
+		| UpdateUserInformationResponse
+		| {
+				status: "NO_API_CALLED";
+		  }
+	>;
 	emailVerificationStatus: EmailVerificationStatus | undefined;
 };
 
@@ -221,9 +230,15 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const { recipeId } = userState;
 	const { firstName, lastName, timeJoined, email } = userState.user;
 	const [isEditing, setIsEditing] = useState(false);
+	const { showLoadingOverlay, hideLoadingOverlay } = useUserDetailContext();
 
 	const onSave = useCallback(async () => {
+		showLoadingOverlay();
 		const response = await onUpdateCallback(userDetail.user.id, userState);
+
+		if (response.status === "NO_API_CALLED") {
+			return;
+		}
 
 		if (response.status === "OK") {
 			await refetchData();
@@ -245,6 +260,8 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 				setPhoneErrorFromAPI(response.error);
 			}
 		}
+
+		hideLoadingOverlay();
 	}, [onUpdateCallback, userState, userDetail]);
 
 	const updateUserDataState = useCallback((updatedUser: Partial<UserWithRecipeId["user"]>) => {
@@ -341,6 +358,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 			showModal(
 				getUserChangePasswordPopupProps({
 					userId: userDetail.user.id,
+					tenantIds: userDetail.user.tenantIds,
 				})
 			),
 		[showModal, handleChangePassword]
@@ -396,7 +414,11 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 								user={userDetail}
 								isEditing={isEditing}
 								setVerificationStatus={async (isVerified) => {
-									await onUpdateEmailVerificationStatusCallback(userDetail.user.id, isVerified);
+									await onUpdateEmailVerificationStatusCallback(
+										userDetail.user.id,
+										isVerified,
+										userDetail.user.tenantIds.length > 0 ? userDetail.user.tenantIds[0] : undefined
+									);
 									await refetchData();
 								}}
 								sendVerification={() => onSendEmailVerificationCallback(userDetail)}

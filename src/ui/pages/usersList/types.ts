@@ -39,6 +39,7 @@ export type User = {
 	timeJoined: number;
 	firstName?: string;
 	lastName?: string;
+	tenantIds: string[];
 };
 
 export type UserEmailPassword = User;

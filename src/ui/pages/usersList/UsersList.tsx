@@ -15,6 +15,7 @@
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useGetTenantsList } from "../../../api/tenants/list";
 import useDeleteUserService from "../../../api/user/delete";
 import useVerifyEmailService from "../../../api/user/email/verify";
 import useVerifyUserTokenService from "../../../api/user/email/verify/token";
@@ -42,6 +43,7 @@ import UsersListTable, {
 	UserRowActionProps,
 } from "../../components/usersListTable/UsersListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
+import { useTenantsListContext } from "../../contexts/TenantsListContext";
 import "./UsersList.scss";
 import { EmailVerificationStatus, UserWithRecipeId } from "./types";
 
@@ -76,9 +78,12 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [isSearch, setIsSearch] = useState<boolean>(false);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
 	const { fetchUsers } = useFetchUsersService();
-
 	const { fetchCount } = useFetchCount();
+	const { fetchTenants } = useGetTenantsList();
 	const fetchData = useFetchData();
+	const { setTenantsListToStore, tenantsListFromStore, getSelectedTenant, setSelectedTenant } =
+		useTenantsListContext();
+	const selectedTenant = getSelectedTenant();
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: UserWithRecipeId[], paramOffset?: number, isSearch?: boolean) => {
@@ -115,14 +120,15 @@ export const UsersList: React.FC<UserListProps> = ({
 			setLoading(true);
 			const nextOffset = paramOffset + limit;
 			let data;
+			const tenantId = getSelectedTenant();
 			if (paginationToken !== undefined) {
-				data = await fetchUsers({ paginationToken }).catch(() => undefined);
+				data = await fetchUsers({ paginationToken }, undefined, tenantId).catch(() => undefined);
 				setIsSearch(false);
 			} else if (search === undefined || Object.keys(search).length === 0) {
-				data = await fetchUsers().catch(() => undefined);
+				data = await fetchUsers(undefined, undefined, tenantId).catch(() => undefined);
 				setIsSearch(false);
 			} else {
-				data = await fetchUsers({ limit: 1000 }, search).catch(() => undefined);
+				data = await fetchUsers({ limit: 1000 }, search, tenantId).catch(() => undefined);
 				setIsSearch(true);
 				localSearch = true;
 			}
@@ -176,15 +182,42 @@ export const UsersList: React.FC<UserListProps> = ({
 		}
 	};
 
-	const loadCount = useCallback(async () => {
+	const fetchAndSetCurrentTenant = async () => {
+		const result = await fetchTenants();
+
+		setTenantsListToStore(result.tenants);
+
+		if (result.tenants.length === 0) {
+			return;
+		}
+
+		const tenantInStorage = getSelectedTenant();
+		let tenantIdToUse: string | undefined;
+
+		if (tenantInStorage === undefined) {
+			tenantIdToUse = result.tenants[0].tenantId;
+			setSelectedTenant(tenantIdToUse);
+		} else {
+			const filteredTenants = result.tenants.filter((t) => t.tenantId === tenantInStorage);
+			if (filteredTenants.length === 0) {
+				tenantIdToUse = result.tenants[0].tenantId;
+				setSelectedTenant(tenantIdToUse);
+			} else {
+				tenantIdToUse = filteredTenants[0].tenantId;
+			}
+		}
+	};
+
+	const loadCount = async () => {
 		setLoading(true);
-		const [countResult] = await Promise.all([fetchCount().catch(() => undefined), loadUsers()]);
+		const tenantId = getSelectedTenant();
+		const [countResult] = await Promise.all([fetchCount(tenantId).catch(() => undefined), loadUsers()]);
 		if (countResult) {
 			setCount(countResult.count);
 		}
 
 		setLoading(false);
-	}, []);
+	};
 
 	const loadOffset = useCallback(
 		async (offset: number) => {
@@ -193,10 +226,15 @@ export const UsersList: React.FC<UserListProps> = ({
 		[paginationTokenByOffset, loadUsers]
 	);
 
+	const onMount = async () => {
+		await fetchAndSetCurrentTenant();
+		await loadCount();
+		await fireAnalyticsEvent();
+	};
+
 	useEffect(() => {
-		void loadCount();
-		void fireAnalyticsEvent();
-	}, [loadCount]);
+		void onMount();
+	}, []);
 
 	useEffect(() => {
 		if (reloadRef !== undefined) {
@@ -228,7 +266,35 @@ export const UsersList: React.FC<UserListProps> = ({
 
 			{connectionURI && <InfoConnection connectionURI={connectionURI} />}
 
-			{isSearchEnabled() && <Search onSearch={loadUsers} />}
+			{tenantsListFromStore !== undefined && tenantsListFromStore.length > 1 && (
+				<div className="tenant-id-container">
+					<span className="tenant-id-title">Tenant ID:</span>
+					<select
+						className="tenant-list-dropdown"
+						defaultValue={selectedTenant}
+						onChange={(event) => {
+							setSelectedTenant(event.target.value);
+							void loadCount();
+						}}>
+						{tenantsListFromStore.map((tenant) => {
+							return (
+								<option
+									key={tenant.tenantId}
+									value={tenant.tenantId}>
+									{tenant.tenantId}
+								</option>
+							);
+						})}
+					</select>
+				</div>
+			)}
+
+			{isSearchEnabled() && (
+				<Search
+					onSearch={loadUsers}
+					loading={loading}
+				/>
+			)}
 
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (
@@ -309,8 +375,8 @@ export const UserListPage = () => {
 	);
 
 	const sendUserEmailVerification = useCallback(
-		async (userId: string) => {
-			const isSend = await sendUserEmailVerificationApi(userId);
+		async (userId: string, tenantId: string | undefined) => {
+			const isSend = await sendUserEmailVerificationApi(userId, tenantId);
 			showToast(getSendEmailVerificationToast(isSend));
 			return isSend;
 		},
@@ -318,8 +384,8 @@ export const UserListPage = () => {
 	);
 
 	const updateEmailVerificationStatus = useCallback(
-		async (userId: string, isVerified: boolean) => {
-			const isUpdated = await updateUserEmailVerificationStatus(userId, isVerified);
+		async (userId: string, isVerified: boolean, tenantId: string | undefined) => {
+			const isUpdated = await updateUserEmailVerificationStatus(userId, isVerified, tenantId);
 			if (isUpdated) {
 				setSelectedUserEmailVerification({ isVerified, status: "OK" });
 			}
@@ -381,8 +447,16 @@ export const UserListPage = () => {
 					user={selectedUser}
 					onBackButtonClicked={backToList}
 					onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
-					onSendEmailVerificationCallback={({ user: { id } }) => sendUserEmailVerification(id)}
-					onUpdateEmailVerificationStatusCallback={updateEmailVerificationStatus}
+					onSendEmailVerificationCallback={({ user: { id, tenantIds } }) => {
+						return sendUserEmailVerification(id, tenantIds.length > 0 ? tenantIds[0] : undefined);
+					}}
+					onUpdateEmailVerificationStatusCallback={(
+						userId: string,
+						isVerified: boolean,
+						tenantId: string | undefined
+					) => {
+						return updateEmailVerificationStatus(userId, isVerified, tenantId);
+					}}
 					onChangePasswordCallback={changePassword}
 				/>
 			)}

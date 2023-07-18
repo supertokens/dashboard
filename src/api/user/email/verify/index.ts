@@ -3,7 +3,11 @@ import { getApiUrl, useFetchData } from "../../../../utils";
 
 interface IUseVerifyUserEmailService {
 	getUserEmailVerificationStatus: (userId: string) => Promise<EmailVerificationStatus>;
-	updateUserEmailVerificationStatus: (userId: string, isEmailVerified: boolean) => Promise<boolean>;
+	updateUserEmailVerificationStatus: (
+		userId: string,
+		isEmailVerified: boolean,
+		tenantId: string | undefined
+	) => Promise<boolean>;
 }
 
 const useVerifyUserEmail = (): IUseVerifyUserEmailService => {
@@ -20,9 +24,13 @@ const useVerifyUserEmail = (): IUseVerifyUserEmailService => {
 		return body;
 	};
 
-	const updateUserEmailVerificationStatus = async (userId: string, isEmailVerified: boolean) => {
+	const updateUserEmailVerificationStatus = async (
+		userId: string,
+		isEmailVerified: boolean,
+		tenantId: string | undefined
+	) => {
 		const response = await fetchData({
-			url: getApiUrl("/api/user/email/verify"),
+			url: getApiUrl("/api/user/email/verify", tenantId),
 			method: "PUT",
 			config: {
 				body: JSON.stringify({ verified: isEmailVerified, userId }),
