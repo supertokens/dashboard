@@ -22,6 +22,7 @@ import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { EmailVerificationStatus, UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
+import { UserDetailContextProvider } from "./context/UserDetailContext";
 import "./userDetail.scss";
 import { getUpdateUserToast } from "./userDetailForm";
 import UserDetailHeader from "./userDetailHeader";
@@ -47,6 +48,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [emailVerificationStatus, setEmailVerificationStatus] = useState<EmailVerificationStatus | undefined>(
 		undefined
 	);
+	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
 
 	const { getUser, updateUserInformation } = useUserService();
 
@@ -122,14 +124,28 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	}, [fetchEmailVerificationStatus]);
 
 	const refetchAllData = async () => {
+		setShowLoadingOverlay(true);
 		await loadUserDetail();
 		await fetchUserMetaData();
 		await fetchSession();
 		await fetchEmailVerificationStatus();
+		setShowLoadingOverlay(false);
+	};
+
+	const showLoadingOverlay = () => {
+		setShowLoadingOverlay(true);
+	};
+
+	const hideLoadingOverlay = () => {
+		setShowLoadingOverlay(false);
 	};
 
 	if (userDetail === undefined) {
-		return <></>;
+		return (
+			<div className="user-detail-page-loader">
+				<div className="loader"></div>
+			</div>
+		);
 	}
 
 	if (userDetail.status === "NO_USER_FOUND_ERROR") {
@@ -161,40 +177,51 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	}
 
 	return (
-		<div className="user-detail">
-			<div className="user-detail__navigation">
-				<button
-					className="button flat"
-					onClick={onBackButtonClicked}>
-					<img
-						src={getImageUrl("left-arrow-dark.svg")}
-						alt="Back to all users"
-					/>
-					<span>Back to all users</span>
-				</button>
-			</div>
-			<UserDetailHeader
-				userDetail={userDetail.user}
-				{...props}
-			/>
-			<UserDetailInfoGrid
-				userDetail={userDetail.user}
-				refetchData={refetchAllData}
-				onUpdateCallback={updateUser}
-				emailVerificationStatus={emailVerificationStatus}
-				{...props}
-			/>
-			<UserMetaDataSection
-				metadata={userMetaData}
-				userId={user}
-				refetchData={refetchAllData}
-			/>
+		<UserDetailContextProvider
+			showLoadingOverlay={showLoadingOverlay}
+			hideLoadingOverlay={hideLoadingOverlay}>
+			<div className="user-detail">
+				{shouldShowLoadingOverlay && (
+					<div className="full-screen-loading-overlay">
+						<div className="loader-container">
+							<div className="loader"></div>
+						</div>
+					</div>
+				)}
+				<div className="user-detail__navigation">
+					<button
+						className="button flat"
+						onClick={onBackButtonClicked}>
+						<img
+							src={getImageUrl("left-arrow-dark.svg")}
+							alt="Back to all users"
+						/>
+						<span>Back to all users</span>
+					</button>
+				</div>
+				<UserDetailHeader
+					userDetail={userDetail.user}
+					{...props}
+				/>
+				<UserDetailInfoGrid
+					userDetail={userDetail.user}
+					refetchData={refetchAllData}
+					onUpdateCallback={updateUser}
+					emailVerificationStatus={emailVerificationStatus}
+					{...props}
+				/>
+				<UserMetaDataSection
+					metadata={userMetaData}
+					userId={user}
+					refetchData={refetchAllData}
+				/>
 
-			<UserDetailsSessionList
-				sessionList={sessionList}
-				refetchData={refetchAllData}
-			/>
-		</div>
+				<UserDetailsSessionList
+					sessionList={sessionList}
+					refetchData={refetchAllData}
+				/>
+			</div>
+		</UserDetailContextProvider>
 	);
 };
 
