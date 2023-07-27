@@ -171,7 +171,7 @@ export const EmailVerifiedField: FC<EmailVerifiedFieldProps> = (props: EmailVeri
 	const { user, isEditing, setVerificationStatus, sendVerification } = props;
 	const { recipeId } = user;
 
-	const isApplicable = isEmailVerificationApplicable(recipeId, user.user.email);
+	const isApplicable = isEmailVerificationApplicable(recipeId, user.user.emails[0]);
 
 	const setEmailVerificationStatusCallback = async () => {
 		await setVerificationStatus(!isVerified);
@@ -228,7 +228,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const [userState, setUserState] = useState<UserWithRecipeId>({ ...userDetail });
 	const { showModal } = useContext(PopupContentContext);
 	const { recipeId } = userState;
-	const { firstName, lastName, timeJoined, email } = userState.user;
+	const { firstName, lastName, timeJoined, emails } = userState.user;
 	const [isEditing, setIsEditing] = useState(false);
 	const { showLoadingOverlay, hideLoadingOverlay } = useUserDetailContext();
 
@@ -283,7 +283,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		}
 
 		return undefined;
-	}, [email, userDetail.user.email, isEditing, emailErrorFromAPI])();
+	}, [emails, userDetail.user.emails, isEditing, emailErrorFromAPI])();
 
 	// validate phone if `isEditing=true`
 	const phoneNumber = recipeId === "passwordless" ? userState.user.phoneNumber : undefined;
@@ -323,13 +323,14 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 				type="email"
 				name="email"
 				error={emailError}
-				value={email}
-				handleChange={({ target: { value } }) => updateUserDataState({ email: value })}
+				value={emails[0]}
+				// TODO: Change this to an array of emails correctly modified
+				handleChange={({ target: { value } }) => updateUserDataState({ emails: [value] })}
 			/>
 		) : (
 			<>
 				<span className="user-detail__provider-box__user-id">
-					<CopyText>{email || ""}</CopyText>
+					<CopyText>{emails[0] || ""}</CopyText>
 				</span>
 			</>
 		);

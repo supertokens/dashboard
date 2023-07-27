@@ -33,10 +33,28 @@ export type UserWithRecipeId =
 	| { recipeId: PasswordlessRecipeId; user: UserPasswordLess }
 	| { recipeId: ThirdPartyRecipeId; user: UserThirdParty };
 
+export type LoginMethod = {
+	timeJoined: number;
+	recipeUserId: string;
+	recipeId: EmailPasswordRecipeId | PasswordlessRecipeId | ThirdPartyRecipeId;
+	email?: string;
+	phoneNumber?: string;
+	thirdParty?: {
+		id: string;
+		userId: string;
+	};
+};
+
 export type User = {
 	id: string;
-	email?: string;
 	timeJoined: number;
+	emails: string[];
+	phoneNumbers: string[];
+	thirdParty: {
+		id: string;
+		userId: string;
+	}[];
+	loginMethods: LoginMethod[];
 	firstName?: string;
 	lastName?: string;
 	tenantIds: string[];

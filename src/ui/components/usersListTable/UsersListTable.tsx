@@ -299,7 +299,7 @@ const UserTableRow: React.FC<
 };
 
 const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSelectUserFunction }) => {
-	const { firstName, lastName, email } = user.user;
+	const { firstName, lastName, emails } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 	let isClicked = false;
@@ -327,17 +327,17 @@ const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSele
 					isClicked = false;
 				}}
 				className="main"
-				title={name || email}>
-				{name || email || (phone && <PhoneDisplay phone={phone} />)}
+				title={name || emails[0]}>
+				{name || emails[0] || (phone && <PhoneDisplay phone={phone} />)}
 			</div>
-			{email && name && (
+			{emails[0] && name && (
 				<div
 					className="email"
-					title={email}>
-					{email}
+					title={emails[0]}>
+					{emails[0]}
 				</div>
 			)}
-			{phone && (name || email) && (
+			{phone && (name || emails[0]) && (
 				<div className="phone">
 					<PhoneDisplay phone={phone} />
 				</div>

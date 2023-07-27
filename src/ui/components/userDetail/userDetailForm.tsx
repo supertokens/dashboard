@@ -449,8 +449,8 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 	let informationToEnter = "Confirm";
 	let inputType = "following information";
 
-	if (user.user.email !== undefined) {
-		informationToEnter = user.user.email;
+	if (user.user.emails.length > 0) {
+		informationToEnter = user.user.emails[0];
 		inputType = "user's email id";
 	}
 

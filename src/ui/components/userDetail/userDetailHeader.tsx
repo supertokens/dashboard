@@ -25,7 +25,7 @@ type UserDetailBaseProps = {
 };
 
 const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
-	const { firstName, lastName, email, id } = user;
+	const { firstName, lastName, emails, id } = user;
 
 	let firstnameToUse = "";
 	let lastNameToUse = "";
@@ -44,8 +44,8 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 		const splitFullName = fullName.split(" ");
 		return splitFullName.length > 1 ? `${splitFullName[0][0]}${splitFullName[1][0]}` : splitFullName[0].slice(0, 2);
 	}
-	if (email !== undefined && email.trim().length > 0) {
-		const splittedEmailName = email.trim().split("@")[0].split(".");
+	if (emails.length > 0 && emails[0].trim().length > 0) {
+		const splittedEmailName = emails[0].trim().split("@")[0].split(".");
 		return splittedEmailName.length > 1
 			? `${splittedEmailName[0][0]}${splittedEmailName[1][0]}`
 			: splittedEmailName[0].slice(0, 2);
@@ -56,7 +56,7 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 };
 
 export const UserDisplayName: FC<UserProps> = ({ user }) => {
-	const { firstName, lastName, email } = user.user;
+	const { firstName, lastName, emails } = user.user;
 	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
 
 	let firstNameToUse = firstName ?? "";
@@ -72,7 +72,7 @@ export const UserDisplayName: FC<UserProps> = ({ user }) => {
 
 	const fullName = `${firstNameToUse} ${lastNameToUse}`.trim();
 
-	return <span>{fullName || email || phone}</span>;
+	return <span>{fullName || emails[0] || phone}</span>;
 };
 
 export const UserDetailBadge: React.FC<UserProps> = ({ user }: UserProps) => (
