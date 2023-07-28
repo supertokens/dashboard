@@ -17,7 +17,7 @@ import React, { useCallback, useContext } from "react";
 
 import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
+import { User, UserRecipeType } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "../userDetail/userDetail";
 import {
@@ -32,12 +32,12 @@ import "./UsersListTable.scss";
 const USER_TABLE_COLUMNS_COUNT = 4;
 export const LIST_DEFAULT_LIMIT = 10;
 
-export type OnSelectUserFunction = (user: UserWithRecipeId) => void;
+export type OnSelectUserFunction = (user: User) => void;
 
 export type UserRowActionProps = Pick<UserDetailProps, "onDeleteCallback" | "onChangePasswordCallback">;
 
 type UserListProps = {
-	users: UserWithRecipeId[];
+	users: User[];
 	count: number;
 	nextPaginationToken?: string;
 	isLoading?: boolean;
@@ -153,7 +153,7 @@ const UserTableRows = ({
 // Single Row Section
 const UserTableRow: React.FC<
 	{
-		user: UserWithRecipeId;
+		user: User;
 		index?: number;
 		onSelect: OnSelectUserFunction;
 		onEmailChanged: () => Promise<void>;
@@ -218,50 +218,50 @@ const UserTableRow: React.FC<
 			},
 		];
 
-		if (user.recipeId === "emailpassword") {
-			menuItems.push({
-				onClick: openChangePasswordModal,
-				text: "Change Password",
-				imageUrl: "lock.svg",
-				hoverImageUrl: "lock-opened.svg",
-				disabled: (user: UserWithRecipeId) => user.recipeId !== "emailpassword",
-			});
+		// if (user.recipeId === "emailpassword") {
+		// 	menuItems.push({
+		// 		onClick: openChangePasswordModal,
+		// 		text: "Change Password",
+		// 		imageUrl: "lock.svg",
+		// 		hoverImageUrl: "lock-opened.svg",
+		// 		disabled: (user: User) => user.recipeId !== "emailpassword",
+		// 	});
 
-			menuItems.push({
-				onClick: () => {
-					openChangeEmailModal("emailpassword");
-				},
-				text: "Change Email",
-				imageUrl: "mail.svg",
-				hoverImageUrl: "mail-opened.svg",
-				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
-			});
-		}
+		// 	menuItems.push({
+		// 		onClick: () => {
+		// 			openChangeEmailModal("emailpassword");
+		// 		},
+		// 		text: "Change Email",
+		// 		imageUrl: "mail.svg",
+		// 		hoverImageUrl: "mail-opened.svg",
+		// 		disabled: (user: User) => user.recipeId === "thirdparty",
+		// 	});
+		// }
 
-		if (user.recipeId === "passwordless") {
-			menuItems.push({
-				onClick: () => {
-					openChangeEmailModal("passwordless");
-				},
-				text: "Change Email",
-				imageUrl: "mail.svg",
-				hoverImageUrl: "mail-opened.svg",
-				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
-			});
-		}
+		// if (user.recipeId === "passwordless") {
+		// 	menuItems.push({
+		// 		onClick: () => {
+		// 			openChangeEmailModal("passwordless");
+		// 		},
+		// 		text: "Change Email",
+		// 		imageUrl: "mail.svg",
+		// 		hoverImageUrl: "mail-opened.svg",
+		// 		disabled: (user: User) => user.recipeId === "thirdparty",
+		// 	});
+		// }
 
-		if (user.recipeId === "passwordless" && user.phoneNumbers[0] !== undefined) {
-			// menuItems.push({
-			// 	onClick: () => {
-			// 		openChangePhoneModal();
-			// 	},
-			// 	text: "Change Phone Number",
-			// 	// TODO: Need an icon for phone
-			// 	imageUrl: "mail.svg",
-			// 	hoverImageUrl: "mail-opened.svg",
-			// 	disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
-			// });
-		}
+		// if (user.recipeId === "passwordless" && user.phoneNumbers[0] !== undefined) {
+		// 	// menuItems.push({
+		// 	// 	onClick: () => {
+		// 	// 		openChangePhoneModal();
+		// 	// 	},
+		// 	// 	text: "Change Phone Number",
+		// 	// 	// TODO: Need an icon for phone
+		// 	// 	imageUrl: "mail.svg",
+		// 	// 	hoverImageUrl: "mail-opened.svg",
+		// 	// 	disabled: (user: User) => user.recipeId === "thirdparty",
+		// 	// });
+		// }
 
 		menuItems.push({
 			onClick: openDeleteConfirmation,
@@ -300,9 +300,9 @@ const UserTableRow: React.FC<
 	);
 };
 
-const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSelectUserFunction }) => {
+const UserInfo = ({ user, onSelect }: { user: User; onSelect: OnSelectUserFunction }) => {
 	const { firstName, lastName, emails } = user;
-	const phone = user.recipeId === "passwordless" ? user.phoneNumbers[0] : undefined;
+	const phone = user.phoneNumbers[0];
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 	let isClicked = false;
 	let didDrag = false;
@@ -348,11 +348,13 @@ const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSele
 	);
 };
 
-export const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
-	const thirdpartyId = user.recipeId === "thirdparty" && user.thirdParty[0].id;
+export const UserRecipePill = ({ user }: { user: User }) => {
+	const loginMethods = user.loginMethods;
+	const thirdpartyId = loginMethods.length > 1 ? "" : user.thirdParty[0]?.id;
+	const recipeId = loginMethods.length > 1 ? "multiple" : loginMethods[0].recipeId;
 	return (
-		<div className={`pill ${user.recipeId} ${thirdpartyId}`}>
-			<span>{UserRecipeTypeText[user.recipeId]}</span>
+		<div className={`pill ${recipeId} ${thirdpartyId}`}>
+			<span>{UserRecipeTypeText[recipeId]}</span>
 			{thirdpartyId && (
 				<span
 					className="thirdparty-name"
@@ -365,7 +367,7 @@ export const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
 	);
 };
 
-const UserDate = ({ user }: { user: UserWithRecipeId }) => {
+const UserDate = ({ user }: { user: User }) => {
 	return <div className="user-date">{user.timeJoined && formatLongDate(user.timeJoined)}</div>;
 };
 
@@ -373,6 +375,7 @@ const UserRecipeTypeText: Record<UserRecipeType, string> = {
 	["emailpassword"]: "Email password",
 	["passwordless"]: "Passwordless",
 	["thirdparty"]: "Third party",
+	["multiple"]: "Multiple",
 };
 
 // Pagination Section

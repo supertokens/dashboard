@@ -454,7 +454,7 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 		inputType = "user's email id";
 	}
 
-	if (user.recipeId === "passwordless" && user.phoneNumbers[0] !== undefined) {
+	if (user.loginMethods[0].recipeId === "passwordless" && user.phoneNumbers[0] !== undefined) {
 		informationToEnter = user.phoneNumbers[0];
 		inputType = "user's phone number";
 	}

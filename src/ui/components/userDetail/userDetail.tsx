@@ -23,7 +23,7 @@ import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useTenantsListContext } from "../../contexts/TenantsListContext";
-import { EmailVerificationStatus, UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
+import { EmailVerificationStatus, User, UserRecipeType } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import { UserDetailContextProvider } from "./context/UserDetailContext";
@@ -40,7 +40,7 @@ export type UserDetailProps = {
 	recipeId: string;
 	onBackButtonClicked: () => void;
 	onDeleteCallback: OnSelectUserFunction;
-	onSendEmailVerificationCallback: (user: UserWithRecipeId) => Promise<boolean>;
+	onSendEmailVerificationCallback: (user: User) => Promise<boolean>;
 	onUpdateEmailVerificationStatusCallback: (
 		userId: string,
 		isVerified: boolean,
@@ -81,7 +81,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const updateUser = useCallback(
 		async (
 			userId: string,
-			data: UserWithRecipeId
+			data: User
 		): Promise<
 			| UpdateUserInformationResponse
 			| {
@@ -92,15 +92,15 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 			const tenants: Tenant[] = getTenantsObjectsForIds(tenantsListFromStore ?? [], data.tenantIds);
 			let matchingTenants: Tenant[] = [];
 
-			if (data.recipeId === "emailpassword") {
+			if (data.loginMethods[0].recipeId === "emailpassword") {
 				matchingTenants = tenants.filter((tenant) => tenant.emailPassword.enabled === true);
 			}
 
-			if (data.recipeId === "passwordless") {
+			if (data.loginMethods[0].recipeId === "passwordless") {
 				matchingTenants = tenants.filter((tenant) => tenant.passwordless.enabled === true);
 			}
 
-			if (data.recipeId === "thirdparty") {
+			if (data.loginMethods[0].recipeId === "thirdparty") {
 				matchingTenants = tenants.filter((tenant) => tenant.thirdParty.enabled === true);
 			}
 
@@ -112,7 +112,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				setShowLoadingOverlay(false);
 				showModal(
 					getMissingTenantIdModalProps({
-						message: `User does not belong to a tenant that has the ${data.recipeId} recipe enabled`,
+						message: `User does not belong to a tenant that has the ${data.loginMethods[0].recipeId} recipe enabled`,
 					})
 				);
 
@@ -123,9 +123,9 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 			const userInfoResponse = await updateUserInformation({
 				userId,
-				recipeId: data.recipeId,
+				recipeId: data.loginMethods[0].recipeId,
 				email: data.emails[0],
-				phone: data.recipeId === "passwordless" ? data.phoneNumbers[0] : "",
+				phone: data.loginMethods[0].recipeId === "passwordless" ? data.phoneNumbers[0] : "",
 				firstName: data.firstName,
 				lastName: data.lastName,
 				tenantId,

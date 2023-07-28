@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { UserWithRecipeId } from "../../ui/pages/usersList/types";
+import { User } from "../../ui/pages/usersList/types";
 import { getApiUrl, useFetchData } from "../../utils";
 
 interface IUseUserService {
@@ -40,7 +40,7 @@ export type GetUserInfoResult =
 	  }
 	| {
 			status: "OK";
-			user: UserWithRecipeId;
+			user: User;
 	  };
 
 export type UpdateUserInformationResponse =

@@ -45,7 +45,7 @@ import UsersListTable, {
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useTenantsListContext } from "../../contexts/TenantsListContext";
 import "./UsersList.scss";
-import { EmailVerificationStatus, UserWithRecipeId } from "./types";
+import { EmailVerificationStatus, User } from "./types";
 
 type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 
@@ -71,7 +71,7 @@ export const UsersList: React.FC<UserListProps> = ({
 }) => {
 	const limit = LIST_DEFAULT_LIMIT;
 	const [count, setCount] = useState<number>();
-	const [users, setUsers] = useState<UserWithRecipeId[]>([]);
+	const [users, setUsers] = useState<User[]>([]);
 	const [offset, setOffset] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
@@ -86,7 +86,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const selectedTenant = getSelectedTenant();
 
 	const insertUsersAtOffset = useCallback(
-		(paramUsers: UserWithRecipeId[], paramOffset?: number, isSearch?: boolean) => {
+		(paramUsers: User[], paramOffset?: number, isSearch?: boolean) => {
 			if (isSearch) {
 				return [...paramUsers];
 			}
@@ -421,18 +421,17 @@ export const UserListPage = () => {
 		}
 	}, []);
 
-	const onUserSelected = (user: UserWithRecipeId) => {
+	const onUserSelected = (user: User) => {
 		navigate(
 			{
 				pathname: currentLocation.pathname,
-				search: `?userid=${user.id}&recipeId=${user.recipeId}`,
+				search: `?userid=${user.id}`,
 			},
 			{
 				replace: true,
 			}
 		);
 		setSelectedUser(user.id);
-		setSelectedRecipeId(user.recipeId);
 	};
 
 	return (

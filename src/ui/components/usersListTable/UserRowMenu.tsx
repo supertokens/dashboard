@@ -15,11 +15,11 @@
 
 import { FC } from "react";
 import { getImageUrl } from "../../../utils";
-import { UserWithRecipeId } from "../../pages/usersList/types";
+import { User } from "../../pages/usersList/types";
 
 export type UserRowMenuProps = {
 	menuItems: UserRowMenuItemProps[];
-	user: UserWithRecipeId;
+	user: User;
 };
 
 export type UserRowMenuItemProps = {
@@ -28,7 +28,7 @@ export type UserRowMenuItemProps = {
 	imageUrl: string;
 	hoverImageUrl?: string;
 	className?: string;
-	disabled?: (user: UserWithRecipeId) => boolean;
+	disabled?: (user: User) => boolean;
 };
 
 export const UserRowMenuItem: FC<UserRowMenuItemProps> = ({ imageUrl, hoverImageUrl, text, onClick, className }) => (

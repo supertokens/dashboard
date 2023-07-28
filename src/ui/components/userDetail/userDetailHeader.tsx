@@ -15,16 +15,16 @@
 
 import { FC, useCallback, useContext } from "react";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { UserProps, UserWithRecipeId } from "../../pages/usersList/types";
+import { User, UserProps } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
 import { UserDetailProps } from "./userDetail";
 import { getUserDeleteConfirmationProps } from "./userDetailForm";
 
 type UserDetailBaseProps = {
-	user: UserWithRecipeId;
+	user: User;
 };
 
-const getBadgeInitial = ({ firstName, lastName, emails, id, recipeId }: UserWithRecipeId) => {
+const getBadgeInitial = ({ firstName, lastName, emails, id }: User) => {
 	let firstnameToUse = "";
 	let lastNameToUse = "";
 
@@ -55,7 +55,7 @@ const getBadgeInitial = ({ firstName, lastName, emails, id, recipeId }: UserWith
 
 export const UserDisplayName: FC<UserProps> = ({ user }) => {
 	const { firstName, lastName, emails } = user;
-	const phone = user.recipeId === "passwordless" ? user.phoneNumbers[0] : undefined;
+	const phone = user.phoneNumbers[0];
 
 	let firstNameToUse = firstName ?? "";
 	let lastNameToUse = lastName ?? "";
@@ -78,7 +78,7 @@ export const UserDetailBadge: React.FC<UserProps> = ({ user }: UserProps) => (
 );
 
 export type UserDetailHeaderProps = UserDetailProps & {
-	userDetail: UserWithRecipeId;
+	userDetail: User;
 };
 
 export const UserDetailHeader: React.FC<UserDetailHeaderProps> = ({
