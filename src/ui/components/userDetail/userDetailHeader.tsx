@@ -24,9 +24,7 @@ type UserDetailBaseProps = {
 	user: UserWithRecipeId;
 };
 
-const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
-	const { firstName, lastName, emails, id } = user;
-
+const getBadgeInitial = ({ firstName, lastName, emails, id, recipeId }: UserWithRecipeId) => {
 	let firstnameToUse = "";
 	let lastNameToUse = "";
 
@@ -56,8 +54,8 @@ const getBadgeInitial = ({ user, recipeId }: UserWithRecipeId) => {
 };
 
 export const UserDisplayName: FC<UserProps> = ({ user }) => {
-	const { firstName, lastName, emails } = user.user;
-	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
+	const { firstName, lastName, emails } = user;
+	const phone = user.recipeId === "passwordless" ? user.phoneNumbers[0] : undefined;
 
 	let firstNameToUse = firstName ?? "";
 	let lastNameToUse = lastName ?? "";
@@ -87,7 +85,7 @@ export const UserDetailHeader: React.FC<UserDetailHeaderProps> = ({
 	userDetail,
 	onDeleteCallback,
 }: UserDetailHeaderProps) => {
-	const { id } = userDetail.user;
+	const { id } = userDetail;
 	const { showModal } = useContext(PopupContentContext);
 
 	const openDeleteConfirmation = useCallback(

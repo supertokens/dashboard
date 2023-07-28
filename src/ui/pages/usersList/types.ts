@@ -28,10 +28,9 @@ export type PasswordlessRecipeId = "passwordless";
 
 export type UserRecipeType = EmailPasswordRecipeId | ThirdPartyRecipeId | PasswordlessRecipeId;
 
-export type UserWithRecipeId =
-	| { recipeId: EmailPasswordRecipeId; user: UserEmailPassword }
-	| { recipeId: PasswordlessRecipeId; user: UserPasswordLess }
-	| { recipeId: ThirdPartyRecipeId; user: UserThirdParty };
+export type UserWithRecipeId = User & {
+	recipeId: EmailPasswordRecipeId | PasswordlessRecipeId | ThirdPartyRecipeId;
+};
 
 export type LoginMethod = {
 	timeJoined: number;

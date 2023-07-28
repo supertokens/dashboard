@@ -425,13 +425,13 @@ export const UserListPage = () => {
 		navigate(
 			{
 				pathname: currentLocation.pathname,
-				search: `?userid=${user.user.id}&recipeId=${user.recipeId}`,
+				search: `?userid=${user.id}&recipeId=${user.recipeId}`,
 			},
 			{
 				replace: true,
 			}
 		);
-		setSelectedUser(user.user.id);
+		setSelectedUser(user.id);
 		setSelectedRecipeId(user.recipeId);
 	};
 
@@ -446,8 +446,8 @@ export const UserListPage = () => {
 					recipeId={selectedRecipeId}
 					user={selectedUser}
 					onBackButtonClicked={backToList}
-					onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
-					onSendEmailVerificationCallback={({ user: { id, tenantIds } }) => {
+					onDeleteCallback={({ id }) => onUserDelete(id)}
+					onSendEmailVerificationCallback={({ id, tenantIds }) => {
 						return sendUserEmailVerification(id, tenantIds.length > 0 ? tenantIds[0] : undefined);
 					}}
 					onUpdateEmailVerificationStatusCallback={(
@@ -466,7 +466,7 @@ export const UserListPage = () => {
 				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
 				reloadRef={reloadListRef}
 				onChangePasswordCallback={changePassword}
-				onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
+				onDeleteCallback={({ id }) => onUserDelete(id)}
 			/>
 			<Footer
 				colorMode="dark"

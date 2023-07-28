@@ -2,12 +2,7 @@ import { FC, ReactNode, useCallback, useContext, useEffect, useState } from "rea
 import { UpdateUserInformationResponse } from "../../../api/user";
 import { formatLongDate, getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import {
-	EmailVerificationStatus,
-	FEATURE_NOT_ENABLED_TEXT,
-	UserThirdParty,
-	UserWithRecipeId,
-} from "../../pages/usersList/types";
+import { EmailVerificationStatus, FEATURE_NOT_ENABLED_TEXT, User, UserWithRecipeId } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
 import InputField from "../inputField/InputField";
 import { LayoutPanel } from "../layout/layoutPanel";
@@ -71,8 +66,8 @@ export const NameTooltip: FC<{ fieldName: string }> = ({ fieldName }) => (
 	</>
 );
 
-export const UserDetailProviderBox: FC<{ user: UserThirdParty }> = ({ user }) => {
-	const { userId, id } = user.thirdParty;
+export const UserDetailProviderBox: FC<{ user: User }> = ({ user }) => {
+	const { userId, id } = user.thirdParty[0];
 	const useLogoIcon = ["apple", "github", "google", "facebook"].includes(id.toLowerCase());
 
 	return (
@@ -171,7 +166,7 @@ export const EmailVerifiedField: FC<EmailVerifiedFieldProps> = (props: EmailVeri
 	const { user, isEditing, setVerificationStatus, sendVerification } = props;
 	const { recipeId } = user;
 
-	const isApplicable = isEmailVerificationApplicable(recipeId, user.user.emails[0]);
+	const isApplicable = isEmailVerificationApplicable(recipeId, user.emails[0]);
 
 	const setEmailVerificationStatusCallback = async () => {
 		await setVerificationStatus(!isVerified);
@@ -228,13 +223,13 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const [userState, setUserState] = useState<UserWithRecipeId>({ ...userDetail });
 	const { showModal } = useContext(PopupContentContext);
 	const { recipeId } = userState;
-	const { firstName, lastName, timeJoined, emails } = userState.user;
+	const { firstName, lastName, timeJoined, emails } = userState;
 	const [isEditing, setIsEditing] = useState(false);
 	const { showLoadingOverlay, hideLoadingOverlay } = useUserDetailContext();
 
 	const onSave = useCallback(async () => {
 		showLoadingOverlay();
-		const response = await onUpdateCallback(userDetail.user.id, userState);
+		const response = await onUpdateCallback(userDetail.id, userState);
 
 		if (response.status === "NO_API_CALLED") {
 			return;
@@ -264,9 +259,9 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		hideLoadingOverlay();
 	}, [onUpdateCallback, userState, userDetail]);
 
-	const updateUserDataState = useCallback((updatedUser: Partial<UserWithRecipeId["user"]>) => {
+	const updateUserDataState = useCallback((updatedUser: Partial<UserWithRecipeId>) => {
 		setUserState((currentState) => {
-			return { ...currentState, user: { ...currentState.user, ...updatedUser } } as UserWithRecipeId;
+			return { ...currentState, user: { ...currentState, ...updatedUser } } as UserWithRecipeId;
 		});
 	}, []);
 
@@ -283,11 +278,11 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		}
 
 		return undefined;
-	}, [emails, userDetail.user.emails, isEditing, emailErrorFromAPI])();
+	}, [emails, userDetail.emails, isEditing, emailErrorFromAPI])();
 
 	// validate phone if `isEditing=true`
-	const phoneNumber = recipeId === "passwordless" ? userState.user.phoneNumber : undefined;
-	const phoneNumberProps = userDetail.recipeId === "passwordless" ? userDetail.user.phoneNumber : undefined;
+	const phoneNumber = recipeId === "passwordless" ? userState.phoneNumbers[0] : undefined;
+	const phoneNumberProps = userDetail.recipeId === "passwordless" ? userDetail.phoneNumbers[0] : undefined;
 	const phoneNumberError = useCallback(() => {
 		if (!isEditing) {
 			return;
@@ -307,10 +302,10 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 			error={phoneNumberError}
 			isRequired={
 				// prevent delete phone number if it was a phoneNumber account
-				userDetail.recipeId === "passwordless" && userDetail.user.phoneNumber !== undefined
+				userDetail.recipeId === "passwordless" && userDetail.phoneNumbers[0] !== undefined
 			}
 			onChange={(phoneNumber) => {
-				updateUserDataState({ phoneNumber });
+				updateUserDataState({ phoneNumbers: [phoneNumber] });
 			}}
 		/>
 	) : phoneNumber !== undefined ? (
@@ -347,19 +342,19 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const handleChangePassword = useCallback(
 		async (password?: string) => {
 			if (password !== undefined && password !== "") {
-				await onChangePasswordCallback(userDetail.user.id, password);
+				await onChangePasswordCallback(userDetail.id, password);
 				await refetchData();
 			}
 		},
-		[onChangePasswordCallback, userDetail.user.id]
+		[onChangePasswordCallback, userDetail.id]
 	);
 
 	const openChangePasswordModal = useCallback(
 		() =>
 			showModal(
 				getUserChangePasswordPopupProps({
-					userId: userDetail.user.id,
-					tenantIds: userDetail.user.tenantIds,
+					userId: userDetail.id,
+					tenantIds: userDetail.tenantIds,
 				})
 			),
 		[showModal, handleChangePassword]
@@ -416,9 +411,9 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 								isEditing={isEditing}
 								setVerificationStatus={async (isVerified) => {
 									await onUpdateEmailVerificationStatusCallback(
-										userDetail.user.id,
+										userDetail.id,
 										isVerified,
-										userDetail.user.tenantIds.length > 0 ? userDetail.user.tenantIds[0] : undefined
+										userDetail.tenantIds.length > 0 ? userDetail.tenantIds[0] : undefined
 									);
 									await refetchData();
 								}}
@@ -448,11 +443,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 					<UserDetailInfoGridItem
 						label={"Provider | Provider user id:"}
 						body={
-							recipeId === "thirdparty" ? (
-								<UserDetailProviderBox user={userState.user} />
-							) : (
-								NON_APPLICABLE_TEXT
-							)
+							recipeId === "thirdparty" ? <UserDetailProviderBox user={userState} /> : NON_APPLICABLE_TEXT
 						}
 					/>
 					<UserDetailInfoGridItem

@@ -23,7 +23,6 @@ import EmailPassword from "supertokens-node/recipe/emailpassword";
 import EmailVerification from "supertokens-node/recipe/emailverification";
 import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
-import ThirdParty from "supertokens-node/recipe/thirdparty";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
 
 const websiteDomain = "http://localhost:3000";
@@ -34,8 +33,7 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "https://st-dev-fc045a40-2527-11ee-a35f-b5d577ffdb9c.aws.supertokens.io",
-		apiKey: "=XmrF3o7Qfqj7XJVomcvxGu=j6",
+		connectionURI: "https://try.supertokens.io",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",
@@ -45,6 +43,7 @@ SuperTokens.init({
 	},
 	recipeList: [
 		Dashboard.init({
+			apiKey: "test",
 			// Keep this so that the dev server uses api key based login
 			override: {
 				functions: (original) => {
@@ -64,24 +63,24 @@ SuperTokens.init({
 			contactMethod: "EMAIL_OR_PHONE",
 			flowType: "USER_INPUT_CODE_AND_MAGIC_LINK",
 		}),
-		ThirdParty.init({
-			signInAndUpFeature: {
-				providers: [
-					{
-						config: {
-							thirdPartyId: "google",
-							clients: [
-								{
-									clientId:
-										"1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
-									clientSecret: "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",
-								},
-							],
-						},
-					},
-				],
-			},
-		}),
+		// ThirdParty.init({
+		// 	signInAndUpFeature: {
+		// 		providers: [
+		// 			{
+		// 				config: {
+		// 					thirdPartyId: "google",
+		// 					clients: [
+		// 						{
+		// 							clientId:
+		// 								"1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
+		// 							clientSecret: "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",
+		// 						},
+		// 					],
+		// 				},
+		// 			},
+		// 		],
+		// 	},
+		// }),
 		EmailVerification.init({
 			mode: "REQUIRED",
 		}),

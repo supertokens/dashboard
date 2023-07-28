@@ -134,16 +134,18 @@ const UserTableRows = ({
 	}) => {
 	return (
 		<>
-			{users.map((user) => (
-				<UserTableRow
-					onEmailChanged={onEmailChanged}
-					user={user}
-					key={user.user.id}
-					onSelect={onSelect}
-					onChangePasswordCallback={onChangePasswordCallback}
-					onDeleteCallback={onDeleteCallback}
-				/>
-			))}
+			{users.map((user) => {
+				return (
+					<UserTableRow
+						onEmailChanged={onEmailChanged}
+						user={user}
+						key={user.id}
+						onSelect={onSelect}
+						onChangePasswordCallback={onChangePasswordCallback}
+						onDeleteCallback={onDeleteCallback}
+					/>
+				);
+			})}
 		</>
 	);
 };
@@ -164,35 +166,35 @@ const UserTableRow: React.FC<
 		() =>
 			showModal(
 				getUserChangePasswordPopupProps({
-					userId: user.user.id,
-					tenantIds: user.user.tenantIds,
+					userId: user.id,
+					tenantIds: user.tenantIds,
 				})
 			),
-		[showModal, user.user.id, onChangePasswordCallback]
+		[showModal, user.id, onChangePasswordCallback]
 	);
 
 	const openChangeEmailModal = useCallback(
 		(recipeId: "emailpassword" | "passwordless") =>
 			showModal(
 				getUserChangeEmailPopupProps({
-					userId: user.user.id,
+					userId: user.id,
 					recipeId,
 					onEmailChanged: props.onEmailChanged,
-					tenantIds: user.user.tenantIds,
+					tenantIds: user.tenantIds,
 				})
 			),
-		[showModal, user.user.id, onChangePasswordCallback]
+		[showModal, user.id, onChangePasswordCallback]
 	);
 
 	const openChangePhoneModal = useCallback(
 		() =>
 			showModal(
 				getUserChangePhonePopupProps({
-					userId: user.user.id,
-					tenantIds: user.user.tenantIds,
+					userId: user.id,
+					tenantIds: user.tenantIds,
 				})
 			),
-		[showModal, user.user.id, onChangePasswordCallback]
+		[showModal, user.id, onChangePasswordCallback]
 	);
 
 	const openDeleteConfirmation = useCallback(
@@ -248,7 +250,7 @@ const UserTableRow: React.FC<
 			});
 		}
 
-		if (user.recipeId === "passwordless" && user.user.phoneNumber !== undefined) {
+		if (user.recipeId === "passwordless" && user.phoneNumbers[0] !== undefined) {
 			// menuItems.push({
 			// 	onClick: () => {
 			// 		openChangePhoneModal();
@@ -299,8 +301,8 @@ const UserTableRow: React.FC<
 };
 
 const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSelectUserFunction }) => {
-	const { firstName, lastName, emails } = user.user;
-	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
+	const { firstName, lastName, emails } = user;
+	const phone = user.recipeId === "passwordless" ? user.phoneNumbers[0] : undefined;
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 	let isClicked = false;
 	let didDrag = false;
@@ -347,7 +349,7 @@ const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSele
 };
 
 export const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
-	const thirdpartyId = user.recipeId === "thirdparty" && user.user.thirdParty.id;
+	const thirdpartyId = user.recipeId === "thirdparty" && user.thirdParty[0].id;
 	return (
 		<div className={`pill ${user.recipeId} ${thirdpartyId}`}>
 			<span>{UserRecipeTypeText[user.recipeId]}</span>
@@ -364,7 +366,7 @@ export const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
 };
 
 const UserDate = ({ user }: { user: UserWithRecipeId }) => {
-	return <div className="user-date">{user.user.timeJoined && formatLongDate(user.user.timeJoined)}</div>;
+	return <div className="user-date">{user.timeJoined && formatLongDate(user.timeJoined)}</div>;
 };
 
 const UserRecipeTypeText: Record<UserRecipeType, string> = {

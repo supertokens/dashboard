@@ -89,7 +89,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 			  }
 		> => {
 			let tenantId: string | undefined;
-			const tenants: Tenant[] = getTenantsObjectsForIds(tenantsListFromStore ?? [], data.user.tenantIds);
+			const tenants: Tenant[] = getTenantsObjectsForIds(tenantsListFromStore ?? [], data.tenantIds);
 			let matchingTenants: Tenant[] = [];
 
 			if (data.recipeId === "emailpassword") {
@@ -124,10 +124,10 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 			const userInfoResponse = await updateUserInformation({
 				userId,
 				recipeId: data.recipeId,
-				email: data.user.emails[0],
-				phone: data.recipeId === "passwordless" ? data.user.phoneNumber : "",
-				firstName: data.user.firstName,
-				lastName: data.user.lastName,
+				email: data.emails[0],
+				phone: data.recipeId === "passwordless" ? data.phoneNumbers[0] : "",
+				firstName: data.firstName,
+				lastName: data.lastName,
 				tenantId,
 			});
 			showToast(getUpdateUserToast(userInfoResponse.status === "OK"));
@@ -257,9 +257,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 					{...props}
 				/>
 
-				{userDetail.user.user.tenantIds.length > 0 && (
-					<UserTenantsList tenantIds={userDetail.user.user.tenantIds} />
-				)}
+				{userDetail.user.tenantIds.length > 0 && <UserTenantsList tenantIds={userDetail.user.tenantIds} />}
 
 				<UserDetailInfoGrid
 					userDetail={userDetail.user}
