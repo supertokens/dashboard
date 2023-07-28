@@ -395,28 +395,14 @@ export const UserListPage = () => {
 		[showToast]
 	);
 
-	// load user detail && email verification from API when userId changes
-	// useEffect(() => {
-	// 	if (selectedUser !== undefined) {
-	// 		void getUser(selectedUser);
-	// 		if (isEmailVerificationApplicable(selectedUser.recipeId)) {
-	// 			void getUserEmailVerificationStatus(selectedUser?.user.id).then(setSelectedUserEmailVerification);
-	// 		}
-	// 	} else {
-	// 		setSelectedUserEmailVerification(undefined);
-	// 	}
-	// }, [selectedUser?.user.id, selectedUser?.recipeId, getUser]);
-
 	useEffect(() => {
 		if (selectedUser === undefined && currentLocation.search !== null && currentLocation.search !== "") {
 			const urlParams = new URLSearchParams(currentLocation.search);
 			const userid = urlParams.get("userid");
-			const recipeId = urlParams.get("recipeId");
 
-			if (userid !== null && recipeId !== null) {
+			if (userid !== null) {
 				// This means that there is a userid in the URL, show details
 				setSelectedUser(userid);
-				setSelectedRecipeId(recipeId);
 			}
 		}
 	}, []);
@@ -440,9 +426,9 @@ export const UserListPage = () => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(window as any).connectionURI
 			}>
-			{isSelectedUserNotEmpty && selectedRecipeId !== undefined && (
+			{isSelectedUserNotEmpty && (
 				<UserDetail
-					recipeId={selectedRecipeId}
+					recipeId={""}
 					user={selectedUser}
 					onBackButtonClicked={backToList}
 					onDeleteCallback={({ id }) => onUserDelete(id)}
