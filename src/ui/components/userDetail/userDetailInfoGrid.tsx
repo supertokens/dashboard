@@ -1,5 +1,5 @@
 import { FC, ReactNode, useCallback, useContext, useEffect, useState } from "react";
-import { UpdateUserInformationResponse } from "../../../api/user";
+import user, { UpdateUserInformationResponse } from "../../../api/user";
 import { formatLongDate, getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { EmailVerificationStatus, FEATURE_NOT_ENABLED_TEXT, User } from "../../pages/usersList/types";
@@ -18,20 +18,7 @@ import { getUserChangePasswordPopupProps } from "./userDetailForm";
 type UserDetailInfoGridProps = Pick<
 	UserDetailProps,
 	"onSendEmailVerificationCallback" | "onUpdateEmailVerificationStatusCallback" | "onChangePasswordCallback"
-> & {
-	userDetail: User;
-	refetchData: () => Promise<void>;
-	onUpdateCallback: (
-		userId: string,
-		updatedValue: User
-	) => Promise<
-		| UpdateUserInformationResponse
-		| {
-				status: "NO_API_CALLED";
-		  }
-	>;
-	emailVerificationStatus: EmailVerificationStatus | undefined;
-};
+>;
 
 type UserDetailInfoGridItemProps = {
 	label?: ReactNode;
@@ -208,33 +195,25 @@ export const EmailVerifiedField: FC<EmailVerifiedFieldProps> = (props: EmailVeri
 };
 
 export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
-	const {
-		userDetail,
-		onUpdateCallback,
-		onSendEmailVerificationCallback,
-		onUpdateEmailVerificationStatusCallback,
-		onChangePasswordCallback,
-		refetchData,
-		emailVerificationStatus,
-	} = props;
+	const { onChangePasswordCallback } = props;
+	const { showLoadingOverlay, hideLoadingOverlay, userDetail } = useUserDetailContext();
 	const [emailErrorFromAPI, setEmailErrorFromAPI] = useState<string | undefined>(undefined);
 	const [phoneErrorFromAPI, setPhoneErrorFromAPI] = useState<string | undefined>(undefined);
-	const [userState, setUserState] = useState<User>({ ...userDetail });
+	const [userState, setUserState] = useState<User>({ ...userDetail.details });
 	const { showModal } = useContext(PopupContentContext);
 	const { firstName, lastName, timeJoined, emails } = userState;
 	const [isEditing, setIsEditing] = useState(false);
-	const { showLoadingOverlay, hideLoadingOverlay } = useUserDetailContext();
 
 	const onSave = useCallback(async () => {
 		showLoadingOverlay();
-		const response = await onUpdateCallback(userDetail.id, userState);
+		const response = await userDetail.func.updateUser(userDetail.userId, userState);
 
 		if (response.status === "NO_API_CALLED") {
 			return;
 		}
 
 		if (response.status === "OK") {
-			await refetchData();
+			await userDetail.func.refetchAllData();
 			setIsEditing(false);
 		} else {
 			if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
@@ -255,7 +234,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		}
 
 		hideLoadingOverlay();
-	}, [onUpdateCallback, userState, userDetail]);
+	}, [userDetail, userState, userDetail]);
 
 	const updateUserDataState = useCallback((updatedUser: Partial<User>) => {
 		setUserState((currentState) => {
@@ -263,7 +242,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		});
 	}, []);
 
-	useEffect(() => setUserState(userDetail), [userDetail]);
+	useEffect(() => setUserState(userDetail.details), [userDetail]);
 
 	// validate email if `isEditing=true`
 	const emailError = useCallback(() => {
@@ -276,12 +255,12 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		}
 
 		return undefined;
-	}, [emails, userDetail.emails, isEditing, emailErrorFromAPI])();
+	}, [emails, userDetail.details.emails, isEditing, emailErrorFromAPI])();
 
 	// validate phone if `isEditing=true`
 	const phoneNumber = userState.phoneNumbers[0];
 	const phoneNumberProps =
-		userDetail.loginMethods[0].recipeId === "passwordless" ? userDetail.phoneNumbers[0] : undefined;
+		userDetail.details.loginMethods[0].recipeId === "passwordless" ? userDetail.details.phoneNumbers[0] : undefined;
 	const phoneNumberError = useCallback(() => {
 		if (!isEditing) {
 			return;
@@ -301,7 +280,8 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 			error={phoneNumberError}
 			isRequired={
 				// prevent delete phone number if it was a phoneNumber account
-				userDetail.loginMethods[0].recipeId === "passwordless" && userDetail.phoneNumbers[0] !== undefined
+				userDetail.details.loginMethods[0].recipeId === "passwordless" &&
+				userDetail.details.phoneNumbers[0] !== undefined
 			}
 			onChange={(phoneNumber) => {
 				updateUserDataState({ phoneNumbers: [phoneNumber] });
@@ -313,8 +293,8 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 
 	const emailGridContent =
 		isEditing &&
-		(userDetail.loginMethods[0].recipeId === "emailpassword" ||
-			userDetail.loginMethods[0].recipeId === "passwordless") ? (
+		(userDetail.details.loginMethods[0].recipeId === "emailpassword" ||
+			userDetail.details.loginMethods[0].recipeId === "passwordless") ? (
 			<InputField
 				type="email"
 				name="email"
@@ -337,25 +317,25 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		setEmailErrorFromAPI(undefined);
 		setPhoneErrorFromAPI(undefined);
 		setIsEditing(false);
-		setUserState(userDetail);
+		setUserState(userDetail.details);
 	}, [userDetail]);
 
 	const handleChangePassword = useCallback(
 		async (password?: string) => {
 			if (password !== undefined && password !== "") {
-				await onChangePasswordCallback(userDetail.id, password);
-				await refetchData();
+				await onChangePasswordCallback(userDetail.userId, password);
+				await userDetail.func.refetchAllData();
 			}
 		},
-		[onChangePasswordCallback, userDetail.id]
+		[onChangePasswordCallback, userDetail.userId]
 	);
 
 	const openChangePasswordModal = useCallback(
 		() =>
 			showModal(
 				getUserChangePasswordPopupProps({
-					userId: userDetail.id,
-					tenantIds: userDetail.tenantIds,
+					userId: userDetail.userId,
+					tenantIds: userDetail.details.tenantIds,
 				})
 			),
 		[showModal, handleChangePassword]
@@ -366,7 +346,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 			<LayoutPanel
 				header={
 					<UserDetailInfoGridHeader
-						{...{ onSave, isEditing, user: userDetail, onUpdateCallback }}
+						{...{ onSave, isEditing, user: userDetail }}
 						onEdit={() => setIsEditing(true)}
 						onCancel={handleCancelSave}
 						isSaveDisabled={false}
@@ -399,61 +379,6 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 					<UserDetailInfoGridItem
 						label={"Signed up on:"}
 						body={timeJoined && formatLongDate(timeJoined)}
-					/>
-					<UserDetailInfoGridItem
-						label={"Email ID:"}
-						body={emailGridContent}
-					/>
-					<UserDetailInfoGridItem
-						label={"Is Email Verified:"}
-						body={
-							<EmailVerifiedField
-								user={userDetail}
-								isEditing={isEditing}
-								setVerificationStatus={async (isVerified) => {
-									await onUpdateEmailVerificationStatusCallback(
-										userDetail.id,
-										isVerified,
-										userDetail.tenantIds.length > 0 ? userDetail.tenantIds[0] : undefined
-									);
-									await refetchData();
-								}}
-								sendVerification={() => onSendEmailVerificationCallback(userDetail)}
-								emailVerificationStatus={emailVerificationStatus}
-							/>
-						}
-					/>
-					<UserDetailInfoGridItem
-						label={"Phone Number:"}
-						body={userDetail.loginMethods[0].recipeId === "passwordless" ? phone : NON_APPLICABLE_TEXT}
-					/>
-					<UserDetailInfoGridItem
-						label={"Password:"}
-						body={
-							userDetail.loginMethods[0].recipeId === "emailpassword" ? (
-								<button
-									className="flat link"
-									onClick={openChangePasswordModal}>
-									Change Password
-								</button>
-							) : (
-								NON_APPLICABLE_TEXT
-							)
-						}
-					/>
-					<UserDetailInfoGridItem
-						label={"Provider | Provider user id:"}
-						body={
-							userDetail.loginMethods[0].recipeId === "thirdparty" ? (
-								<UserDetailProviderBox user={userState} />
-							) : (
-								NON_APPLICABLE_TEXT
-							)
-						}
-					/>
-					<UserDetailInfoGridItem
-						label="Auth Method"
-						body={<UserRecipePill user={userDetail} />}
 					/>
 				</div>
 			</LayoutPanel>

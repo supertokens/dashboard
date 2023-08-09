@@ -428,7 +428,6 @@ export const UserListPage = () => {
 			}>
 			{isSelectedUserNotEmpty && (
 				<UserDetail
-					recipeId={""}
 					user={selectedUser}
 					onBackButtonClicked={backToList}
 					onDeleteCallback={({ id }) => onUserDelete(id)}

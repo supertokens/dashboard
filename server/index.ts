@@ -33,7 +33,7 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "https://try.supertokens.io",
+		connectionURI: "http://localhost:3567",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",
@@ -56,7 +56,7 @@ SuperTokens.init({
 				},
 			},
 		}),
-		UserMetaData.init(),
+		// UserMetaData.init(),z
 		// These are initialised so that functionailty works in the node SDK
 		EmailPassword.init(),
 		Passwordless.init({

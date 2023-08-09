@@ -13,15 +13,31 @@
  * under the License.
  */
 import { PropsWithChildren, createContext, useContext } from "react";
+import { User } from "../../../pages/usersList/types";
+import UserDetail from "../userDetail";
 
 type UserDetailContextType = {
 	showLoadingOverlay: () => void;
 	hideLoadingOverlay: () => void;
+	userDetail: UserDetails;
 };
 
 type IncomingProps = {
 	showLoadingOverlay: () => void;
 	hideLoadingOverlay: () => void;
+	userDetail: UserDetails;
+};
+
+export type UserDetails = {
+	userId: string;
+	details: User;
+	emailVerified: boolean;
+	metaData: string | undefined;
+	sessions: { sessionHandle: string; timeCreated: number; expiry: number }[] | undefined;
+	func: {
+		refetchAllData: () => Promise<void>;
+		updateUser: (userId: string, data: User) => Promise<{ status: string; error?: string }>;
+	};
 };
 
 type Props = PropsWithChildren<IncomingProps>;
@@ -37,7 +53,11 @@ export const useUserDetailContext = () => {
 export const UserDetailContextProvider: React.FC<Props> = (props: Props) => {
 	return (
 		<UserDetailContext.Provider
-			value={{ showLoadingOverlay: props.showLoadingOverlay, hideLoadingOverlay: props.hideLoadingOverlay }}>
+			value={{
+				showLoadingOverlay: props.showLoadingOverlay,
+				hideLoadingOverlay: props.hideLoadingOverlay,
+				userDetail: props.userDetail,
+			}}>
 			{props.children}
 		</UserDetailContext.Provider>
 	);
