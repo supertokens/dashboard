@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import "./loginMethods.scss";
 import { LayoutPanel } from "../../layout/layoutPanel";
 import { UserRecipeType } from "../../../pages/usersList/types";
@@ -7,22 +7,21 @@ import { DropDown } from "./components/dropDown";
 import { EditableInput } from "./components/editableInput";
 import { getImageUrl } from "../../../../utils";
 import { useUserDetailContext } from "../context/UserDetailContext";
-
-export type LoginMethods = {
-	tenantIds?: string[];
-	timeJoined: number;
-	recipeUserId: string;
-	recipeId: "emailpassword" | "thirdparty" | "passwordless";
-	email?: string;
-	phoneNumber?: string;
-	thirdParty?: {
-		id: string;
-		userId: string;
-	};
-};
+import {
+	getDeleteUserToast,
+	getLoginMethodDeleteConfirmationProps,
+	getUserChangePasswordPopupProps,
+	getUserDeleteConfirmationProps,
+} from "../userDetailForm";
+import { PopupContentContext } from "../../../contexts/PopupContentContext";
+import usePasswordResetService from "../../../../api/user/password/reset";
+import { type LoginMethod } from "../../../pages/usersList/types";
+import { type User } from "../../../pages/usersList/types";
+import useDeleteUserService from "../../../../api/user/delete";
+import useDeleteLoginMethodService from "../../../../api/user/deleteLoginMethod";
 
 export type LoginMethodsProps = {
-	methods: LoginMethods[];
+	methods: LoginMethod[];
 };
 
 export type InfoItemProps = { label: string; info: string; isEditing: boolean };
@@ -49,18 +48,24 @@ const ProviderPill = ({ id, userId }: { id: string; userId: string }) => {
 				return getImageUrl("auth-provider.svg");
 		}
 	};
+
+	const trim = (val: string) => {
+		const len = val.length;
+		return val.substring(0, Math.floor(len / 7)) + "..." + val.substring(6 * Math.floor(len / 7), len);
+	};
+
 	return (
 		<span className="provider-pill">
 			<img
 				src={idToImage()}
 				alt="Provider logo"
 			/>{" "}
-			| <CopyText>{userId}</CopyText>
+			| <CopyText copyVal={userId}>{trim(userId)}</CopyText>
 		</span>
 	);
 };
 
-const UserRecipePill = (loginMethod: LoginMethods) => {
+const UserRecipePill = (loginMethod: LoginMethod) => {
 	return (
 		<div className={`pill ${loginMethod.recipeId} ${loginMethod.thirdParty ?? ""}`}>
 			<span>{UserRecipeTypeText[loginMethod.recipeId]}</span>
@@ -82,7 +87,23 @@ const VerifiedPill = ({ isVerified }: { isVerified: boolean }) => {
 	} else return <span className="verified">Verified</span>;
 };
 
-const Methods: React.FC<LoginMethods> = (loginMethod) => {
+type MethodProps = {
+	loginMethod: LoginMethod;
+	onUpdateEmailVerificationStatusCallback: (
+		userId: string,
+		isVerified: boolean,
+		tenantId: string | undefined
+	) => Promise<boolean>;
+	onDeleteCallback: () => void;
+	onUnlinkCallback: () => void;
+};
+
+const Methods: React.FC<MethodProps> = ({
+	loginMethod,
+	onUpdateEmailVerificationStatusCallback,
+	onDeleteCallback,
+	onUnlinkCallback,
+}) => {
 	const dateToWord = (timestamp: number) => {
 		const date = new Date(timestamp);
 		return (
@@ -97,7 +118,28 @@ const Methods: React.FC<LoginMethods> = (loginMethod) => {
 			date.getMinutes()
 		);
 	};
+	const { showModal, showToast } = useContext(PopupContentContext);
 	const [isEditing, setEdit] = useState(false);
+	const { updatePassword } = usePasswordResetService();
+	const changePassword = useCallback(
+		async (userId: string, newPassword: string) => {
+			const response = await updatePassword(userId, newPassword, undefined);
+			// showToast(getUpdatePasswordToast(respo));
+			// eslint-disable-next-line no-console
+			console.log(response);
+		},
+		[showToast]
+	);
+	const openChangePasswordModal = useCallback(
+		() =>
+			showModal(
+				getUserChangePasswordPopupProps({
+					userId: loginMethod.recipeUserId,
+					tenantIds: loginMethod.tenantIds ?? [],
+				})
+			),
+		[showModal, loginMethod.recipeUserId, changePassword]
+	);
 	return (
 		<div className="method">
 			<div className="method-header">
@@ -114,8 +156,8 @@ const Methods: React.FC<LoginMethods> = (loginMethod) => {
 					{!isEditing && (
 						<DropDown
 							onEdit={() => setEdit(!isEditing)}
-							onDelete={() => null}
-							onUnlink={() => null}
+							onDelete={onDeleteCallback}
+							onUnlink={onUnlinkCallback}
 						/>
 					)}
 					{isEditing && (
@@ -128,13 +170,25 @@ const Methods: React.FC<LoginMethods> = (loginMethod) => {
 				</div>
 			</div>
 			<div className="method-body">
-				<EditableInput
-					label={"Email ID"}
-					val={loginMethod.email ?? ""}
-					edit={isEditing}
-				/>
 				<div>
-					Is Email Verified?: <VerifiedPill isVerified={true} />
+					<EditableInput
+						label={"Email ID"}
+						val={loginMethod.email ?? ""}
+						edit={isEditing}
+						type={"email"}
+					/>
+				</div>
+				<div>
+					Is Email Verified?:&nbsp; <VerifiedPill isVerified={loginMethod.verified} />{" "}
+					{isEditing && (
+						<span
+							onClick={() =>
+								onUpdateEmailVerificationStatusCallback(loginMethod.recipeUserId, true, undefined)
+							}
+							className="password-link">
+							Set as Verified
+						</span>
+					)}
 				</div>
 				{loginMethod.recipeId === "thirdparty" && (
 					<>
@@ -144,7 +198,7 @@ const Methods: React.FC<LoginMethods> = (loginMethod) => {
 						<div>
 							{loginMethod.thirdParty && (
 								<>
-									Provider: <ProviderPill {...loginMethod.thirdParty} />
+									Provider | Provider ID:&nbsp; <ProviderPill {...loginMethod.thirdParty} />
 								</>
 							)}
 						</div>
@@ -155,17 +209,25 @@ const Methods: React.FC<LoginMethods> = (loginMethod) => {
 						<div>
 							Created On: <b>{dateToWord(loginMethod.timeJoined)}</b>
 						</div>
-						<EditableInput
-							label={"Phonenumber"}
-							val={loginMethod.phoneNumber ?? ""}
-							edit={isEditing}
-						/>
+						<div>
+							<EditableInput
+								label={"Phonenumber"}
+								val={loginMethod.phoneNumber ?? ""}
+								edit={isEditing}
+								type={"phone"}
+							/>
+						</div>
 					</>
 				)}
 				{loginMethod.recipeId === "emailpassword" && (
 					<>
 						<div>
-							Password: <span className="password-link">Change Password</span>
+							Password:{" "}
+							<span
+								onClick={openChangePasswordModal}
+								className="password-link">
+								Change Password
+							</span>
 						</div>
 						<div>
 							Created On: <b>{dateToWord(loginMethod.timeJoined)}</b>
@@ -195,12 +257,56 @@ const Methods: React.FC<LoginMethods> = (loginMethod) => {
 export const LoginMethods: React.FC = () => {
 	const { userDetail } = useUserDetailContext();
 	const methods = userDetail.details.loginMethods;
+	const { deleteLoginMethod } = useDeleteLoginMethodService();
+	const { showToast, showModal } = useContext(PopupContentContext);
+
+	const onDeleteCallback = useCallback(
+		async (userId: string) => {
+			const deleteSucceed = await deleteLoginMethod(userId);
+			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
+			showToast(getDeleteUserToast(didSucceed));
+		},
+		[showToast]
+	);
+	const openDeleteConfirmation = useCallback(
+		(loginMethod: LoginMethod) =>
+			showModal(
+				getLoginMethodDeleteConfirmationProps({
+					loginMethod: loginMethod,
+					user: userDetail.details,
+					deleteCallback: onDeleteCallback,
+				})
+			),
+		[userDetail.details, onDeleteCallback, showModal]
+	);
+	const onUnlinkCallback = useCallback(
+		async (userId: string) => {
+			const deleteSucceed = await deleteLoginMethod(userId);
+			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
+			showToast(getDeleteUserToast(didSucceed));
+		},
+		[showToast]
+	);
+	const openUnlinkConfirmation = useCallback(
+		(loginMethod: LoginMethod) =>
+			showModal(
+				getLoginMethodDeleteConfirmationProps({
+					loginMethod: loginMethod,
+					user: userDetail.details,
+					deleteCallback: onUnlinkCallback,
+				})
+			),
+		[userDetail.details, onDeleteCallback, showModal]
+	);
 	return (
 		<LayoutPanel header={<div className="title">Login Methods</div>}>
 			{methods.map((val, ind) => (
 				<Methods
-					{...val}
+					loginMethod={val}
+					onUpdateEmailVerificationStatusCallback={userDetail.func.onUpdateEmailVerificationStatusCallback}
 					key={ind}
+					onDeleteCallback={() => openDeleteConfirmation(val)}
+					onUnlinkCallback={() => openUnlinkConfirmation(val)}
 				/>
 			))}
 		</LayoutPanel>

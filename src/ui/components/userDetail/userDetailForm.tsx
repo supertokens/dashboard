@@ -21,7 +21,7 @@ import { getImageUrl } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useTenantsListContext } from "../../contexts/TenantsListContext";
-import { UserProps } from "../../pages/usersList/types";
+import { LoginMethod, UserProps } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import InputField from "../inputField/InputField";
 import { LayoutModalProps } from "../layout/layoutModal";
@@ -442,6 +442,134 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 	);
 };
 
+export const LoginMethodUnlinkConfirmation: FC<UserDeleteConfirmationProps & { loginMethod: LoginMethod }> = ({
+	user,
+	onConfirmed,
+	loginMethod,
+}) => {
+	const [inputValue, setInputValue] = useState<string>("");
+	const [showError, shouldShowError] = useState(false);
+
+	let informationToEnter = "Confirm";
+	let inputType = "following information";
+
+	if (user.emails.length > 0) {
+		informationToEnter = user.emails[0];
+		inputType = "user's email id";
+	}
+
+	if (loginMethod.recipeId === "passwordless" && loginMethod.phoneNumber !== undefined) {
+		informationToEnter = user.phoneNumbers[0];
+		inputType = "user's phone number";
+	}
+
+	const onUnlinkPressed = () => {
+		if (informationToEnter !== inputValue) {
+			shouldShowError(true);
+			return;
+		}
+
+		onConfirmed(true);
+	};
+
+	return (
+		<div className="user-detail-form">
+			<p>
+				Are you sure you want to unlink the selected Login method <span>{loginMethod.recipeId}</span>?
+			</p>
+			<p>
+				To unlink the user, please confirm by typing the {inputType}: <span>{informationToEnter}</span> below
+			</p>
+			<div className="user-delete-input-container">
+				<InputField
+					type="text"
+					name="input"
+					error={showError ? "Incorrect entry" : undefined}
+					value={inputValue}
+					handleChange={({ target: { value } }) => setInputValue(value)}
+				/>
+			</div>
+			<div className="user-detail-form__actions">
+				<button
+					className="button outline"
+					onClick={() => onConfirmed(false)}>
+					Cancel
+				</button>
+				<button
+					className="button button-error"
+					onClick={onUnlinkPressed}
+					disabled={inputValue === ""}>
+					Delete Forever
+				</button>
+			</div>
+		</div>
+	);
+};
+
+export const LoginMethodDeleteConfirmation: FC<UserDeleteConfirmationProps & { loginMethod: LoginMethod }> = ({
+	user,
+	onConfirmed,
+	loginMethod,
+}) => {
+	const [inputValue, setInputValue] = useState<string>("");
+	const [showError, shouldShowError] = useState(false);
+
+	let informationToEnter = "Confirm";
+	let inputType = "following information";
+
+	if (user.emails.length > 0) {
+		informationToEnter = user.emails[0];
+		inputType = "user's email id";
+	}
+
+	if (loginMethod.recipeId === "passwordless" && loginMethod.phoneNumber !== undefined) {
+		informationToEnter = user.phoneNumbers[0];
+		inputType = "user's phone number";
+	}
+
+	const onDeletePressed = () => {
+		if (informationToEnter !== inputValue) {
+			shouldShowError(true);
+			return;
+		}
+
+		onConfirmed(true);
+	};
+
+	return (
+		<div className="user-detail-form">
+			<p>
+				Are you sure you want to delete the selected Login method <span>{loginMethod.recipeId}</span>?
+			</p>
+			<p>
+				To delete the user, please confirm by typing the {inputType}: <span>{informationToEnter}</span> below
+			</p>
+			<div className="user-delete-input-container">
+				<InputField
+					type="text"
+					name="input"
+					error={showError ? "Incorrect entry" : undefined}
+					value={inputValue}
+					handleChange={({ target: { value } }) => setInputValue(value)}
+				/>
+			</div>
+			<div className="user-detail-form__actions">
+				<button
+					className="button outline"
+					onClick={() => onConfirmed(false)}>
+					Cancel
+				</button>
+				<button
+					className="button button-error"
+					onClick={onDeletePressed}
+					disabled={inputValue === ""}>
+					Yes, Unlink
+				</button>
+			</div>
+		</div>
+	);
+};
+
 export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, onConfirmed }) => {
 	const [inputValue, setInputValue] = useState<string>("");
 	const [showError, shouldShowError] = useState(false);
@@ -515,6 +643,35 @@ export const getUserDeleteConfirmationProps = (props: UserDeleteConfirmationTrig
 			<UserDeleteConfirmation
 				user={user}
 				onConfirmed={onConfirmedDelete}
+			/>
+		),
+		header: <h2>Delete User?</h2>,
+		closeCallbackRef: closeConfirmDeleteRef,
+	} as LayoutModalProps;
+};
+
+export type deleteLoginMethodProps = {
+	loginMethod: LoginMethod;
+	deleteCallback: (userId: string) => void;
+} & UserProps;
+
+export const getLoginMethodDeleteConfirmationProps = (props: deleteLoginMethodProps) => {
+	const { user, loginMethod, deleteCallback } = props;
+	const closeConfirmDeleteRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
+
+	const onConfirmedDelete = (isConfirmed: boolean) => {
+		if (isConfirmed) {
+			deleteCallback("");
+		}
+		closeConfirmDeleteRef.current?.();
+	};
+
+	return {
+		modalContent: (
+			<LoginMethodDeleteConfirmation
+				loginMethod={loginMethod}
+				onConfirmed={onConfirmedDelete}
+				user={user}
 			/>
 		),
 		header: <h2>Delete User?</h2>,

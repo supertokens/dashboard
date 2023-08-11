@@ -24,6 +24,7 @@
 	&__actions {
 		display: flex;
 		justify-content: flex-end;
+		margin-top: 24px;
 		@include gap-horizontal(24px);
 		button {
 			justify-content: center;

@@ -31,12 +31,16 @@ type IncomingProps = {
 export type UserDetails = {
 	userId: string;
 	details: User;
-	emailVerified: boolean;
 	metaData: string | undefined;
 	sessions: { sessionHandle: string; timeCreated: number; expiry: number }[] | undefined;
 	func: {
 		refetchAllData: () => Promise<void>;
 		updateUser: (userId: string, data: User) => Promise<{ status: string; error?: string }>;
+		onUpdateEmailVerificationStatusCallback: (
+			userId: string,
+			isVerified: boolean,
+			tenantId: string | undefined
+		) => Promise<boolean>;
 	};
 };
 

@@ -51,13 +51,10 @@ export type UserDetailProps = {
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
-	const { onBackButtonClicked, user } = props;
+	const { onBackButtonClicked, user, onUpdateEmailVerificationStatusCallback } = props;
 	const [userDetail, setUserDetail] = useState<GetUserInfoResult | undefined>(undefined);
 	const [sessionList, setSessionList] = useState<SessionInfo[] | undefined>(undefined);
 	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
-	const [emailVerificationStatus, setEmailVerificationStatus] = useState<EmailVerificationStatus | undefined>(
-		undefined
-	);
 	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
 
 	const { getUser, updateUserInformation } = useUserService();
@@ -220,12 +217,12 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const contextUserObject: UserDetails = {
 		userId: user,
 		details: userDetail.user,
-		emailVerified: emailVerificationStatus?.status === "OK" ? emailVerificationStatus?.isVerified : false,
 		metaData: userMetaData,
 		sessions: sessionList,
 		func: {
 			refetchAllData: refetchAllData,
 			updateUser: updateUser,
+			onUpdateEmailVerificationStatusCallback: onUpdateEmailVerificationStatusCallback,
 		},
 	};
 

@@ -26,6 +26,8 @@
 					color: #d65078;
 					font-family: Menlo;
 					font-size: 13px;
+					padding: 5px;
+					margin-left: 10px;
 				}
 			}
 		}
@@ -35,13 +37,25 @@
 		padding: 18px 27px;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-
-		grid-row-gap: 2rem;
+		gap: 10px;
 
 		color: #6e6a65;
 
+		align-items: center;
+
+		& > div {
+			display: flex;
+			align-items: center;
+			height: 50px;
+		}
+
 		b {
-			color: initial;
+			color: #222;
+			font-family: Rubik;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: normal;
 		}
 	}
 }
@@ -52,6 +66,7 @@
 	background: #ececec;
 	font-size: 12px;
 	padding: 5px;
+	color: #252728;
 }
 
 .verified {
@@ -86,7 +101,6 @@
 	display: inline-flex;
 
 	max-width: 250px;
-	text-overflow: ellipsis;
 
 	img {
 		height: 15px;

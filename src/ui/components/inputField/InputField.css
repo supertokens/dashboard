@@ -49,7 +49,8 @@
 	background-color: rgb(250, 250, 250);
 }
 
-.input-field:focus {
+.input-field:focus,
+.input-field:hover {
 	background-color: white;
 }
 
