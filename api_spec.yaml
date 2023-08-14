@@ -609,6 +609,57 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
+    /user/unlink:
+        get:
+            tags:
+                - User Details
+            summary: Unlink a user account
+            operationId: userUnlink
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+                - name: recipeUserId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
     /user/email/verify:
         get:
             tags:
