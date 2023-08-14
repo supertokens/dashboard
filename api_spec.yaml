@@ -610,11 +610,11 @@ paths:
                                 enum:
                                     - Not Found
     /user/unlink:
-        post:
+        get:
             tags:
                 - User Details
-            summary: Unlike a user account
-            operationId: userDelete
+            summary: Unlink a user account
+            operationId: userUnlink
             parameters:
                 - name: authorization
                   in: header
