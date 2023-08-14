@@ -622,18 +622,11 @@ paths:
                   schema:
                       type: string
                       example: "Bearer API_KEY"
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                userId:
-                                    type: string
-                                recipeUserId:
-                                    type: string
-                                tenantId:
-                                    type: string
+                - name: recipeUserId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
             responses:
                 200:
                     description: Success
