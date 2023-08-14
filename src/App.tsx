@@ -22,9 +22,11 @@ import "./images";
 import SignOutBtn from "./ui/components/auth/SignOutBtn";
 import AuthWrapper from "./ui/components/authWrapper";
 import ErrorBoundary from "./ui/components/errorboundary";
+import { AccessDeniedModal } from "./ui/components/layout/accessDeniedModal";
 import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
 import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
 import { ToastNotificationContainer } from "./ui/components/toast/toastNotification";
+import { AccessDeniedContextProvider } from "./ui/contexts/AccessDeniedContext";
 import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
 import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
 
@@ -34,25 +36,28 @@ function App() {
 			<SafeAreaView />
 			<ErrorBoundary>
 				<PopupContentContextProvider>
-					<TenantsListContextProvider>
-						<AuthWrapper>
-							<Router basename={getDashboardAppBasePath()}>
-								<SignOutBtn />
-								<Routes>
-									<Route
-										path="/"
-										element={<UsersListPage />}
-									/>
-									<Route
-										path="*"
-										element={<UsersListPage />}
-									/>
-								</Routes>
-							</Router>
-							<ToastNotificationContainer />
-							<LayoutModalContainer />
-						</AuthWrapper>
-					</TenantsListContextProvider>
+					<AccessDeniedContextProvider>
+						<TenantsListContextProvider>
+							<AuthWrapper>
+								<Router basename={getDashboardAppBasePath()}>
+									<SignOutBtn />
+									<Routes>
+										<Route
+											path="/"
+											element={<UsersListPage />}
+										/>
+										<Route
+											path="*"
+											element={<UsersListPage />}
+										/>
+									</Routes>
+								</Router>
+								<AccessDeniedModal />
+								<ToastNotificationContainer />
+								<LayoutModalContainer />
+							</AuthWrapper>
+						</TenantsListContextProvider>
+					</AccessDeniedContextProvider>
 				</PopupContentContextProvider>
 			</ErrorBoundary>
 		</>

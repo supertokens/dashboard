@@ -13,11 +13,13 @@
  * under the License.
  */
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { HTTPStatusCodes, StorageKeys } from "../constants";
+import { getAccessDeniedEvent } from "../events/accessDenied";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
 import { HttpMethod } from "../types";
+import { AccessDeniedPopupContext } from "../ui/contexts/AccessDeniedContext";
 import { UserRecipeType } from "../ui/pages/usersList/types";
 
 export function getStaticBasePath(): string {
@@ -77,6 +79,8 @@ interface IFetchDataArgs {
 
 export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
+	const [body, setBody] = useState<any>({});
+	const { showPopup } = useContext(AccessDeniedPopupContext);
 
 	const fetchData = async ({
 		url,
@@ -87,7 +91,6 @@ export const useFetchData = () => {
 		ignoreErrors = false,
 	}: IFetchDataArgs) => {
 		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.AUTH_KEY);
-
 		let additionalHeaders: { [key: string]: string } = {};
 
 		if (apiKeyInStorage !== undefined) {
@@ -115,11 +118,27 @@ export const useFetchData = () => {
 			window.location.reload();
 		} else {
 			setStatusCode(ignoreErrors ? 200 : response.status);
+			setBody(await response.clone().json());
 		}
 		return response;
 	};
 
 	if (statusCode < 300 || statusCode === HTTPStatusCodes.UNAUTHORIZED) {
+		return fetchData;
+	}
+
+	/**
+	 * @comment
+	 * whenever the server returns 403 (Forbidden status code) it means that the
+	 * user is not allowed to perform that particular action and we will emit the
+	 * accessDenied event and open the access denied popup.
+	 */
+	if (statusCode === 403) {
+		const messageInBody = body.message;
+		showPopup(messageInBody);
+		window.dispatchEvent(
+			getAccessDeniedEvent(messageInBody === undefined ? "You do not have access to this page" : messageInBody)
+		);
 		return fetchData;
 	}
 
