@@ -13,13 +13,12 @@
  * under the License.
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HTTPStatusCodes, StorageKeys } from "../constants";
 import { getAccessDeniedEvent } from "../events/accessDenied";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
 import { HttpMethod } from "../types";
-import { AccessDeniedPopupContext } from "../ui/contexts/AccessDeniedContext";
 import { UserRecipeType } from "../ui/pages/usersList/types";
 
 export function getStaticBasePath(): string {
@@ -80,7 +79,6 @@ interface IFetchDataArgs {
 export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 	const [body, setBody] = useState<any>({});
-	const { showPopup } = useContext(AccessDeniedPopupContext);
 
 	const fetchData = async ({
 		url,
@@ -135,7 +133,6 @@ export const useFetchData = () => {
 	 */
 	if (statusCode === 403) {
 		const messageInBody = body.message;
-		showPopup(messageInBody);
 		window.dispatchEvent(
 			getAccessDeniedEvent(messageInBody === undefined ? "You do not have access to this page" : messageInBody)
 		);
