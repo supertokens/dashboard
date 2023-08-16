@@ -33,7 +33,7 @@ const useVerifyUserEmail = (): IUseVerifyUserEmailService => {
 			url: getApiUrl("/api/user/email/verify", tenantId),
 			method: "PUT",
 			config: {
-				body: JSON.stringify({ verified: isEmailVerified, userId }),
+				body: JSON.stringify({ verified: isEmailVerified, recipeUserId: userId }),
 			},
 		});
 		return response?.ok;
