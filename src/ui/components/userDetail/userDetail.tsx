@@ -120,6 +120,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 			const userInfoResponse = await updateUserInformation({
 				userId,
 				recipeId: data.loginMethods[0].recipeId,
+				recipeUserId: data.loginMethods[0].recipeUserId,
 				email: data.emails[0],
 				phone: data.loginMethods[0].recipeId === "passwordless" ? data.phoneNumbers[0] : "",
 				firstName: data.firstName,

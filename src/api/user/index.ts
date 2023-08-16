@@ -21,9 +21,10 @@ interface IUseUserService {
 	getUser: (userId: string) => Promise<GetUserInfoResult>;
 }
 
-interface IUpdateUserInformationArgs {
+export interface IUpdateUserInformationArgs {
 	userId: string;
 	recipeId: string;
+	recipeUserId: string;
 	tenantId: string | undefined;
 	email?: string;
 	phone?: string;
@@ -90,6 +91,7 @@ export const useUserService = (): IUseUserService => {
 	const updateUserInformation = async ({
 		userId,
 		recipeId,
+		recipeUserId,
 		email,
 		phone,
 		firstName,
@@ -112,6 +114,7 @@ export const useUserService = (): IUseUserService => {
 				body: JSON.stringify({
 					recipeId,
 					userId,
+					recipeUserId,
 					phone: phoneToSend,
 					email: emailToSend,
 					firstName: firstNameToSend,

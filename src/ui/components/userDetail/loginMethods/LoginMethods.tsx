@@ -10,21 +10,15 @@ import { useUserDetailContext } from "../context/UserDetailContext";
 import {
 	getDeleteUserToast,
 	getLoginMethodDeleteConfirmationProps,
+	getUpdatePasswordToast,
 	getUserChangePasswordPopupProps,
-	getUserDeleteConfirmationProps,
 } from "../userDetailForm";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import usePasswordResetService from "../../../../api/user/password/reset";
 import { type LoginMethod } from "../../../pages/usersList/types";
-import { type User } from "../../../pages/usersList/types";
 import useDeleteUserService from "../../../../api/user/delete";
-import useDeleteLoginMethodService from "../../../../api/user/deleteLoginMethod";
-
-export type LoginMethodsProps = {
-	methods: LoginMethod[];
-};
-
-export type InfoItemProps = { label: string; info: string; isEditing: boolean };
+import useUnlinkService from "../../../../api/user/unlink";
+import useUserService, { type IUpdateUserInformationArgs } from "../../../../api/user";
 
 const UserRecipeTypeText: Record<UserRecipeType, string> = {
 	["emailpassword"]: "Email password",
@@ -96,6 +90,7 @@ type MethodProps = {
 	) => Promise<boolean>;
 	onDeleteCallback: () => void;
 	onUnlinkCallback: () => void;
+	onEditCallback: (val: IUpdateUserInformationArgs) => void;
 };
 
 const Methods: React.FC<MethodProps> = ({
@@ -103,6 +98,7 @@ const Methods: React.FC<MethodProps> = ({
 	onUpdateEmailVerificationStatusCallback,
 	onDeleteCallback,
 	onUnlinkCallback,
+	onEditCallback,
 }) => {
 	const dateToWord = (timestamp: number) => {
 		const date = new Date(timestamp);
@@ -121,10 +117,20 @@ const Methods: React.FC<MethodProps> = ({
 	const { showModal, showToast } = useContext(PopupContentContext);
 	const [isEditing, setEdit] = useState(false);
 	const { updatePassword } = usePasswordResetService();
+	const [send, setSend] = useState<IUpdateUserInformationArgs>({
+		userId: loginMethod.recipeUserId,
+		recipeId: loginMethod.recipeId,
+		recipeUserId: loginMethod.recipeUserId,
+		tenantId: loginMethod.tenantIds[0],
+		email: loginMethod.email,
+		phone: loginMethod.phoneNumber,
+		firstName: undefined,
+		lastName: undefined,
+	});
 	const changePassword = useCallback(
 		async (userId: string, newPassword: string) => {
 			const response = await updatePassword(userId, newPassword, undefined);
-			// showToast(getUpdatePasswordToast(respo));
+			showToast(getUpdatePasswordToast(response.status === "OK"));
 			// eslint-disable-next-line no-console
 			console.log(response);
 		},
@@ -162,7 +168,10 @@ const Methods: React.FC<MethodProps> = ({
 					)}
 					{isEditing && (
 						<button
-							onClick={() => setEdit(false)}
+							onClick={() => {
+								onEditCallback(send);
+								setEdit(false);
+							}}
 							className="save-button">
 							Save
 						</button>
@@ -176,6 +185,7 @@ const Methods: React.FC<MethodProps> = ({
 						val={loginMethod.email ?? ""}
 						edit={isEditing}
 						type={"email"}
+						onChange={(val) => setSend({ ...send, email: val })}
 					/>
 				</div>
 				<div>
@@ -215,6 +225,7 @@ const Methods: React.FC<MethodProps> = ({
 								val={loginMethod.phoneNumber ?? ""}
 								edit={isEditing}
 								type={"phone"}
+								onChange={(val) => setSend({ ...send, phone: val })}
 							/>
 						</div>
 					</>
@@ -256,13 +267,15 @@ const Methods: React.FC<MethodProps> = ({
 
 export const LoginMethods: React.FC = () => {
 	const { userDetail } = useUserDetailContext();
+	const { updateUserInformation } = useUserService();
 	const methods = userDetail.details.loginMethods;
-	const { deleteLoginMethod } = useDeleteLoginMethodService();
+	const { deleteUser } = useDeleteUserService();
+	const { unlinkUser } = useUnlinkService();
 	const { showToast, showModal } = useContext(PopupContentContext);
 
 	const onDeleteCallback = useCallback(
 		async (userId: string) => {
-			const deleteSucceed = await deleteLoginMethod(userId);
+			const deleteSucceed = await deleteUser(userId, false);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			showToast(getDeleteUserToast(didSucceed));
 		},
@@ -281,7 +294,7 @@ export const LoginMethods: React.FC = () => {
 	);
 	const onUnlinkCallback = useCallback(
 		async (userId: string) => {
-			const deleteSucceed = await deleteLoginMethod(userId);
+			const deleteSucceed = await unlinkUser(userId);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			showToast(getDeleteUserToast(didSucceed));
 		},
@@ -293,11 +306,14 @@ export const LoginMethods: React.FC = () => {
 				getLoginMethodDeleteConfirmationProps({
 					loginMethod: loginMethod,
 					user: userDetail.details,
-					deleteCallback: onUnlinkCallback,
+					deleteCallback: () => onUnlinkCallback(loginMethod.recipeUserId),
 				})
 			),
 		[userDetail.details, onDeleteCallback, showModal]
 	);
+	const onEditCallback = useCallback(async (vals: IUpdateUserInformationArgs) => {
+		await updateUserInformation(vals);
+	}, []);
 	return (
 		<LayoutPanel header={<div className="title">Login Methods</div>}>
 			{methods.map((val, ind) => (
@@ -307,6 +323,7 @@ export const LoginMethods: React.FC = () => {
 					key={ind}
 					onDeleteCallback={() => openDeleteConfirmation(val)}
 					onUnlinkCallback={() => openUnlinkConfirmation(val)}
+					onEditCallback={(val) => onEditCallback(val)}
 				/>
 			))}
 		</LayoutPanel>
