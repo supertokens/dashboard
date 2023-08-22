@@ -18,12 +18,13 @@ import { getApiUrl, useFetchData } from "../../utils";
 
 interface IUseUserService {
 	updateUserInformation: (args: IUpdateUserInformationArgs) => Promise<UpdateUserInformationResponse>;
-	getUser: (userId: string, recipeId: string) => Promise<GetUserInfoResult>;
+	getUser: (userId: string) => Promise<GetUserInfoResult>;
 }
 
-interface IUpdateUserInformationArgs {
+export interface IUpdateUserInformationArgs {
 	userId: string;
 	recipeId: string;
+	recipeUserId: string;
 	tenantId: string | undefined;
 	email?: string;
 	phone?: string;
@@ -55,13 +56,12 @@ export type UpdateUserInformationResponse =
 export const useUserService = (): IUseUserService => {
 	const fetchData = useFetchData();
 
-	const getUser = async (userId: string, recipeId: string): Promise<GetUserInfoResult> => {
+	const getUser = async (userId: string): Promise<GetUserInfoResult> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/user"),
 			method: "GET",
 			query: {
 				userId,
-				recipeId,
 			},
 		});
 
@@ -80,10 +80,7 @@ export const useUserService = (): IUseUserService => {
 				};
 			}
 
-			return {
-				status: "OK",
-				user: body,
-			};
+			return body;
 		}
 
 		return {
@@ -94,6 +91,7 @@ export const useUserService = (): IUseUserService => {
 	const updateUserInformation = async ({
 		userId,
 		recipeId,
+		recipeUserId,
 		email,
 		phone,
 		firstName,
@@ -116,6 +114,7 @@ export const useUserService = (): IUseUserService => {
 				body: JSON.stringify({
 					recipeId,
 					userId,
+					recipeUserId,
 					phone: phoneToSend,
 					email: emailToSend,
 					firstName: firstNameToSend,

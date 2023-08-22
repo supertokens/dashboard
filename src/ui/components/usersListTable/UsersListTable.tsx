@@ -20,12 +20,6 @@ import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "../userDetail/userDetail";
-import {
-	getUserChangeEmailPopupProps,
-	getUserChangePasswordPopupProps,
-	getUserChangePhonePopupProps,
-	getUserDeleteConfirmationProps,
-} from "../userDetail/userDetailForm";
 import "./UsersListTable.scss";
 
 const USER_TABLE_COLUMNS_COUNT = 4;
@@ -157,55 +151,7 @@ const UserTableRow: React.FC<
 		onEmailChanged: () => Promise<void>;
 	} & UserRowActionProps
 > = (props) => {
-	const { user, index, onSelect, onChangePasswordCallback, onDeleteCallback } = props;
-	const { showModal } = useContext(PopupContentContext);
-
-	const openChangePasswordModal = useCallback(
-		() =>
-			showModal(
-				getUserChangePasswordPopupProps({
-					userId: user.id,
-					tenantIds: user.tenantIds,
-				})
-			),
-		[showModal, user.id, onChangePasswordCallback]
-	);
-
-	const openChangeEmailModal = useCallback(
-		(recipeId: "emailpassword" | "passwordless") =>
-			showModal(
-				getUserChangeEmailPopupProps({
-					userId: user.id,
-					recipeId,
-					onEmailChanged: props.onEmailChanged,
-					tenantIds: user.tenantIds,
-				})
-			),
-		[showModal, user.id, onChangePasswordCallback]
-	);
-
-	const openChangePhoneModal = useCallback(
-		() =>
-			showModal(
-				getUserChangePhonePopupProps({
-					userId: user.id,
-					tenantIds: user.tenantIds,
-				})
-			),
-		[showModal, user.id, onChangePasswordCallback]
-	);
-
-	const openDeleteConfirmation = useCallback(
-		() =>
-			showModal(
-				getUserDeleteConfirmationProps({
-					onDeleteCallback,
-					user,
-				})
-			),
-		[user, onDeleteCallback, showModal]
-	);
-
+	const { user, index, onSelect } = props;
 	return (
 		<tr
 			key={index}

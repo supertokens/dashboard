@@ -13,16 +13,13 @@
  * under the License.
  */
 
-import { FC, useCallback, useContext } from "react";
+import { FC, useCallback, useContext, useEffect } from "react";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserProps } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
 import { UserDetailProps } from "./userDetail";
 import { getUserDeleteConfirmationProps } from "./userDetailForm";
-
-type UserDetailBaseProps = {
-	user: User;
-};
+import { useUserDetailContext } from "./context/UserDetailContext";
 
 const getBadgeInitial = ({ firstName, lastName, emails, id }: User) => {
 	let firstnameToUse = "";
@@ -77,15 +74,8 @@ export const UserDetailBadge: React.FC<UserProps> = ({ user }: UserProps) => (
 	<div className="user-detail__header__badge">{getBadgeInitial(user)}</div>
 );
 
-export type UserDetailHeaderProps = UserDetailProps & {
-	userDetail: User;
-};
-
-export const UserDetailHeader: React.FC<UserDetailHeaderProps> = ({
-	userDetail,
-	onDeleteCallback,
-}: UserDetailHeaderProps) => {
-	const { id } = userDetail;
+export const UserDetailHeader: React.FC<UserDetailProps> = ({ onDeleteCallback }: UserDetailProps) => {
+	const { userDetail } = useUserDetailContext();
 	const { showModal } = useContext(PopupContentContext);
 
 	const openDeleteConfirmation = useCallback(
@@ -93,7 +83,7 @@ export const UserDetailHeader: React.FC<UserDetailHeaderProps> = ({
 			showModal(
 				getUserDeleteConfirmationProps({
 					onDeleteCallback,
-					user: userDetail,
+					user: userDetail.details,
 				})
 			),
 		[userDetail, onDeleteCallback, showModal]
@@ -101,19 +91,19 @@ export const UserDetailHeader: React.FC<UserDetailHeaderProps> = ({
 
 	return (
 		<div className="user-detail__header">
-			<UserDetailBadge user={userDetail} />
+			<UserDetailBadge user={userDetail.details} />
 			<div className="user-detail__header__info">
 				<div className="user-detail__header__title">
 					<span>
-						<UserDisplayName user={userDetail} />
+						<UserDisplayName user={userDetail.details} />
 					</span>
 				</div>
 				<div className="user-detail__header__user-id">
 					<span className="user-detail__header__user-id__label">User ID:</span>
 					<span
 						className="user-detail__header__user-id__text block-snippet-large"
-						title={id}>
-						<CopyText>{id}</CopyText>
+						title={userDetail.userId}>
+						<CopyText>{userDetail.userId}</CopyText>
 					</span>
 				</div>
 			</div>

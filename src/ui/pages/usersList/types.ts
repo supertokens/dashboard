@@ -38,6 +38,8 @@ export type LoginMethod = {
 		id: string;
 		userId: string;
 	};
+	verified: boolean;
+	tenantIds: string[];
 };
 
 export type User = {

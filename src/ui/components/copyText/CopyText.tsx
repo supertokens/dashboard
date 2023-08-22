@@ -21,16 +21,17 @@ import "./CopyText.scss";
 type CopyTextProps = {
 	showChild?: boolean;
 	children: string;
+	copyVal?: string;
 };
 
-export const CopyText: React.FC<CopyTextProps> = ({ showChild = true, children }: CopyTextProps) => {
+export const CopyText: React.FC<CopyTextProps> = ({ showChild = true, children, copyVal }: CopyTextProps) => {
 	const alertWidth = 80;
 	const copyBoxRef = useRef<HTMLDivElement>(null);
 	const [isCopied, setIsCopied] = useState<boolean>(false);
 	const copyClick = useCallback(() => {
 		if (!isCopied) {
 			setIsCopied(true);
-			void navigator.clipboard.writeText(children);
+			void navigator.clipboard.writeText(copyVal ?? children);
 		}
 	}, [isCopied, children]);
 

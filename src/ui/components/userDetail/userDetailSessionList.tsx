@@ -18,18 +18,11 @@ import { PlaceholderTableRows } from "../usersListTable/UsersListTable";
 import { useUserDetailContext } from "./context/UserDetailContext";
 import "./userDetailSessionList.scss";
 
-export type UserDetailsSessionListProps = {
-	sessionList: SessionInfo[] | undefined;
-	refetchData: () => Promise<void>;
-};
-
-export const UserDetailsSessionList: React.FC<UserDetailsSessionListProps> = ({
-	sessionList,
-	refetchData,
-}: UserDetailsSessionListProps) => {
+export const UserDetailsSessionList: React.FC = () => {
+	const { hideLoadingOverlay, showLoadingOverlay, userDetail } = useUserDetailContext();
+	const sessionList = userDetail.sessions;
 	const sessionCountText = sessionList === undefined ? "" : `(TOTAL NO OF SESSIONS: ${sessionList.length})`;
 	const { deleteSessionsForUser } = useSessionsForUserService();
-	const { hideLoadingOverlay, showLoadingOverlay } = useUserDetailContext();
 	const revokeAllSessions = async () => {
 		showLoadingOverlay();
 		try {
@@ -39,7 +32,7 @@ export const UserDetailsSessionList: React.FC<UserDetailsSessionListProps> = ({
 
 			const allSessionHandles: string[] = sessionList.map((item) => item.sessionHandle);
 			await deleteSessionsForUser(allSessionHandles);
-			await refetchData();
+			await userDetail.func.refetchAllData();
 		} finally {
 			hideLoadingOverlay();
 		}
@@ -86,7 +79,7 @@ export const UserDetailsSessionList: React.FC<UserDetailsSessionListProps> = ({
 											sessionHandle={session.sessionHandle}
 											expiry={session.expiry}
 											timeCreated={session.timeCreated}
-											refetchData={refetchData}
+											refetchData={userDetail.func.refetchAllData}
 										/>
 									);
 								})}

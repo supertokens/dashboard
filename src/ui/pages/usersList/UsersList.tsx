@@ -356,7 +356,7 @@ export const UserListPage = () => {
 
 	const onUserDelete = useCallback(
 		async (userId: string) => {
-			const deleteSucceed = await deleteUser(userId);
+			const deleteSucceed = await deleteUser(userId, true);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			if (didSucceed) {
 				backToList();
@@ -428,7 +428,6 @@ export const UserListPage = () => {
 			}>
 			{isSelectedUserNotEmpty && (
 				<UserDetail
-					recipeId={""}
 					user={selectedUser}
 					onBackButtonClicked={backToList}
 					onDeleteCallback={({ id }) => onUserDelete(id)}
