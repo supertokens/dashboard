@@ -13,8 +13,8 @@
  * under the License.
  */
 import { PropsWithChildren, createContext, useContext } from "react";
+import { Tenant } from "../../../../api/tenants/list";
 import { User } from "../../../pages/usersList/types";
-import UserDetail from "../userDetail";
 
 type UserDetailContextType = {
 	showLoadingOverlay: () => void;
@@ -35,7 +35,11 @@ export type UserDetails = {
 	sessions: { sessionHandle: string; timeCreated: number; expiry: number }[] | undefined;
 	func: {
 		refetchAllData: () => Promise<void>;
-		updateUser: (userId: string, data: User) => Promise<{ status: string; error?: string }>;
+		updateUser: (
+			userId: string,
+			data: User,
+			tenantListFromStore: Tenant[] | undefined
+		) => Promise<{ status: string; error?: string }>;
 		onUpdateEmailVerificationStatusCallback: (
 			userId: string,
 			isVerified: boolean,

@@ -1,19 +1,14 @@
 import { FC, ReactNode, useCallback, useContext, useEffect, useState } from "react";
-import user, { UpdateUserInformationResponse } from "../../../api/user";
 import { formatLongDate, getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
+import { useTenantsListContext } from "../../contexts/TenantsListContext";
 import { EmailVerificationStatus, FEATURE_NOT_ENABLED_TEXT, User } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
-import InputField from "../inputField/InputField";
 import { LayoutPanel } from "../layout/layoutPanel";
-import PhoneDisplay from "../phoneNumber/PhoneNumber";
-import { PhoneNumberInput } from "../phoneNumber/PhoneNumberInput";
 import TooltipContainer from "../tooltip/tooltip";
-import { UserRecipePill } from "../usersListTable/UsersListTable";
 import { UserDetailNameField } from "./components/nameField/nameField";
 import { useUserDetailContext } from "./context/UserDetailContext";
 import { UserDetailProps } from "./userDetail";
-import { getUserChangePasswordPopupProps } from "./userDetailForm";
 
 type UserDetailInfoGridProps = Pick<
 	UserDetailProps,
@@ -203,10 +198,11 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const { showModal } = useContext(PopupContentContext);
 	const { firstName, lastName, timeJoined, emails } = userState;
 	const [isEditing, setIsEditing] = useState(false);
+	const { tenantsListFromStore } = useTenantsListContext();
 
 	const onSave = useCallback(async () => {
 		showLoadingOverlay();
-		const response = await userDetail.func.updateUser(userDetail.userId, userState);
+		const response = await userDetail.func.updateUser(userDetail.userId, userState, tenantsListFromStore);
 
 		if (response.status === "NO_API_CALLED") {
 			return;
