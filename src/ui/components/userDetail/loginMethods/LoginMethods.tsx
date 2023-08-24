@@ -10,6 +10,7 @@ import { useUserDetailContext } from "../context/UserDetailContext";
 import {
 	getDeleteUserToast,
 	getLoginMethodDeleteConfirmationProps,
+	getSendEmailVerificationToast,
 	getUpdatePasswordToast,
 	getUserChangePasswordPopupProps,
 } from "../userDetailForm";
@@ -19,6 +20,7 @@ import { type LoginMethod } from "../../../pages/usersList/types";
 import useDeleteUserService from "../../../../api/user/delete";
 import useUnlinkService from "../../../../api/user/unlink";
 import useUserService, { type IUpdateUserInformationArgs } from "../../../../api/user";
+import useVerifyUserTokenService from "../../../../api/user/email/verify/token";
 
 const UserRecipeTypeText: Record<UserRecipeType, string> = {
 	["emailpassword"]: "Email password",
@@ -91,6 +93,7 @@ type MethodProps = {
 	onDeleteCallback: () => void;
 	onUnlinkCallback: () => void;
 	onEditCallback: (val: IUpdateUserInformationArgs) => void;
+	refetchAllData: () => Promise<void>;
 };
 
 const Methods: React.FC<MethodProps> = ({
@@ -99,7 +102,10 @@ const Methods: React.FC<MethodProps> = ({
 	onDeleteCallback,
 	onUnlinkCallback,
 	onEditCallback,
+	refetchAllData,
 }) => {
+	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
+	const { showModal, showToast } = useContext(PopupContentContext);
 	const dateToWord = (timestamp: number) => {
 		const date = new Date(timestamp);
 		return (
@@ -114,7 +120,21 @@ const Methods: React.FC<MethodProps> = ({
 			date.getMinutes()
 		);
 	};
-	const { showModal, showToast } = useContext(PopupContentContext);
+
+	const trim = (val: string) => {
+		const len = val.length;
+		return val.substring(0, Math.floor(len / 7)) + "..." + val.substring(6 * Math.floor(len / 7), len);
+	};
+
+	const sendUserEmailVerification = useCallback(
+		async (userId: string, tenantId: string | undefined) => {
+			const isSend = await sendUserEmailVerificationApi(userId, tenantId);
+			showToast(getSendEmailVerificationToast(isSend));
+			return isSend;
+		},
+		[sendUserEmailVerificationApi, showToast]
+	);
+
 	const [isEditing, setEdit] = useState(false);
 	const { updatePassword } = usePasswordResetService();
 	const [send, setSend] = useState<IUpdateUserInformationArgs>({
@@ -146,6 +166,10 @@ const Methods: React.FC<MethodProps> = ({
 			),
 		[showModal, loginMethod.recipeUserId, changePassword]
 	);
+	const changeEmailVerificationStatus = async () => {
+		await onUpdateEmailVerificationStatusCallback(loginMethod.recipeUserId, !loginMethod.verified, undefined);
+		await refetchAllData();
+	};
 	return (
 		<div className="method">
 			<div className="method-header">
@@ -153,6 +177,9 @@ const Methods: React.FC<MethodProps> = ({
 					<UserRecipePill {...loginMethod} />
 					<span className="user-id-span">
 						User ID:
+						<span className="copy-text-wrapper resp">
+							<CopyText>{trim(loginMethod.recipeUserId)}</CopyText>
+						</span>
 						<span className="copy-text-wrapper">
 							<CopyText>{loginMethod.recipeUserId}</CopyText>
 						</span>
@@ -189,21 +216,29 @@ const Methods: React.FC<MethodProps> = ({
 					/>
 				</div>
 				<div>
-					Is Email Verified?:&nbsp; <VerifiedPill isVerified={loginMethod.verified} />{" "}
-					{isEditing && (
+					Is Email Verified?:&nbsp; <VerifiedPill isVerified={loginMethod.verified} />
+					<br />
+					{!isEditing && !loginMethod.verified && (
 						<span
 							onClick={() =>
-								onUpdateEmailVerificationStatusCallback(loginMethod.recipeUserId, true, undefined)
+								sendUserEmailVerification(loginMethod.recipeUserId, loginMethod.tenantIds[0])
 							}
 							className="password-link">
-							Set as Verified
+							Send verification mail
+						</span>
+					)}
+					{isEditing && (
+						<span
+							onClick={changeEmailVerificationStatus}
+							className="password-link">
+							{loginMethod.verified ? "Set as Unverified" : "Set as Verified"}
 						</span>
 					)}
 				</div>
 				{loginMethod.recipeId === "thirdparty" && (
 					<>
 						<div>
-							Created On: <b>{dateToWord(loginMethod.timeJoined)}</b>
+							Created On:&nbsp;<b>{dateToWord(loginMethod.timeJoined)}</b>
 						</div>
 						<div>
 							{loginMethod.thirdParty && (
@@ -265,7 +300,9 @@ const Methods: React.FC<MethodProps> = ({
 	);
 };
 
-export const LoginMethods: React.FC = () => {
+type LoginMethodProps = { refetchAllData: () => Promise<void> };
+
+export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => {
 	const { userDetail } = useUserDetailContext();
 	const { updateUserInformation } = useUserService();
 	const methods = userDetail.details.loginMethods;
@@ -278,6 +315,7 @@ export const LoginMethods: React.FC = () => {
 			const deleteSucceed = await deleteUser(userId, false);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			showToast(getDeleteUserToast(didSucceed));
+			await refetchAllData();
 		},
 		[showToast]
 	);
@@ -297,6 +335,7 @@ export const LoginMethods: React.FC = () => {
 			const deleteSucceed = await unlinkUser(userId);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			showToast(getDeleteUserToast(didSucceed));
+			await refetchAllData();
 		},
 		[showToast]
 	);
@@ -324,6 +363,7 @@ export const LoginMethods: React.FC = () => {
 					onDeleteCallback={() => openDeleteConfirmation(val)}
 					onUnlinkCallback={() => openUnlinkConfirmation(val)}
 					onEditCallback={(val) => onEditCallback(val)}
+					refetchAllData={refetchAllData}
 				/>
 			))}
 		</LayoutPanel>

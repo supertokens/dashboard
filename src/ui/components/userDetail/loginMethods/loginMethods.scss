@@ -3,6 +3,10 @@
 	border: 1px solid #ddd;
 	margin-bottom: 16px;
 
+	@media screen and (max-width: 900px) {
+		font-size: 12px;
+	}
+
 	.method-header {
 		border-radius: 5px 5px 0px 0px;
 		border-bottom: 1px solid #ddd;
@@ -30,6 +34,26 @@
 					margin-left: 10px;
 				}
 			}
+
+			.resp {
+				display: none;
+			}
+
+			@media screen and (max-width: 900px) {
+				flex-direction: column;
+
+				.user-id-span {
+					margin-left: 0;
+
+					.copy-text-wrapper {
+						display: none;
+					}
+					.copy-text-wrapper.resp {
+						display: inline-block;
+						margin-left: 0;
+					}
+				}
+			}
 		}
 	}
 
@@ -39,6 +63,10 @@
 		grid-template-columns: 1fr 1fr;
 		gap: 10px;
 
+		@media screen and (max-width: 900px) {
+			grid-template-columns: 1fr;
+		}
+
 		color: #6e6a65;
 
 		align-items: center;
@@ -47,6 +75,10 @@
 			display: flex;
 			align-items: center;
 			height: 50px;
+
+			@media screen and (max-width: 900px) {
+				height: 37px;
+			}
 		}
 
 		b {
@@ -56,6 +88,10 @@
 			font-style: normal;
 			font-weight: 500;
 			line-height: normal;
+
+			@media screen and (max-width: 900px) {
+				font-size: 12px;
+			}
 		}
 	}
 }
@@ -67,6 +103,8 @@
 	font-size: 12px;
 	padding: 5px;
 	color: #252728;
+	width: 15ch;
+	text-align: center;
 }
 
 .verified {
@@ -81,6 +119,7 @@
 .password-link {
 	color: rgba(0, 122, 255, 1);
 	cursor: pointer;
+	margin-left: 1em;
 }
 
 .save-button {
@@ -101,6 +140,10 @@
 	display: inline-flex;
 
 	max-width: 250px;
+
+	@media screen and (max-width: 900px) {
+		display: block;
+	}
 
 	img {
 		height: 15px;

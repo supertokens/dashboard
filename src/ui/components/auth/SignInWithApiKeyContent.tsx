@@ -75,6 +75,7 @@ const SignInWithApiKeyContent = (props: SignInWithApiKeyContentProps) => {
 				<button
 					className="button"
 					type="submit"
+					style={{ marginTop: "1em" }}
 					disabled={loading}>
 					<span>Continue</span>{" "}
 					<img

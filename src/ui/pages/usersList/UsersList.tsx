@@ -204,6 +204,7 @@ export const UsersList: React.FC<UserListProps> = ({
 				setSelectedTenant(tenantIdToUse);
 			} else {
 				tenantIdToUse = filteredTenants[0].tenantId;
+				setSelectedTenant(tenantIdToUse);
 			}
 		}
 	};

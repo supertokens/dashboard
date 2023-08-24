@@ -24,6 +24,7 @@ import EmailVerification from "supertokens-node/recipe/emailverification";
 import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
+import ThirdParty from "supertokens-node/recipe/thirdparty";
 
 const websiteDomain = "http://localhost:3000";
 
@@ -56,31 +57,31 @@ SuperTokens.init({
 				},
 			},
 		}),
-		// UserMetaData.init(),z
+		UserMetaData.init(),
 		// These are initialised so that functionailty works in the node SDK
 		EmailPassword.init(),
 		Passwordless.init({
 			contactMethod: "EMAIL_OR_PHONE",
 			flowType: "USER_INPUT_CODE_AND_MAGIC_LINK",
 		}),
-		// ThirdParty.init({
-		// 	signInAndUpFeature: {
-		// 		providers: [
-		// 			{
-		// 				config: {
-		// 					thirdPartyId: "google",
-		// 					clients: [
-		// 						{
-		// 							clientId:
-		// 								"1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
-		// 							clientSecret: "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",
-		// 						},
-		// 					],
-		// 				},
-		// 			},
-		// 		],
-		// 	},
-		// }),
+		ThirdParty.init({
+			signInAndUpFeature: {
+				providers: [
+					{
+						config: {
+							thirdPartyId: "google",
+							clients: [
+								{
+									clientId:
+										"1060725074195-kmeum4crr01uirfl2op9kd5acmi9jutn.apps.googleusercontent.com",
+									clientSecret: "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",
+								},
+							],
+						},
+					},
+				],
+			},
+		}),
 		EmailVerification.init({
 			mode: "REQUIRED",
 		}),

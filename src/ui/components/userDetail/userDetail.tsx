@@ -14,20 +14,18 @@
  */
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Tenant } from "../../../api/tenants/list";
+import { Tenant, useGetTenantsList } from "../../../api/tenants/list";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
-import useVerifyUserEmail from "../../../api/user/email/verify";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
 import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useTenantsListContext } from "../../contexts/TenantsListContext";
-import { EmailVerificationStatus, User, UserRecipeType } from "../../pages/usersList/types";
+import { User, UserRecipeType } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import { UserDetailContextProvider, UserDetails } from "./context/UserDetailContext";
-import { UserTenantsList } from "./tenantList/UserTenantsList";
 import "./userDetail.scss";
 import "./tenantList/UserTenantsList.scss";
 import { getUpdateUserToast } from "./userDetailForm";
@@ -60,7 +58,9 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
-	const { tenantsListFromStore } = useTenantsListContext();
+	const { tenantsListFromStore, setTenantsListToStore, getSelectedTenant, setSelectedTenant } =
+		useTenantsListContext();
+	const { fetchTenants } = useGetTenantsList();
 	const { showModal } = useContext(PopupContentContext);
 
 	const loadUserDetail = useCallback(async () => {
@@ -84,20 +84,24 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 					status: "NO_API_CALLED";
 			  }
 		> => {
+			// eslint-disable-next-line no-console
+			console.log(data);
+			// eslint-disable-next-line no-console
+			console.log(tenantsListFromStore);
 			let tenantId: string | undefined;
 			const tenants: Tenant[] = getTenantsObjectsForIds(tenantsListFromStore ?? [], data.tenantIds);
 			let matchingTenants: Tenant[] = [];
 
 			if (data.loginMethods[0].recipeId === "emailpassword") {
-				matchingTenants = tenants.filter((tenant) => tenant.emailPassword.enabled === true);
+				matchingTenants = tenants.filter((tenant) => tenant.emailPassword.enabled);
 			}
 
 			if (data.loginMethods[0].recipeId === "passwordless") {
-				matchingTenants = tenants.filter((tenant) => tenant.passwordless.enabled === true);
+				matchingTenants = tenants.filter((tenant) => tenant.passwordless.enabled);
 			}
 
 			if (data.loginMethods[0].recipeId === "thirdparty") {
-				matchingTenants = tenants.filter((tenant) => tenant.thirdParty.enabled === true);
+				matchingTenants = tenants.filter((tenant) => tenant.thirdParty.enabled);
 			}
 
 			if (matchingTenants.length > 0) {
@@ -149,6 +153,37 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		void fetchUserMetaData();
 	}, [fetchUserMetaData]);
 
+	const fetchAndSetCurrentTenant = useCallback(async () => {
+		const result = await fetchTenants();
+
+		setTenantsListToStore(result.tenants);
+
+		if (result.tenants.length === 0) {
+			return;
+		}
+
+		const tenantInStorage = getSelectedTenant();
+		let tenantIdToUse: string | undefined;
+
+		if (tenantInStorage === undefined) {
+			tenantIdToUse = result.tenants[0].tenantId;
+			setSelectedTenant(tenantIdToUse);
+		} else {
+			const filteredTenants = result.tenants.filter((t) => t.tenantId === tenantInStorage);
+			if (filteredTenants.length === 0) {
+				tenantIdToUse = result.tenants[0].tenantId;
+				setSelectedTenant(tenantIdToUse);
+			} else {
+				tenantIdToUse = filteredTenants[0].tenantId;
+				setSelectedTenant(tenantIdToUse);
+			}
+		}
+	}, [fetchTenants, getSelectedTenant, setSelectedTenant, setTenantsListToStore]);
+
+	useEffect(() => {
+		void fetchAndSetCurrentTenant();
+	}, []);
+
 	const fetchSession = useCallback(async () => {
 		let response = await getSessionsForUser(user);
 
@@ -167,6 +202,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		setShowLoadingOverlay(true);
 		await loadUserDetail();
 		await fetchUserMetaData();
+		await fetchAndSetCurrentTenant();
 		await fetchSession();
 		setShowLoadingOverlay(false);
 	};
@@ -257,7 +293,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 				<UserDetailInfoGrid {...props} />
 
-				<LoginMethods />
+				<LoginMethods refetchAllData={refetchAllData} />
 
 				<UserMetaDataSection />
 
