@@ -293,7 +293,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 				<UserDetailInfoGrid {...props} />
 
-				<LoginMethods />
+				<LoginMethods refetchAllData={refetchAllData} />
 
 				<UserMetaDataSection />
 

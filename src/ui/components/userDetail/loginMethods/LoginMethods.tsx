@@ -93,6 +93,7 @@ type MethodProps = {
 	onDeleteCallback: () => void;
 	onUnlinkCallback: () => void;
 	onEditCallback: (val: IUpdateUserInformationArgs) => void;
+	refetchAllData: () => Promise<void>;
 };
 
 const Methods: React.FC<MethodProps> = ({
@@ -101,6 +102,7 @@ const Methods: React.FC<MethodProps> = ({
 	onDeleteCallback,
 	onUnlinkCallback,
 	onEditCallback,
+	refetchAllData,
 }) => {
 	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
 	const { showModal, showToast } = useContext(PopupContentContext);
@@ -164,6 +166,10 @@ const Methods: React.FC<MethodProps> = ({
 			),
 		[showModal, loginMethod.recipeUserId, changePassword]
 	);
+	const changeEmailVerificationStatus = async () => {
+		await onUpdateEmailVerificationStatusCallback(loginMethod.recipeUserId, !loginMethod.verified, undefined);
+		await refetchAllData();
+	};
 	return (
 		<div className="method">
 			<div className="method-header">
@@ -212,7 +218,7 @@ const Methods: React.FC<MethodProps> = ({
 				<div>
 					Is Email Verified?:&nbsp; <VerifiedPill isVerified={loginMethod.verified} />
 					<br />
-					{!isEditing && (
+					{!isEditing && !loginMethod.verified && (
 						<span
 							onClick={() =>
 								sendUserEmailVerification(loginMethod.recipeUserId, loginMethod.tenantIds[0])
@@ -223,13 +229,7 @@ const Methods: React.FC<MethodProps> = ({
 					)}
 					{isEditing && (
 						<span
-							onClick={() =>
-								onUpdateEmailVerificationStatusCallback(
-									loginMethod.recipeUserId,
-									!loginMethod.verified,
-									undefined
-								)
-							}
+							onClick={changeEmailVerificationStatus}
 							className="password-link">
 							{loginMethod.verified ? "Set as Unverified" : "Set as Verified"}
 						</span>
@@ -300,7 +300,9 @@ const Methods: React.FC<MethodProps> = ({
 	);
 };
 
-export const LoginMethods: React.FC = () => {
+type LoginMethodProps = { refetchAllData: () => Promise<void> };
+
+export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => {
 	const { userDetail } = useUserDetailContext();
 	const { updateUserInformation } = useUserService();
 	const methods = userDetail.details.loginMethods;
@@ -313,6 +315,7 @@ export const LoginMethods: React.FC = () => {
 			const deleteSucceed = await deleteUser(userId, false);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			showToast(getDeleteUserToast(didSucceed));
+			await refetchAllData();
 		},
 		[showToast]
 	);
@@ -332,6 +335,7 @@ export const LoginMethods: React.FC = () => {
 			const deleteSucceed = await unlinkUser(userId);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			showToast(getDeleteUserToast(didSucceed));
+			await refetchAllData();
 		},
 		[showToast]
 	);
@@ -359,6 +363,7 @@ export const LoginMethods: React.FC = () => {
 					onDeleteCallback={() => openDeleteConfirmation(val)}
 					onUnlinkCallback={() => openUnlinkConfirmation(val)}
 					onEditCallback={(val) => onEditCallback(val)}
+					refetchAllData={refetchAllData}
 				/>
 			))}
 		</LayoutPanel>

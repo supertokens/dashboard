@@ -103,6 +103,8 @@
 	font-size: 12px;
 	padding: 5px;
 	color: #252728;
+	width: 15ch;
+	text-align: center;
 }
 
 .verified {
@@ -138,6 +140,10 @@
 	display: inline-flex;
 
 	max-width: 250px;
+
+	@media screen and (max-width: 900px) {
+		display: block;
+	}
 
 	img {
 		height: 15px;
