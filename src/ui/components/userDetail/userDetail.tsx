@@ -24,7 +24,7 @@ import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
-import { UserDetailContextProvider, UserDetails } from "./context/UserDetailContext";
+import { UserDetailContextProvider, UserDetails, useUserDetailContext } from "./context/UserDetailContext";
 import { LoginMethods } from "./loginMethods/LoginMethods";
 import "./tenantList/UserTenantsList.scss";
 import "./userDetail.scss";
@@ -146,10 +146,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		void fetchUserMetaData();
 	}, [fetchUserMetaData]);
 
-	useEffect(() => {
-		// void fetchAndSetCurrentTenant();
-	}, []);
-
 	const fetchSession = useCallback(async () => {
 		let response = await getSessionsForUser(user);
 
@@ -163,14 +159,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	useEffect(() => {
 		void fetchSession();
 	}, [fetchSession]);
-
-	const refetchAllData = async () => {
-		setShowLoadingOverlay(true);
-		await loadUserDetail();
-		await fetchUserMetaData();
-		await fetchSession();
-		setShowLoadingOverlay(false);
-	};
 
 	const showLoadingOverlay = () => {
 		setShowLoadingOverlay(true);
@@ -216,23 +204,27 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		);
 	}
 
-	const contextUserObject: UserDetails = {
-		userId: user,
-		details: userDetail.user,
-		metaData: userMetaData,
-		sessions: sessionList,
-		func: {
-			refetchAllData: refetchAllData,
-			updateUser: updateUser,
-			onUpdateEmailVerificationStatusCallback: onUpdateEmailVerificationStatusCallback,
-		},
+	const refetchAllData = async () => {
+		setShowLoadingOverlay(true);
+		await loadUserDetail();
+		await fetchUserMetaData();
+		await fetchSession();
+		setShowLoadingOverlay(false);
 	};
-
+	const userFunctions = {
+		refetchAllData: refetchAllData,
+		updateUser: updateUser,
+		onUpdateEmailVerificationStatusCallback: onUpdateEmailVerificationStatusCallback,
+	};
 	return (
 		<UserDetailContextProvider
 			showLoadingOverlay={showLoadingOverlay}
 			hideLoadingOverlay={hideLoadingOverlay}
-			userDetail={contextUserObject}>
+			metaData={userMetaData}
+			details={userDetail.user}
+			sessions={sessionList}
+			func={userFunctions}
+			userId={user}>
 			<div className="user-detail">
 				{shouldShowLoadingOverlay && (
 					<div className="full-screen-loading-overlay">

@@ -10,14 +10,15 @@ export type EditableInputProps = {
 	edit: boolean;
 	type: "email" | "phone";
 	onChange: (val: string) => void;
+	error?: string;
 };
 
-export const EditableInput = ({ label, val, edit, type, onChange }: EditableInputProps) => {
+export const EditableInput = ({ label, val, edit, type, onChange, error }: EditableInputProps) => {
 	const [normaliseVal, setVal] = useState(val);
 	if (!edit) {
 		return (
 			<span>
-				{label}:&nbsp; <b>{normaliseVal == "" ? "-" : normaliseVal}</b>
+				{label}:<b>{normaliseVal == "" ? "-" : normaliseVal}</b>
 			</span>
 		);
 	} else {
@@ -28,7 +29,7 @@ export const EditableInput = ({ label, val, edit, type, onChange }: EditableInpu
 					<InputField
 						type="email"
 						name="email"
-						error={""}
+						error={error ?? ""}
 						value={val}
 						// handleChange={({ target: { value } }) => updateUserDataState({ emails: [value] })}
 						handleChange={({ target }) => {

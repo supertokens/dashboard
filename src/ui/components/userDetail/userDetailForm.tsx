@@ -302,6 +302,7 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 					error={apiError}
 					handleChange={({ target: { value } }) => setPassword(value)}
 				/>
+				<br />
 				<InputField
 					name="repeatPassword"
 					type="password"
@@ -405,12 +406,12 @@ export const LoginMethodDeleteConfirmation: FC<UserDeleteConfirmationProps & { l
 	let inputType = "following information";
 
 	if (user.emails.length > 0) {
-		informationToEnter = user.emails[0];
+		informationToEnter = loginMethod.email ?? user.emails[0];
 		inputType = "user's email id";
 	}
 
 	if (loginMethod.recipeId === "passwordless" && loginMethod.phoneNumber !== undefined) {
-		informationToEnter = user.phoneNumbers[0];
+		informationToEnter = loginMethod.phoneNumber;
 		inputType = "user's phone number";
 	}
 

@@ -51,8 +51,8 @@ const getBadgeInitial = ({ firstName, lastName, emails, id }: User) => {
 };
 
 export const UserDisplayName: FC<UserProps> = ({ user }) => {
-	const { firstName, lastName, emails } = user;
-	const phone = user.phoneNumbers[0];
+	const { firstName, lastName, emails, id } = user;
+	const phone = user.loginMethods.filter((recipe) => recipe.recipeUserId === id)[0].phoneNumber;
 
 	let firstNameToUse = firstName ?? "";
 	let lastNameToUse = lastName ?? "";
@@ -67,7 +67,9 @@ export const UserDisplayName: FC<UserProps> = ({ user }) => {
 
 	const fullName = `${firstNameToUse} ${lastNameToUse}`.trim();
 
-	return <span>{fullName || emails[0] || phone}</span>;
+	const email = user.loginMethods.filter((recipe) => recipe.recipeUserId === id)[0].email;
+
+	return <span>{fullName || email || phone}</span>;
 };
 
 export const UserDetailBadge: React.FC<UserProps> = ({ user }: UserProps) => (

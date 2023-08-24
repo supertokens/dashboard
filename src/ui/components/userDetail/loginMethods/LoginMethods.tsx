@@ -19,7 +19,7 @@ import usePasswordResetService from "../../../../api/user/password/reset";
 import { type LoginMethod } from "../../../pages/usersList/types";
 import useDeleteUserService from "../../../../api/user/delete";
 import useUnlinkService from "../../../../api/user/unlink";
-import useUserService, { type IUpdateUserInformationArgs } from "../../../../api/user";
+import useUserService, { type IUpdateUserInformationArgs, UpdateUserInformationResponse } from "../../../../api/user";
 import useVerifyUserTokenService from "../../../../api/user/email/verify/token";
 
 const UserRecipeTypeText: Record<UserRecipeType, string> = {
@@ -92,8 +92,10 @@ type MethodProps = {
 	) => Promise<boolean>;
 	onDeleteCallback: () => void;
 	onUnlinkCallback: () => void;
-	onEditCallback: (val: IUpdateUserInformationArgs) => void;
+	onEditCallback: (val: IUpdateUserInformationArgs) => Promise<UpdateUserInformationResponse>;
 	refetchAllData: () => Promise<void>;
+	updateContext: (val: LoginMethod, ind: number) => void;
+	index: number;
 };
 
 const Methods: React.FC<MethodProps> = ({
@@ -103,9 +105,12 @@ const Methods: React.FC<MethodProps> = ({
 	onUnlinkCallback,
 	onEditCallback,
 	refetchAllData,
+	updateContext,
+	index,
 }) => {
 	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
 	const { showModal, showToast } = useContext(PopupContentContext);
+	const [emailError, setEmailError] = useState("");
 	const dateToWord = (timestamp: number) => {
 		const date = new Date(timestamp);
 		return (
@@ -170,6 +175,29 @@ const Methods: React.FC<MethodProps> = ({
 		await onUpdateEmailVerificationStatusCallback(loginMethod.recipeUserId, !loginMethod.verified, undefined);
 		await refetchAllData();
 	};
+
+	const updateUser = async () => {
+		const resp = await onEditCallback(send);
+		if (resp.status === "INVALID_EMAIL_ERROR") {
+			setEmailError(resp.error);
+		} else if (resp.status === "EMAIL_ALREADY_EXISTS_ERROR") {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Entered email already exists</>,
+			});
+		} else if (resp.status === "PHONE_ALREADY_EXISTS_ERROR") {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Entered phone number already exists</>,
+			});
+		} else {
+			const tempLoginMethod = { ...loginMethod, email: send.email };
+			updateContext(tempLoginMethod, index);
+			setEdit(false);
+		}
+	};
 	return (
 		<div className="method">
 			<div className="method-header">
@@ -195,10 +223,7 @@ const Methods: React.FC<MethodProps> = ({
 					)}
 					{isEditing && (
 						<button
-							onClick={() => {
-								onEditCallback(send);
-								setEdit(false);
-							}}
+							onClick={updateUser}
 							className="save-button">
 							Save
 						</button>
@@ -212,11 +237,12 @@ const Methods: React.FC<MethodProps> = ({
 						val={loginMethod.email ?? ""}
 						edit={isEditing}
 						type={"email"}
+						error={emailError}
 						onChange={(val) => setSend({ ...send, email: val })}
 					/>
 				</div>
 				<div>
-					Is Email Verified?:&nbsp; <VerifiedPill isVerified={loginMethod.verified} />
+					Is Email Verified ?:&nbsp; <VerifiedPill isVerified={loginMethod.verified} />
 					<br />
 					{!isEditing && !loginMethod.verified && (
 						<span
@@ -238,7 +264,7 @@ const Methods: React.FC<MethodProps> = ({
 				{loginMethod.recipeId === "thirdparty" && (
 					<>
 						<div>
-							Created On:&nbsp;<b>{dateToWord(loginMethod.timeJoined)}</b>
+							Created On:<b>{dateToWord(loginMethod.timeJoined)}</b>
 						</div>
 						<div>
 							{loginMethod.thirdParty && (
@@ -303,7 +329,7 @@ const Methods: React.FC<MethodProps> = ({
 type LoginMethodProps = { refetchAllData: () => Promise<void> };
 
 export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => {
-	const { userDetail } = useUserDetailContext();
+	const { userDetail, setUserDetails } = useUserDetailContext();
 	const { updateUserInformation } = useUserService();
 	const methods = userDetail.details.loginMethods;
 	const { deleteUser } = useDeleteUserService();
@@ -351,8 +377,14 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 		[userDetail.details, onDeleteCallback, showModal]
 	);
 	const onEditCallback = useCallback(async (vals: IUpdateUserInformationArgs) => {
-		await updateUserInformation(vals);
+		const resp = await updateUserInformation(vals);
+		return resp;
 	}, []);
+	const updateLoginMethodInContext = (val: LoginMethod, ind: number) => {
+		const tempUserDetails = userDetail;
+		userDetail.details.loginMethods[ind] = val;
+		setUserDetails({ ...tempUserDetails });
+	};
 	return (
 		<LayoutPanel header={<div className="title">Login Methods</div>}>
 			{methods.map((val, ind) => (
@@ -364,6 +396,8 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 					onUnlinkCallback={() => openUnlinkConfirmation(val)}
 					onEditCallback={(val) => onEditCallback(val)}
 					refetchAllData={refetchAllData}
+					updateContext={updateLoginMethodInContext}
+					index={ind}
 				/>
 			))}
 		</LayoutPanel>

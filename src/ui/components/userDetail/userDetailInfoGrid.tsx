@@ -194,7 +194,10 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const { showLoadingOverlay, hideLoadingOverlay, userDetail } = useUserDetailContext();
 	const [emailErrorFromAPI, setEmailErrorFromAPI] = useState<string | undefined>(undefined);
 	const [phoneErrorFromAPI, setPhoneErrorFromAPI] = useState<string | undefined>(undefined);
-	const [userState, setUserState] = useState<User>({ ...userDetail.details });
+	const [userState, setUserState] = useState<User>({
+		...userDetail.details,
+		...JSON.parse(userDetail.metaData ?? "{}"),
+	});
 	const { showModal } = useContext(PopupContentContext);
 	const { firstName, lastName, timeJoined, emails } = userState;
 	const [isEditing, setIsEditing] = useState(false);
