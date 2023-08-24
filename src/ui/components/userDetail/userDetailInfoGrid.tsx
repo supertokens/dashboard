@@ -238,80 +238,11 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 
 	const updateUserDataState = useCallback((updatedUser: Partial<User>) => {
 		setUserState((currentState) => {
-			return { ...currentState, user: { ...currentState, ...updatedUser } } as User;
+			return { ...currentState, ...updatedUser } as User;
 		});
 	}, []);
 
 	useEffect(() => setUserState(userDetail.details), [userDetail]);
-
-	// validate email if `isEditing=true`
-	const emailError = useCallback(() => {
-		if (!isEditing) {
-			return;
-		}
-
-		if (emailErrorFromAPI !== undefined) {
-			return emailErrorFromAPI;
-		}
-
-		return undefined;
-	}, [emails, userDetail.details.emails, isEditing, emailErrorFromAPI])();
-
-	// validate phone if `isEditing=true`
-	const phoneNumber = userState.phoneNumbers[0];
-	const phoneNumberProps =
-		userDetail.details.loginMethods[0].recipeId === "passwordless" ? userDetail.details.phoneNumbers[0] : undefined;
-	const phoneNumberError = useCallback(() => {
-		if (!isEditing) {
-			return;
-		}
-
-		if (phoneErrorFromAPI !== undefined) {
-			return phoneErrorFromAPI;
-		}
-
-		return undefined;
-	}, [phoneNumber, phoneNumberProps, isEditing, phoneErrorFromAPI])();
-
-	const phone = isEditing ? (
-		<PhoneNumberInput
-			name="phone number"
-			value={phoneNumber}
-			error={phoneNumberError}
-			isRequired={
-				// prevent delete phone number if it was a phoneNumber account
-				userDetail.details.loginMethods[0].recipeId === "passwordless" &&
-				userDetail.details.phoneNumbers[0] !== undefined
-			}
-			onChange={(phoneNumber) => {
-				updateUserDataState({ phoneNumbers: [phoneNumber] });
-			}}
-		/>
-	) : phoneNumber !== undefined ? (
-		<PhoneDisplay phone={phoneNumber} />
-	) : undefined;
-
-	const emailGridContent =
-		isEditing &&
-		(userDetail.details.loginMethods[0].recipeId === "emailpassword" ||
-			userDetail.details.loginMethods[0].recipeId === "passwordless") ? (
-			<InputField
-				type="email"
-				name="email"
-				error={emailError}
-				value={emails[0]}
-				// TODO: Change this to an array of emails correctly modified
-				handleChange={({ target: { value } }) => updateUserDataState({ emails: [value] })}
-			/>
-		) : (
-			<>
-				<span className="user-detail__provider-box__user-id">
-					<CopyText>{emails[0] || ""}</CopyText>
-				</span>
-			</>
-		);
-
-	const saveDisabled = emailError !== undefined || phoneNumberError !== undefined;
 
 	const handleCancelSave = useCallback(() => {
 		setEmailErrorFromAPI(undefined);
@@ -319,27 +250,6 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		setIsEditing(false);
 		setUserState(userDetail.details);
 	}, [userDetail]);
-
-	const handleChangePassword = useCallback(
-		async (password?: string) => {
-			if (password !== undefined && password !== "") {
-				await onChangePasswordCallback(userDetail.userId, password);
-				await userDetail.func.refetchAllData();
-			}
-		},
-		[onChangePasswordCallback, userDetail.userId]
-	);
-
-	const openChangePasswordModal = useCallback(
-		() =>
-			showModal(
-				getUserChangePasswordPopupProps({
-					userId: userDetail.userId,
-					tenantIds: userDetail.details.tenantIds,
-				})
-			),
-		[showModal, handleChangePassword]
-	);
 
 	return (
 		<div className="user-detail__info-grid">

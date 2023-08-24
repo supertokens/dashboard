@@ -56,7 +56,7 @@ SuperTokens.init({
 				},
 			},
 		}),
-		// UserMetaData.init(),z
+		UserMetaData.init(),
 		// These are initialised so that functionailty works in the node SDK
 		EmailPassword.init(),
 		Passwordless.init({

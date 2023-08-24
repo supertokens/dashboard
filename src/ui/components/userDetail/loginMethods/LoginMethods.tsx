@@ -10,6 +10,7 @@ import { useUserDetailContext } from "../context/UserDetailContext";
 import {
 	getDeleteUserToast,
 	getLoginMethodDeleteConfirmationProps,
+	getSendEmailVerificationToast,
 	getUpdatePasswordToast,
 	getUserChangePasswordPopupProps,
 } from "../userDetailForm";
@@ -19,6 +20,7 @@ import { type LoginMethod } from "../../../pages/usersList/types";
 import useDeleteUserService from "../../../../api/user/delete";
 import useUnlinkService from "../../../../api/user/unlink";
 import useUserService, { type IUpdateUserInformationArgs } from "../../../../api/user";
+import useVerifyUserTokenService from "../../../../api/user/email/verify/token";
 
 const UserRecipeTypeText: Record<UserRecipeType, string> = {
 	["emailpassword"]: "Email password",
@@ -100,6 +102,8 @@ const Methods: React.FC<MethodProps> = ({
 	onUnlinkCallback,
 	onEditCallback,
 }) => {
+	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
+	const { showModal, showToast } = useContext(PopupContentContext);
 	const dateToWord = (timestamp: number) => {
 		const date = new Date(timestamp);
 		return (
@@ -114,7 +118,21 @@ const Methods: React.FC<MethodProps> = ({
 			date.getMinutes()
 		);
 	};
-	const { showModal, showToast } = useContext(PopupContentContext);
+
+	const trim = (val: string) => {
+		const len = val.length;
+		return val.substring(0, Math.floor(len / 7)) + "..." + val.substring(6 * Math.floor(len / 7), len);
+	};
+
+	const sendUserEmailVerification = useCallback(
+		async (userId: string, tenantId: string | undefined) => {
+			const isSend = await sendUserEmailVerificationApi(userId, tenantId);
+			showToast(getSendEmailVerificationToast(isSend));
+			return isSend;
+		},
+		[sendUserEmailVerificationApi, showToast]
+	);
+
 	const [isEditing, setEdit] = useState(false);
 	const { updatePassword } = usePasswordResetService();
 	const [send, setSend] = useState<IUpdateUserInformationArgs>({
@@ -153,6 +171,9 @@ const Methods: React.FC<MethodProps> = ({
 					<UserRecipePill {...loginMethod} />
 					<span className="user-id-span">
 						User ID:
+						<span className="copy-text-wrapper resp">
+							<CopyText>{trim(loginMethod.recipeUserId)}</CopyText>
+						</span>
 						<span className="copy-text-wrapper">
 							<CopyText>{loginMethod.recipeUserId}</CopyText>
 						</span>
@@ -189,21 +210,35 @@ const Methods: React.FC<MethodProps> = ({
 					/>
 				</div>
 				<div>
-					Is Email Verified?:&nbsp; <VerifiedPill isVerified={loginMethod.verified} />{" "}
+					Is Email Verified?:&nbsp; <VerifiedPill isVerified={loginMethod.verified} />
+					<br />
+					{!isEditing && (
+						<span
+							onClick={() =>
+								sendUserEmailVerification(loginMethod.recipeUserId, loginMethod.tenantIds[0])
+							}
+							className="password-link">
+							Send verification mail
+						</span>
+					)}
 					{isEditing && (
 						<span
 							onClick={() =>
-								onUpdateEmailVerificationStatusCallback(loginMethod.recipeUserId, true, undefined)
+								onUpdateEmailVerificationStatusCallback(
+									loginMethod.recipeUserId,
+									!loginMethod.verified,
+									undefined
+								)
 							}
 							className="password-link">
-							Set as Verified
+							{loginMethod.verified ? "Set as Unverified" : "Set as Verified"}
 						</span>
 					)}
 				</div>
 				{loginMethod.recipeId === "thirdparty" && (
 					<>
 						<div>
-							Created On: <b>{dateToWord(loginMethod.timeJoined)}</b>
+							Created On:&nbsp;<b>{dateToWord(loginMethod.timeJoined)}</b>
 						</div>
 						<div>
 							{loginMethod.thirdParty && (
