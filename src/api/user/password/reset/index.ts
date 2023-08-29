@@ -1,3 +1,4 @@
+import { HTTPStatusCodes } from "../../../../constants";
 import { getApiUrl, useFetchData } from "../../../../utils";
 
 interface IUsePasswordResetService {
@@ -10,7 +11,7 @@ interface IUsePasswordResetService {
 
 type UpdatePasswordResponse =
 	| {
-			status: "OK";
+			status: "OK" | "PASSWORD_UPDATE_FORBIDDEN";
 	  }
 	| {
 			status: "INVALID_PASSWORD_ERROR";
@@ -36,6 +37,13 @@ const usePasswordResetService = (): IUsePasswordResetService => {
 				}),
 			},
 		});
+
+		if (response.status === HTTPStatusCodes.FORBIDDEN) {
+			return {
+				status: "PASSWORD_UPDATE_FORBIDDEN",
+			};
+		}
+
 		return await response.json();
 	};
 
