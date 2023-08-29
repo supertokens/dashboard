@@ -21,6 +21,7 @@ import useDeleteUserService from "../../../../api/user/delete";
 import useUnlinkService from "../../../../api/user/unlink";
 import useUserService, { type IUpdateUserInformationArgs, UpdateUserInformationResponse } from "../../../../api/user";
 import useVerifyUserTokenService from "../../../../api/user/email/verify/token";
+import { formatLongDate } from "../../../../utils/index";
 
 const UserRecipeTypeText: Record<UserRecipeType, string> = {
 	["emailpassword"]: "Email password",
@@ -96,6 +97,7 @@ type MethodProps = {
 	refetchAllData: () => Promise<void>;
 	updateContext: (val: LoginMethod, ind: number) => void;
 	index: number;
+	showUnlink: boolean;
 };
 
 const Methods: React.FC<MethodProps> = ({
@@ -107,24 +109,11 @@ const Methods: React.FC<MethodProps> = ({
 	refetchAllData,
 	updateContext,
 	index,
+	showUnlink,
 }) => {
 	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
 	const { showModal, showToast } = useContext(PopupContentContext);
 	const [emailError, setEmailError] = useState("");
-	const dateToWord = (timestamp: number) => {
-		const date = new Date(timestamp);
-		return (
-			date.getUTCDay() +
-			"th " +
-			date.getUTCMonth() +
-			", " +
-			date.getFullYear() +
-			" at " +
-			date.getUTCHours() +
-			":" +
-			date.getMinutes()
-		);
-	};
 
 	const trim = (val: string) => {
 		const len = val.length;
@@ -197,6 +186,7 @@ const Methods: React.FC<MethodProps> = ({
 			updateContext(tempLoginMethod, index);
 			setEdit(false);
 		}
+		await refetchAllData();
 	};
 	return (
 		<div className="method">
@@ -219,14 +209,25 @@ const Methods: React.FC<MethodProps> = ({
 							onEdit={() => setEdit(!isEditing)}
 							onDelete={onDeleteCallback}
 							onUnlink={onUnlinkCallback}
+							showUnlink={showUnlink}
 						/>
 					)}
 					{isEditing && (
-						<button
-							onClick={updateUser}
-							className="save-button">
-							Save
-						</button>
+						<>
+							<button
+								onClick={async () => {
+									await refetchAllData();
+									setEdit(false);
+								}}
+								className="button button-error-outline cancel">
+								Cancel
+							</button>
+							<button
+								onClick={updateUser}
+								className="save-button">
+								Save
+							</button>
+						</>
 					)}
 				</div>
 			</div>
@@ -264,7 +265,7 @@ const Methods: React.FC<MethodProps> = ({
 				{loginMethod.recipeId === "thirdparty" && (
 					<>
 						<div>
-							Created On:<b>{dateToWord(loginMethod.timeJoined)}</b>
+							Created On:<b>{formatLongDate(loginMethod.timeJoined)}</b>
 						</div>
 						<div>
 							{loginMethod.thirdParty && (
@@ -278,11 +279,11 @@ const Methods: React.FC<MethodProps> = ({
 				{loginMethod.recipeId === "passwordless" && (
 					<>
 						<div>
-							Created On: <b>{dateToWord(loginMethod.timeJoined)}</b>
+							Created On: <b>{formatLongDate(loginMethod.timeJoined)}</b>
 						</div>
 						<div>
 							<EditableInput
-								label={"Phonenumber"}
+								label={"Phone Number"}
 								val={loginMethod.phoneNumber ?? ""}
 								edit={isEditing}
 								type={"phone"}
@@ -302,7 +303,7 @@ const Methods: React.FC<MethodProps> = ({
 							</span>
 						</div>
 						<div>
-							Created On: <b>{dateToWord(loginMethod.timeJoined)}</b>
+							Created On: <b>{formatLongDate(loginMethod.timeJoined)}</b>
 						</div>
 					</>
 				)}
@@ -386,7 +387,9 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 		setUserDetails({ ...tempUserDetails });
 	};
 	return (
-		<LayoutPanel header={<div className="title">Login Methods</div>}>
+		<LayoutPanel
+			headerBorder={false}
+			header={<div className="title">Login Methods</div>}>
 			{methods.map((val, ind) => (
 				<Methods
 					loginMethod={val}
@@ -398,6 +401,7 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 					refetchAllData={refetchAllData}
 					updateContext={updateLoginMethodInContext}
 					index={ind}
+					showUnlink={methods.length > 1}
 				/>
 			))}
 		</LayoutPanel>

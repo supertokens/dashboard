@@ -174,7 +174,9 @@ const UserTableRow: React.FC<
 
 const UserInfo = ({ user, onSelect }: { user: User; onSelect: OnSelectUserFunction }) => {
 	const { firstName, lastName, emails } = user;
-	const phone = user.phoneNumbers[0];
+	const methodFilter = user.loginMethods.filter((el) => el.recipeUserId === user.id);
+	const email = methodFilter.length > 0 ? methodFilter[0].email : user.emails[0];
+	const phone = methodFilter.length > 0 ? methodFilter[0].phoneNumber : user.phoneNumbers[0];
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 	let isClicked = false;
 	let didDrag = false;
@@ -201,17 +203,17 @@ const UserInfo = ({ user, onSelect }: { user: User; onSelect: OnSelectUserFuncti
 					isClicked = false;
 				}}
 				className="main"
-				title={name || emails[0]}>
-				{name || emails[0] || (phone && <PhoneDisplay phone={phone} />)}
+				title={name || email}>
+				{name || email || (phone && <PhoneDisplay phone={phone} />)}
 			</div>
-			{emails[0] && name && (
+			{emails && name && (
 				<div
 					className="email"
-					title={emails[0]}>
-					{emails[0]}
+					title={email}>
+					{email}
 				</div>
 			)}
-			{phone && (name || emails[0]) && (
+			{phone && (name || email) && (
 				<div className="phone">
 					<PhoneDisplay phone={phone} />
 				</div>

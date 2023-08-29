@@ -341,13 +341,13 @@ export const LoginMethodUnlinkConfirmation: FC<UserDeleteConfirmationProps & { l
 	let informationToEnter = "Confirm";
 	let inputType = "following information";
 
-	if (user.emails.length > 0) {
-		informationToEnter = user.emails[0];
+	if (loginMethod.recipeId === "emailpassword") {
+		informationToEnter = loginMethod.email ?? "";
 		inputType = "user's email id";
 	}
 
 	if (loginMethod.recipeId === "passwordless" && loginMethod.phoneNumber !== undefined) {
-		informationToEnter = user.phoneNumbers[0];
+		informationToEnter = loginMethod.phoneNumber;
 		inputType = "user's phone number";
 	}
 
@@ -426,11 +426,9 @@ export const LoginMethodDeleteConfirmation: FC<UserDeleteConfirmationProps & { l
 
 	return (
 		<div className="user-detail-form">
+			<p>Are you sure you want to unlink the selected Login method {loginMethod.recipeId}?</p>
 			<p>
-				Are you sure you want to delete the selected Login method <span>{loginMethod.recipeId}</span>?
-			</p>
-			<p>
-				To delete the user, please confirm by typing the {inputType}: <span>{informationToEnter}</span> below
+				Please confirm by typing the {inputType}: <span>{informationToEnter}</span> below
 			</p>
 			<div className="user-delete-input-container">
 				<InputField

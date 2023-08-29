@@ -6,9 +6,10 @@ type DropDOwnProps = {
 	onEdit: () => void;
 	onUnlink: () => void | null;
 	onDelete: () => void | null;
+	showUnlink: boolean;
 };
 
-export const DropDown = ({ onEdit, onUnlink, onDelete }: DropDOwnProps) => {
+export const DropDown = ({ onEdit, onUnlink, onDelete, showUnlink }: DropDOwnProps) => {
 	const [open, setOpen] = useState(false);
 	const [hover, setHover] = useState(false);
 	const ref = useRef(null);
@@ -37,13 +38,15 @@ export const DropDown = ({ onEdit, onUnlink, onDelete }: DropDOwnProps) => {
 					/>{" "}
 					Edit
 				</div>
-				<div onClick={() => close(onUnlink)}>
-					<img
-						src={getImageUrl("unlink-login-method.png")}
-						alt=""
-					/>{" "}
-					Unlink
-				</div>
+				{showUnlink && (
+					<div onClick={() => close(onUnlink)}>
+						<img
+							src={getImageUrl("unlink-login-method.png")}
+							alt=""
+						/>{" "}
+						Unlink
+					</div>
+				)}
 				<div onClick={() => close(onDelete)}>
 					<img
 						src={getImageUrl("delete-login-method.png")}
