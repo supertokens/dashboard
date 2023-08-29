@@ -19,13 +19,13 @@ import morgan from "morgan";
 import SuperTokens from "supertokens-node";
 import { errorHandler, middleware } from "supertokens-node/framework/express";
 import Dashboard from "supertokens-node/lib/build/recipe/dashboard/recipe";
+import AccountLinking from "supertokens-node/recipe/accountlinking";
 import EmailPassword from "supertokens-node/recipe/emailpassword";
 import EmailVerification from "supertokens-node/recipe/emailverification";
 import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
-import UserMetaData from "supertokens-node/recipe/usermetadata";
 import ThirdParty from "supertokens-node/recipe/thirdparty";
-import AccountLinking from "supertokens-node/recipe/accountlinking";
+import UserMetaData from "supertokens-node/recipe/usermetadata";
 import RecipeUserId from "../../supertokens-node/lib/build/recipeUserId";
 
 const websiteDomain = "http://localhost:3000";
@@ -36,7 +36,7 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "http://localhost:3567",
+		connectionURI: "https://64d2-2401-4900-1f29-b3f-c936-832b-9704-ab33.ngrok-free.app/",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",

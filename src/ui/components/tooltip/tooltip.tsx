@@ -1,7 +1,7 @@
 import { FC, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { isMobile } from "../../../utils";
 import Toast, { ToastProps } from "../toast/toast";
-import { getPopupPosition, PopUpPositionProperties, PopUpPositionType } from "./tooltip-util";
+import { PopUpPositionProperties, PopUpPositionType, getPopupPosition } from "./tooltip-util";
 
 const DEFAULT_TOOLTIP_WIDTH = 380;
 
