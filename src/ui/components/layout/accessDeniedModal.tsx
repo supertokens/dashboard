@@ -20,7 +20,11 @@ import { LayoutModalContent } from "./layoutModal";
 export const AccessDeniedModal = () => {
 	const context = useContext(AccessDeniedPopupContext);
 
-	if (!context.isPopupVisible) {
+	if (context === undefined) {
+		throw new Error("Access denied modal must be used within the AccessDeninedContext.");
+	}
+
+	if (context.isPopupVisible === false) {
 		return <></>;
 	}
 

@@ -15,20 +15,11 @@
 import { PropsWithChildren, createContext, useEffect, useState } from "react";
 import { DASHBOARD_ACCESS_DENIED_EVENT } from "../../events/accessDenied";
 
-/**
- * @comment: this context is responsible for handling global context of the access denied popup
- * for closing and opening the pop from anywhere when required.
- */
-
 export const AccessDeniedPopupContext = createContext<{
-	showPopup: (message: string) => void;
 	hidePopup: () => void;
 	isPopupVisible: boolean;
 	popupMessage: string;
 }>({
-	showPopup: () => {
-		return;
-	},
 	isPopupVisible: false,
 	popupMessage: "",
 	hidePopup: () => {
@@ -41,30 +32,20 @@ export const AccessDeniedContextProvider: React.FC<PropsWithChildren> = (props: 
 	const [popupMessage, setPopupMessage] = useState("");
 
 	const handleAccessDenied = (e: CustomEvent) => {
-		showPopup(e.detail.message);
-	};
+		if (isPopupVisible) return;
 
-	useEffect(() => {
-		window.addEventListener(DASHBOARD_ACCESS_DENIED_EVENT, handleAccessDenied as EventListener);
-
-		return () => {
-			window.removeEventListener(DASHBOARD_ACCESS_DENIED_EVENT, handleAccessDenied as EventListener);
-		};
-	}, []);
-
-	const showPopup = (message: string) => {
-		if (isPopupVisible) {
-			return;
-		}
+		const message = e.detail.message;
 
 		setPopupMessage(message);
 		setIsPopupVisible(true);
 	};
 
+	useEffect(() => {
+		window.addEventListener(DASHBOARD_ACCESS_DENIED_EVENT, handleAccessDenied as EventListener);
+	}, []);
+
 	const hidePopup = () => {
-		if (!isPopupVisible) {
-			return;
-		}
+		if (!isPopupVisible) return;
 
 		setPopupMessage("");
 		setIsPopupVisible(false);
@@ -75,7 +56,6 @@ export const AccessDeniedContextProvider: React.FC<PropsWithChildren> = (props: 
 			value={{
 				isPopupVisible,
 				popupMessage,
-				showPopup,
 				hidePopup,
 			}}>
 			{props.children}

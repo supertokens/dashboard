@@ -78,7 +78,6 @@ interface IFetchDataArgs {
 
 export const useFetchData = () => {
 	const [statusCode, setStatusCode] = useState<number>(0);
-	const [body, setBody] = useState<any>({});
 
 	const fetchData = async ({
 		url,
@@ -89,12 +88,21 @@ export const useFetchData = () => {
 		ignoreErrors = false,
 	}: IFetchDataArgs) => {
 		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.AUTH_KEY);
+		const email = localStorageHandler.getItem(StorageKeys.EMAIL);
+
 		let additionalHeaders: { [key: string]: string } = {};
 
 		if (apiKeyInStorage !== undefined) {
 			additionalHeaders = {
 				...additionalHeaders,
 				authorization: `Bearer ${apiKeyInStorage}`,
+			};
+		}
+
+		if (email !== undefined) {
+			additionalHeaders = {
+				...additionalHeaders,
+				email,
 			};
 		}
 
@@ -110,32 +118,30 @@ export const useFetchData = () => {
 				},
 			},
 		});
+
+		if (ignoreErrors) {
+			return response;
+		}
+
+		if (response.status === HTTPStatusCodes.FORBIDDEN) {
+			const message = (await response.clone().json())?.message;
+
+			window.dispatchEvent(
+				getAccessDeniedEvent(message === undefined ? "You do not have access to this page" : message)
+			);
+		}
+
 		const logoutAndRedirect = shouldRedirectOnUnauthorised && HTTPStatusCodes.UNAUTHORIZED === response.status;
 		if (logoutAndRedirect) {
 			window.localStorage.removeItem(StorageKeys.AUTH_KEY);
 			window.location.reload();
 		} else {
 			setStatusCode(ignoreErrors ? 200 : response.status);
-			setBody(await response.clone().json());
 		}
 		return response;
 	};
 
-	if (statusCode < 300 || statusCode === HTTPStatusCodes.UNAUTHORIZED) {
-		return fetchData;
-	}
-
-	/**
-	 * @comment
-	 * whenever the server returns 403 (Forbidden status code) it means that the
-	 * user is not allowed to perform that particular action and we will emit the
-	 * accessDenied event and open the access denied popup.
-	 */
-	if (statusCode === 403) {
-		const messageInBody = body.message;
-		window.dispatchEvent(
-			getAccessDeniedEvent(messageInBody === undefined ? "You do not have access to this page" : messageInBody)
-		);
+	if (statusCode < 300 || statusCode === HTTPStatusCodes.UNAUTHORIZED || statusCode === HTTPStatusCodes.FORBIDDEN) {
 		return fetchData;
 	}
 
