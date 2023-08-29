@@ -52,9 +52,19 @@ type UserDetailChangePhoneFormProps = {
 	tenantIds: string[];
 };
 
-type UserDeleteConfirmationProps = UserProps & { onConfirmed: (isConfirmed: boolean) => void };
+type UserDeleteConfirmationProps = UserProps & {
+	onConfirmed: (isConfirmed: boolean) => void;
+	loginMethod?: LoginMethod;
+	all: boolean;
+};
 
-type UserDeleteConfirmationTriggerProps = UserProps & { onDeleteCallback: OnSelectUserFunction };
+type UserUnlinkConfirmationProps = { onConfirmed: (isConfirmed: boolean) => void; loginMethod: LoginMethod };
+
+type UserDeleteConfirmationTriggerProps = UserProps & {
+	onDeleteCallback: OnSelectUserFunction;
+	loginMethod?: LoginMethod;
+	all: boolean;
+};
 
 export type UserDetailChangePasswordPopupProps = Omit<LayoutModalProps, "modalContent"> & {
 	userId: string;
@@ -330,11 +340,7 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 	);
 };
 
-export const LoginMethodUnlinkConfirmation: FC<UserDeleteConfirmationProps & { loginMethod: LoginMethod }> = ({
-	user,
-	onConfirmed,
-	loginMethod,
-}) => {
+export const LoginMethodUnlinkConfirmation: FC<UserUnlinkConfirmationProps> = ({ onConfirmed, loginMethod }) => {
 	const [inputValue, setInputValue] = useState<string>("");
 	const [showError, shouldShowError] = useState(false);
 
@@ -346,8 +352,8 @@ export const LoginMethodUnlinkConfirmation: FC<UserDeleteConfirmationProps & { l
 		inputType = "user's email id";
 	}
 
-	if (loginMethod.recipeId === "passwordless" && loginMethod.phoneNumber !== undefined) {
-		informationToEnter = loginMethod.phoneNumber;
+	if (loginMethod.recipeId === "passwordless") {
+		informationToEnter = loginMethod.phoneNumber !== undefined ? loginMethod.phoneNumber : loginMethod.email ?? "";
 		inputType = "user's phone number";
 	}
 
@@ -387,7 +393,7 @@ export const LoginMethodUnlinkConfirmation: FC<UserDeleteConfirmationProps & { l
 					className="button button-error"
 					onClick={onUnlinkPressed}
 					disabled={inputValue === ""}>
-					Delete Forever
+					Yes, Unlink
 				</button>
 			</div>
 		</div>
@@ -456,7 +462,7 @@ export const LoginMethodDeleteConfirmation: FC<UserDeleteConfirmationProps & { l
 	);
 };
 
-export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, onConfirmed }) => {
+export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, onConfirmed, loginMethod }) => {
 	const [inputValue, setInputValue] = useState<string>("");
 	const [showError, shouldShowError] = useState(false);
 
@@ -471,6 +477,16 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 	if (user.loginMethods[0].recipeId === "passwordless" && user.phoneNumbers[0] !== undefined) {
 		informationToEnter = user.phoneNumbers[0];
 		inputType = "user's phone number";
+	}
+
+	if (loginMethod !== undefined) {
+		if (loginMethod.email !== undefined) {
+			informationToEnter = loginMethod.email;
+			inputType = "user's email id";
+		} else if (loginMethod.recipeId === "passwordless") {
+			informationToEnter = loginMethod.phoneNumber ?? loginMethod.email ?? "";
+			inputType = loginMethod.phoneNumber ? "user's phone number" : "user's email id";
+		}
 	}
 
 	const onDeletePressed = () => {
@@ -514,7 +530,7 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 };
 
 export const getUserDeleteConfirmationProps = (props: UserDeleteConfirmationTriggerProps) => {
-	const { user, onDeleteCallback } = props;
+	const { user, onDeleteCallback, loginMethod, all } = props;
 	const closeConfirmDeleteRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
 
 	const onConfirmedDelete = (isConfirmed: boolean) => {
@@ -527,6 +543,8 @@ export const getUserDeleteConfirmationProps = (props: UserDeleteConfirmationTrig
 	return {
 		modalContent: (
 			<UserDeleteConfirmation
+				loginMethod={loginMethod}
+				all={all}
 				user={user}
 				onConfirmed={onConfirmedDelete}
 			/>
@@ -541,23 +559,27 @@ export type deleteLoginMethodProps = {
 	deleteCallback: (userId: string) => void;
 } & UserProps;
 
-export const getLoginMethodDeleteConfirmationProps = (props: deleteLoginMethodProps) => {
-	const { user, loginMethod, deleteCallback } = props;
+export type UnlinkLoginMethodProps = {
+	loginMethod: LoginMethod;
+	unlinkCallback: (userId: string) => void;
+} & UserProps;
+
+export const getLoginMethodUnlinkConfirmationProps = (props: UnlinkLoginMethodProps) => {
+	const { user, loginMethod, unlinkCallback } = props;
 	const closeConfirmDeleteRef: React.MutableRefObject<(() => void) | undefined> = { current: undefined };
 
-	const onConfirmedDelete = (isConfirmed: boolean) => {
+	const onConfirmedUnlink = (isConfirmed: boolean) => {
 		if (isConfirmed) {
-			deleteCallback("");
+			unlinkCallback("");
 		}
 		closeConfirmDeleteRef.current?.();
 	};
 
 	return {
 		modalContent: (
-			<LoginMethodDeleteConfirmation
+			<LoginMethodUnlinkConfirmation
 				loginMethod={loginMethod}
-				onConfirmed={onConfirmedDelete}
-				user={user}
+				onConfirmed={onConfirmedUnlink}
 			/>
 		),
 		header: <h2>Delete User?</h2>,
@@ -570,6 +592,14 @@ export const getDeleteUserToast = (isSuccessfull: boolean) => {
 		iconImage: getImageUrl(isSuccessfull ? "trash.svg" : "form-field-error-icon.svg"),
 		toastType: "error",
 		children: <>{isSuccessfull ? "User deleted successfully" : "User is not deleted"}</>,
+	} as ToastNotificationProps;
+};
+
+export const getUnlinkUserToast = (isSuccessfull: boolean) => {
+	return {
+		iconImage: getImageUrl(isSuccessfull ? "trash.svg" : "form-field-error-icon.svg"),
+		toastType: "error",
+		children: <>{isSuccessfull ? "User unlinked successfully" : "User is not unlinked"}</>,
 	} as ToastNotificationProps;
 };
 

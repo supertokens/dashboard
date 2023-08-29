@@ -9,10 +9,12 @@ import { getImageUrl } from "../../../../utils";
 import { useUserDetailContext } from "../context/UserDetailContext";
 import {
 	getDeleteUserToast,
-	getLoginMethodDeleteConfirmationProps,
+	getLoginMethodUnlinkConfirmationProps,
 	getSendEmailVerificationToast,
+	getUnlinkUserToast,
 	getUpdatePasswordToast,
 	getUserChangePasswordPopupProps,
+	getUserDeleteConfirmationProps,
 } from "../userDetailForm";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import usePasswordResetService from "../../../../api/user/password/reset";
@@ -337,6 +339,8 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 	const { unlinkUser } = useUnlinkService();
 	const { showToast, showModal } = useContext(PopupContentContext);
 
+	// Delete functions
+
 	const onDeleteCallback = useCallback(
 		async (userId: string) => {
 			const deleteSucceed = await deleteUser(userId, false);
@@ -349,19 +353,23 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 	const openDeleteConfirmation = useCallback(
 		(loginMethod: LoginMethod) =>
 			showModal(
-				getLoginMethodDeleteConfirmationProps({
+				getUserDeleteConfirmationProps({
 					loginMethod: loginMethod,
 					user: userDetail.details,
-					deleteCallback: onDeleteCallback,
+					onDeleteCallback: (user) => onDeleteCallback(user.id),
+					all: false,
 				})
 			),
 		[userDetail.details, onDeleteCallback, showModal]
 	);
+
+	// Unlink Functions
+
 	const onUnlinkCallback = useCallback(
 		async (userId: string) => {
 			const deleteSucceed = await unlinkUser(userId);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
-			showToast(getDeleteUserToast(didSucceed));
+			showToast(getUnlinkUserToast(didSucceed));
 			await refetchAllData();
 		},
 		[showToast]
@@ -369,10 +377,10 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 	const openUnlinkConfirmation = useCallback(
 		(loginMethod: LoginMethod) =>
 			showModal(
-				getLoginMethodDeleteConfirmationProps({
+				getLoginMethodUnlinkConfirmationProps({
 					loginMethod: loginMethod,
 					user: userDetail.details,
-					deleteCallback: () => onUnlinkCallback(loginMethod.recipeUserId),
+					unlinkCallback: () => onUnlinkCallback(loginMethod.recipeUserId),
 				})
 			),
 		[userDetail.details, onDeleteCallback, showModal]
