@@ -94,6 +94,7 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ onDeleteCallback }
 				getUserDeleteConfirmationProps({
 					onDeleteCallback,
 					user: userDetail.details,
+					all: true,
 				})
 			),
 		[userDetail, onDeleteCallback, showModal]

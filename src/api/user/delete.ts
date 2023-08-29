@@ -18,7 +18,7 @@ const useDeleteUserService = (): IUseDeleteUserService => {
 			method: "DELETE",
 			query: {
 				userId,
-				removeAllLinkedAccounts: "true",
+				removeAllLinkedAccounts: String(removeAllLinkedAccounts),
 			},
 		});
 
