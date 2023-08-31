@@ -13,7 +13,6 @@
  * under the License.
  */
 
-import { HTTPStatusCodes } from "../../constants";
 import { UserWithRecipeId } from "../../ui/pages/usersList/types";
 import { getApiUrl, useFetchData } from "../../utils";
 
@@ -46,7 +45,7 @@ export type GetUserInfoResult =
 
 export type UpdateUserInformationResponse =
 	| {
-			status: "OK" | "EMAIL_ALREADY_EXISTS_ERROR" | "PHONE_ALREADY_EXISTS_ERROR" | "EMAIL_UPDATE_FORBIDDEN";
+			status: "OK" | "EMAIL_ALREADY_EXISTS_ERROR" | "PHONE_ALREADY_EXISTS_ERROR";
 	  }
 	| {
 			status: "INVALID_EMAIL_ERROR" | "INVALID_PHONE_ERROR";
@@ -124,12 +123,6 @@ export const useUserService = (): IUseUserService => {
 				}),
 			},
 		});
-
-		if (response.status === HTTPStatusCodes.FORBIDDEN) {
-			return {
-				status: "EMAIL_UPDATE_FORBIDDEN",
-			};
-		}
 
 		return await response.json();
 	};

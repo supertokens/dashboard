@@ -300,9 +300,7 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 			setApiError(response.error);
 		} else if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
 			setApiError("A user with this email already exists");
-		} else if (response.status === "EMAIL_UPDATE_FORBIDDEN") {
-			void onCancel();
-		} else {
+		} else if (response.status === "OK") {
 			showToast(getUpdateEmailToast(true));
 			await onEmailChange(true);
 		}
@@ -393,9 +391,7 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 
 		if (response.status === "INVALID_PASSWORD_ERROR") {
 			setApiError(response.error);
-		} else if (response.status === "PASSWORD_UPDATE_FORBIDDEN") {
-			void onCancel();
-		} else {
+		} else if (response.status === "OK") {
 			showToast(getUpdatePasswordToast(true));
 			await onPasswordChange();
 		}
