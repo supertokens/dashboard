@@ -20,6 +20,7 @@ import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
 import { HttpMethod } from "../types";
 import { UserRecipeType } from "../ui/pages/usersList/types";
+import { ForbiddenError } from "./customErrors";
 
 export function getStaticBasePath(): string {
 	return (window as any).staticBasePath;
@@ -124,11 +125,17 @@ export const useFetchData = () => {
 		}
 
 		if (response.status === HTTPStatusCodes.FORBIDDEN) {
-			const message = (await response.clone().json())?.message;
+			let message = (await response.clone().json())?.message;
+			if (message === undefined) {
+				message = "You do not have access to this page";
+			}
+			window.dispatchEvent(getAccessDeniedEvent(message));
 
-			window.dispatchEvent(
-				getAccessDeniedEvent(message === undefined ? "You do not have access to this page" : message)
-			);
+			/*	throwing this error just to make sure that this case is handled in some places in the application.
+				global search for ForbiddenError.isThisError to see those places
+			*/
+
+			throw new ForbiddenError(message);
 		}
 
 		const logoutAndRedirect = shouldRedirectOnUnauthorised && HTTPStatusCodes.UNAUTHORIZED === response.status;
