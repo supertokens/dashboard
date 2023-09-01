@@ -34,9 +34,7 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "https://st-dev-5bda0a00-431e-11ee-9f3e-67aeb340adc9.aws.supertokens.io",
-		// connectionURI: "https://try.supertokens.com",
-		apiKey: "pjS17UlWEXFZLhbi-0diY2LVry",
+		connectionURI: "https://try.supertokens.com",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",
@@ -47,7 +45,6 @@ SuperTokens.init({
 	recipeList: [
 		Dashboard.init({
 			// Keep this so that the dev server uses api key based login
-			admins: ["devchakspp@gmail.com"],
 			override: {
 				functions: (original) => {
 					return {
