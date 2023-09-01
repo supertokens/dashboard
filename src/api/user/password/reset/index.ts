@@ -36,7 +36,6 @@ const usePasswordResetService = (): IUsePasswordResetService => {
 				}),
 			},
 		});
-
 		return await response.json();
 	};
 

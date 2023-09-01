@@ -18,6 +18,7 @@ import { Tenant } from "../../../api/tenants/list";
 import { useUserService } from "../../../api/user";
 import usePasswordResetService from "../../../api/user/password/reset";
 import { getImageUrl } from "../../../utils";
+import { ForbiddenError } from "../../../utils/customErrors";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useTenantsListContext } from "../../contexts/TenantsListContext";
@@ -289,18 +290,26 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 			return;
 		}
 
-		const response = await updateUserInformation({
-			userId,
-			email,
-			recipeId,
-			tenantId,
-		});
+		let response;
 
-		if (response.status === "INVALID_EMAIL_ERROR") {
+		try {
+			response = await updateUserInformation({
+				userId,
+				email,
+				recipeId,
+				tenantId,
+			});
+		} catch (error) {
+			if (ForbiddenError.isThisError(error)) {
+				void onCancel();
+			}
+		}
+
+		if (response?.status === "INVALID_EMAIL_ERROR") {
 			setApiError(response.error);
-		} else if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
+		} else if (response?.status === "EMAIL_ALREADY_EXISTS_ERROR") {
 			setApiError("A user with this email already exists");
-		} else if (response.status === "OK") {
+		} else if (response?.status === "OK") {
 			showToast(getUpdateEmailToast(true));
 			await onEmailChange(true);
 		}
@@ -383,15 +392,23 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 			return;
 		}
 
-		const response = await updatePassword(
-			userId,
-			password,
-			matchingTenantIds.length > 0 ? matchingTenantIds[0].tenantId : undefined
-		);
+		let response;
 
-		if (response.status === "INVALID_PASSWORD_ERROR") {
+		try {
+			response = await updatePassword(
+				userId,
+				password,
+				matchingTenantIds.length > 0 ? matchingTenantIds[0].tenantId : undefined
+			);
+		} catch (error) {
+			if (ForbiddenError.isThisError(error)) {
+				void onCancel();
+			}
+		}
+
+		if (response?.status === "INVALID_PASSWORD_ERROR") {
 			setApiError(response.error);
-		} else if (response.status === "OK") {
+		} else if (response?.status === "OK") {
 			showToast(getUpdatePasswordToast(true));
 			await onPasswordChange();
 		}
