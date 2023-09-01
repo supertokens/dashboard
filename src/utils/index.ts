@@ -131,6 +131,10 @@ export const useFetchData = () => {
 			}
 			window.dispatchEvent(getAccessDeniedEvent(message));
 
+			/*	throwing this error just to make sure that this case is handled in some places in the application.
+				global search for ForbiddenError.isThisError to see those places
+			*/
+
 			throw new ForbiddenError(message);
 		}
 

@@ -290,28 +290,26 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 			return;
 		}
 
-		let response;
-
 		try {
-			response = await updateUserInformation({
+			const response = await updateUserInformation({
 				userId,
 				email,
 				recipeId,
 				tenantId,
 			});
+
+			if (response.status === "INVALID_EMAIL_ERROR") {
+				setApiError(response.error);
+			} else if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
+				setApiError("A user with this email already exists");
+			} else if (response.status === "OK") {
+				showToast(getUpdateEmailToast(true));
+				await onEmailChange(true);
+			}
 		} catch (error) {
 			if (ForbiddenError.isThisError(error)) {
 				void onCancel();
 			}
-		}
-
-		if (response?.status === "INVALID_EMAIL_ERROR") {
-			setApiError(response.error);
-		} else if (response?.status === "EMAIL_ALREADY_EXISTS_ERROR") {
-			setApiError("A user with this email already exists");
-		} else if (response?.status === "OK") {
-			showToast(getUpdateEmailToast(true));
-			await onEmailChange(true);
 		}
 	};
 
@@ -392,25 +390,23 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 			return;
 		}
 
-		let response;
-
 		try {
-			response = await updatePassword(
+			const response = await updatePassword(
 				userId,
 				password,
 				matchingTenantIds.length > 0 ? matchingTenantIds[0].tenantId : undefined
 			);
+
+			if (response?.status === "INVALID_PASSWORD_ERROR") {
+				setApiError(response.error);
+			} else if (response?.status === "OK") {
+				showToast(getUpdatePasswordToast(true));
+				await onPasswordChange();
+			}
 		} catch (error) {
 			if (ForbiddenError.isThisError(error)) {
 				void onCancel();
 			}
-		}
-
-		if (response?.status === "INVALID_PASSWORD_ERROR") {
-			setApiError(response.error);
-		} else if (response?.status === "OK") {
-			showToast(getUpdatePasswordToast(true));
-			await onPasswordChange();
 		}
 	};
 
