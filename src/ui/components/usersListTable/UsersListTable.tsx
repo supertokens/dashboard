@@ -13,10 +13,9 @@
  * under the License.
  */
 
-import React, { useCallback, useContext } from "react";
+import React from "react";
 
 import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
-import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "../userDetail/userDetail";
@@ -364,12 +363,11 @@ export const PlaceholderTableRows = (props: { rowCount: number; colSpan: number;
  * get estimated count as a fallback if the count API don't give correct value
  */
 const getEstimatedCount = (props: Pick<UserListProps, "count" | "limit" | "users" | "nextPaginationToken">) => {
-	const { count, limit, users, nextPaginationToken } = {
-		limit: LIST_DEFAULT_LIMIT,
+	const { count } = {
 		...props,
 	};
 	// in case the count is smaller than user's length, then estimate the count to be users.length + limit
-	return nextPaginationToken && count <= users.length ? users.length + limit : count;
+	return count;
 };
 
 export default UsersListTable;
