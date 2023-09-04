@@ -52,7 +52,11 @@ const getBadgeInitial = ({ firstName, lastName, emails, id }: User) => {
 
 export const UserDisplayName: FC<UserProps> = ({ user }) => {
 	const { firstName, lastName, emails, id } = user;
-	const phone = user.loginMethods.filter((recipe) => recipe.recipeUserId === id)[0].phoneNumber;
+	const phoneFilter = user.loginMethods.filter((recipe) => recipe.recipeUserId === id);
+	let phone = user.phoneNumbers[0];
+	if (phoneFilter.length !== 0) {
+		phone = phoneFilter[0].phoneNumber ?? "";
+	}
 
 	let firstNameToUse = firstName ?? "";
 	let lastNameToUse = lastName ?? "";
@@ -67,7 +71,11 @@ export const UserDisplayName: FC<UserProps> = ({ user }) => {
 
 	const fullName = `${firstNameToUse} ${lastNameToUse}`.trim();
 
-	const email = user.loginMethods.filter((recipe) => recipe.recipeUserId === id)[0].email;
+	const emailFilter = user.loginMethods.filter((recipe) => recipe.recipeUserId === id);
+	let email = user.emails[0];
+	if (emailFilter.length !== 0) {
+		email = emailFilter[0].email ?? "";
+	}
 
 	return <span>{fullName || email || phone}</span>;
 };
@@ -86,6 +94,7 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ onDeleteCallback }
 				getUserDeleteConfirmationProps({
 					onDeleteCallback,
 					user: userDetail.details,
+					all: true,
 				})
 			),
 		[userDetail, onDeleteCallback, showModal]

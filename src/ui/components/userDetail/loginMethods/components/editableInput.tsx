@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../../../inputField/InputField";
 import "./editableInput.scss";
 import { PhoneNumberInput } from "../../../phoneNumber/PhoneNumberInput";
@@ -14,11 +14,10 @@ export type EditableInputProps = {
 };
 
 export const EditableInput = ({ label, val, edit, type, onChange, error }: EditableInputProps) => {
-	const [normaliseVal, setVal] = useState(val);
 	if (!edit) {
 		return (
 			<span>
-				{label}:<b>{normaliseVal == "" ? "-" : normaliseVal}</b>
+				{label}:<b>{val == "" ? "-" : val}</b>
 			</span>
 		);
 	} else {
@@ -31,9 +30,7 @@ export const EditableInput = ({ label, val, edit, type, onChange, error }: Edita
 						name="email"
 						error={error ?? ""}
 						value={val}
-						// handleChange={({ target: { value } }) => updateUserDataState({ emails: [value] })}
 						handleChange={({ target }) => {
-							setVal(target.value);
 							onChange(target.value);
 						}}
 					/>
@@ -42,7 +39,7 @@ export const EditableInput = ({ label, val, edit, type, onChange, error }: Edita
 					<PhoneNumberInput
 						value={val}
 						name="Phone Number"
-						onChange={setVal}
+						onChange={onChange}
 					/>
 				)}
 			</span>

@@ -61,7 +61,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user);
-		setUserDetail(userDetailsResponse);
+		setUserDetail(JSON.parse(JSON.stringify(userDetailsResponse)));
 	}, []);
 
 	useEffect(() => {
@@ -85,15 +85,17 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 			const tenants: Tenant[] = getTenantsObjectsForIds(tenantListFromStore ?? [], data.tenantIds);
 			let matchingTenants: Tenant[] = [];
 
-			if (data.loginMethods[0].recipeId === "emailpassword") {
+			const PrimaryLoginMethod = data.loginMethods.filter((el) => el.recipeUserId === data.id)[0];
+
+			if (PrimaryLoginMethod.recipeId === "emailpassword") {
 				matchingTenants = tenants.filter((tenant) => tenant.emailPassword.enabled);
 			}
 
-			if (data.loginMethods[0].recipeId === "passwordless") {
+			if (PrimaryLoginMethod.recipeId === "passwordless") {
 				matchingTenants = tenants.filter((tenant) => tenant.passwordless.enabled);
 			}
 
-			if (data.loginMethods[0].recipeId === "thirdparty") {
+			if (PrimaryLoginMethod.recipeId === "thirdparty") {
 				matchingTenants = tenants.filter((tenant) => tenant.thirdParty.enabled);
 			}
 
@@ -105,7 +107,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				setShowLoadingOverlay(false);
 				showModal(
 					getMissingTenantIdModalProps({
-						message: `User does not belong to a tenant that has the ${data.loginMethods[0].recipeId} recipe enabled`,
+						message: `User does not belong to a tenant that has the ${PrimaryLoginMethod.recipeId} recipe enabled`,
 					})
 				);
 
@@ -116,10 +118,10 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 			const userInfoResponse = await updateUserInformation({
 				userId,
-				recipeId: data.loginMethods[0].recipeId,
-				recipeUserId: data.loginMethods[0].recipeUserId,
-				email: data.emails[0],
-				phone: data.loginMethods[0].recipeId === "passwordless" ? data.phoneNumbers[0] : "",
+				recipeId: PrimaryLoginMethod.recipeId,
+				recipeUserId: PrimaryLoginMethod.recipeUserId,
+				email: PrimaryLoginMethod.email,
+				phone: PrimaryLoginMethod.recipeId === "passwordless" ? PrimaryLoginMethod.phoneNumber : "",
 				firstName: data.firstName,
 				lastName: data.lastName,
 				tenantId,
