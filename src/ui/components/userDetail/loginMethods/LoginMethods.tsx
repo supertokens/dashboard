@@ -216,7 +216,7 @@ const Methods: React.FC<MethodProps> = ({
 				children: <>Entered phone number already exists</>,
 			});
 		} else {
-			const tempLoginMethod = { ...loginMethod, email: send.email };
+			const tempLoginMethod = { ...loginMethod, email: send.email, phone: send.phone };
 			updateContext(tempLoginMethod, index);
 			setEdit(false);
 		}
@@ -270,7 +270,7 @@ const Methods: React.FC<MethodProps> = ({
 					<EditableInput
 						label={"Email ID"}
 						val={loginMethod.email ?? ""}
-						edit={isEditing}
+						edit={loginMethod.recipeId === "thirdparty" ? false : isEditing}
 						type={"email"}
 						error={emailError}
 						onChange={(val) => setSend({ ...send, email: val })}
