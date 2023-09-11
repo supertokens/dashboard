@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.7.2] - 2023-09-11
+
+-   Enforces read, write permissions for allowed user on the user management dashboard.
+
 ## [0.7.1] - 2023-08-03
 
 -   Fixed issues where DELETE request had header `"Content-Type": "application/json"`
