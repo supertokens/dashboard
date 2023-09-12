@@ -89,7 +89,6 @@ export const useFetchData = () => {
 		ignoreErrors = false,
 	}: IFetchDataArgs) => {
 		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.AUTH_KEY);
-		const email = localStorageHandler.getItem(StorageKeys.EMAIL);
 
 		let additionalHeaders: { [key: string]: string } = {};
 
@@ -97,13 +96,6 @@ export const useFetchData = () => {
 			additionalHeaders = {
 				...additionalHeaders,
 				authorization: `Bearer ${apiKeyInStorage}`,
-			};
-		}
-
-		if (email !== undefined) {
-			additionalHeaders = {
-				...additionalHeaders,
-				email,
 			};
 		}
 
