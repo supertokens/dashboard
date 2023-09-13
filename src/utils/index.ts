@@ -15,10 +15,12 @@
 
 import { useEffect, useState } from "react";
 import { HTTPStatusCodes, StorageKeys } from "../constants";
+import { getAccessDeniedEvent } from "../events/accessDenied";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
 import { HttpMethod } from "../types";
 import { UserRecipeType } from "../ui/pages/usersList/types";
+import { ForbiddenError } from "./customErrors";
 
 export function getStaticBasePath(): string {
 	return (window as any).staticBasePath;
@@ -109,6 +111,25 @@ export const useFetchData = () => {
 				},
 			},
 		});
+
+		if (ignoreErrors) {
+			return response;
+		}
+
+		if (response.status === HTTPStatusCodes.FORBIDDEN) {
+			let message = (await response.clone().json())?.message;
+			if (message === undefined) {
+				message = "You do not have access to this page";
+			}
+			window.dispatchEvent(getAccessDeniedEvent(message));
+
+			/*	throwing this error just to make sure that this case is handled in some places in the application.
+				global search for ForbiddenError.isThisError to see those places
+			*/
+
+			throw new ForbiddenError(message);
+		}
+
 		const logoutAndRedirect = shouldRedirectOnUnauthorised && HTTPStatusCodes.UNAUTHORIZED === response.status;
 		if (logoutAndRedirect) {
 			window.localStorage.removeItem(StorageKeys.AUTH_KEY);
@@ -119,7 +140,7 @@ export const useFetchData = () => {
 		return response;
 	};
 
-	if (statusCode < 300 || statusCode === HTTPStatusCodes.UNAUTHORIZED) {
+	if (statusCode < 300 || statusCode === HTTPStatusCodes.UNAUTHORIZED || statusCode === HTTPStatusCodes.FORBIDDEN) {
 		return fetchData;
 	}
 

@@ -208,7 +208,7 @@ $container-padding-v: 24px;
 	&:last-of-type {
 		// put popup on the left because the popup could be cropped by the paper's bottom
 		.user-row-select-popup {
-			top: 0px;
+			top: -50%;
 			padding: 0px 40px 0px;
 		}
 	}

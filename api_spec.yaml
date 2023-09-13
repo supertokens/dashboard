@@ -4,6 +4,7 @@ info:
     version: 0.0.0
     title: Dashboard Interface
     description: Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
+    note: "All the POST api's would give 403 status code back when user permissions are enabled."
 
 tags:
     - name: "User Authentication"
@@ -1254,15 +1255,18 @@ paths:
                                                 emailPassword:
                                                     type: object
                                                     properties:
-                                                        enabled: boolean
+                                                        enabled:
+                                                            type: boolean
                                                 passwordless:
                                                     type: object
                                                     properties:
-                                                        enabled: boolean
+                                                        enabled:
+                                                            type: boolean
                                                 thirdParty:
                                                     type: object
                                                     properties:
-                                                        enabled: boolean
+                                                        enabled:
+                                                            type: boolean
 
 servers:
     # Added by API Auto Mocking Plugin

@@ -147,7 +147,6 @@ export default class NetworkManager {
 			method: "DELETE",
 			headers: {
 				...config?.headers,
-				"Content-Type": "application/json",
 			},
 		});
 	}
