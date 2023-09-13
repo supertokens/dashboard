@@ -447,7 +447,9 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 					refetchAllData={refetchAllData}
 					updateContext={updateLoginMethodInContext}
 					index={ind}
-					showUnlink={methods.length > 1}
+					showUnlink={
+						methods.length > 1 || (userDetail.details.isPrimaryUser === true && methods.length === 1)
+					}
 				/>
 			))}
 		</LayoutPanel>

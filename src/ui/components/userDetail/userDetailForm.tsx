@@ -359,7 +359,7 @@ export const LoginMethodUnlinkConfirmation: FC<UserUnlinkConfirmationProps> = ({
 	let informationToEnter = "Confirm";
 	let inputType = "following information";
 
-	if (loginMethod.recipeId === "emailpassword") {
+	if (loginMethod.recipeId === "emailpassword" || loginMethod.recipeId === "thirdparty") {
 		informationToEnter = loginMethod.email ?? "";
 		inputType = "user's email id";
 	}
@@ -594,7 +594,7 @@ export const getLoginMethodUnlinkConfirmationProps = (props: UnlinkLoginMethodPr
 				onConfirmed={onConfirmedUnlink}
 			/>
 		),
-		header: <h2>Delete User?</h2>,
+		header: <h2>Unlink login method?</h2>,
 		closeCallbackRef: closeConfirmDeleteRef,
 	} as LayoutModalProps;
 };
