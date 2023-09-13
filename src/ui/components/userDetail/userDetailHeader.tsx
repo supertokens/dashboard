@@ -13,13 +13,13 @@
  * under the License.
  */
 
-import { FC, useCallback, useContext, useEffect } from "react";
+import { FC, useCallback, useContext } from "react";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserProps } from "../../pages/usersList/types";
 import CopyText from "../copyText/CopyText";
+import { useUserDetailContext } from "./context/UserDetailContext";
 import { UserDetailProps } from "./userDetail";
 import { getUserDeleteConfirmationProps } from "./userDetailForm";
-import { useUserDetailContext } from "./context/UserDetailContext";
 
 const getBadgeInitial = ({ firstName, lastName, emails, id }: User) => {
 	let firstnameToUse = "";

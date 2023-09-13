@@ -55,6 +55,7 @@ export type User = {
 	firstName?: string;
 	lastName?: string;
 	tenantIds: string[];
+	isPrimaryUser: boolean;
 };
 
 export type UserEmailPassword = User;

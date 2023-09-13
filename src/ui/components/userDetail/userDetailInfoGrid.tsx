@@ -199,7 +199,7 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 		...JSON.parse(userDetail.metaData ?? "{}"),
 	});
 	const { showModal } = useContext(PopupContentContext);
-	const { firstName, lastName, timeJoined, emails } = userState;
+	const { firstName, lastName, timeJoined, emails, isPrimaryUser } = userState;
 	const [isEditing, setIsEditing] = useState(false);
 	const { tenantsListFromStore } = useTenantsListContext();
 
@@ -288,6 +288,11 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 					<UserDetailInfoGridItem
 						label={"Signed up on:"}
 						body={timeJoined && formatLongDate(timeJoined)}
+					/>
+
+					<UserDetailInfoGridItem
+						label={"Is Primary User?"}
+						body={isPrimaryUser ? "Yes" : "No"}
 					/>
 				</div>
 			</LayoutPanel>
