@@ -230,7 +230,7 @@ const Methods: React.FC<MethodProps> = ({
 					<span className="user-id-span">
 						User ID:
 						<span className="copy-text-wrapper resp">
-							<CopyText>{trim(loginMethod.recipeUserId)}</CopyText>
+							<CopyText copyVal={loginMethod.recipeUserId}>{trim(loginMethod.recipeUserId)}</CopyText>
 						</span>
 						<span className="copy-text-wrapper">
 							<CopyText>{loginMethod.recipeUserId}</CopyText>

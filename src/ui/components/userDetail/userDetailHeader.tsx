@@ -113,8 +113,8 @@ export const UserDetailHeader: React.FC<UserDetailProps> = ({ onDeleteCallback }
 					<span className="user-detail__header__user-id__label">User ID:</span>
 					<span
 						className="user-detail__header__user-id__text block-snippet-large"
-						title={userDetail.userId}>
-						<CopyText>{userDetail.userId}</CopyText>
+						title={userDetail.details.id}>
+						<CopyText>{userDetail.details.id}</CopyText>
 					</span>
 				</div>
 			</div>
