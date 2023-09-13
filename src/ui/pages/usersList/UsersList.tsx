@@ -45,7 +45,7 @@ import UsersListTable, {
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useTenantsListContext } from "../../contexts/TenantsListContext";
 import "./UsersList.scss";
-import { EmailVerificationStatus, UserWithRecipeId } from "./types";
+import { EmailVerificationStatus, User } from "./types";
 
 type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 
@@ -71,7 +71,7 @@ export const UsersList: React.FC<UserListProps> = ({
 }) => {
 	const limit = LIST_DEFAULT_LIMIT;
 	const [count, setCount] = useState<number>();
-	const [users, setUsers] = useState<UserWithRecipeId[]>([]);
+	const [users, setUsers] = useState<User[]>([]);
 	const [offset, setOffset] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
@@ -86,7 +86,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const selectedTenant = getSelectedTenant();
 
 	const insertUsersAtOffset = useCallback(
-		(paramUsers: UserWithRecipeId[], paramOffset?: number, isSearch?: boolean) => {
+		(paramUsers: User[], paramOffset?: number, isSearch?: boolean) => {
 			if (isSearch) {
 				return [...paramUsers];
 			}
@@ -204,6 +204,7 @@ export const UsersList: React.FC<UserListProps> = ({
 				setSelectedTenant(tenantIdToUse);
 			} else {
 				tenantIdToUse = filteredTenants[0].tenantId;
+				setSelectedTenant(tenantIdToUse);
 			}
 		}
 	};
@@ -356,7 +357,7 @@ export const UserListPage = () => {
 
 	const onUserDelete = useCallback(
 		async (userId: string) => {
-			const deleteSucceed = await deleteUser(userId);
+			const deleteSucceed = await deleteUser(userId, true);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			if (didSucceed) {
 				backToList();
@@ -395,44 +396,29 @@ export const UserListPage = () => {
 		[showToast]
 	);
 
-	// load user detail && email verification from API when userId changes
-	// useEffect(() => {
-	// 	if (selectedUser !== undefined) {
-	// 		void getUser(selectedUser);
-	// 		if (isEmailVerificationApplicable(selectedUser.recipeId)) {
-	// 			void getUserEmailVerificationStatus(selectedUser?.user.id).then(setSelectedUserEmailVerification);
-	// 		}
-	// 	} else {
-	// 		setSelectedUserEmailVerification(undefined);
-	// 	}
-	// }, [selectedUser?.user.id, selectedUser?.recipeId, getUser]);
-
 	useEffect(() => {
 		if (selectedUser === undefined && currentLocation.search !== null && currentLocation.search !== "") {
 			const urlParams = new URLSearchParams(currentLocation.search);
 			const userid = urlParams.get("userid");
-			const recipeId = urlParams.get("recipeId");
 
-			if (userid !== null && recipeId !== null) {
+			if (userid !== null) {
 				// This means that there is a userid in the URL, show details
 				setSelectedUser(userid);
-				setSelectedRecipeId(recipeId);
 			}
 		}
 	}, []);
 
-	const onUserSelected = (user: UserWithRecipeId) => {
+	const onUserSelected = (user: User) => {
 		navigate(
 			{
 				pathname: currentLocation.pathname,
-				search: `?userid=${user.user.id}&recipeId=${user.recipeId}`,
+				search: `?userid=${user.id}`,
 			},
 			{
 				replace: true,
 			}
 		);
-		setSelectedUser(user.user.id);
-		setSelectedRecipeId(user.recipeId);
+		setSelectedUser(user.id);
 	};
 
 	return (
@@ -441,13 +427,12 @@ export const UserListPage = () => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(window as any).connectionURI
 			}>
-			{isSelectedUserNotEmpty && selectedRecipeId !== undefined && (
+			{isSelectedUserNotEmpty && (
 				<UserDetail
-					recipeId={selectedRecipeId}
 					user={selectedUser}
 					onBackButtonClicked={backToList}
-					onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
-					onSendEmailVerificationCallback={({ user: { id, tenantIds } }) => {
+					onDeleteCallback={({ id }) => onUserDelete(id)}
+					onSendEmailVerificationCallback={({ id, tenantIds }) => {
 						return sendUserEmailVerification(id, tenantIds.length > 0 ? tenantIds[0] : undefined);
 					}}
 					onUpdateEmailVerificationStatusCallback={(
@@ -466,7 +451,7 @@ export const UserListPage = () => {
 				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
 				reloadRef={reloadListRef}
 				onChangePasswordCallback={changePassword}
-				onDeleteCallback={({ user: { id } }) => onUserDelete(id)}
+				onDeleteCallback={({ id }) => onUserDelete(id)}
 			/>
 			<Footer
 				colorMode="dark"

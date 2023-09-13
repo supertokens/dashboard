@@ -18,7 +18,7 @@ import { HttpApiBaseResponse } from "../../../types";
 export type UserListCount = HttpApiBaseResponse & { count: number };
 export type UserPaginationList = HttpApiBaseResponse & {
 	nextPaginationToken?: string;
-	users: UserWithRecipeId[];
+	users: User[];
 };
 
 // Users Models
@@ -26,20 +26,36 @@ export type EmailPasswordRecipeId = "emailpassword";
 export type ThirdPartyRecipeId = "thirdparty";
 export type PasswordlessRecipeId = "passwordless";
 
-export type UserRecipeType = EmailPasswordRecipeId | ThirdPartyRecipeId | PasswordlessRecipeId;
+export type UserRecipeType = EmailPasswordRecipeId | ThirdPartyRecipeId | PasswordlessRecipeId | "multiple";
 
-export type UserWithRecipeId =
-	| { recipeId: EmailPasswordRecipeId; user: UserEmailPassword }
-	| { recipeId: PasswordlessRecipeId; user: UserPasswordLess }
-	| { recipeId: ThirdPartyRecipeId; user: UserThirdParty };
+export type LoginMethod = {
+	timeJoined: number;
+	recipeUserId: string;
+	recipeId: EmailPasswordRecipeId | PasswordlessRecipeId | ThirdPartyRecipeId;
+	email?: string;
+	phoneNumber?: string;
+	thirdParty?: {
+		id: string;
+		userId: string;
+	};
+	verified: boolean;
+	tenantIds: string[];
+};
 
 export type User = {
 	id: string;
-	email?: string;
 	timeJoined: number;
+	emails: string[];
+	phoneNumbers: string[];
+	thirdParty: {
+		id: string;
+		userId: string;
+	}[];
+	loginMethods: LoginMethod[];
 	firstName?: string;
 	lastName?: string;
 	tenantIds: string[];
+	isPrimaryUser: boolean;
 };
 
 export type UserEmailPassword = User;
@@ -59,7 +75,7 @@ export type UserFeatureStatus = {
 	emailVerification: boolean;
 };
 
-export type UserProps = { user: UserWithRecipeId };
+export type UserProps = { user: User };
 
 export const FEATURE_NOT_ENABLED_TEXT = "FEATURE_NOT_ENABLED_ERROR";
 

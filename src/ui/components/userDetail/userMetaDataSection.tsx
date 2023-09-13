@@ -22,21 +22,11 @@ import IconButton from "../common/iconButton";
 import { useUserDetailContext } from "./context/UserDetailContext";
 import "./userMetaDataSection.scss";
 
-export type UserMetaDataSectionProps = {
-	metadata: string | undefined;
-	userId: string;
-	refetchData: () => Promise<void>;
-};
-
-export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
-	metadata,
-	userId,
-	refetchData,
-}: UserMetaDataSectionProps) => {
+export const UserMetaDataSection: React.FC = () => {
+	const { hideLoadingOverlay, showLoadingOverlay, userDetail } = useUserDetailContext();
 	const [isEditing, setIsEditing] = useState<boolean>(false);
-	const [metadataForEditing, setMetaDataForEditing] = useState(metadata);
+	const [metadataForEditing, setMetaDataForEditing] = useState(userDetail.metaData);
 	const [metaDataUpdateError, setMetaDataUpdateError] = useState<string | undefined>(undefined);
-	const { hideLoadingOverlay, showLoadingOverlay } = useUserDetailContext();
 
 	const { updateUserMetaData } = useMetadataService();
 
@@ -46,8 +36,8 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 	}, []);
 
 	useEffect(() => {
-		setMetaDataForEditing(metadata);
-	}, [metadata]);
+		setMetaDataForEditing(userDetail.metaData);
+	}, [userDetail]);
 
 	const getFormattedMetaData = (_metadata: string): string => {
 		if (_metadata === "Feature Not Enabled") {
@@ -58,11 +48,11 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 	};
 
 	const renderMetaDataContent = () => {
-		if (metadata === undefined) {
+		if (userDetail.metaData === undefined) {
 			return "Loading...";
 		}
 
-		const highlightedCode = HighlightJS.highlight(getFormattedMetaData(metadata), {
+		const highlightedCode = HighlightJS.highlight(getFormattedMetaData(userDetail.metaData), {
 			language: "typescript",
 		});
 
@@ -75,7 +65,7 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 	};
 
 	const renderContent = () => {
-		if (isEditing && metadata !== undefined) {
+		if (isEditing && userDetail.metaData !== undefined) {
 			return (
 				<div className="metadata-edit-container">
 					<textarea
@@ -85,7 +75,7 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 						onChange={({ target: { value } }) => {
 							setMetaDataForEditing(value);
 						}}
-						key={metadata}
+						key={userDetail.metaData}
 					/>
 					{metaDataUpdateError !== undefined && (
 						<div className="input-field-error block-small block-error">
@@ -105,7 +95,7 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 	};
 
 	const onCancelEditing = () => {
-		setMetaDataForEditing(metadata);
+		setMetaDataForEditing(userDetail.metaData);
 		setIsEditing(false);
 	};
 
@@ -121,10 +111,10 @@ export const UserMetaDataSection: React.FC<UserMetaDataSectionProps> = ({
 			}
 			setMetaDataUpdateError(undefined);
 			await updateUserMetaData(
-				userId,
+				userDetail.userId,
 				metadataForEditing === undefined || metadataForEditing === "" ? "{}" : metadataForEditing
 			);
-			await refetchData();
+			await userDetail.func.refetchAllData();
 			setIsEditing(false);
 			// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 		} catch (e: any) {

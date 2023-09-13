@@ -66,3 +66,8 @@ import "./assets/trash-opened.svg";
 import "./assets/trash.svg";
 import "./assets/triangle-down.svg";
 import "./logo.svg";
+import "./assets/Union.png";
+import "./assets/Union-yellow.png";
+import "./assets/delete-login-method.png";
+import "./assets/edit-login-method.png";
+import "./assets/unlink-login-method.png";

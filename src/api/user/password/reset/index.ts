@@ -31,7 +31,7 @@ const usePasswordResetService = (): IUsePasswordResetService => {
 			query: { userId },
 			config: {
 				body: JSON.stringify({
-					userId,
+					recipeUserId: userId,
 					newPassword,
 				}),
 			},

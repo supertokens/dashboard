@@ -13,31 +13,23 @@
  * under the License.
  */
 
-import React, { useCallback, useContext } from "react";
+import React from "react";
 
 import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
-import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { UserRecipeType, UserWithRecipeId } from "../../pages/usersList/types";
+import { User, UserRecipeType } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
 import { UserDetailProps } from "../userDetail/userDetail";
-import {
-	getUserChangeEmailPopupProps,
-	getUserChangePasswordPopupProps,
-	getUserChangePhonePopupProps,
-	getUserDeleteConfirmationProps,
-} from "../userDetail/userDetailForm";
-import UserRowMenu, { UserRowMenuItemProps } from "./UserRowMenu";
 import "./UsersListTable.scss";
 
 const USER_TABLE_COLUMNS_COUNT = 4;
 export const LIST_DEFAULT_LIMIT = 10;
 
-export type OnSelectUserFunction = (user: UserWithRecipeId) => void;
+export type OnSelectUserFunction = (user: User) => void;
 
 export type UserRowActionProps = Pick<UserDetailProps, "onDeleteCallback" | "onChangePasswordCallback">;
 
 type UserListProps = {
-	users: UserWithRecipeId[];
+	users: User[];
 	count: number;
 	nextPaginationToken?: string;
 	isLoading?: boolean;
@@ -77,7 +69,6 @@ const UsersListTable: React.FC<UserListProps> = (props) => {
 						<th>User</th>
 						<th>Auth Method</th>
 						<th>Time joined</th>
-						<th></th>
 					</tr>
 				</thead>
 				<tbody className="text-small">
@@ -134,16 +125,18 @@ const UserTableRows = ({
 	}) => {
 	return (
 		<>
-			{users.map((user) => (
-				<UserTableRow
-					onEmailChanged={onEmailChanged}
-					user={user}
-					key={user.user.id}
-					onSelect={onSelect}
-					onChangePasswordCallback={onChangePasswordCallback}
-					onDeleteCallback={onDeleteCallback}
-				/>
-			))}
+			{users.map((user) => {
+				return (
+					<UserTableRow
+						onEmailChanged={onEmailChanged}
+						user={user}
+						key={user.id}
+						onSelect={onSelect}
+						onChangePasswordCallback={onChangePasswordCallback}
+						onDeleteCallback={onDeleteCallback}
+					/>
+				);
+			})}
 		</>
 	);
 };
@@ -151,127 +144,13 @@ const UserTableRows = ({
 // Single Row Section
 const UserTableRow: React.FC<
 	{
-		user: UserWithRecipeId;
+		user: User;
 		index?: number;
 		onSelect: OnSelectUserFunction;
 		onEmailChanged: () => Promise<void>;
 	} & UserRowActionProps
 > = (props) => {
-	const { user, index, onSelect, onChangePasswordCallback, onDeleteCallback } = props;
-	const { showModal } = useContext(PopupContentContext);
-
-	const openChangePasswordModal = useCallback(
-		() =>
-			showModal(
-				getUserChangePasswordPopupProps({
-					userId: user.user.id,
-					tenantIds: user.user.tenantIds,
-				})
-			),
-		[showModal, user.user.id, onChangePasswordCallback]
-	);
-
-	const openChangeEmailModal = useCallback(
-		(recipeId: "emailpassword" | "passwordless") =>
-			showModal(
-				getUserChangeEmailPopupProps({
-					userId: user.user.id,
-					recipeId,
-					onEmailChanged: props.onEmailChanged,
-					tenantIds: user.user.tenantIds,
-				})
-			),
-		[showModal, user.user.id, onChangePasswordCallback]
-	);
-
-	const openChangePhoneModal = useCallback(
-		() =>
-			showModal(
-				getUserChangePhonePopupProps({
-					userId: user.user.id,
-					tenantIds: user.user.tenantIds,
-				})
-			),
-		[showModal, user.user.id, onChangePasswordCallback]
-	);
-
-	const openDeleteConfirmation = useCallback(
-		() =>
-			showModal(
-				getUserDeleteConfirmationProps({
-					onDeleteCallback,
-					user,
-				})
-			),
-		[user, onDeleteCallback, showModal]
-	);
-
-	const getMenuItems = (): UserRowMenuItemProps[] => {
-		const menuItems: UserRowMenuItemProps[] = [
-			{
-				onClick: () => onSelect(user),
-				text: "View Details",
-				imageUrl: "people.svg",
-				hoverImageUrl: "people-opened.svg",
-			},
-		];
-
-		if (user.recipeId === "emailpassword") {
-			menuItems.push({
-				onClick: openChangePasswordModal,
-				text: "Change Password",
-				imageUrl: "lock.svg",
-				hoverImageUrl: "lock-opened.svg",
-				disabled: (user: UserWithRecipeId) => user.recipeId !== "emailpassword",
-			});
-
-			menuItems.push({
-				onClick: () => {
-					openChangeEmailModal("emailpassword");
-				},
-				text: "Change Email",
-				imageUrl: "mail.svg",
-				hoverImageUrl: "mail-opened.svg",
-				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
-			});
-		}
-
-		if (user.recipeId === "passwordless") {
-			menuItems.push({
-				onClick: () => {
-					openChangeEmailModal("passwordless");
-				},
-				text: "Change Email",
-				imageUrl: "mail.svg",
-				hoverImageUrl: "mail-opened.svg",
-				disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
-			});
-		}
-
-		if (user.recipeId === "passwordless" && user.user.phoneNumber !== undefined) {
-			// menuItems.push({
-			// 	onClick: () => {
-			// 		openChangePhoneModal();
-			// 	},
-			// 	text: "Change Phone Number",
-			// 	// TODO: Need an icon for phone
-			// 	imageUrl: "mail.svg",
-			// 	hoverImageUrl: "mail-opened.svg",
-			// 	disabled: (user: UserWithRecipeId) => user.recipeId === "thirdparty",
-			// });
-		}
-
-		menuItems.push({
-			onClick: openDeleteConfirmation,
-			text: "Delete user",
-			imageUrl: "trash.svg",
-			hoverImageUrl: "trash-opened.svg",
-			className: "delete",
-		});
-
-		return menuItems;
-	};
-
+	const { user, index, onSelect } = props;
 	return (
 		<tr
 			key={index}
@@ -288,19 +167,15 @@ const UserTableRow: React.FC<
 			<td>
 				<UserDate user={user} />
 			</td>
-			<td>
-				<UserRowMenu
-					menuItems={getMenuItems()}
-					user={user}
-				/>
-			</td>
 		</tr>
 	);
 };
 
-const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSelectUserFunction }) => {
-	const { firstName, lastName, email } = user.user;
-	const phone = user.recipeId === "passwordless" ? user.user.phoneNumber : undefined;
+const UserInfo = ({ user, onSelect }: { user: User; onSelect: OnSelectUserFunction }) => {
+	const { firstName, lastName, emails } = user;
+	const methodFilter = user.loginMethods.filter((el) => el.recipeUserId === user.id);
+	const email = methodFilter.length > 0 ? methodFilter[0].email : user.emails[0];
+	const phone = methodFilter.length > 0 ? methodFilter[0].phoneNumber : user.phoneNumbers[0];
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 	let isClicked = false;
 	let didDrag = false;
@@ -330,7 +205,7 @@ const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSele
 				title={name || email}>
 				{name || email || (phone && <PhoneDisplay phone={phone} />)}
 			</div>
-			{email && name && (
+			{emails && name && (
 				<div
 					className="email"
 					title={email}>
@@ -346,11 +221,13 @@ const UserInfo = ({ user, onSelect }: { user: UserWithRecipeId; onSelect: OnSele
 	);
 };
 
-export const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
-	const thirdpartyId = user.recipeId === "thirdparty" && user.user.thirdParty.id;
+export const UserRecipePill = ({ user }: { user: User }) => {
+	const loginMethods = user.loginMethods;
+	const thirdpartyId = loginMethods.length > 1 ? "" : user.thirdParty[0]?.id;
+	const recipeId = loginMethods.length > 1 ? "multiple" : loginMethods[0].recipeId;
 	return (
-		<div className={`pill ${user.recipeId} ${thirdpartyId}`}>
-			<span>{UserRecipeTypeText[user.recipeId]}</span>
+		<div className={`pill ${recipeId} ${thirdpartyId}`}>
+			<span>{UserRecipeTypeText[recipeId]}</span>
 			{thirdpartyId && (
 				<span
 					className="thirdparty-name"
@@ -363,14 +240,15 @@ export const UserRecipePill = ({ user }: { user: UserWithRecipeId }) => {
 	);
 };
 
-const UserDate = ({ user }: { user: UserWithRecipeId }) => {
-	return <div className="user-date">{user.user.timeJoined && formatLongDate(user.user.timeJoined)}</div>;
+const UserDate = ({ user }: { user: User }) => {
+	return <div className="user-date">{user.timeJoined && formatLongDate(user.timeJoined)}</div>;
 };
 
 const UserRecipeTypeText: Record<UserRecipeType, string> = {
 	["emailpassword"]: "Email password",
 	["passwordless"]: "Passwordless",
 	["thirdparty"]: "Third party",
+	["multiple"]: "Multiple",
 };
 
 // Pagination Section
@@ -485,12 +363,11 @@ export const PlaceholderTableRows = (props: { rowCount: number; colSpan: number;
  * get estimated count as a fallback if the count API don't give correct value
  */
 const getEstimatedCount = (props: Pick<UserListProps, "count" | "limit" | "users" | "nextPaginationToken">) => {
-	const { count, limit, users, nextPaginationToken } = {
-		limit: LIST_DEFAULT_LIMIT,
+	const { count } = {
 		...props,
 	};
 	// in case the count is smaller than user's length, then estimate the count to be users.length + limit
-	return nextPaginationToken && count <= users.length ? users.length + limit : count;
+	return count;
 };
 
 export default UsersListTable;

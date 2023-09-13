@@ -256,6 +256,10 @@ $container-padding-v: 24px;
 		color: var(--color-emailpassword-text);
 		background-color: var(--color-emailpassword-bg);
 	}
+	&.multiple {
+		color: var(--color-multiple-login-text);
+		background-color: var(--color-multiple-login-bg);
+	}
 	&.thirdparty {
 		color: var(--color-custom-provider-text);
 		background-color: var(--color-custom-provider-bg);

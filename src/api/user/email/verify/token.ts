@@ -13,7 +13,7 @@ const useVerifyUserTokenService = (): IUseVerifyUserTokenService => {
 			method: "POST",
 			config: {
 				body: JSON.stringify({
-					userId,
+					recipeUserId: userId,
 				}),
 			},
 		});

@@ -58,6 +58,8 @@ body {
 	--color-emailpassword-text: rgb(0, 106, 91);
 	--color-passwordless-bg: rgb(255, 234, 247);
 	--color-passwordless-text: rgb(168, 17, 90);
+	--color-multiple-login-text: rgb(159, 112, 19);
+	--color-multiple-login-bg: rgb(255, 246, 197);
 
 	/* Social Provider Pill Colors */
 	--color-google-bg: rgb(241, 222, 255);
