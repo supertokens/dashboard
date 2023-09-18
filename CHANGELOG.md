@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.8.1] - 2023-09-18
+
+-   Updates the text for the popup that shows when deleting a user to explain that it will also delete all linked accounts
+
 ## [0.8.0] - 2023-09-14
 
 -   Adds support for account linking

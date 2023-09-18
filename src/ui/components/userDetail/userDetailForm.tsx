@@ -515,6 +515,8 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 			<p>
 				To delete the user, please confirm by typing the {inputType}: <span>{informationToEnter}</span> below
 			</p>
+			<p>{""}</p>
+			<p>This will also delete any accounts linked to this user</p>
 			<div className="user-delete-input-container">
 				<InputField
 					type="text"

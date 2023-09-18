@@ -1,6 +1,6 @@
 {
 	"name": "dashboard",
-	"version": "0.8.0",
+	"version": "0.8.1",
 	"private": true,
 	"dependencies": {
 		"@babel/core": "^7.16.0",
