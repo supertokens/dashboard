@@ -26,7 +26,6 @@ import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
 import ThirdParty from "supertokens-node/recipe/thirdparty";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
-import RecipeUserId from "../../supertokens-node/lib/build/recipeUserId";
 
 const websiteDomain = "http://localhost:3000";
 
@@ -106,25 +105,6 @@ app.use(errorHandler());
 
 app.get("/status", (req, res) => {
 	res.status(200).send("Started");
-});
-
-app.get("/link", async (req, res) => {
-	await AccountLinking.linkAccounts(
-		"public",
-		new RecipeUserId("6b763048-486f-4965-b2e0-2f7650efbdf5"),
-		"6f922cbf-99de-4078-a9d0-e67dff5df09d"
-	);
-	await AccountLinking.linkAccounts(
-		"public",
-		new RecipeUserId("9a8837c0-ee02-457b-93bd-61bf16a6c2f9"),
-		"6f922cbf-99de-4078-a9d0-e67dff5df09d"
-	);
-	await AccountLinking.linkAccounts(
-		"public",
-		new RecipeUserId("a31e669f-553a-40dc-9192-1b06c9d75d31"),
-		"6f922cbf-99de-4078-a9d0-e67dff5df09d"
-	);
-	return res.status(200).send("OK");
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

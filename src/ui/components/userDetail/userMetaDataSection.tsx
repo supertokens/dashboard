@@ -22,6 +22,8 @@ import IconButton from "../common/iconButton";
 import { useUserDetailContext } from "./context/UserDetailContext";
 import "./userMetaDataSection.scss";
 
+export const METADATA_NOT_ENABLED_TEXT = "Feature Not Enabled";
+
 export const UserMetaDataSection: React.FC = () => {
 	const { hideLoadingOverlay, showLoadingOverlay, userDetail } = useUserDetailContext();
 	const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -40,7 +42,7 @@ export const UserMetaDataSection: React.FC = () => {
 	}, [userDetail]);
 
 	const getFormattedMetaData = (_metadata: string): string => {
-		if (_metadata === "Feature Not Enabled") {
+		if (_metadata === METADATA_NOT_ENABLED_TEXT) {
 			return _metadata;
 		}
 
