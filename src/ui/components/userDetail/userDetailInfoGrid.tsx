@@ -9,6 +9,7 @@ import TooltipContainer from "../tooltip/tooltip";
 import { UserDetailNameField } from "./components/nameField/nameField";
 import { useUserDetailContext } from "./context/UserDetailContext";
 import { UserDetailProps } from "./userDetail";
+import { METADATA_NOT_ENABLED_TEXT } from "./userMetaDataSection";
 
 type UserDetailInfoGridProps = Pick<
 	UserDetailProps,
@@ -194,9 +195,26 @@ export const UserDetailInfoGrid: FC<UserDetailInfoGridProps> = (props) => {
 	const { showLoadingOverlay, hideLoadingOverlay, userDetail } = useUserDetailContext();
 	const [emailErrorFromAPI, setEmailErrorFromAPI] = useState<string | undefined>(undefined);
 	const [phoneErrorFromAPI, setPhoneErrorFromAPI] = useState<string | undefined>(undefined);
+
+	let nameInfo = {};
+
+	if (userDetail.metaData !== undefined && userDetail.metaData !== METADATA_NOT_ENABLED_TEXT) {
+		const metaData = JSON.parse(userDetail.metaData);
+		const firstName = metaData.first_name;
+		const lastName = metaData.last_name;
+
+		if (firstName !== undefined) {
+			nameInfo = { ...nameInfo, firstName };
+		}
+
+		if (lastName !== undefined) {
+			nameInfo = { ...nameInfo, lastName };
+		}
+	}
+
 	const [userState, setUserState] = useState<User>({
 		...userDetail.details,
-		...JSON.parse(userDetail.metaData ?? "{}"),
+		...nameInfo,
 	});
 	const { showModal } = useContext(PopupContentContext);
 	const { firstName, lastName, timeJoined, emails, isPrimaryUser } = userState;
