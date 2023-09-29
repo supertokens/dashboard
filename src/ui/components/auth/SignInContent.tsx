@@ -170,7 +170,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					placeholder=""
 				/>
 
-				<div className="cta-container">
+				<div className="cta-container margin-top-16">
 					<button
 						className="button"
 						type="submit"

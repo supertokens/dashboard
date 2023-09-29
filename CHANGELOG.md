@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.8.3] - 2023-09-29
+
+-   Fixes dashboard signin form styles issue.
+
 ## [0.8.2] - 2023-09-20
 
 -   Fixes an issue where user details would not load if user meta data was not enabled in the backend
