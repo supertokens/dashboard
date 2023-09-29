@@ -159,7 +159,7 @@ const SignInContent: React.FC<SignInContentProps> = ({
 					forceShowError={userTriedToSubmit}
 				/>
 
-				<label>Password</label>
+				<label className="margin-top-16">Password</label>
 				<InputField
 					handleChange={handlePasswordFieldChange}
 					name="password"
