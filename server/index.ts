@@ -21,7 +21,6 @@ import { errorHandler, middleware } from "supertokens-node/framework/express";
 import Dashboard from "supertokens-node/lib/build/recipe/dashboard/recipe";
 import AccountLinking from "supertokens-node/recipe/accountlinking";
 import EmailPassword from "supertokens-node/recipe/emailpassword";
-import EmailVerification from "supertokens-node/recipe/emailverification";
 import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
 import ThirdParty from "supertokens-node/recipe/thirdparty";
@@ -83,9 +82,9 @@ SuperTokens.init({
 				],
 			},
 		}),
-		EmailVerification.init({
-			mode: "REQUIRED",
-		}),
+		// EmailVerification.init({
+		// 	mode: "REQUIRED",
+		// }),
 		Session.init(),
 		AccountLinking.init(),
 	],

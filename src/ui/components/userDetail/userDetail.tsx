@@ -16,13 +16,12 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Tenant } from "../../../api/tenants/list";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
-import useVerifyUserEmail from "../../../api/user/email/verify";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
 import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { FEATURE_NOT_ENABLED_TEXT, User, UserRecipeType } from "../../pages/usersList/types";
+import { User, UserRecipeType } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import { UserDetailContextProvider } from "./context/UserDetailContext";
@@ -54,37 +53,17 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [sessionList, setSessionList] = useState<SessionInfo[] | undefined>(undefined);
 	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
 	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
-	const [isVerifyEmailFeatureEnabled, setIsVerifyEmailFeatureEnabled] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
 	const { showModal } = useContext(PopupContentContext);
-	const { getUserEmailVerificationStatus } = useVerifyUserEmail();
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user);
-		const parsedUserDetails = JSON.parse(JSON.stringify(userDetailsResponse)) as GetUserInfoResult;
-		try {
-			if (parsedUserDetails && parsedUserDetails.status === "OK") {
-				const res = await getUserEmailVerificationStatus(parsedUserDetails.user.loginMethods[0].recipeUserId);
-				if (res.status === "OK") {
-					setIsVerifyEmailFeatureEnabled(true);
-				}
-			}
-			// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-		} catch (err: any) {
-			if (err.status === FEATURE_NOT_ENABLED_TEXT) {
-				setIsVerifyEmailFeatureEnabled(false);
-			}
-		} finally {
-			setUserDetail(parsedUserDetails);
-		}
+		setUserDetail(JSON.parse(JSON.stringify(userDetailsResponse)));
 	}, []);
-
-	useEffect(() => {
-		void loadUserDetail();
-	}, [loadUserDetail]);
 
 	const { showToast } = useContext(PopupContentContext);
 
@@ -162,10 +141,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		}
 	}, []);
 
-	useEffect(() => {
-		void fetchUserMetaData();
-	}, [fetchUserMetaData]);
-
 	const fetchSession = useCallback(async () => {
 		let response = await getSessionsForUser(user);
 
@@ -176,10 +151,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		setSessionList(response);
 	}, []);
 
-	useEffect(() => {
-		void fetchSession();
-	}, [fetchSession]);
-
 	const showLoadingOverlay = () => {
 		setShowLoadingOverlay(true);
 	};
@@ -188,7 +159,27 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		setShowLoadingOverlay(false);
 	};
 
-	if (userDetail === undefined) {
+	const fetchData = async () => {
+		setIsLoading(true);
+		await loadUserDetail();
+		await fetchUserMetaData();
+		await fetchSession();
+		setIsLoading(false);
+	};
+
+	const refetchAllData = async () => {
+		setShowLoadingOverlay(true);
+		await loadUserDetail();
+		await fetchUserMetaData();
+		await fetchSession();
+		setShowLoadingOverlay(false);
+	};
+
+	useEffect(() => {
+		void fetchData();
+	}, []);
+
+	if (userDetail === undefined || isLoading) {
 		return (
 			<div className="user-detail-page-loader">
 				<div className="loader"></div>
@@ -224,13 +215,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		);
 	}
 
-	const refetchAllData = async () => {
-		setShowLoadingOverlay(true);
-		await loadUserDetail();
-		await fetchUserMetaData();
-		await fetchSession();
-		setShowLoadingOverlay(false);
-	};
 	const userFunctions = {
 		refetchAllData: refetchAllData,
 		updateUser: updateUser,
@@ -270,10 +254,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 				<UserDetailInfoGrid {...props} />
 
-				<LoginMethods
-					isVerifyEmailFeatureEnabled={isVerifyEmailFeatureEnabled}
-					refetchAllData={refetchAllData}
-				/>
+				<LoginMethods refetchAllData={refetchAllData} />
 
 				<UserMetaDataSection />
 
