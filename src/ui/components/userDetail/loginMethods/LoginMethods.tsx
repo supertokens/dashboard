@@ -132,6 +132,7 @@ type MethodProps = {
 	updateContext: (val: LoginMethod, ind: number) => void;
 	index: number;
 	showUnlink: boolean;
+	isVerifyEmailFeatureEnabled: boolean;
 };
 
 const Methods: React.FC<MethodProps> = ({
@@ -144,6 +145,7 @@ const Methods: React.FC<MethodProps> = ({
 	updateContext,
 	index,
 	showUnlink,
+	isVerifyEmailFeatureEnabled,
 }) => {
 	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
 	const { showModal, showToast } = useContext(PopupContentContext);
@@ -279,26 +281,35 @@ const Methods: React.FC<MethodProps> = ({
 				<div>
 					Is Email Verified?:&nbsp;{" "}
 					<div className="pill-container">
-						<VerifiedPill isVerified={loginMethod.verified} />
-						{!isEditing && !loginMethod.verified && (
-							<TooltipContainer
-								tooltip="Send verification mail"
-								position="right"
-								tooltipWidth={170}>
-								<SendMailIcon
-									className="send-mail-icon"
-									onClick={() =>
-										sendUserEmailVerification(loginMethod.recipeUserId, loginMethod.tenantIds[0])
-									}
-								/>
-							</TooltipContainer>
-						)}
-						{isEditing && (
-							<span
-								onClick={changeEmailVerificationStatus}
-								className="password-link">
-								{loginMethod.verified ? "Set as Unverified" : "Set as Verified"}
-							</span>
+						{isVerifyEmailFeatureEnabled ? (
+							<>
+								<VerifiedPill isVerified={loginMethod.verified} />
+								{!isEditing && !loginMethod.verified && (
+									<TooltipContainer
+										tooltip="Send verification mail"
+										position="right"
+										tooltipWidth={170}>
+										<SendMailIcon
+											className="send-mail-icon"
+											onClick={() =>
+												sendUserEmailVerification(
+													loginMethod.recipeUserId,
+													loginMethod.tenantIds[0]
+												)
+											}
+										/>
+									</TooltipContainer>
+								)}
+								{isEditing && (
+									<span
+										onClick={changeEmailVerificationStatus}
+										className="password-link">
+										{loginMethod.verified ? "Set as Unverified" : "Set as Verified"}
+									</span>
+								)}
+							</>
+						) : (
+							<span className="not-verified">Feature not enabled</span>
 						)}
 					</div>
 				</div>
@@ -367,9 +378,9 @@ const Methods: React.FC<MethodProps> = ({
 	);
 };
 
-type LoginMethodProps = { refetchAllData: () => Promise<void> };
+type LoginMethodProps = { refetchAllData: () => Promise<void>; isVerifyEmailFeatureEnabled: boolean };
 
-export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => {
+export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData, isVerifyEmailFeatureEnabled }) => {
 	const { userDetail, setUserDetails } = useUserDetailContext();
 	const { updateUserInformation } = useUserService();
 	const methods = userDetail.details.loginMethods;
@@ -438,6 +449,7 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 			header={<div className="title">Login Methods</div>}>
 			{methods.map((val, ind) => (
 				<Methods
+					isVerifyEmailFeatureEnabled={isVerifyEmailFeatureEnabled}
 					loginMethod={val}
 					onUpdateEmailVerificationStatusCallback={userDetail.func.onUpdateEmailVerificationStatusCallback}
 					key={ind}

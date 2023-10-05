@@ -16,15 +16,16 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Tenant } from "../../../api/tenants/list";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
+import useVerifyUserEmail from "../../../api/user/email/verify";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
 import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { User, UserRecipeType } from "../../pages/usersList/types";
+import { FEATURE_NOT_ENABLED_TEXT, User, UserRecipeType } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
-import { UserDetailContextProvider, UserDetails, useUserDetailContext } from "./context/UserDetailContext";
+import { UserDetailContextProvider } from "./context/UserDetailContext";
 import { LoginMethods } from "./loginMethods/LoginMethods";
 import "./tenantList/UserTenantsList.scss";
 import "./userDetail.scss";
@@ -53,15 +54,32 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [sessionList, setSessionList] = useState<SessionInfo[] | undefined>(undefined);
 	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
 	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
+	const [isVerifyEmailFeatureEnabled, setIsVerifyEmailFeatureEnabled] = useState(false);
 
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
 	const { showModal } = useContext(PopupContentContext);
+	const { getUserEmailVerificationStatus } = useVerifyUserEmail();
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user);
-		setUserDetail(JSON.parse(JSON.stringify(userDetailsResponse)));
+		const parsedUserDetails = JSON.parse(JSON.stringify(userDetailsResponse)) as GetUserInfoResult;
+		try {
+			if (parsedUserDetails && parsedUserDetails.status === "OK") {
+				const res = await getUserEmailVerificationStatus(parsedUserDetails.user.loginMethods[0].recipeUserId);
+				if (res.status === "OK") {
+					setIsVerifyEmailFeatureEnabled(true);
+				}
+			}
+			// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			if (err.status === FEATURE_NOT_ENABLED_TEXT) {
+				setIsVerifyEmailFeatureEnabled(false);
+			}
+		} finally {
+			setUserDetail(parsedUserDetails);
+		}
 	}, []);
 
 	useEffect(() => {
@@ -252,7 +270,10 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 				<UserDetailInfoGrid {...props} />
 
-				<LoginMethods refetchAllData={refetchAllData} />
+				<LoginMethods
+					isVerifyEmailFeatureEnabled={isVerifyEmailFeatureEnabled}
+					refetchAllData={refetchAllData}
+				/>
 
 				<UserMetaDataSection />
 

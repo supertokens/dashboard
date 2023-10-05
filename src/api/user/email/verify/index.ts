@@ -17,7 +17,7 @@ const useVerifyUserEmail = (): IUseVerifyUserEmailService => {
 		const response = await fetchData({
 			url: getApiUrl("/api/user/email/verify"),
 			method: "GET",
-			query: { userId },
+			query: { recipeUserId: userId },
 		});
 
 		const body = await response.json();
