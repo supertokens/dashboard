@@ -1,19 +1,21 @@
 import React, { useCallback, useContext, useState } from "react";
 import useUserService, { UpdateUserInformationResponse, type IUpdateUserInformationArgs } from "../../../../api/user";
 import useDeleteUserService from "../../../../api/user/delete";
+import useVerifyUserEmail from "../../../../api/user/email/verify";
 import useVerifyUserTokenService from "../../../../api/user/email/verify/token";
 import usePasswordResetService from "../../../../api/user/password/reset";
 import useUnlinkService from "../../../../api/user/unlink";
 import { getImageUrl } from "../../../../utils";
 import { formatLongDate } from "../../../../utils/index";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
-import { UserRecipeType, type LoginMethod } from "../../../pages/usersList/types";
+import { FEATURE_NOT_ENABLED_TEXT, UserRecipeType, type LoginMethod } from "../../../pages/usersList/types";
 import CopyText from "../../copyText/CopyText";
 import { LayoutPanel } from "../../layout/layoutPanel";
 import TooltipContainer from "../../tooltip/tooltip";
 import { useUserDetailContext } from "../context/UserDetailContext";
 import {
 	getDeleteUserToast,
+	getInitlizeEmailVerificationRecipeTost,
 	getLoginMethodUnlinkConfirmationProps,
 	getSendEmailVerificationToast,
 	getUnlinkUserToast,
@@ -148,6 +150,7 @@ const Methods: React.FC<MethodProps> = ({
 	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
 	const { showModal, showToast } = useContext(PopupContentContext);
 	const [emailError, setEmailError] = useState("");
+	const { getUserEmailVerificationStatus } = useVerifyUserEmail();
 
 	const trim = (val: string) => {
 		const len = val.length;
@@ -156,6 +159,13 @@ const Methods: React.FC<MethodProps> = ({
 
 	const sendUserEmailVerification = useCallback(
 		async (userId: string, tenantId: string | undefined) => {
+			const res = await getUserEmailVerificationStatus(userId);
+
+			if (res.status === FEATURE_NOT_ENABLED_TEXT) {
+				showToast(getInitlizeEmailVerificationRecipeTost());
+				return;
+			}
+
 			const isSend = await sendUserEmailVerificationApi(userId, tenantId);
 			showToast(getSendEmailVerificationToast(isSend));
 			return isSend;
@@ -195,6 +205,12 @@ const Methods: React.FC<MethodProps> = ({
 		[showModal, loginMethod.recipeUserId, changePassword]
 	);
 	const changeEmailVerificationStatus = async () => {
+		const res = await getUserEmailVerificationStatus(loginMethod.recipeUserId);
+
+		if (res.status === FEATURE_NOT_ENABLED_TEXT) {
+			showToast(getInitlizeEmailVerificationRecipeTost());
+			return;
+		}
 		await onUpdateEmailVerificationStatusCallback(loginMethod.recipeUserId, !loginMethod.verified, undefined);
 		await refetchAllData();
 	};

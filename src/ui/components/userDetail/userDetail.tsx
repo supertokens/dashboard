@@ -24,7 +24,7 @@ import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
-import { UserDetailContextProvider, UserDetails, useUserDetailContext } from "./context/UserDetailContext";
+import { UserDetailContextProvider } from "./context/UserDetailContext";
 import { LoginMethods } from "./loginMethods/LoginMethods";
 import "./tenantList/UserTenantsList.scss";
 import "./userDetail.scss";
@@ -53,6 +53,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [sessionList, setSessionList] = useState<SessionInfo[] | undefined>(undefined);
 	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
 	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
@@ -63,10 +64,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		const userDetailsResponse = await getUser(user);
 		setUserDetail(JSON.parse(JSON.stringify(userDetailsResponse)));
 	}, []);
-
-	useEffect(() => {
-		void loadUserDetail();
-	}, [loadUserDetail]);
 
 	const { showToast } = useContext(PopupContentContext);
 
@@ -144,10 +141,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		}
 	}, []);
 
-	useEffect(() => {
-		void fetchUserMetaData();
-	}, [fetchUserMetaData]);
-
 	const fetchSession = useCallback(async () => {
 		let response = await getSessionsForUser(user);
 
@@ -158,10 +151,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		setSessionList(response);
 	}, []);
 
-	useEffect(() => {
-		void fetchSession();
-	}, [fetchSession]);
-
 	const showLoadingOverlay = () => {
 		setShowLoadingOverlay(true);
 	};
@@ -170,7 +159,27 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		setShowLoadingOverlay(false);
 	};
 
-	if (userDetail === undefined) {
+	const fetchData = async () => {
+		setIsLoading(true);
+		await loadUserDetail();
+		await fetchUserMetaData();
+		await fetchSession();
+		setIsLoading(false);
+	};
+
+	const refetchAllData = async () => {
+		setShowLoadingOverlay(true);
+		await loadUserDetail();
+		await fetchUserMetaData();
+		await fetchSession();
+		setShowLoadingOverlay(false);
+	};
+
+	useEffect(() => {
+		void fetchData();
+	}, []);
+
+	if (userDetail === undefined || isLoading) {
 		return (
 			<div className="user-detail-page-loader">
 				<div className="loader"></div>
@@ -206,13 +215,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		);
 	}
 
-	const refetchAllData = async () => {
-		setShowLoadingOverlay(true);
-		await loadUserDetail();
-		await fetchUserMetaData();
-		await fetchSession();
-		setShowLoadingOverlay(false);
-	};
 	const userFunctions = {
 		refetchAllData: refetchAllData,
 		updateUser: updateUser,

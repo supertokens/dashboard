@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.8.5] - 2023-10-5
+
+-   Fixes showing email verification UI even though it's not initialised.
+
 ## [0.8.4] - 2023-09-29
 
 -   Fixes dashboard signin form input styles issue.

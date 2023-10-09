@@ -633,6 +633,14 @@ export const getSendEmailVerificationToast = (isSuccessfull: boolean) => {
 	} as ToastNotificationProps;
 };
 
+export const getInitlizeEmailVerificationRecipeTost = () => {
+	return {
+		iconImage: getImageUrl("form-field-error-icon.svg"),
+		toastType: "error",
+		children: <>{"EmailVerification feature is not enabled"}</>,
+	} as ToastNotificationProps;
+};
+
 export const getEmailVerifiedToast = (isSuccessfull: boolean) => {
 	return {
 		iconImage: getImageUrl(isSuccessfull ? "checkmark-green.svg" : "form-field-error-icon.svg"),
