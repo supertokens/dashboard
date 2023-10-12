@@ -19,6 +19,8 @@ tags:
       description: APIs related to recording telemetry from the dashboard
     - name: "Multitenancy"
       description: APIs related to multitenancy
+    - name: "User Roles and Permissions"
+      description: APIs related to user roles and permisssions
 
 paths:
     /signin:
@@ -1267,6 +1269,38 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
+    /userroles/list:
+        get:
+            tags:
+                - User Roles and Permissions
+            summary: Get all created roles
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          roles:
+                                              type: array
+                                              items:
+                                                  type: string
+                                                  example: ["admin", "user"]
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "RECIPE_NOT_INITIALISED"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "NO_ROLES_FOUND"
 
 servers:
     # Added by API Auto Mocking Plugin
