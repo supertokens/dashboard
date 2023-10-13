@@ -1269,7 +1269,7 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
-    /userroles/list:
+    /userroles/roles:
         get:
             tags:
                 - User Roles and Permissions
@@ -1290,7 +1290,9 @@ paths:
                                               type: array
                                               items:
                                                   type: string
-                                                  example: ["admin", "user"]
+                                                  example:
+                                                      - "admin"
+                                                      - "user"
                                     - type: object
                                       properties:
                                           status:
@@ -1301,6 +1303,359 @@ paths:
                                           status:
                                               type: string
                                               default: "NO_ROLES_FOUND"
+    /userroles/role:
+        post:
+            tags:
+                - User Roles and Permissions
+            summary: Creates a role with permissions
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                roleName:
+                                    type: string
+                                    example: "admin"
+                                permissions:
+                                    type: array
+                                    items:
+                                        type: string
+                                        example:
+                                            - "read"
+                                            - "write"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNewRole:
+                                              type: boolean
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+        delete:
+            tags:
+                - User Roles and Permissions
+            summary: Deletes a role.
+            parameters:
+                - name: roleName
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: admin
+
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+    /userroles/role/permissions:
+        get:
+            tags:
+                - User Roles and Permissions
+            summary: Get permissions associated with a role
+            parameters:
+                - name: roleName
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "admin"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          permissions:
+                                              type: array
+                                              items:
+                                                  type: string
+                                                  example:
+                                                      - "read"
+                                                      - "write"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "NO_ROLE_FOUND"
+        put:
+            tags:
+                - User Roles and Permissions
+            summary: Adds new permissions to a role
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                roleName:
+                                    type: string
+                                    example: "admin"
+                                permission:
+                                    type: string
+                                    example: "readonly"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNewRole:
+                                              type: boolean
+                                              example: false
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+    /userroles/role/permissions/remove:
+        put:
+            tags:
+                - User Roles and Permissions
+            summary: Remove permissions associated with a role
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                roleName:
+                                    type: string
+                                    example: "admin"
+                                permission:
+                                    type: string
+                                    example: "readonly"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNewRole:
+                                              type: boolean
+                                              example: false
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+    /userroles/<appId>/user/roles:
+        get:
+            tags:
+                - User Roles and Permissions
+            summary: Get all roles that are assigned to a user
+            parameters:
+                - name: roleName
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "admin"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          permissions:
+                                              type: array
+                                              items:
+                                                  type: string
+                                                  example:
+                                                      - "read"
+                                                      - "write"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "NO_ROLE_FOUND"
+        put:
+            tags:
+                - User Roles and Permissions
+            summary: Add a new role to a user
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                userId:
+                                    type: string
+                                    example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                roleName:
+                                    type: string
+                                    example: "admin"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          didUserAlreadyHaveRole:
+                                              type: boolean
+                                              example: false
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+        delete:
+            tags:
+                - User Roles and Permissions
+            summary: Remove a role assigned to a user
+            parameters:
+                - name: userId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                - name: roleName
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "admin"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          didUserAlreadyHaveRole:
+                                              type: boolean
+                                              example: false
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
 
 servers:
     # Added by API Auto Mocking Plugin
