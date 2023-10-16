@@ -1289,20 +1289,21 @@ paths:
                                           roles:
                                               type: array
                                               items:
-                                                  type: string
-                                                  example:
-                                                      - "admin"
-                                                      - "user"
+                                                  type: object
+                                                  properties:
+                                                      role:
+                                                          type: string
+                                                          default: "admin"
+                                                      permissions:
+                                                          type: array
+                                                          items:
+                                                              type: string
+                                                              default: "read"
                                     - type: object
                                       properties:
                                           status:
                                               type: string
-                                              default: "RECIPE_NOT_INITIALISED"
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "NO_ROLES_FOUND"
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
     /userroles/role:
         post:
             tags:
@@ -1314,7 +1315,7 @@ paths:
                         schema:
                             type: object
                             properties:
-                                roleName:
+                                role:
                                     type: string
                                     example: "admin"
                                 permissions:
@@ -1336,8 +1337,11 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
-                                          createdNewRole:
-                                              type: boolean
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "ROLE_ALREADY_EXITS"
                 401:
                     description: Unauthorised access
                     content:
@@ -1359,7 +1363,7 @@ paths:
                 - User Roles and Permissions
             summary: Deletes a role.
             parameters:
-                - name: roleName
+                - name: role
                   in: query
                   required: true
                   schema:
@@ -1378,6 +1382,11 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "ROLE_DO_NOT_EXISTS"
                 401:
                     description: Unauthorised access
                     content:
@@ -1400,7 +1409,7 @@ paths:
                 - User Roles and Permissions
             summary: Get permissions associated with a role
             parameters:
-                - name: roleName
+                - name: role
                   in: query
                   required: true
                   schema:
@@ -1422,14 +1431,6 @@ paths:
                                               type: array
                                               items:
                                                   type: string
-                                                  example:
-                                                      - "read"
-                                                      - "write"
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "NO_ROLE_FOUND"
         put:
             tags:
                 - User Roles and Permissions
@@ -1440,12 +1441,13 @@ paths:
                         schema:
                             type: object
                             properties:
-                                roleName:
+                                role:
                                     type: string
                                     example: "admin"
-                                permission:
-                                    type: string
-                                    example: "readonly"
+                                permissions:
+                                    type: array
+                                    items:
+                                        type: string
             responses:
                 200:
                     description: Success
@@ -1488,12 +1490,13 @@ paths:
                         schema:
                             type: object
                             properties:
-                                roleName:
+                                role:
                                     type: string
                                     example: "admin"
-                                permission:
-                                    type: string
-                                    example: "readonly"
+                                permissions:
+                                    type: array
+                                    items:
+                                        type: string
             responses:
                 200:
                     description: Success
@@ -1506,9 +1509,11 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
-                                          createdNewRole:
-                                              type: boolean
-                                              example: false
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_ROLE_ERROR"
                 401:
                     description: Unauthorised access
                     content:
@@ -1525,18 +1530,24 @@ paths:
                                 type: string
                                 enum:
                                     - Method not supported
-    /userroles/<appId>/user/roles:
+    /userroles/user/roles:
         get:
             tags:
                 - User Roles and Permissions
             summary: Get all roles that are assigned to a user
             parameters:
-                - name: roleName
+                - name: userId
                   in: query
                   required: true
                   schema:
                       type: string
-                      example: "admin"
+                      example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                - name: tenantId
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                      example: "public"
             responses:
                 200:
                     description: Success
@@ -1570,13 +1581,17 @@ paths:
                     application/json:
                         schema:
                             type: object
+                            required: ["userId", "role"]
                             properties:
                                 userId:
                                     type: string
                                     example: "fa7a0841-b533-4478-95533-0fde890c3483"
-                                roleName:
+                                role:
                                     type: string
                                     example: "admin"
+                                tenantId:
+                                    type: string
+                                    example: "public"
             responses:
                 200:
                     description: Success
@@ -1589,9 +1604,16 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
-                                          didUserAlreadyHaveRole:
-                                              type: boolean
-                                              example: false
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_ROLE_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "ROLE_ALREADY_ASSIGNED"
                 401:
                     description: Unauthorised access
                     content:
@@ -1619,7 +1641,7 @@ paths:
                   schema:
                       type: string
                       example: "fa7a0841-b533-4478-95533-0fde890c3483"
-                - name: roleName
+                - name: role
                   in: query
                   required: true
                   schema:
@@ -1637,9 +1659,12 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
-                                          didUserAlreadyHaveRole:
-                                              type: boolean
-                                              example: false
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_ROLE_ERROR"
+
                 401:
                     description: Unauthorised access
                     content:
