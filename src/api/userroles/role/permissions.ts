@@ -23,10 +23,16 @@ export const usePermissionsService = () => {
 		};
 	};
 
-	const addPermissionsToRole = async (): Promise<boolean> => {
+	const addPermissionsToRole = async (role: string, permissions: string[]): Promise<boolean> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role/permissions"),
 			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					role,
+					permissions,
+				}),
+			},
 		});
 
 		if (response.ok) {
@@ -36,12 +42,21 @@ export const usePermissionsService = () => {
 		return false;
 	};
 
-	const removePermissionsFromRole = async (): Promise<{
+	const removePermissionsFromRole = async (
+		role: string,
+		permissions: string[]
+	): Promise<{
 		status: "OK" | "UNKNOWN_ROLE_ERROR";
 	}> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role/permissions/remove"),
-			method: "DELETE",
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					role,
+					permissions,
+				}),
+			},
 		});
 
 		if (response.ok) {

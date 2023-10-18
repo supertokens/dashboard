@@ -53,12 +53,21 @@ export const useRolesService = () => {
 		};
 	};
 
-	const createRole = async (): Promise<{
+	const createRole = async (
+		role: string,
+		permissions: string[]
+	): Promise<{
 		status: "OK" | "ROLE_ALREADY_EXITS";
 	}> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role"),
 			method: "POST",
+			config: {
+				body: JSON.stringify({
+					role,
+					permissions,
+				}),
+			},
 		});
 
 		if (response.ok) {
@@ -76,10 +85,13 @@ export const useRolesService = () => {
 		};
 	};
 
-	const deleteRole = async (): Promise<void> => {
+	const deleteRole = async (role: string): Promise<void> => {
 		await fetchData({
 			url: getApiUrl("/api/userroles/role"),
 			method: "DELETE",
+			query: {
+				role,
+			},
 		});
 	};
 
