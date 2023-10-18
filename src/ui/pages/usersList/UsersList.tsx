@@ -85,6 +85,8 @@ export const UsersList: React.FC<UserListProps> = ({
 		useTenantsListContext();
 	const selectedTenant = getSelectedTenant();
 
+	const navigate = useNavigate();
+
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: User[], paramOffset?: number, isSearch?: boolean) => {
 			if (isSearch) {
@@ -260,6 +262,11 @@ export const UsersList: React.FC<UserListProps> = ({
 			/>
 			<h1 className="users-list-title">
 				User Management <span className="pill paid-feature-badge">Beta</span>
+				<button
+					onClick={() => navigate("/roles")}
+					className="pill paid-feature-badge">
+					Roles
+				</button>
 			</h1>
 			<p className="text-small users-list-subtitle">
 				One place to manage all your users, revoke access and edit information according to your needs.
@@ -327,7 +334,6 @@ export const UserListPage = () => {
 	const navigate = useNavigate();
 	const currentLocation = useLocation();
 	const [selectedUser, setSelectedUser] = useState<string>();
-	const [selectedRecipeId, setSelectedRecipeId] = useState<string>();
 	const [selectedUserEmailVerification, setSelectedUserEmailVerification] = useState<
 		EmailVerificationStatus | undefined
 	>();

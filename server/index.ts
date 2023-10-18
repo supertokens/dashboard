@@ -26,6 +26,7 @@ import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
 import ThirdParty from "supertokens-node/recipe/thirdparty";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
+import UserRoles from "supertokens-node/recipe/userroles";
 
 const websiteDomain = "http://localhost:3000";
 
@@ -35,7 +36,7 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "try.supertokens.com",
+		connectionURI: "http://localhost:3567",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",
@@ -45,7 +46,6 @@ SuperTokens.init({
 	},
 	recipeList: [
 		Dashboard.init({
-			apiKey: "test",
 			// Keep this so that the dev server uses api key based login
 			override: {
 				functions: (original) => {
@@ -88,6 +88,7 @@ SuperTokens.init({
 		}),
 		Session.init(),
 		AccountLinking.init(),
+		UserRoles.init(),
 	],
 });
 

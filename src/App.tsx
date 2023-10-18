@@ -29,6 +29,7 @@ import { ToastNotificationContainer } from "./ui/components/toast/toastNotificat
 import { AccessDeniedContextProvider } from "./ui/contexts/AccessDeniedContext";
 import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
 import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
+import UserRolesList from "./ui/pages/userroles";
 
 function App() {
 	return (
@@ -45,6 +46,10 @@ function App() {
 										<Route
 											path="/"
 											element={<UsersListPage />}
+										/>
+										<Route
+											path="/roles"
+											element={<UserRolesList />}
 										/>
 										<Route
 											path="*"
