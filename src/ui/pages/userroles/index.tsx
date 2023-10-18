@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import useRolesService from "../../../api/userroles/roles";
+import useRolesService from "../../../api/userroles/role";
 import { Footer } from "../../components/footer/footer";
 import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
 

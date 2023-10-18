@@ -13,9 +13,10 @@
  * under the License.
  */
 
-import { getApiUrl, useFetchData } from "../../utils";
+import { getApiUrl, useFetchData } from "../../../utils";
 
 type Roles = Array<{ role: string; permissions: string[] }>;
+
 type GetRolesResponse =
 	| {
 			status: "OK";
