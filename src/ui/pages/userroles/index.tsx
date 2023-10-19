@@ -18,6 +18,7 @@ import useRolesService from "../../../api/userroles/role";
 import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
 
 import { usePermissionsService } from "../../../api/userroles/role/permissions";
+import { RolesTable } from "../../components/userroles/components/RolesTable";
 import "./index.scss";
 
 export default function UserRolesList() {
@@ -70,115 +71,14 @@ export default function UserRolesList() {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(window as any).connectionURI
 			}>
-			<section className="userroles-container">
-				<div
-					style={{
-						marginBottom: "35px",
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "start",
-						alignItems: "start",
-						gap: "10px",
-					}}>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "start",
-							alignItems: "start",
-							gap: "10px",
-						}}>
-						<label
-							style={{ fontSize: "14px" }}
-							htmlFor="role">
-							Enter role name
-						</label>
-						<input
-							type="text"
-							name="role"
-							id="role"
-							placeholder="admin"
-						/>
-					</div>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "start",
-							alignItems: "start",
-							gap: "10px",
-						}}>
-						<label
-							style={{ fontSize: "14px" }}
-							htmlFor="permissions">
-							Enter Permissions seperated with ","
-						</label>
-						<input
-							type="text"
-							name="permissions"
-							id="permissions"
-							placeholder="read,write"
-						/>
-					</div>
-
-					<button onClick={handleCreateRole}>create role</button>
-				</div>
-				<div>
-					<ul>
-						{roles.map(({ permissions, role }) => {
-							const permissionsInputId = "add-permissions-" + role;
-							return (
-								<li
-									key={role}
-									style={{ marginBottom: "40px" }}>
-									{role}:
-									<span
-										onClick={() => handleDeleteRole(role)}
-										style={{ color: "red", marginLeft: "40px", cursor: "pointer" }}>
-										delete
-									</span>
-									<ul style={{ color: "green", marginLeft: "40px", cursor: "pointer" }}>
-										{permissions.map((permission) => {
-											return (
-												<li key={permission}>
-													{permission}:{" "}
-													<span
-														onClick={() => handleDeletePermissions(role, permission)}
-														style={{
-															fontSize: "10px",
-															color: "red",
-															marginLeft: "40px",
-															cursor: "pointer",
-														}}>
-														delete
-													</span>
-												</li>
-											);
-										})}
-										<input
-											type="text"
-											name={permissionsInputId}
-											id={permissionsInputId}
-											placeholder="read,write"
-										/>
-										<button
-											onClick={() => handleAddPermissions(role, permissionsInputId)}
-											style={{ marginTop: "10px", marginLeft: "5px" }}>
-											+ permissions
-										</button>
-									</ul>
-								</li>
-							);
-						})}
-						{roles.length === 0 ? <>No Roles found, please create one</> : null}
-					</ul>
-				</div>
-			</section>
-			{/* <Footer
-				colorMode="dark"
-				horizontalAlignment="center"
-				verticalAlignment="center"
-			/> */}
+			<div className="userroles-container">
+				<h1 className="users-list-title">Roles and Permissions</h1>
+				<p className="text-small users-list-subtitle">
+					One place to manage all your user Roles and Permissions. Edit roles and permissions according to
+					your needs.
+				</p>
+				<RolesTable />
+			</div>
 		</AppEnvContextProvider>
 	);
 }

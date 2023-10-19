@@ -18,6 +18,12 @@
  *
  * Note: Never use local imports or relative paths when using images in src etc
  */
+import "./assets/ST_full_logo_dark_theme.svg";
+import "./assets/ST_full_logo_light_theme.svg";
+import "./assets/ST_icon_dark_theme.svg";
+import "./assets/ST_icon_light_theme.svg";
+import "./assets/Union-yellow.png";
+import "./assets/Union.png";
 import "./assets/auth-background-portrait.png";
 import "./assets/auth-background.png";
 import "./assets/auth-method.svg";
@@ -32,7 +38,9 @@ import "./assets/chevron-up-selected.svg";
 import "./assets/clear.svg";
 import "./assets/close.svg";
 import "./assets/copy.svg";
+import "./assets/delete-login-method.png";
 import "./assets/delete.svg";
+import "./assets/edit-login-method.png";
 import "./assets/edit.svg";
 import "./assets/email.svg";
 import "./assets/envelope-green.svg";
@@ -56,18 +64,12 @@ import "./assets/provider-facebook.svg";
 import "./assets/provider-github.svg";
 import "./assets/provider-google.svg";
 import "./assets/right_arrow_icon.svg";
+import "./assets/roles-and-permissions.svg";
 import "./assets/search.png";
 import "./assets/star_sparkle.svg";
-import "./assets/ST_full_logo_dark_theme.svg";
-import "./assets/ST_full_logo_light_theme.svg";
-import "./assets/ST_icon_dark_theme.svg";
-import "./assets/ST_icon_light_theme.svg";
 import "./assets/trash-opened.svg";
 import "./assets/trash.svg";
 import "./assets/triangle-down.svg";
-import "./logo.svg";
-import "./assets/Union.png";
-import "./assets/Union-yellow.png";
-import "./assets/delete-login-method.png";
-import "./assets/edit-login-method.png";
 import "./assets/unlink-login-method.png";
+import "./assets/user-managment.svg";
+import "./logo.svg";

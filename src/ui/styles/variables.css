@@ -23,6 +23,9 @@ body {
 	--color-black: rgb(34, 34, 34);
 	--color-window-bg: rgb(248, 248, 248);
 
+	--color-secondary: rgb(0, 122, 255);
+	--color-secondary-shadow: rgba(0, 122, 255, 0.16);
+
 	/* Background Colors */
 	--color-loader-placeholder-bg: rgba(110, 106, 101, 0.4);
 	--color-shadow: rgba(0, 0, 0, 0.16);
@@ -83,6 +86,7 @@ body {
 	--color-button-error-border: rgb(222, 35, 61);
 	--color-button-error-disabled: rgb(221, 221, 221);
 	--color-button-error-hover: rgb(222, 35, 61);
+	--color-button-error-shadow: rgba(237, 52, 78, 0.16);
 
 	/* Z-index value for different of popup element */
 	--z-index-inline-popup: 1;
@@ -94,6 +98,10 @@ body {
 
 	/* Sizes */
 	--sidebar-width: 240px;
+
+	--container-width: 842px;
+
+	--test: 1024px;
 }
 
 *[data-theme="dark"] {

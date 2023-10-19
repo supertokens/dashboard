@@ -13,22 +13,20 @@
  * under the License.
  */
 
-.userroles-container {
-	max-width: var(--container-width);
-	height: 100vh;
-	padding: 72px 40px 48px;
-	margin: auto;
+import "./button.scss";
 
-	.userroles-title {
-		font-size: 28px;
-		line-height: 34px;
-		color: var(--color-black);
-		margin-bottom: 16px;
-		font-weight: 500;
-	}
+type ButtonProps = {
+	color?: "primary" | "secondary" | "danger" | "outline" | "danger-outline";
+	size?: "sm" | "md" | "lg";
+} & JSX.IntrinsicElements["button"];
 
-	.userroles-subtitle {
-		color: var(--color-secondary-text);
-		margin-bottom: 48px;
-	}
+export default function Button(props: ButtonProps) {
+	const { color = "primary", size = "md", className = "", children, ...rest } = props;
+	return (
+		<button
+			className={`btn ${size} ${color}`}
+			{...rest}>
+			{children}
+		</button>
+	);
 }

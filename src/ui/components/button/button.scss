@@ -1,0 +1,73 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.btn {
+	display: flex;
+	align-items: center;
+	font-weight: 600;
+	border-radius: 6px;
+	font-family: inherit;
+	cursor: pointer;
+
+	&.primary {
+		background-color: var(--color-primary);
+		border: 1px solid var(--color-primary-darker);
+		color: var(--color-white);
+		box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.15);
+	}
+
+	&.danger {
+		border: 1px solid var(--color-button-error-border);
+		background: var(--color-button-error);
+		color: var(--color-white);
+		box-shadow: 0px 3px 6px 0px var(--color-button-error-shadow);
+	}
+
+	&.danger-outline {
+		border: 1px solid var(--color-button-error-border);
+		background: var(--color-white);
+		color: var(--color-button-error);
+	}
+
+	&.secondary {
+		border: 1px solid var(--color-secondary);
+		background: var(--color-secondary);
+		color: var(--color-white);
+	}
+
+	&.outline {
+		border: 1px solid var(--color-black);
+		background: var(--color-white);
+		color: var(--color-black);
+	}
+
+	&.sm {
+		padding: 6px 8px;
+		font-size: 14px;
+		line-height: normal;
+	}
+
+	&.md {
+		padding: 8px 16px;
+		font-size: 16px;
+		line-height: 16px;
+	}
+
+	&.lg {
+		padding: 8px 16px;
+		font-size: 16px;
+		line-height: 20px;
+	}
+}

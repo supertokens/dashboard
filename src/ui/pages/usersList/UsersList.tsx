@@ -85,8 +85,6 @@ export const UsersList: React.FC<UserListProps> = ({
 		useTenantsListContext();
 	const selectedTenant = getSelectedTenant();
 
-	const navigate = useNavigate();
-
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: User[], paramOffset?: number, isSearch?: boolean) => {
 			if (isSearch) {
@@ -454,11 +452,6 @@ export const UserListPage = () => {
 				onChangePasswordCallback={changePassword}
 				onDeleteCallback={({ id }) => onUserDelete(id)}
 			/>
-			{/* <Footer
-				colorMode="dark"
-				horizontalAlignment="center"
-				verticalAlignment="center"
-			/> */}
 		</AppEnvContextProvider>
 	);
 };
