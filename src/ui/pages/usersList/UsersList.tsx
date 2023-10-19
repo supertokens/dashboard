@@ -26,7 +26,7 @@ import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
 import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
-import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
+import { LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
 import Search from "../../components/search";
@@ -262,11 +262,6 @@ export const UsersList: React.FC<UserListProps> = ({
 			/>
 			<h1 className="users-list-title">
 				User Management <span className="pill paid-feature-badge">Beta</span>
-				<button
-					onClick={() => navigate("/roles")}
-					className="pill paid-feature-badge">
-					Roles
-				</button>
 			</h1>
 			<p className="text-small users-list-subtitle">
 				One place to manage all your users, revoke access and edit information according to your needs.
@@ -459,11 +454,11 @@ export const UserListPage = () => {
 				onChangePasswordCallback={changePassword}
 				onDeleteCallback={({ id }) => onUserDelete(id)}
 			/>
-			<Footer
+			{/* <Footer
 				colorMode="dark"
 				horizontalAlignment="center"
 				verticalAlignment="center"
-			/>
+			/> */}
 		</AppEnvContextProvider>
 	);
 };

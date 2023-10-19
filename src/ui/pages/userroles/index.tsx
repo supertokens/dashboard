@@ -15,7 +15,6 @@
 
 import { useEffect, useState } from "react";
 import useRolesService from "../../../api/userroles/role";
-import { Footer } from "../../components/footer/footer";
 import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
 
 import { usePermissionsService } from "../../../api/userroles/role/permissions";
@@ -175,11 +174,11 @@ export default function UserRolesList() {
 					</ul>
 				</div>
 			</section>
-			<Footer
+			{/* <Footer
 				colorMode="dark"
 				horizontalAlignment="center"
 				verticalAlignment="center"
-			/>
+			/> */}
 		</AppEnvContextProvider>
 	);
 }

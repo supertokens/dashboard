@@ -91,6 +91,9 @@ body {
 	--color-popup-item-hover: rgb(240, 240, 240);
 	--color-popup-item-delete-hover: rgba(222, 35, 61, 0.12);
 	--color-button-outline-hover: rgb(250, 250, 250);
+
+	/* Sizes */
+	--sidebar-width: 240px;
 }
 
 *[data-theme="dark"] {

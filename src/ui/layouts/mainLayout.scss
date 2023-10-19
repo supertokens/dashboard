@@ -1,0 +1,8 @@
+.main-layout-container {
+	display: block;
+
+	.main-content {
+		margin-left: var(--sidebar-width);
+		min-height: 100vh;
+	}
+}
