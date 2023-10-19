@@ -1,22 +1,38 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
 import { getApiUrl, useFetchData } from "../../../utils";
 
 export const useUserRolesService = () => {
 	const fetchData = useFetchData();
 
-	const addRoleToUser = async (): Promise<
-		| {
-				status: "OK";
-		  }
-		| {
-				status: "UNKNOWN_ROLE_ERROR";
-		  }
-		| {
-				status: "ROLE_ALREADY_ASSIGNED";
-		  }
-	> => {
+	const addRoleToUser = async (
+		userId: string,
+		role: string
+	): Promise<{
+		status: "OK" | "UNKNOWN_ROLE_ERROR" | "ROLE_ALREADY_ASSIGNED";
+	}> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/userroles/roles"),
+			url: getApiUrl("/api/userroles/user/roles"),
 			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					userId,
+					role,
+				}),
+			},
 		});
 
 		if (response.ok) {
@@ -29,18 +45,23 @@ export const useUserRolesService = () => {
 		};
 	};
 
-	const getRolesForUser = async (): Promise<
+	const getRolesForUser = async (
+		userId: string
+	): Promise<
 		| {
 				status: "OK";
 				roles: string[];
 		  }
 		| {
-				status: "UNKNOWN_ROLE_ERROR" | "FEATURE_NOT_ENABLED_ERROR";
+				status: "FEATURE_NOT_ENABLED_ERROR";
 		  }
 	> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/userroles/roles"),
+			url: getApiUrl("/api/userroles/user/roles"),
 			method: "GET",
+			query: {
+				userId,
+			},
 		});
 
 		if (response.ok) {
@@ -54,7 +75,10 @@ export const useUserRolesService = () => {
 		};
 	};
 
-	const removeUserRole = async (): Promise<
+	const removeUserRole = async (
+		userId: string,
+		role: string
+	): Promise<
 		| {
 				status: "OK";
 		  }
@@ -63,8 +87,12 @@ export const useUserRolesService = () => {
 		  }
 	> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/userroles/roles"),
+			url: getApiUrl("/api/userroles/user/roles"),
 			method: "DELETE",
+			query: {
+				userId,
+				role,
+			},
 		});
 
 		if (response.ok) {

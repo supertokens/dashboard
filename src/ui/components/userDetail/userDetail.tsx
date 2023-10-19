@@ -18,6 +18,7 @@ import { Tenant } from "../../../api/tenants/list";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
+import { useUserRolesService } from "../../../api/userroles/user/roles";
 import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
@@ -54,10 +55,12 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
 	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const [userRoles, setUserRoles] = useState<string[]>([]);
 
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
+	const { addRoleToUser, getRolesForUser, removeUserRole } = useUserRolesService();
 	const { showModal } = useContext(PopupContentContext);
 
 	const loadUserDetail = useCallback(async () => {
@@ -151,6 +154,25 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		setSessionList(response);
 	}, []);
 
+	async function fetchUserRoles() {
+		const response = await getRolesForUser(user);
+		if (response.status === "OK") {
+			setUserRoles(response.roles);
+		}
+
+		if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+			alert("feature not enabled");
+		}
+	}
+
+	async function handleRemoveRole(role: string) {
+		await removeUserRole(user, role);
+	}
+
+	async function handleAddRole(role: string) {
+		await addRoleToUser(user, role);
+	}
+
 	const showLoadingOverlay = () => {
 		setShowLoadingOverlay(true);
 	};
@@ -164,12 +186,14 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		await loadUserDetail();
 		await fetchUserMetaData();
 		await fetchSession();
+		await fetchUserRoles();
 		setIsLoading(false);
 	};
 
 	const refetchAllData = async () => {
 		setShowLoadingOverlay(true);
 		await loadUserDetail();
+		await fetchUserRoles();
 		await fetchUserMetaData();
 		await fetchSession();
 		setShowLoadingOverlay(false);
@@ -249,6 +273,27 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 					</button>
 				</div>
 				<UserDetailHeader {...props} />
+
+				<div style={{ background: "gray", padding: "24px", borderRadius: "8px" }}>
+					<div>
+						{userRoles.length === 0 ? "Roles are not available" : null}
+						<ul>
+							{userRoles.map((role) => {
+								return (
+									<li
+										key={role}
+										style={{ background: "white", padding: "5px", color: "black" }}>
+										{role}
+									</li>
+								);
+							})}
+						</ul>
+					</div>
+					<div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+						<button onClick={() => handleAddRole("admin")}>add role</button>
+						<button onClick={() => handleRemoveRole("admin")}>remove role</button>
+					</div>
+				</div>
 
 				{/* {userDetail.user.tenantIds.length > 0 && <UserTenantsList tenantIds={userDetail.user.tenantIds} />}*/}
 
