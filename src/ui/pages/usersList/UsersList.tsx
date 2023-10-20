@@ -26,7 +26,6 @@ import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
 import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
-import { LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
 import Search from "../../components/search";
@@ -253,11 +252,6 @@ export const UsersList: React.FC<UserListProps> = ({
 		<div
 			className="users-list"
 			style={css}>
-			<img
-				className="title-image"
-				src={LOGO_ICON_LIGHT}
-				alt="Auth Page"
-			/>
 			<h1 className="users-list-title">
 				User Management <span className="pill paid-feature-badge">Beta</span>
 			</h1>

@@ -13,28 +13,16 @@
  * under the License.
  */
 
-.userroles-container {
-	max-width: var(--container-width);
-	height: 100vh;
-	padding: 72px 0px 0px;
-	margin: auto;
+.st-header {
+	position: fixed;
+	width: 100%;
+	z-index: 100;
 
-	.userroles-title {
-		font-size: 28px;
-		line-height: 34px;
-		color: var(--color-black);
-		margin-bottom: 16px;
-		font-weight: 500;
-	}
+	display: flex;
+	padding: 16px 18px;
+	justify-content: space-between;
+	align-items: center;
 
-	.userroles-subtitle {
-		color: var(--color-secondary-text);
-		margin-bottom: 48px;
-	}
-}
-
-@media (max-width: 1024px) {
-	.userroles-container {
-		padding: 72px 40px 48px;
-	}
+	background: #fff;
+	box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.16);
 }

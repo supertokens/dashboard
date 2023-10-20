@@ -19,7 +19,6 @@ import { getDashboardAppBasePath } from "./utils";
 
 // This is to make sure that images are packed in the build folder
 import "./images";
-import SignOutBtn from "./ui/components/auth/SignOutBtn";
 import AuthWrapper from "./ui/components/authWrapper";
 import ErrorBoundary from "./ui/components/errorboundary";
 import { AccessDeniedModal } from "./ui/components/layout/accessDeniedModal";
@@ -29,6 +28,7 @@ import { ToastNotificationContainer } from "./ui/components/toast/toastNotificat
 import { AccessDeniedContextProvider } from "./ui/contexts/AccessDeniedContext";
 import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
 import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
+import MainLayout from "./ui/layouts/mainLayout";
 import UserRolesList from "./ui/pages/userroles";
 
 function App() {
@@ -41,21 +41,22 @@ function App() {
 						<TenantsListContextProvider>
 							<AuthWrapper>
 								<Router basename={getDashboardAppBasePath()}>
-									<SignOutBtn />
-									<Routes>
-										<Route
-											path="/"
-											element={<UsersListPage />}
-										/>
-										<Route
-											path="/roles"
-											element={<UserRolesList />}
-										/>
-										<Route
-											path="*"
-											element={<UsersListPage />}
-										/>
-									</Routes>
+									<MainLayout>
+										<Routes>
+											<Route
+												path="/"
+												element={<UsersListPage />}
+											/>
+											<Route
+												path="/roles"
+												element={<UserRolesList />}
+											/>
+											<Route
+												path="*"
+												element={<UsersListPage />}
+											/>
+										</Routes>
+									</MainLayout>
 								</Router>
 								<AccessDeniedModal />
 								<ToastNotificationContainer />

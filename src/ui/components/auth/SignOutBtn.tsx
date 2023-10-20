@@ -1,13 +1,14 @@
 import useAuthService from "../../../api";
+import Button from "../button";
 import "./SignOutBtn.scss";
 const SignOutBtn = () => {
 	const { logout } = useAuthService();
 	return (
-		<button
-			id="sign-out-btn"
+		<Button
+			color="outline"
 			onClick={logout}>
 			Sign Out
-		</button>
+		</Button>
 	);
 };
 

@@ -1,5 +1,4 @@
 import React from "react";
-import MainLayout from "../layouts/mainLayout";
 
 interface IAppEnvContext {
 	connectionURI: string;
@@ -32,9 +31,5 @@ export const AppEnvContextProvider: React.FC<IAppEnvContextProviderProps> = ({ c
 		isDemoConnectionURI: isDemoConnectionUri(connectionURI),
 	};
 
-	return (
-		<AppEnvContext.Provider value={contextValue}>
-			<MainLayout>{children}</MainLayout>
-		</AppEnvContext.Provider>
-	);
+	return <AppEnvContext.Provider value={contextValue}>{children}</AppEnvContext.Provider>;
 };

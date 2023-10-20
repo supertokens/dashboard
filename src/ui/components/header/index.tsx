@@ -13,28 +13,22 @@
  * under the License.
  */
 
-.userroles-container {
-	max-width: var(--container-width);
-	height: 100vh;
-	padding: 72px 0px 0px;
-	margin: auto;
+import { getImageUrl } from "../../../utils";
+import SignOutBtn from "../auth/SignOutBtn";
 
-	.userroles-title {
-		font-size: 28px;
-		line-height: 34px;
-		color: var(--color-black);
-		margin-bottom: 16px;
-		font-weight: 500;
-	}
+import "./header.scss";
 
-	.userroles-subtitle {
-		color: var(--color-secondary-text);
-		margin-bottom: 48px;
-	}
-}
+export const LOGO_LIGHT = getImageUrl("ST_icon_light_theme.svg");
 
-@media (max-width: 1024px) {
-	.userroles-container {
-		padding: 72px 40px 48px;
-	}
+export default function Header() {
+	return (
+		<header className="st-header">
+			<img
+				className="logo"
+				src={LOGO_LIGHT}
+				alt="Supertokens"
+			/>
+			<SignOutBtn />
+		</header>
+	);
 }
