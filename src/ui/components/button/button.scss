@@ -16,10 +16,24 @@
 .btn {
 	display: flex;
 	align-items: center;
-	font-weight: 600;
+	gap: 6px;
+	font-weight: 500;
 	border-radius: 6px;
 	font-family: inherit;
 	cursor: pointer;
+
+	&.gray {
+		background: #ddd;
+		color: var(--color-white);
+		border: 1px solid #ddd;
+		border: none;
+	}
+
+	&.gray-outline {
+		background-color: var(--color-white);
+		border: 1px solid var(--color-gray);
+		color: var(--color-secondary-text);
+	}
 
 	&.primary {
 		background-color: var(--color-primary);
@@ -45,6 +59,7 @@
 		border: 1px solid var(--color-secondary);
 		background: var(--color-secondary);
 		color: var(--color-white);
+		box-shadow: 0px 3px 6px 0px var(--color-secondary-shadow);
 	}
 
 	&.outline {
@@ -60,14 +75,18 @@
 	}
 
 	&.md {
-		padding: 8px 16px;
-		font-size: 16px;
+		padding: 10px 16px;
+		font-size: 14px;
 		line-height: 16px;
 	}
 
 	&.lg {
-		padding: 8px 16px;
+		padding: 10px 16px;
 		font-size: 16px;
 		line-height: 20px;
+	}
+
+	&:hover:not(:disabled):not(.gray) {
+		opacity: 0.9;
 	}
 }

@@ -1,3 +1,4 @@
+import Badge from "../../badge";
 import Button from "../../button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
 
@@ -5,7 +6,7 @@ import "./rolesTable.scss";
 
 export function RolesTable() {
 	return (
-		<Table>
+		<Table className="theme-blue">
 			<TableHeader>
 				<TableRow>
 					<TableHead className="roles-column">
@@ -22,8 +23,7 @@ export function RolesTable() {
 						<div className="delete-btn-container">
 							Permissions
 							<Button
-								style={{ marginLeft: "auto" }}
-								color="danger"
+								color="gray"
 								size="sm">
 								Delete
 							</Button>
@@ -43,7 +43,14 @@ export function RolesTable() {
 							Role1
 						</div>
 					</TableCell>
-					<TableCell>Item</TableCell>
+					<TableCell>
+						<div className="permissions-container">
+							<Badge>Permissions</Badge>
+							<Badge>Permissions</Badge>
+							<Badge>Permissions</Badge>
+							<Badge>Permissions</Badge>
+						</div>
+					</TableCell>
 				</TableRow>
 				<TableRow>
 					<TableCell>
@@ -56,7 +63,12 @@ export function RolesTable() {
 							Role2
 						</div>
 					</TableCell>
-					<TableCell>Item</TableCell>
+					<TableCell>
+						<div className="permissions-container">
+							<Badge>User</Badge>
+							<Badge>Admin</Badge>
+						</div>
+					</TableCell>
 				</TableRow>
 			</TableBody>
 		</Table>

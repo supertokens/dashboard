@@ -22,9 +22,11 @@ body {
 	--color-white: rgb(255, 255, 255);
 	--color-black: rgb(34, 34, 34);
 	--color-window-bg: rgb(248, 248, 248);
+	--color-gray: rgba(170, 170, 170, 1);
 
 	--color-secondary: rgb(0, 122, 255);
 	--color-secondary-shadow: rgba(0, 122, 255, 0.16);
+	--color-secondary-light: rgba(244, 248, 253, 1);
 
 	/* Background Colors */
 	--color-loader-placeholder-bg: rgba(110, 106, 101, 0.4);

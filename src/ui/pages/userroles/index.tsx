@@ -14,11 +14,17 @@
  */
 
 import { useEffect, useState } from "react";
+
 import useRolesService from "../../../api/userroles/role";
 import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
 
 import { usePermissionsService } from "../../../api/userroles/role/permissions";
+import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
+import Button from "../../components/button";
+import Search from "../../components/search";
 import { RolesTable } from "../../components/userroles/components/RolesTable";
+
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../components/dialog";
 import "./index.scss";
 
 export default function UserRolesList() {
@@ -65,6 +71,10 @@ export default function UserRolesList() {
 		void fetchRoles();
 	}, []);
 
+	async function onSearch(paginationToken?: string, search?: object) {
+		return;
+	}
+
 	return (
 		<AppEnvContextProvider
 			connectionURI={
@@ -77,6 +87,25 @@ export default function UserRolesList() {
 					One place to manage all your user Roles and Permissions. Edit roles and permissions according to
 					your needs.
 				</p>
+				<div className="search-add-role-container">
+					<Search
+						loading
+						onSearch={onSearch}
+					/>
+					<Button color="secondary">
+						<PlusIcon />
+						Add Role
+					</Button>
+				</div>
+				<Dialog>
+					<DialogContent>
+						<DialogHeader>Create New Role</DialogHeader>
+						<DialogFooter>
+							<Button color="gray-outline">Go Back</Button>
+							<Button>Create now</Button>
+						</DialogFooter>
+					</DialogContent>
+				</Dialog>
 				<RolesTable />
 			</div>
 		</AppEnvContextProvider>

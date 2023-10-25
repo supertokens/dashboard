@@ -15,10 +15,7 @@
 
 @import "../../styles/mixin.scss";
 
-$container-padding-v: 24px;
-
 .table-container {
-	padding: $container-padding-v 34px;
 	display: block;
 	width: 100%;
 	max-width: 100%;
@@ -49,10 +46,20 @@ $container-padding-v: 24px;
 .table thead tr {
 	border-bottom: 1px solid var(--color-border);
 	th {
-		padding: 0 1em 24px 0;
 		font-weight: 500;
 		text-align: left;
 		width: 33%;
+		line-height: 24px;
+
+		padding: 18px 8px;
+
+		&:first-child {
+			padding: 18px 14px 18px 36px;
+		}
+
+		&:last-child {
+			padding: 18px 36px 18px 14px;
+		}
 	}
 }
 
@@ -66,16 +73,37 @@ $container-padding-v: 24px;
 			padding: 12px 0;
 		}
 	}
+	cursor: pointer;
 }
 
-.table tr td:first-child {
-	font-weight: 500;
+.table.theme-blue tbody tr {
+	&:hover {
+		background: var(--color-secondary-light);
+	}
+}
+
+.table.theme-blue tbody tr[data-active="true"] {
+	background: var(--color-secondary-light);
+}
+
+.table tr td {
+	font-size: 14px;
+
+	&:first-child {
+		font-weight: 500;
+		text-transform: uppercase;
+		padding: 18px 14px 18px 36px;
+	}
+
+	&:last-child {
+		padding: 18px 36px 18px 14px;
+	}
 }
 
 .table tfoot {
 	display: flex;
 	justify-content: flex-end;
-	padding-top: $container-padding-v;
+	padding-top: 24px;
 	position: sticky;
 	left: 0px;
 }

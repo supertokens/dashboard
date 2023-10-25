@@ -59,6 +59,7 @@ import "./assets/people-opened.svg";
 import "./assets/people-restricted.svg";
 import "./assets/people.svg";
 import "./assets/phone-no.svg";
+import "./assets/plus.svg";
 import "./assets/provider-apple.svg";
 import "./assets/provider-facebook.svg";
 import "./assets/provider-github.svg";
