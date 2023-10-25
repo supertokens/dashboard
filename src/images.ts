@@ -38,6 +38,7 @@ import "./assets/chevron-up-selected.svg";
 import "./assets/clear.svg";
 import "./assets/close.svg";
 import "./assets/copy.svg";
+import "./assets/cross.svg";
 import "./assets/delete-login-method.png";
 import "./assets/delete.svg";
 import "./assets/edit-login-method.png";

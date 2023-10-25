@@ -19,12 +19,10 @@ import useRolesService from "../../../api/userroles/role";
 import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
 
 import { usePermissionsService } from "../../../api/userroles/role/permissions";
-import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
-import Button from "../../components/button";
 import Search from "../../components/search";
 import { RolesTable } from "../../components/userroles/components/RolesTable";
 
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../components/dialog";
+import CreateNewRole from "../../components/userroles/components/CreateNewRole";
 import "./index.scss";
 
 export default function UserRolesList() {
@@ -92,20 +90,9 @@ export default function UserRolesList() {
 						loading
 						onSearch={onSearch}
 					/>
-					<Button color="secondary">
-						<PlusIcon />
-						Add Role
-					</Button>
+					<CreateNewRole />
 				</div>
-				<Dialog>
-					<DialogContent>
-						<DialogHeader>Create New Role</DialogHeader>
-						<DialogFooter>
-							<Button color="gray-outline">Go Back</Button>
-							<Button>Create now</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
+
 				<RolesTable />
 			</div>
 		</AppEnvContextProvider>

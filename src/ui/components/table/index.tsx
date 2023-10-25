@@ -2,17 +2,19 @@ import * as React from "react";
 
 import "./table.scss";
 
-const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>((props, ref) => {
-	return (
-		<div className="table-container">
-			<table
-				ref={ref}
-				className="table"
-				{...props}
-			/>
-		</div>
-	);
-});
+const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement> & { className?: string }>(
+	({ className, ...props }, ref) => {
+		return (
+			<div className="table-container">
+				<table
+					ref={ref}
+					className={`table ${className}`}
+					{...props}
+				/>
+			</div>
+		);
+	}
+);
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(

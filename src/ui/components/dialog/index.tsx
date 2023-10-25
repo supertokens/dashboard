@@ -1,18 +1,54 @@
+import { createContext, useContext } from "react";
+
+import React from "react";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
 import "./dialog.scss";
+
+type DialogContextType = {
+	isDialogOpen: boolean;
+	closeDialog: () => void;
+};
+
+const DialogContext = createContext<DialogContextType | undefined>(undefined);
+
+function useDialog() {
+	const context = useContext(DialogContext);
+
+	if (context === undefined) {
+		throw Error("useMenubarContext is used outside the MenubarContext provider.");
+	}
+
+	return context;
+}
 
 type DialogCommonProps = {
 	children: React.ReactNode;
 	className?: string;
 };
 
-function Dialog(props: DialogCommonProps) {
-	const { children, className = "" } = props;
+type DialogProps = DialogCommonProps & {
+	closeOnOverlayClick?: boolean;
+} & DialogContextType;
+
+function Dialog(props: DialogProps) {
+	const { children, className = "", closeOnOverlayClick = false, isDialogOpen, closeDialog } = props;
 
 	return (
-		<div className="dialog-overlay">
-			<div className={`dialog-container ${className}`}>{children}</div>
-		</div>
+		<DialogContext.Provider value={{ closeDialog, isDialogOpen }}>
+			{isDialogOpen ? (
+				<>
+					<div
+						className="dialog-overlay"
+						onClick={() => {
+							if (closeOnOverlayClick === true) {
+								closeDialog();
+							}
+						}}
+					/>
+					<div className={`dialog-container ${className}`}>{children}</div>
+				</>
+			) : null}
+		</DialogContext.Provider>
 	);
 }
 
@@ -25,9 +61,11 @@ function DialogContent(props: DialogCommonProps) {
 function DialogHeader(props: DialogCommonProps) {
 	const { children, className = "" } = props;
 
+	const { closeDialog } = useDialog();
+
 	return (
 		<div className={`dialog-header ${className}`}>
-			{children} <CloseIcon />
+			{children} <CloseIcon onClick={closeDialog} />
 		</div>
 	);
 }
@@ -35,12 +73,19 @@ function DialogHeader(props: DialogCommonProps) {
 type DialogFooterProps = DialogCommonProps & {
 	flexDirection?: "row" | "column";
 	justifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around" | "space-evenly";
+	border?: "border-top" | "border-none";
 };
 
 function DialogFooter(props: DialogFooterProps) {
-	const { children, className = "", flexDirection = "row", justifyContent = "flex-end" } = props;
+	const {
+		children,
+		className = "",
+		flexDirection = "row",
+		justifyContent = "flex-end",
+		border = "border-top",
+	} = props;
 
-	return <div className={`dialog-footer ${flexDirection} ${justifyContent} ${className}`}>{children}</div>;
+	return <div className={`dialog-footer ${flexDirection} ${justifyContent} ${border} ${className}`}>{children}</div>;
 }
 
 export { Dialog, DialogContent, DialogFooter, DialogHeader };
