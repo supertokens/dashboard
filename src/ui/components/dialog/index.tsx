@@ -5,7 +5,6 @@ import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
 import "./dialog.scss";
 
 type DialogContextType = {
-	isDialogOpen: boolean;
 	closeDialog: () => void;
 };
 
@@ -31,23 +30,19 @@ type DialogProps = DialogCommonProps & {
 } & DialogContextType;
 
 function Dialog(props: DialogProps) {
-	const { children, className = "", closeOnOverlayClick = false, isDialogOpen, closeDialog } = props;
+	const { children, className = "", closeOnOverlayClick = false, closeDialog } = props;
 
 	return (
-		<DialogContext.Provider value={{ closeDialog, isDialogOpen }}>
-			{isDialogOpen ? (
-				<>
-					<div
-						className="dialog-overlay"
-						onClick={() => {
-							if (closeOnOverlayClick === true) {
-								closeDialog();
-							}
-						}}
-					/>
-					<div className={`dialog-container ${className}`}>{children}</div>
-				</>
-			) : null}
+		<DialogContext.Provider value={{ closeDialog }}>
+			<div
+				className="dialog-overlay"
+				onClick={() => {
+					if (closeOnOverlayClick === true) {
+						closeDialog();
+					}
+				}}
+			/>
+			<div className={`dialog-container ${className}`}>{children}</div>
 		</DialogContext.Provider>
 	);
 }
