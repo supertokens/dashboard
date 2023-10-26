@@ -67,8 +67,10 @@ export default function TagsInputField(props: TagsInputFieldProps) {
 			<div className="tags-container">
 				{tags.map((tag) => {
 					return (
-						<Badge key={tag}>
-							{tag} <CrossIcon onClick={() => removeTag(tag)} />
+						<Badge
+							key={tag}
+							text={tag}>
+							<CrossIcon onClick={() => removeTag(tag)} />
 						</Badge>
 					);
 				})}

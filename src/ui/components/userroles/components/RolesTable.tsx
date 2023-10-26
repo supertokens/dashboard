@@ -22,15 +22,21 @@ import Button from "../../button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
 import { PlaceholderTableRows } from "../../usersListTable/UsersListTable";
 import { useUserRolesContext } from "../context/UserRolesContext";
+import { Role } from "../types";
+import NoRolesFound from "./NoRolesFound";
 import DeleteRolesDialog from "./dialogs/DeleteRoles";
+import EditRoleDialog from "./dialogs/EditRole";
 import "./rolesTable.scss";
 
 export function RolesTable() {
 	const { getRoles } = useRolesService();
 	const { roles, setRoles } = useUserRolesContext();
 
+	const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
+
 	const [selectedRolesToDelete, setSelectedRolesToDelete] = useState<string[]>([]);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [showEditDialog, setShowEditDialog] = useState(true);
 
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -48,88 +54,104 @@ export function RolesTable() {
 		void fetchRoles();
 	}, []);
 
+	if (isLoading === false && roles.length < 1) {
+		return <NoRolesFound />;
+	}
+
 	return (
-		<Table className="theme-blue">
-			<TableHeader>
-				<TableRow>
-					<TableHead className="roles-column">
-						<div className="checkbox-text-container">
-							<input
-								type="checkbox"
-								name="check"
-								id="check"
-								onChange={(e) => {
-									if (e.currentTarget.checked) {
-										setSelectedRolesToDelete(roles.map(({ role }) => role));
-									} else {
-										setSelectedRolesToDelete([]);
-									}
-									e.stopPropagation();
-								}}
-								onClick={(e) => e.stopPropagation()}
-							/>
-							User Roles
-						</div>
-					</TableHead>
-					<TableHead>
-						<div className="delete-btn-container">
-							Permissions
-							<Button
-								onClick={() => setShowDeleteDialog(true)}
-								color={selectedRolesToDelete.length > 0 ? "danger" : "gray"}
-								size="sm">
-								Delete
-							</Button>
-						</div>
-					</TableHead>
-				</TableRow>
-			</TableHeader>
-			{isLoading ? (
-				<PlaceholderTableRows
-					rowCount={10}
-					colSpan={3}
-					className={"user-info"}
-				/>
-			) : null}
-			<TableBody>
-				{roles.map(({ role, permissions }) => {
-					const selected = selectedRolesToDelete.includes(role);
-					return (
-						<TableRow
-							key={role}
-							data-active={selected ? "true" : "false"}
-							onClick={() => alert("open")}>
-							<TableCell>
-								<div className="checkbox-text-container">
-									<input
-										type="checkbox"
-										name="check"
-										id="check"
-										checked={selected}
-										onChange={(e) => {
-											if (e.currentTarget.checked) {
-												setSelectedRolesToDelete([...selectedRolesToDelete, role]);
-											} else {
-												setSelectedRolesToDelete(
-													selectedRolesToDelete.filter((r) => r !== role)
-												);
-											}
-										}}
-									/>
-									{role}
-								</div>
-							</TableCell>
-							<TableCell>
-								<div className="permissions-container">
-									{permissions.map((permission) => {
-										return <Badge key={permission}>{permission}</Badge>;
-									})}
-								</div>
-							</TableCell>
-						</TableRow>
-					);
-				})}
-			</TableBody>
+		<>
+			<Table className="theme-blue">
+				<TableHeader>
+					<TableRow>
+						<TableHead className="roles-column">
+							<div className="checkbox-text-container">
+								<input
+									type="checkbox"
+									name="check"
+									id="check"
+									onChange={(e) => {
+										if (e.currentTarget.checked) {
+											setSelectedRolesToDelete(roles.map(({ role }) => role));
+										} else {
+											setSelectedRolesToDelete([]);
+										}
+									}}
+								/>
+								User Roles
+							</div>
+						</TableHead>
+						<TableHead>
+							<div className="delete-btn-container">
+								Permissions
+								<Button
+									onClick={() => {
+										if (selectedRolesToDelete.length > 0) setShowDeleteDialog(true);
+									}}
+									color={selectedRolesToDelete.length > 0 ? "danger" : "gray"}
+									size="sm">
+									Delete
+								</Button>
+							</div>
+						</TableHead>
+					</TableRow>
+				</TableHeader>
+				{isLoading ? (
+					<PlaceholderTableRows
+						rowCount={10}
+						colSpan={3}
+						className={"user-info"}
+					/>
+				) : null}
+				<TableBody>
+					{roles.map(({ role, permissions }, index) => {
+						const selected = selectedRolesToDelete.includes(role);
+						return (
+							<TableRow
+								key={role}
+								data-active={selected ? "true" : "false"}
+								onClick={() => {
+									setSelectedRole(roles[index]);
+									setShowEditDialog(true);
+								}}>
+								<TableCell>
+									<div className="checkbox-text-container">
+										<input
+											type="checkbox"
+											name="check"
+											id="check"
+											checked={selected}
+											onChange={(e) => {
+												e.stopPropagation();
+												if (e.currentTarget.checked) {
+													setSelectedRolesToDelete([...selectedRolesToDelete, role]);
+												} else {
+													setSelectedRolesToDelete(
+														selectedRolesToDelete.filter((r) => r !== role)
+													);
+												}
+											}}
+											onClick={(e) => e.stopPropagation()}
+										/>
+										{role}
+									</div>
+								</TableCell>
+								<TableCell>
+									<div className="permissions-container">
+										{permissions.map((permission) => {
+											return (
+												<Badge
+													key={permission}
+													text={permission}
+												/>
+											);
+										})}
+									</div>
+								</TableCell>
+							</TableRow>
+						);
+					})}
+				</TableBody>
+			</Table>
 			{showDeleteDialog ? (
 				<DeleteRolesDialog
 					closeDialog={() => setShowDeleteDialog(false)}
@@ -137,6 +159,12 @@ export function RolesTable() {
 					resetSelectedRoles={() => setSelectedRolesToDelete([])}
 				/>
 			) : null}
-		</Table>
+			{showEditDialog && selectedRole ? (
+				<EditRoleDialog
+					selectedRole={selectedRole}
+					closeDialog={() => setShowEditDialog(false)}
+				/>
+			) : null}
+		</>
 	);
 }

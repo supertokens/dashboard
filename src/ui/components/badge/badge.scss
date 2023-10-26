@@ -12,8 +12,28 @@
 	font-weight: 400;
 	line-height: 20px;
 
+	.content {
+		max-width: 110px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	&.xs {
+		font-size: 10px;
+		padding: 0px 4px;
+	}
+	&.sm {
+		font-size: 12px;
+		padding: 0px 4px;
+	}
+
 	&.md {
 		padding: 3px 8px;
+	}
+
+	&.lg {
+		padding: 4px 10px;
 	}
 
 	&.secondary {

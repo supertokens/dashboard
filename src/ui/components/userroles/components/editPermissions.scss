@@ -1,0 +1,61 @@
+.edit-permissions-container {
+	.focus-text {
+		color: var(--color-gray);
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: normal;
+
+		margin-top: 5px;
+	}
+	.permissions-list-wrapper {
+		width: 100%;
+		max-height: 184px;
+		overflow: scroll;
+
+		margin-top: 16px;
+
+		border: 1px solid var(--color-border-command);
+		border-radius: 12px;
+
+		.permissions-list-header {
+			color: var(--light-foregrounds-fg-muted, #9ca3af);
+			font-size: 12px;
+			font-style: normal;
+			font-weight: 500;
+			line-height: 20px;
+			width: 100%;
+			height: fit-content;
+
+			display: flex;
+			justify-content: space-between;
+
+			padding: 8px 16px;
+			align-items: flex-start;
+			gap: 12px;
+
+			background: rgb(245, 245, 245);
+		}
+
+		.permissions-list {
+			background: var(--color-white);
+			padding: 4px 8px;
+
+			.permission-item {
+				display: flex;
+				justify-content: space-between;
+				cursor: pointer;
+
+				padding: 6px 8px;
+				border-radius: 6px;
+
+				[data-selected="true"] {
+					background: rgb(237, 246, 255);
+				}
+				&:hover {
+					background: rgb(237, 246, 255);
+				}
+			}
+		}
+	}
+}
