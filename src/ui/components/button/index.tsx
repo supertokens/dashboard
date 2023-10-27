@@ -19,7 +19,7 @@ import "./button.scss";
 
 type ButtonProps = {
 	color?: "primary" | "secondary" | "danger" | "outline" | "gray" | "danger-outline" | "gray-outline";
-	size?: "sm" | "md" | "lg";
+	size?: "xs" | "sm" | "md" | "lg";
 	isLoading?: boolean;
 } & JSX.IntrinsicElements["button"];
 

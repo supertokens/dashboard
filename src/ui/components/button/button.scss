@@ -20,6 +20,8 @@
 	font-weight: 500;
 	border-radius: 6px;
 	font-family: inherit;
+	line-height: 21px;
+
 	cursor: pointer;
 
 	&.gray {
@@ -65,6 +67,10 @@
 		border: 1px solid var(--color-black);
 		background: var(--color-white);
 		color: var(--color-black);
+	}
+
+	&.xs {
+		padding: 0px 8px;
 	}
 
 	&.sm {

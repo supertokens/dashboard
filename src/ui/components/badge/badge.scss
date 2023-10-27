@@ -41,4 +41,19 @@
 		border: 1px solid var(--light-tags-tag-blue-border, #bfdbfe);
 		background: var(--light-tags-tag-blue-bg, #dbeafe);
 	}
+
+	&.success {
+		color: var(--light-tags-tag-green-text, #047857);
+		border: 1px solid var(--light-tags-tag-green-border, #a7f3d0);
+		background: var(--light-tags-tag-green-bg, #d1fae5);
+
+		& > svg {
+			stroke: rgba(5, 150, 105, 1);
+			cursor: pointer;
+		}
+
+		&:hover {
+			background: var(--light-tags-tag-green-bg-hover, #a7f3d0);
+		}
+	}
 }

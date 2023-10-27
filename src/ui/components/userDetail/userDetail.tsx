@@ -34,6 +34,7 @@ import UserDetailHeader from "./userDetailHeader";
 import UserDetailInfoGrid from "./userDetailInfoGrid";
 import { SessionInfo, UserDetailsSessionList } from "./userDetailSessionList";
 import { UserMetaDataSection } from "./userMetaDataSection";
+import UserRolesList from "./userRoles/UserRolesList";
 
 export type UserDetailProps = {
 	user: string;
@@ -60,7 +61,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
-	const { addRoleToUser, getRolesForUser, removeUserRole } = useUserRolesService();
+	const { getRolesForUser } = useUserRolesService();
 	const { showModal } = useContext(PopupContentContext);
 
 	const loadUserDetail = useCallback(async () => {
@@ -165,14 +166,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		}
 	}
 
-	async function handleRemoveRole(role: string) {
-		await removeUserRole(user, role);
-	}
-
-	async function handleAddRole(role: string) {
-		await addRoleToUser(user, role);
-	}
-
 	const showLoadingOverlay = () => {
 		setShowLoadingOverlay(true);
 	};
@@ -274,30 +267,14 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				</div>
 				<UserDetailHeader {...props} />
 
-				<div style={{ background: "gray", padding: "24px", borderRadius: "8px" }}>
-					<div>
-						{userRoles.length === 0 ? "Roles are not available" : null}
-						<ul>
-							{userRoles.map((role) => {
-								return (
-									<li
-										key={role}
-										style={{ background: "white", padding: "5px", color: "black" }}>
-										{role}
-									</li>
-								);
-							})}
-						</ul>
-					</div>
-					<div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
-						<button onClick={() => handleAddRole("admin")}>add role</button>
-						<button onClick={() => handleRemoveRole("admin")}>remove role</button>
-					</div>
-				</div>
-
 				{/* {userDetail.user.tenantIds.length > 0 && <UserTenantsList tenantIds={userDetail.user.tenantIds} />}*/}
 
 				<UserDetailInfoGrid {...props} />
+
+				<UserRolesList
+					roles={userRoles}
+					userId={user}
+				/>
 
 				<LoginMethods refetchAllData={refetchAllData} />
 
