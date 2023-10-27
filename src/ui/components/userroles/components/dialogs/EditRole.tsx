@@ -1,14 +1,18 @@
 import { useState } from "react";
 
+import { getImageUrl } from "../../../../../utils";
 import Badge from "../../../badge";
 import Button from "../../../button";
+import IconButton from "../../../common/iconButton";
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../../dialog";
+import TagsInputField from "../../../inputField/TagsInputField";
 import { Role } from "../../types";
-import EditPermissions from "../EditPermissions";
 import "./editRole.scss";
 
 export default function EditRoleDialog({ closeDialog, selectedRole }: { closeDialog: () => void; selectedRole: Role }) {
-	const [isInEditingMode, setIsInEditingMode] = useState(true);
+	const [isInEditingMode, setIsInEditingMode] = useState(false);
+
+	const [permissions, setPermissions] = useState(selectedRole.permissions);
 
 	return (
 		<Dialog closeDialog={closeDialog}>
@@ -22,13 +26,10 @@ export default function EditRoleDialog({ closeDialog, selectedRole }: { closeDia
 								<span className="role-name">{selectedRole.role}</span>
 							</div>
 							<div>
-								<EditPermissions
-									selectedRole={selectedRole}
+								<TagsInputField
+									tags={permissions}
 									label="Add Permissions"
-									onPermissionsChange={() => {
-										alert("hi");
-									}}
-									permissions={[]}
+									onTagsChange={setPermissions}
 									focusText="Write permission name and press enter to add it in the list."
 								/>
 							</div>
@@ -64,11 +65,15 @@ export default function EditRoleDialog({ closeDialog, selectedRole }: { closeDia
 							</div>
 						</div>
 						<DialogFooter justifyContent="space-between">
-							<Button
-								color="gray"
-								onClick={() => setIsInEditingMode(true)}>
-								Edit
-							</Button>
+							<IconButton
+								size="small"
+								text="Edit"
+								tint="var(--color-link)"
+								icon={getImageUrl("edit.svg")}
+								onClick={() => {
+									setIsInEditingMode(true);
+								}}
+							/>
 							<Button
 								onClick={closeDialog}
 								color="gray-outline">

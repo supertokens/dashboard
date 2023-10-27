@@ -113,7 +113,7 @@ export default function UserRolesList(props: UserRolesListProps) {
 				<DeleteUserRoleDialog
 					roleToDelete={roleToDelete}
 					userId={userId}
-					roles={roles}
+					assignedRoles={assignedRoles}
 					setAssignedRoles={setAssignedRoles}
 					closeDialog={() => {
 						setRoleToDelete(undefined);

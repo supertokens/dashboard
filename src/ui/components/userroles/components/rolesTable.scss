@@ -1,9 +1,3 @@
-.checkbox-text-container {
-	display: flex;
-	align-items: center;
-	gap: 24px;
-}
-
 .delete-btn-container {
 	display: flex;
 	align-items: center;
@@ -16,5 +10,32 @@
 
 .permissions-container {
 	display: flex;
-	gap: 24px;
+	justify-content: space-between;
+
+	& > .permissions {
+		display: flex;
+		gap: 24px;
+		max-width: 400px;
+		overflow: hidden;
+	}
+
+	& > .delete-role {
+		padding: 6px;
+		border-radius: 3px;
+		border: 1px solid #ddd;
+		background: #fff;
+
+		& > svg > path {
+			fill: rgba(141, 141, 141, 1) !important;
+		}
+
+		&:hover {
+			border: 1px solid #ed344e;
+			background: rgba(237, 52, 78, 0.15);
+
+			& > svg > path {
+				fill: rgba(237, 52, 78, 1) !important;
+			}
+		}
+	}
 }

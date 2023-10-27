@@ -20,7 +20,6 @@ import useRolesService from "../../../api/userroles/role";
 import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
 
 import { usePermissionsService } from "../../../api/userroles/role/permissions";
-import Search from "../../components/search";
 import { RolesTable } from "../../components/userroles/components/RolesTable";
 
 import Button from "../../components/button";
@@ -78,10 +77,6 @@ export default function UserRolesList() {
 						your needs.
 					</p>
 					<div className="search-add-role-container">
-						<Search
-							loading
-							onSearch={onSearch}
-						/>
 						<Button
 							onClick={openDialog}
 							color="secondary">

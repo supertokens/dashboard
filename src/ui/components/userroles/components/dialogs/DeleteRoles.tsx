@@ -25,10 +25,12 @@ import { useUserRolesContext } from "../../context/UserRolesContext";
 import "./deleteRoles.scss";
 
 export default function DeleteRolesDialog({
+	selectedRole,
 	selectedRoles,
 	closeDialog,
 	resetSelectedRoles,
 }: {
+	selectedRole: string;
 	selectedRoles: string[];
 	closeDialog: () => void;
 	resetSelectedRoles: () => void;
@@ -40,26 +42,20 @@ export default function DeleteRolesDialog({
 	const [isDeletingRoles, setIsDeletingRoles] = useState(false);
 
 	async function handleDeleteRoles() {
-		if (selectedRoles.length < 1) {
+		if (typeof selectedRole !== "string") {
 			return;
 		}
-		const promises = [];
-
 		setIsDeletingRoles(true);
 
-		for (let i = 0; i < selectedRoles.length; i++) {
-			promises.push(deleteRole(selectedRoles[i]));
-		}
-
 		try {
-			await Promise.all(promises);
+			await deleteRole(selectedRole);
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
 				toastType: "success",
 				children: "Role deleted successfully!",
 			});
 			const filteredRoles = roles.filter((r) => {
-				return selectedRoles.includes(r.role) === false;
+				return r.role !== selectedRole;
 			});
 
 			setRoles(filteredRoles);
@@ -81,7 +77,8 @@ export default function DeleteRolesDialog({
 			<DialogContent>
 				<DialogHeader>Delete Roles?</DialogHeader>
 				<p className="you-sure-text">
-					Are you sure you want to delete the selected Roles? This action is irreversible.
+					Are you sure you want to delete Role: <span className="red">{selectedRole}</span>? This action is
+					irreversible.
 				</p>
 				<DialogFooter border="border-none">
 					<Button

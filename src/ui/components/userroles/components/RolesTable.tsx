@@ -17,7 +17,8 @@ import { useCallback, useEffect, useState } from "react";
 
 import useRolesService from "../../../../api/userroles/role";
 import Badge from "../../badge";
-import Button from "../../button";
+
+import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
 import { PlaceholderTableRows } from "../../usersListTable/UsersListTable";
@@ -63,35 +64,9 @@ export function RolesTable() {
 			<Table className="theme-blue">
 				<TableHeader>
 					<TableRow>
-						<TableHead className="roles-column">
-							<div className="checkbox-text-container">
-								<input
-									type="checkbox"
-									name="check"
-									id="check"
-									onChange={(e) => {
-										if (e.currentTarget.checked) {
-											setSelectedRolesToDelete(roles.map(({ role }) => role));
-										} else {
-											setSelectedRolesToDelete([]);
-										}
-									}}
-								/>
-								User Roles
-							</div>
-						</TableHead>
+						<TableHead className="roles-column">User Roles</TableHead>
 						<TableHead>
-							<div className="delete-btn-container">
-								Permissions
-								<Button
-									onClick={() => {
-										if (selectedRolesToDelete.length > 0) setShowDeleteDialog(true);
-									}}
-									color={selectedRolesToDelete.length > 0 ? "danger" : "gray"}
-									size="sm">
-									Delete
-								</Button>
-							</div>
+							<div className="delete-btn-container">Permissions</div>
 						</TableHead>
 					</TableRow>
 				</TableHeader>
@@ -113,38 +88,30 @@ export function RolesTable() {
 									setSelectedRole(roles[index]);
 									setShowEditDialog(true);
 								}}>
-								<TableCell>
-									<div className="checkbox-text-container">
-										<input
-											type="checkbox"
-											name="check"
-											id="check"
-											checked={selected}
-											onChange={(e) => {
-												e.stopPropagation();
-												if (e.currentTarget.checked) {
-													setSelectedRolesToDelete([...selectedRolesToDelete, role]);
-												} else {
-													setSelectedRolesToDelete(
-														selectedRolesToDelete.filter((r) => r !== role)
-													);
-												}
-											}}
-											onClick={(e) => e.stopPropagation()}
-										/>
-										{role}
-									</div>
-								</TableCell>
+								<TableCell>{role}</TableCell>
 								<TableCell>
 									<div className="permissions-container">
-										{permissions.map((permission) => {
-											return (
-												<Badge
-													key={permission}
-													text={permission}
-												/>
-											);
-										})}
+										<div
+											id="permissions"
+											className="permissions">
+											{permissions.map((permission) => {
+												return (
+													<Badge
+														key={permission}
+														text={permission}
+													/>
+												);
+											})}
+										</div>
+										<button
+											onClick={(e) => {
+												e.stopPropagation();
+												setShowDeleteDialog(true);
+												setSelectedRole(roles[index]);
+											}}
+											className="delete-role">
+											<TrashIcon />
+										</button>
 									</div>
 								</TableCell>
 							</TableRow>
@@ -152,10 +119,11 @@ export function RolesTable() {
 					})}
 				</TableBody>
 			</Table>
-			{showDeleteDialog ? (
+			{showDeleteDialog && selectedRole ? (
 				<DeleteRolesDialog
 					closeDialog={() => setShowDeleteDialog(false)}
 					selectedRoles={selectedRolesToDelete}
+					selectedRole={selectedRole?.role}
 					resetSelectedRoles={() => setSelectedRolesToDelete([])}
 				/>
 			) : null}

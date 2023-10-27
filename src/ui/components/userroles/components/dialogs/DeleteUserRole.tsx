@@ -11,13 +11,13 @@ export default function DeleteUserRoleDialog({
 	closeDialog,
 	roleToDelete,
 	userId,
-	roles,
+	assignedRoles,
 	setAssignedRoles,
 }: {
 	closeDialog: () => void;
 	roleToDelete: string;
 	userId: string;
-	roles: string[];
+	assignedRoles: string[];
 	setAssignedRoles: (roles: string[]) => void;
 }) {
 	const { showToast } = useContext(PopupContentContext);
@@ -33,7 +33,7 @@ export default function DeleteUserRoleDialog({
 				toastType: "success",
 				children: "Role deleted successfully!",
 			});
-			setAssignedRoles(roles.filter((role) => role !== roleToDelete));
+			setAssignedRoles(assignedRoles.filter((role) => role !== roleToDelete));
 		} catch (error) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
