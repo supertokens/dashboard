@@ -1,6 +1,6 @@
 import "./badge.scss";
 
-type BadgeProps = {
+export type BadgeProps = {
 	children?: React.ReactNode;
 	className?: string;
 	text: string;

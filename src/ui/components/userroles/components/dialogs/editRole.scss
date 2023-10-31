@@ -36,4 +36,18 @@
 		font-weight: 600;
 		line-height: normal;
 	}
+
+	.delete-badge {
+		&:hover {
+			border-radius: 6px;
+			border: 1px solid var(--light-tags-tag-red-border, #fecdd3);
+			background: var(--light-tags-tag-red-bg-hover, #fecdd3);
+			color: rgba(225, 29, 72, 1);
+
+			& > svg {
+				stroke: rgba(225, 29, 72, 1);
+				cursor: pointer;
+			}
+		}
+	}
 }

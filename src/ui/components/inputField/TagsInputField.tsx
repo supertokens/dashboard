@@ -17,22 +17,20 @@ import "./tagsInputField.scss";
 
 import { useState } from "react";
 import { ReactComponent as CrossIcon } from "../../../assets/cross.svg";
-import Badge from "../badge";
+import Badge, { type BadgeProps } from "../badge";
 
 type TagsInputFieldProps = Omit<JSX.IntrinsicElements["input"], "onChange"> & {
 	focusText?: string;
 	label?: string;
 	tags: string[];
-	onTagsChange: (tags: string[]) => void;
+	addTag: (tag: string) => void;
+	removeTag: (tag: string) => void;
+	tagProps?: Partial<BadgeProps>;
 };
 
 export default function TagsInputField(props: TagsInputFieldProps) {
-	const { focusText = "", onTagsChange, tags, ...rest } = props;
+	const { focusText = "", addTag, removeTag, tags, tagProps, ...rest } = props;
 	const [isFocused, setIsFocused] = useState(false);
-
-	function removeTag(tag: string) {
-		onTagsChange(tags.filter((t) => t !== tag));
-	}
 
 	return (
 		<div className="tags-input-field-container">
@@ -53,7 +51,7 @@ export default function TagsInputField(props: TagsInputFieldProps) {
 							if (e.key === "Enter") {
 								const newTag = e.currentTarget.value.trim();
 								if (newTag && tags.includes(newTag) === false) {
-									onTagsChange([...tags, newTag]);
+									addTag(newTag);
 								}
 								e.currentTarget.value = "";
 							}
@@ -69,6 +67,7 @@ export default function TagsInputField(props: TagsInputFieldProps) {
 					return (
 						<Badge
 							key={tag}
+							{...tagProps}
 							text={tag}>
 							<CrossIcon onClick={() => removeTag(tag)} />
 						</Badge>

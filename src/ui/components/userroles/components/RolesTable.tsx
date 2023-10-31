@@ -20,6 +20,7 @@ import Badge from "../../badge";
 
 import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
 
+import Button from "../../button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
 import { PlaceholderTableRows } from "../../usersListTable/UsersListTable";
 import { useUserRolesContext } from "../context/UserRolesContext";
@@ -102,6 +103,13 @@ export function RolesTable() {
 													/>
 												);
 											})}
+											{permissions.length < 1 ? (
+												<Button
+													color="info"
+													size="xs">
+													No Permissions
+												</Button>
+											) : null}
 										</div>
 										<button
 											onClick={(e) => {

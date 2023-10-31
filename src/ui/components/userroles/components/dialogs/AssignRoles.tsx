@@ -174,9 +174,11 @@ export default function AssignRolesDialog({
 								placeholder="Search"
 								hideColon
 								handleChange={(e) => {
-									const searchText = e.currentTarget.value.trim();
+									const searchText = e.currentTarget.value.trim().toLowerCase();
 									if (typeof searchText === "string") {
-										setFilteredRoles(normalizedRoles.filter((role) => role.includes(searchText)));
+										setFilteredRoles(
+											normalizedRoles.filter((role) => role.toLowerCase().includes(searchText))
+										);
 									} else {
 										setFilteredRoles(normalizedRoles);
 									}

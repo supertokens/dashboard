@@ -74,6 +74,14 @@ export default function CreateNewRoleDialog({ closeDialog }: { closeDialog: () =
 		}
 	}
 
+	function addPermission(permission: string) {
+		setPermissions([...permissions, permission]);
+	}
+
+	function removePermission(permission: string) {
+		setPermissions(permissions.filter((p) => p !== permission));
+	}
+
 	return (
 		<Dialog closeDialog={closeDialog}>
 			<DialogContent>
@@ -96,7 +104,8 @@ export default function CreateNewRoleDialog({ closeDialog }: { closeDialog: () =
 					</div>
 					<div>
 						<TagsInputField
-							onTagsChange={(tags) => setPermissions(tags)}
+							addTag={addPermission}
+							removeTag={removePermission}
 							tags={permissions}
 							label="Add Permissions"
 							name="permisions"

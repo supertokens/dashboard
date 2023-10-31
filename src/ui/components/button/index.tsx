@@ -18,7 +18,7 @@ import { ReactComponent as SpinnerIcon } from "../../../assets/spinner.svg";
 import "./button.scss";
 
 type ButtonProps = {
-	color?: "primary" | "secondary" | "danger" | "outline" | "gray" | "danger-outline" | "gray-outline";
+	color?: "primary" | "secondary" | "info" | "danger" | "outline" | "gray" | "danger-outline" | "gray-outline";
 	size?: "xs" | "sm" | "md" | "lg";
 	isLoading?: boolean;
 } & JSX.IntrinsicElements["button"];

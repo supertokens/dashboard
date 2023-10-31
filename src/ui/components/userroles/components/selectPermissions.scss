@@ -1,0 +1,148 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.select-permissions-container {
+	border-radius: 14px;
+	border: 1px solid #e5e5e5;
+
+	width: 100%;
+	overflow: scroll;
+
+	.container-header {
+		background: #fafafa;
+		border-radius: 14px 14px 0px 0px;
+
+		color: var(--light-foregrounds-fg-muted, #9ca3af);
+		font-family: Rubik;
+		font-size: 12px;
+		font-style: normal;
+		font-weight: 500;
+		line-height: 20px; /* 166.667% */
+
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		padding: 6px 16px;
+
+		& > .delete-role {
+			padding: 6px;
+			border-radius: 3px;
+			border: 1px solid #ddd;
+			background: #fff;
+
+			& > svg > path {
+				fill: rgba(141, 141, 141, 1) !important;
+			}
+
+			&:disabled {
+				cursor: not-allowed;
+			}
+
+			&:hover:not(:disabled) {
+				border: 1px solid #ed344e;
+				background: rgba(237, 52, 78, 0.15);
+
+				& > svg > path {
+					fill: rgba(237, 52, 78, 1) !important;
+				}
+			}
+		}
+	}
+
+	.permissions-list {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+
+		max-height: 30vh;
+
+		padding: 4px 8px;
+
+		.info-container {
+			height: 204px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			gap: 10px;
+
+			& > svg {
+				height: 37px;
+				width: 30px;
+			}
+
+			& > h1 {
+				color: var(--color-black);
+				text-align: center;
+				font-size: 16px;
+				font-style: normal;
+				font-weight: 500;
+				line-height: 21px; /* 250% */
+			}
+			.gray {
+				color: #b4b4b4;
+			}
+
+			& > p {
+				color: #6e6a65;
+				font-size: 14px;
+				font-style: normal;
+				font-weight: 400;
+				line-height: 21px;
+
+				padding-top: 0px;
+
+				width: 200px;
+				text-align: center;
+
+				& > a {
+					color: var(--button-tertiary-normal-blue-007-aff, #007aff);
+				}
+			}
+		}
+
+		.permission-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 8px;
+
+			cursor: pointer;
+
+			border-radius: 6px;
+
+			& > input {
+				margin-right: 8px;
+			}
+
+			&:hover:not([data-selected="true"]) {
+				background: #f9fafb;
+			}
+
+			&[data-selected="true"] {
+				background: #edf6ff;
+			}
+		}
+	}
+}
+
+.margin-bottom-5 {
+	margin-bottom: 5px;
+}
+
+.margin-top-5 {
+	margin-top: 5px;
+}
