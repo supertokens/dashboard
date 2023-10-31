@@ -293,3 +293,9 @@ $container-width: 829;
 .pill {
 	margin-top: 4px;
 }
+
+@media (max-width: 425px) {
+	.user-detail {
+		padding: 72px 12px 48px;
+	}
+}

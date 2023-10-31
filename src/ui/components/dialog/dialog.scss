@@ -103,3 +103,11 @@
 		justify-content: space-evenly;
 	}
 }
+
+@media (max-width: 485px) {
+	.dialog-container {
+		width: 95%;
+		padding-left: 14px;
+		padding-right: 14px;
+	}
+}

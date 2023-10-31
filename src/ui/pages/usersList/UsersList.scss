@@ -90,3 +90,9 @@ $container-padding-horizontal: 40;
 		margin: 0 auto;
 	}
 }
+
+@media (max-width: 480px) {
+	.users-list {
+		padding: 72px 18px 48px;
+	}
+}

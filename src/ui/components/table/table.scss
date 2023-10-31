@@ -93,6 +93,10 @@
 		font-weight: 500;
 		text-transform: uppercase;
 		padding: 18px 14px 18px 36px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 126px;
 	}
 
 	&:last-child {

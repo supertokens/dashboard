@@ -20,24 +20,29 @@ const sidebarItems = [
 	},
 ];
 
-export default function SideBar() {
+export function SideBarContent() {
 	const location = useLocation();
 
 	return (
+		<ul className="sidebar-list">
+			{sidebarItems.map((item) => {
+				return (
+					<li key={item.id}>
+						<Link
+							className={`${location.pathname === item.href ? "active" : ""}`}
+							to={item.href}>
+							{item.icon} <span>{item.title}</span>
+						</Link>
+					</li>
+				);
+			})}
+		</ul>
+	);
+}
+export default function SideBar() {
+	return (
 		<aside className="sidebar">
-			<ul>
-				{sidebarItems.map((item) => {
-					return (
-						<li key={item.id}>
-							<Link
-								className={`${location.pathname === item.href ? "active" : ""}`}
-								to={item.href}>
-								{item.icon} <span>{item.title}</span>
-							</Link>
-						</li>
-					);
-				})}
-			</ul>
+			<SideBarContent />
 		</aside>
 	);
 }

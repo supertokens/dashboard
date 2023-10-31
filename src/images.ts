@@ -49,6 +49,7 @@ import "./assets/eye-stroke.svg";
 import "./assets/eye.svg";
 import "./assets/favicon.ico";
 import "./assets/form-field-error-icon.svg";
+import "./assets/hamburger-menu.svg";
 import "./assets/help-icon.png";
 import "./assets/left-arrow-dark.svg";
 import "./assets/loader.svg";

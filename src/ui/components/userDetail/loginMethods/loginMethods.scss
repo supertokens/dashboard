@@ -103,6 +103,21 @@
 	}
 }
 
+@media (max-width: 480px) {
+	.method {
+		.method-header {
+			padding: 16px 8px;
+		}
+		.method-body {
+			padding: 18px 8px;
+		}
+
+		.left {
+			flex-direction: column;
+		}
+	}
+}
+
 .send-mail-icon {
 	cursor: pointer;
 	& > :first-child {

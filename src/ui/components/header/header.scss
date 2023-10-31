@@ -13,7 +13,7 @@
  * under the License.
  */
 
-.st-header {
+.st-header-desktop {
 	position: fixed;
 	width: 100%;
 	z-index: 100;
@@ -25,4 +25,98 @@
 
 	background: #fff;
 	box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.16);
+}
+
+.st-header-mobile {
+	display: none;
+
+	.overlay {
+		background: rgba(0, 0, 0, 0.4);
+		position: fixed;
+		inset: 0;
+		height: 100vh;
+
+		z-index: 9999;
+
+		margin-top: 70px;
+	}
+
+	svg {
+		cursor: pointer;
+	}
+
+	.close-btn {
+		background: rgba(95, 95, 95, 0.08);
+		border-radius: 50%;
+		border: none;
+
+		height: 40px;
+		width: 40px;
+	}
+
+	.menu-container {
+		width: 95%;
+
+		height: fit-content;
+
+		border-radius: 12px;
+		background: #fff;
+		box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.16);
+
+		position: fixed;
+		inset: 0;
+		margin: auto;
+		margin-top: 80px;
+		z-index: 9999;
+
+		padding: 36px 40px;
+
+		.divider {
+			background: #aaa;
+			height: 1px;
+			width: 100%;
+			margin: 40px auto;
+		}
+
+		button {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+
+	.menu-content {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		width: 100%;
+
+		.sidebar-list {
+			margin-top: 0;
+
+			& > li {
+				margin-left: 0;
+				margin-right: 0;
+			}
+		}
+	}
+}
+
+@media (max-width: 1024px) {
+	.st-header-desktop {
+		display: none;
+	}
+
+	.st-header-mobile {
+		position: fixed;
+		width: 100%;
+		z-index: 9999;
+		background: var(--color-white);
+
+		display: flex;
+		justify-content: start;
+		align-items: center;
+		gap: 14px;
+
+		padding: 14px 12px;
+	}
 }

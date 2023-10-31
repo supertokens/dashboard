@@ -16,10 +16,8 @@
 import { useState } from "react";
 import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 
-import useRolesService from "../../../api/userroles/role";
 import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
 
-import { usePermissionsService } from "../../../api/userroles/role/permissions";
 import { RolesTable } from "../../components/userroles/components/RolesTable";
 
 import Button from "../../components/button";
@@ -28,9 +26,6 @@ import UserRolesContextProvider from "../../components/userroles/context/UserRol
 import "./index.scss";
 
 export default function UserRolesList() {
-	const { deleteRole } = useRolesService();
-	const { addPermissionsToRole, removePermissionsFromRole } = usePermissionsService();
-
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
 	function openDialog() {
@@ -39,28 +34,6 @@ export default function UserRolesList() {
 
 	function closeDialog() {
 		setIsDialogOpen(false);
-	}
-
-	async function handleDeleteRole(role: string) {
-		const response = await deleteRole(role);
-		alert("role deleted");
-	}
-
-	async function handleAddPermissions(role: string, permissionsInputId: string) {
-		const permissionsInput = document.getElementById(permissionsInputId) as HTMLInputElement;
-
-		await addPermissionsToRole(role, permissionsInput.value.trim() !== "" ? permissionsInput.value.split(",") : []);
-
-		alert("role updated with permisssions");
-	}
-
-	async function handleDeletePermissions(role: string, permission: string) {
-		await removePermissionsFromRole(role, [permission]);
-		alert("permission removed");
-	}
-
-	async function onSearch(paginationToken?: string, search?: object) {
-		return;
 	}
 
 	return (

@@ -196,6 +196,7 @@ export default function AssignRolesDialog({
 						Go Back
 					</Button>
 					<Button
+						disabled={isAddingRoles}
 						color={selectedRoles.length > 0 && roles.length !== assignedRoles.length ? "primary" : "gray"}
 						onClick={assignRoles}
 						isLoading={isAddingRoles}>

@@ -90,8 +90,8 @@ export default function SelectPermissions({
 					{permissions.length < 1 ? (
 						<div className="info-container">
 							<SecuityKeyIcon />
-							<h1>This Role don't have any permissions associated.</h1>
-							<p>Please add permissions to this role.</p>
+							<h1>No Permissions associated with this Role!</h1>
+							<p>Added Permissions for role will appear here.</p>
 						</div>
 					) : null}
 				</div>
