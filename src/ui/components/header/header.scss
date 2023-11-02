@@ -55,7 +55,7 @@
 	}
 
 	.menu-container {
-		width: 95%;
+		width: 400px;
 
 		height: fit-content;
 
@@ -65,7 +65,7 @@
 
 		position: fixed;
 		inset: 0;
-		margin: auto;
+		margin: 16px;
 		margin-top: 80px;
 		z-index: 9999;
 
@@ -118,5 +118,15 @@
 		gap: 14px;
 
 		padding: 14px 12px;
+	}
+}
+
+@media (max-width: 532px) {
+	.st-header-mobile {
+		.menu-container {
+			width: 95%;
+			margin: auto;
+			margin-top: 80px;
+		}
 	}
 }

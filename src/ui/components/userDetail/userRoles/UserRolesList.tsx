@@ -20,6 +20,7 @@ import Badge from "../../badge";
 import { LayoutPanel } from "../../layout/layoutPanel";
 import { UserRolesListHeader } from "./UserRolesListHeader";
 
+import Alert from "../../alert";
 import AssignRolesDialog from "../../userroles/components/dialogs/AssignRoles";
 import DeleteUserRoleDialog from "../../userroles/components/dialogs/DeleteUserRole";
 import "./userRolesList.scss";
@@ -27,6 +28,7 @@ import "./userRolesList.scss";
 type UserRolesListProps = {
 	roles: string[];
 	userId: string;
+	isFeatureEnabled: boolean;
 };
 
 export default function UserRolesList(props: UserRolesListProps) {
@@ -90,37 +92,47 @@ export default function UserRolesList(props: UserRolesListProps) {
 				<UserRolesListHeader
 					setIsEditing={setIsEditing}
 					isEditing={isEditing}
+					isFeatureEnabled={props.isFeatureEnabled}
 				/>
 			}
 			headerBorder>
-			<div className="user-roles-list-wrapper">
-				<ul>
-					<li>
-						All roles assigned to the user for tenant: <span>{getSelectedTenantId()}</span>
-					</li>
-				</ul>
-				{renderContent()}
-			</div>
-			{showAddRoleDialog ? (
-				<AssignRolesDialog
-					userId={userId}
-					assignedRoles={assignedRoles}
-					setAssignedRoles={setAssignedRoles}
-					closeDialog={() => setShowAddRoleDialog(false)}
+			{props.isFeatureEnabled ? (
+				<>
+					<div className="user-roles-list-wrapper">
+						<ul>
+							<li>
+								All roles assigned to the user for tenant: <span>{getSelectedTenantId()}</span>
+							</li>
+						</ul>
+						{renderContent()}
+					</div>
+					{showAddRoleDialog ? (
+						<AssignRolesDialog
+							userId={userId}
+							assignedRoles={assignedRoles}
+							setAssignedRoles={setAssignedRoles}
+							closeDialog={() => setShowAddRoleDialog(false)}
+						/>
+					) : null}
+					{showDeleteRoleDialog && roleToDelete ? (
+						<DeleteUserRoleDialog
+							roleToDelete={roleToDelete}
+							userId={userId}
+							assignedRoles={assignedRoles}
+							setAssignedRoles={setAssignedRoles}
+							closeDialog={() => {
+								setRoleToDelete(undefined);
+								setShowDeleteDialogRole(false);
+							}}
+						/>
+					) : null}
+				</>
+			) : (
+				<Alert
+					title="Feature is not enabled"
+					content="Please enable this feature first to manage your User Roles and Permissions!"
 				/>
-			) : null}
-			{showDeleteRoleDialog && roleToDelete ? (
-				<DeleteUserRoleDialog
-					roleToDelete={roleToDelete}
-					userId={userId}
-					assignedRoles={assignedRoles}
-					setAssignedRoles={setAssignedRoles}
-					closeDialog={() => {
-						setRoleToDelete(undefined);
-						setShowDeleteDialogRole(false);
-					}}
-				/>
-			) : null}
+			)}
 		</LayoutPanel>
 	);
 }

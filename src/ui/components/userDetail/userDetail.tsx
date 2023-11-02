@@ -57,6 +57,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [userRoles, setUserRoles] = useState<string[]>([]);
+	const [isUserRolesFeatureEnabled, setIsUserRolesFeatureEnabled] = useState(true);
 
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
@@ -162,7 +163,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		}
 
 		if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-			alert("feature not enabled");
+			setIsUserRolesFeatureEnabled(false);
 		}
 	}
 
@@ -272,6 +273,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				<UserDetailInfoGrid {...props} />
 
 				<UserRolesList
+					isFeatureEnabled={isUserRolesFeatureEnabled}
 					roles={userRoles}
 					userId={user}
 				/>

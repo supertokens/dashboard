@@ -30,7 +30,7 @@ import DeleteRolesDialog from "./dialogs/DeleteRoles";
 import EditRoleDialog from "./dialogs/EditRole";
 import "./rolesTable.scss";
 
-export function RolesTable() {
+export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (value: boolean) => void }) {
 	const { getRoles } = useRolesService();
 	const { roles, setRoles } = useUserRolesContext();
 
@@ -49,6 +49,11 @@ export function RolesTable() {
 		if (response.status === "OK") {
 			setRoles(response.roles);
 		}
+
+		if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+			setIsFeatureEnabled(false);
+		}
+
 		setIsLoading(false);
 	}, [roles]);
 
