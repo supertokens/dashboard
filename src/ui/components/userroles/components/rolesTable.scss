@@ -11,12 +11,16 @@
 .permissions-container {
 	display: flex;
 	justify-content: space-between;
+	gap: 14px;
 
 	& > .permissions {
 		display: flex;
 		gap: 24px;
-		max-width: 400px;
 		overflow: hidden;
+
+		.badge-width {
+			width: 80px !important;
+		}
 	}
 
 	& > .delete-role {

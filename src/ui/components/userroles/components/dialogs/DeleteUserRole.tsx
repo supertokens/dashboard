@@ -62,6 +62,7 @@ export default function DeleteUserRoleDialog({
 					</Button>
 					<Button
 						isLoading={isDeletingRoles}
+						disabled={isDeletingRoles}
 						onClick={handleDeleteUserRole}
 						color="danger">
 						Yes, Delete

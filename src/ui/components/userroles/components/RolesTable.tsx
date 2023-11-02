@@ -38,7 +38,7 @@ export function RolesTable() {
 
 	const [selectedRolesToDelete, setSelectedRolesToDelete] = useState<string[]>([]);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-	const [showEditDialog, setShowEditDialog] = useState(true);
+	const [showEditDialog, setShowEditDialog] = useState(false);
 
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -85,32 +85,14 @@ export function RolesTable() {
 							<TableRow
 								key={role}
 								data-active={selected ? "true" : "false"}
-								onClick={() => {
+								onClick={(e) => {
 									setSelectedRole(roles[index]);
 									setShowEditDialog(true);
 								}}>
 								<TableCell>{role}</TableCell>
 								<TableCell>
 									<div className="permissions-container">
-										<div
-											id="permissions"
-											className="permissions">
-											{permissions.map((permission) => {
-												return (
-													<Badge
-														key={permission}
-														text={permission}
-													/>
-												);
-											})}
-											{permissions.length < 1 ? (
-												<Button
-													color="info"
-													size="xs">
-													No Permissions
-												</Button>
-											) : null}
-										</div>
+										<Permissions permissions={permissions} />
 										<button
 											onClick={(e) => {
 												e.stopPropagation();
@@ -142,5 +124,61 @@ export function RolesTable() {
 				/>
 			) : null}
 		</>
+	);
+}
+
+function Permissions({ permissions }: { permissions: string[] }) {
+	const [badgeRenderLimit, setBadgeRenderLimit] = useState(4);
+
+	useEffect(() => {
+		function handleResizeEvent() {
+			const matchesTablet = window.matchMedia("(min-width: 768px)");
+			const matchesMobile = window.matchMedia("(min-width: 568px)");
+
+			if (matchesMobile.matches === false) {
+				setBadgeRenderLimit(1);
+			} else if (matchesTablet.matches === false) {
+				setBadgeRenderLimit(2);
+			} else {
+				setBadgeRenderLimit(4);
+			}
+		}
+
+		handleResizeEvent();
+		window.addEventListener("resize", handleResizeEvent);
+
+		() => {
+			window.removeEventListener("resize", handleResizeEvent);
+		};
+	}, []);
+
+	return (
+		<div
+			id="permissions"
+			className="permissions">
+			{permissions.slice(0, badgeRenderLimit).map((permission) => {
+				return (
+					<Badge
+						className="badge-width"
+						key={permission}
+						text={permission}
+					/>
+				);
+			})}
+			{badgeRenderLimit < permissions.length ? (
+				<Button
+					size="sm"
+					color="info">
+					...
+				</Button>
+			) : null}
+			{permissions.length < 1 ? (
+				<Button
+					color="info"
+					size="xs">
+					No Permissions
+				</Button>
+			) : null}
+		</div>
 	);
 }
