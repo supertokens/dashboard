@@ -401,6 +401,12 @@ export const UserListPage = () => {
 		}
 	}, []);
 
+	useEffect(() => {
+		if (currentLocation && currentLocation.search.includes("userid") === false) {
+			backToList();
+		}
+	}, [currentLocation]);
+
 	const onUserSelected = (user: User) => {
 		navigate(
 			{
