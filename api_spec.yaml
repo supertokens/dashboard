@@ -1274,6 +1274,19 @@ paths:
             tags:
                 - User Roles and Permissions
             summary: Get all created roles
+            parameters:
+                - name: page
+                  in: query
+                  required: true
+                  schema:
+                      type: number
+                      example: "1"
+                - name: limit
+                  in: query
+                  required: true
+                  schema:
+                      type: number
+                      example: "10"
             responses:
                 200:
                     description: Success
@@ -1286,6 +1299,9 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
+                                          totalPages:
+                                              type: number
+                                              default: 5
                                           roles:
                                               type: array
                                               items:
@@ -1305,10 +1321,10 @@ paths:
                                               type: string
                                               default: "FEATURE_NOT_ENABLED_ERROR"
     /userroles/role:
-        post:
+        put:
             tags:
                 - User Roles and Permissions
-            summary: Creates a role with permissions
+            summary: Creates a role with permissions or Adds permissions to a existing role if already exits
             requestBody:
                 content:
                     application/json:
@@ -1337,11 +1353,14 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
+                                          createdNewRole:
+                                              type: boolean
+                                              default: true
                                     - type: object
                                       properties:
                                           status:
                                               type: string
-                                              default: "ROLE_ALREADY_EXITS"
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
                 401:
                     description: Unauthorised access
                     content:
@@ -1382,11 +1401,13 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
+                                          didRoleExists:
+                                              type: boolean
                                     - type: object
                                       properties:
                                           status:
                                               type: string
-                                              default: "ROLE_DO_NOT_EXISTS"
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
                 401:
                     description: Unauthorised access
                     content:
@@ -1431,54 +1452,17 @@ paths:
                                               type: array
                                               items:
                                                   type: string
-        put:
-            tags:
-                - User Roles and Permissions
-            summary: Adds new permissions to a role
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                role:
-                                    type: string
-                                    example: "admin"
-                                permissions:
-                                    type: array
-                                    items:
-                                        type: string
-            responses:
-                200:
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                oneOf:
+
                                     - type: object
                                       properties:
                                           status:
                                               type: string
-                                              default: "OK"
-                                          createdNewRole:
-                                              type: boolean
-                                              example: false
-                401:
-                    description: Unauthorised access
-                    content:
-                        text/plain:
-                            schema:
-                                type: string
-                                enum:
-                                    - Unauthorised access
-                400:
-                    description: error code 400
-                    content:
-                        text/plain:
-                            schema:
-                                type: string
-                                enum:
-                                    - Method not supported
+                                              default: "UNKNOWN_ROLE_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
     /userroles/role/permissions/remove:
         put:
             tags:
@@ -1509,11 +1493,17 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
+
                                     - type: object
                                       properties:
                                           status:
                                               type: string
                                               default: "UNKNOWN_ROLE_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
                 401:
                     description: Unauthorised access
                     content:
@@ -1560,18 +1550,18 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
-                                          permissions:
+                                          roles:
                                               type: array
                                               items:
                                                   type: string
                                                   example:
-                                                      - "read"
-                                                      - "write"
+                                                      - "admin"
+                                                      - "user"
                                     - type: object
                                       properties:
                                           status:
                                               type: string
-                                              default: "NO_ROLE_FOUND"
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
         put:
             tags:
                 - User Roles and Permissions
@@ -1604,6 +1594,9 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
+                                          didUserAlreadyHaveRole:
+                                              type: string
+                                              default: "false"
                                     - type: object
                                       properties:
                                           status:
@@ -1613,7 +1606,7 @@ paths:
                                       properties:
                                           status:
                                               type: string
-                                              default: "ROLE_ALREADY_ASSIGNED"
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
                 401:
                     description: Unauthorised access
                     content:
@@ -1659,11 +1652,19 @@ paths:
                                           status:
                                               type: string
                                               default: "OK"
+                                          didUserHaveRole:
+                                              type: boolean
+                                              default: false
                                     - type: object
                                       properties:
                                           status:
                                               type: string
                                               default: "UNKNOWN_ROLE_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
 
                 401:
                     description: Unauthorised access
