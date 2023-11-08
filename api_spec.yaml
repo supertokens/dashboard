@@ -1302,6 +1302,9 @@ paths:
                                           totalPages:
                                               type: number
                                               default: 5
+                                          rolesCount:
+                                              type: number
+                                              default: 50
                                           roles:
                                               type: array
                                               items:
