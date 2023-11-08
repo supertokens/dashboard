@@ -36,8 +36,10 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "https://st-dev-03e1e730-7d31-11ee-9ea0-ad2f8ba5cda5.aws.supertokens.io",
-		apiKey: "miTQ=HTwA-GjFURFIYgFLkM7pf",
+		connectionURI: "https://st-dev-fd533c00-7e09-11ee-a404-8962e21dfd1c.aws.supertokens.io",
+		apiKey: "Ee79bUTE4R5zu43fWi5hsfxhcJ",
+		// connectionURI: "https://st-dev-4d0a17a0-7d65-11ee-892e-af885d907f9e.aws.supertokens.io",
+		// apiKey: "LDY0PyT=TR1zCASPoENTiglToW",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",

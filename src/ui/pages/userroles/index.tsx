@@ -14,29 +14,17 @@
  */
 
 import { useState } from "react";
-import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 
 import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
 
 import { RolesTable } from "../../components/userroles/components/RolesTable";
 
 import Alert from "../../components/alert";
-import Button from "../../components/button";
-import CreateNewRole from "../../components/userroles/components/dialogs/CreateNewRole";
 import UserRolesContextProvider from "../../components/userroles/context/UserRolesContext";
 import "./index.scss";
 
 export default function UserRolesList() {
-	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [isFeatureEnabled, setIsFeatureEnabled] = useState(true);
-
-	function openDialog() {
-		setIsDialogOpen(true);
-	}
-
-	function closeDialog() {
-		setIsDialogOpen(false);
-	}
 
 	return (
 		<AppEnvContextProvider
@@ -52,18 +40,7 @@ export default function UserRolesList() {
 						your needs.
 					</p>
 					{isFeatureEnabled ? (
-						<>
-							<div className="search-add-role-container">
-								<Button
-									onClick={openDialog}
-									color="secondary">
-									<PlusIcon />
-									Add Role
-								</Button>
-								{isDialogOpen ? <CreateNewRole closeDialog={closeDialog} /> : null}
-							</div>
-							<RolesTable setIsFeatureEnabled={setIsFeatureEnabled} />
-						</>
+						<RolesTable setIsFeatureEnabled={setIsFeatureEnabled} />
 					) : (
 						<Alert
 							title="Feature is not enabled"

@@ -23,12 +23,16 @@ import useRolesService from "../../../../../api/userroles/role";
 import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import TagsInputField from "../../../inputField/TagsInputField";
-import { useUserRolesContext } from "../../context/UserRolesContext";
 import "./createNewRole.scss";
 
-export default function CreateNewRoleDialog({ closeDialog }: { closeDialog: () => void }) {
+export default function CreateNewRoleDialog({
+	closeDialog,
+	refetchRoles,
+}: {
+	closeDialog: () => void;
+	refetchRoles: () => void;
+}) {
 	const { createRole } = useRolesService();
-	const { roles, setRoles } = useUserRolesContext();
 	const { showToast } = useContext(PopupContentContext);
 
 	const [roleError, setRoleError] = useState<string | undefined>(undefined);
@@ -47,21 +51,33 @@ export default function CreateNewRoleDialog({ closeDialog }: { closeDialog: () =
 			setIsLoading(true);
 			const response = await createRole(role, permissions);
 
+			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: "This Feature is not enabled.",
+				});
+				closeDialog();
+				return;
+			}
+
 			if (response.status === "OK") {
+				if (response.createdNewRole === false) {
+					showToast({
+						iconImage: getImageUrl("form-field-error-icon.svg"),
+						toastType: "error",
+						children: "Role already exists!",
+					});
+					return;
+				}
+
 				showToast({
 					iconImage: getImageUrl("checkmark-green.svg"),
 					toastType: "success",
 					children: "Role create successfully!",
 				});
-
-				setRoles([...roles, { role, permissions }]);
-			} else if (response.status === "ROLE_ALREADY_EXITS") {
-				showToast({
-					iconImage: getImageUrl("checkmark-green.svg"),
-					toastType: "success",
-					children: "Role already exists",
-				});
 			}
+			refetchRoles();
 			closeDialog();
 		} catch (error) {
 			showToast({

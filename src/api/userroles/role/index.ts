@@ -21,6 +21,8 @@ type GetRolesResponse =
 	| {
 			status: "OK";
 			roles: Roles;
+			totalPages: number;
+			rolesCount: number;
 	  }
 	| {
 			status: "FEATURE_NOT_ENABLED_ERROR";
@@ -29,39 +31,36 @@ type GetRolesResponse =
 export const useRolesService = () => {
 	const fetchData = useFetchData();
 
-	const getRoles = async (): Promise<GetRolesResponse> => {
+	const getRoles = async (page: number, limit = 10): Promise<GetRolesResponse> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/roles"),
 			method: "GET",
+			query: {
+				page: page.toString(),
+				limit: limit.toString(),
+			},
 		});
 
 		if (response.ok) {
 			const body = await response.json();
-
-			if (body.status === "FEATURE_NOT_ENABLED_ERROR") {
-				return {
-					status: "FEATURE_NOT_ENABLED_ERROR",
-				};
-			}
-
 			return body;
 		}
 
 		return {
 			status: "OK",
 			roles: [],
+			rolesCount: 0,
+			totalPages: 0,
 		};
 	};
 
 	const createRole = async (
 		role: string,
 		permissions: string[]
-	): Promise<{
-		status: "OK" | "ROLE_ALREADY_EXITS";
-	}> => {
+	): Promise<{ status: "OK"; createdNewRole: boolean } | { status: "FEATURE_NOT_ENABLED_ERROR" }> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role"),
-			method: "POST",
+			method: "PUT",
 			config: {
 				body: JSON.stringify({
 					role,
@@ -72,16 +71,12 @@ export const useRolesService = () => {
 
 		if (response.ok) {
 			const body = await response.json();
-
-			if (body.status === "ROLE_ALREADY_EXITS") {
-				return {
-					status: "ROLE_ALREADY_EXITS",
-				};
-			}
+			return body;
 		}
 
 		return {
 			status: "OK",
+			createdNewRole: false,
 		};
 	};
 

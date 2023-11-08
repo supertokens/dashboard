@@ -1,0 +1,18 @@
+@import "../../styles/mixin.scss";
+
+.pagination {
+	display: flex;
+	@include gap-horizontal(1em);
+
+	.pagination-count {
+		font-weight: 500;
+	}
+	.pagination-navigation {
+		display: flex;
+		@include gap-horizontal(0.5em);
+	}
+	.pagination-button {
+		border: none;
+		background: none;
+	}
+}

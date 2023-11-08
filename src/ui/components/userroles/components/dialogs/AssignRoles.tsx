@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { ReactComponent as GreenCheckIcon } from "../../../../../assets/green-check.svg";
 import { ReactComponent as LoaderIcon } from "../../../../../assets/loader.svg";
@@ -78,7 +78,7 @@ export default function AssignRolesDialog({
 				</div>
 			);
 		}
-		if (isLoading === false && roles.length === assignedRoles.length) {
+		if (isLoading === false && roles.length === assignedRoles.length && roles.length > 0) {
 			return (
 				<div className="info-container">
 					<GreenCheckIcon />
@@ -90,7 +90,7 @@ export default function AssignRolesDialog({
 			);
 		}
 
-		if (isLoading === false && normalizedRoles.length < 1) {
+		if (isLoading === false && roles.length < 1) {
 			return (
 				<div className="info-container">
 					<SecuityKeyIcon />
@@ -137,9 +137,9 @@ export default function AssignRolesDialog({
 		});
 	}
 
-	const fetchRoles = useCallback(async () => {
+	const fetchRoles = async () => {
 		setIsLoading(true);
-		const response = await getRoles();
+		const response = await getRoles(1);
 
 		if (response.status === "OK") {
 			const roles = response.roles.map((r) => r.role);
@@ -149,7 +149,7 @@ export default function AssignRolesDialog({
 			setFilteredRoles(normalizedRoles);
 		}
 		setIsLoading(false);
-	}, [roles]);
+	};
 
 	useEffect(() => {
 		void fetchRoles();

@@ -112,7 +112,7 @@ export default function EditRoleDialog({ closeDialog, selectedRole }: { closeDia
 								Go Back
 							</Button>
 							<Button
-								disabled={permissions.length === 0}
+								disabled={permissions.length === 0 || isSaving}
 								isLoading={isSaving}
 								onClick={handleSave}>
 								Save

@@ -26,14 +26,12 @@ import "./deleteRoles.scss";
 
 export default function DeleteRolesDialog({
 	selectedRole,
-	selectedRoles,
+	refetchRoles,
 	closeDialog,
-	resetSelectedRoles,
 }: {
 	selectedRole: string;
-	selectedRoles: string[];
+	refetchRoles: () => void;
 	closeDialog: () => void;
-	resetSelectedRoles: () => void;
 }) {
 	const { showToast } = useContext(PopupContentContext);
 	const { roles, setRoles } = useUserRolesContext();
@@ -59,7 +57,7 @@ export default function DeleteRolesDialog({
 			});
 
 			setRoles(filteredRoles);
-			resetSelectedRoles();
+			refetchRoles();
 			closeDialog();
 		} catch (_) {
 			showToast({
