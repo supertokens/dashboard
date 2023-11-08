@@ -22,7 +22,7 @@ export const useUserRolesService = () => {
 		userId: string,
 		role: string
 	): Promise<{
-		status: "OK" | "UNKNOWN_ROLE_ERROR" | "ROLE_ALREADY_ASSIGNED";
+		status: "OK" | "UNKNOWN_ROLE_ERROR";
 	}> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/user/roles"),

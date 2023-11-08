@@ -76,14 +76,14 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 						</TableHead>
 					</TableRow>
 				</TableHeader>
-				{isLoading ? (
-					<PlaceholderTableRows
-						rowCount={10}
-						colSpan={3}
-						className={"user-info"}
-					/>
-				) : null}
 				<TableBody>
+					{isLoading ? (
+						<PlaceholderTableRows
+							rowCount={10}
+							colSpan={3}
+							className={"user-info"}
+						/>
+					) : null}
 					{roles.map(({ role, permissions }, index) => {
 						const selected = selectedRolesToDelete.includes(role);
 						return (

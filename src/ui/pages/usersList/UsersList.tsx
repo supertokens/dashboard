@@ -344,7 +344,6 @@ export const UserListPage = () => {
 				replace: true,
 			}
 		);
-		void reloadListRef.current?.();
 		setSelectedUser(undefined);
 	}, []);
 
@@ -405,7 +404,7 @@ export const UserListPage = () => {
 		if (currentLocation && currentLocation.search.includes("userid") === false) {
 			backToList();
 		}
-	}, [currentLocation]);
+	}, [currentLocation.search]);
 
 	const onUserSelected = (user: User) => {
 		navigate(
