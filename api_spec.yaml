@@ -1277,13 +1277,13 @@ paths:
             parameters:
                 - name: page
                   in: query
-                  required: true
+                  required: false
                   schema:
                       type: number
                       example: "1"
                 - name: limit
                   in: query
-                  required: true
+                  required: false
                   schema:
                       type: number
                       example: "10"
@@ -1318,6 +1318,19 @@ paths:
                                                           items:
                                                               type: string
                                                               default: "read"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          roles:
+                                              type: array
+                                              items:
+                                                  type: string
+                                                  example:
+                                                      - "admin"
+                                                      - "user"
+
                                     - type: object
                                       properties:
                                           status:
