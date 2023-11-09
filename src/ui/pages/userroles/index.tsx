@@ -36,7 +36,7 @@ export default function UserRolesList() {
 				<div className="userroles-container">
 					<h1 className="users-list-title">Roles and Permissions</h1>
 					<p className="text-small users-list-subtitle">
-						One place to manage all your user Roles and Permissions. Edit roles and permissions according to
+						One place to manage all your user roles and permissions. Edit roles and permissions according to
 						your needs.
 					</p>
 					{isFeatureEnabled ? (

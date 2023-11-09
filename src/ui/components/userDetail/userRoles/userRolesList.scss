@@ -49,8 +49,7 @@
 				fill: #6e6a65;
 			}
 
-			&:hover {
-				border-radius: 6px;
+			&:hover:not([data-disable-hover="true"]) {
 				border: 1px solid rgba(0, 122, 255, 0.5);
 
 				color: var(--color-secondary);

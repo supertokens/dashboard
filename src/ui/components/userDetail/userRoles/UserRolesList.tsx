@@ -72,7 +72,13 @@ export default function UserRolesList(props: UserRolesListProps) {
 
 		return (
 			<div className="roles-list-container">
-				{assignedRoles.length < 1 ? <button className="add-role-btn">No assigned User Roles</button> : null}
+				{assignedRoles.length < 1 ? (
+					<button
+						data-disable-hover="true"
+						className="add-role-btn">
+						No assigned User Roles
+					</button>
+				) : null}
 				{assignedRoles.map((role) => {
 					return (
 						<Badge

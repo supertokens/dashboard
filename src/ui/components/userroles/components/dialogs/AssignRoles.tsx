@@ -70,6 +70,22 @@ export default function AssignRolesDialog({
 		}
 	}
 
+	const fetchRoles = async () => {
+		setIsLoading(true);
+		const response = await getRoles();
+		if (response.status === "OK" && response.totalPages === undefined) {
+			setRoles(response.roles);
+			const normalizedRoles = response.roles.filter((r) => assignedRoles.includes(r) === false);
+			setNormalizedRoles(normalizedRoles);
+			setFilteredRoles(normalizedRoles);
+		}
+		setIsLoading(false);
+	};
+
+	useEffect(() => {
+		void fetchRoles();
+	}, []);
+
 	function renderRoles() {
 		if (isLoading === true) {
 			return (
@@ -137,24 +153,6 @@ export default function AssignRolesDialog({
 		});
 	}
 
-	const fetchRoles = async () => {
-		setIsLoading(true);
-		const response = await getRoles(1);
-
-		if (response.status === "OK") {
-			const roles = response.roles.map((r) => r.role);
-			setRoles(roles);
-			const normalizedRoles = roles.filter((r) => assignedRoles.includes(r) === false);
-			setNormalizedRoles(normalizedRoles);
-			setFilteredRoles(normalizedRoles);
-		}
-		setIsLoading(false);
-	};
-
-	useEffect(() => {
-		void fetchRoles();
-	}, []);
-
 	return (
 		<Dialog closeDialog={closeDialog}>
 			<DialogContent>
@@ -168,6 +166,7 @@ export default function AssignRolesDialog({
 								alt="search icon"
 							/>
 							<InputField
+								disabled={isLoading}
 								forceShowError={true}
 								name="search-box"
 								type="text"

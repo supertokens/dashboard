@@ -17,6 +17,11 @@ import { getApiUrl, useFetchData } from "../../../utils";
 
 type Roles = Array<{ role: string; permissions: string[] }>;
 
+type GetRolesQuery = {
+	page: string;
+	limit: string;
+};
+
 type GetRolesResponse =
 	| {
 			status: "OK";
@@ -25,20 +30,22 @@ type GetRolesResponse =
 			rolesCount: number;
 	  }
 	| {
+			status: "OK";
+			roles: string[];
+			totalPages: undefined;
+	  }
+	| {
 			status: "FEATURE_NOT_ENABLED_ERROR";
 	  };
 
 export const useRolesService = () => {
 	const fetchData = useFetchData();
 
-	const getRoles = async (page: number, limit = 10): Promise<GetRolesResponse> => {
+	const getRoles = async (query?: GetRolesQuery): Promise<GetRolesResponse> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/roles"),
 			method: "GET",
-			query: {
-				page: page.toString(),
-				limit: limit.toString(),
-			},
+			query,
 		});
 
 		if (response.ok) {

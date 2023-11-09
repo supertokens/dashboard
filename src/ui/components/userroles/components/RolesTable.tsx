@@ -58,9 +58,9 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 		setIsLoading(true);
 		setRoles([]);
 		try {
-			const response = await getRoles(page, PAGINATION_LIMIT);
+			const response = await getRoles({ limit: PAGINATION_LIMIT.toString(), page: page.toString() });
 
-			if (response.status === "OK") {
+			if (response.status === "OK" && response.totalPages !== undefined) {
 				if (response.roles.length < 1 && page !== 1) {
 					setPage(page - 1);
 					return;
