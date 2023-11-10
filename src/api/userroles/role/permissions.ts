@@ -36,10 +36,7 @@ export const usePermissionsService = () => {
 			return body;
 		}
 
-		return {
-			status: "OK",
-			permissions: [],
-		};
+		return undefined;
 	};
 
 	const addPermissionsToRole = async (
@@ -62,10 +59,7 @@ export const usePermissionsService = () => {
 			return body;
 		}
 
-		return {
-			status: "OK",
-			createdNewRole: false,
-		};
+		return undefined;
 	};
 
 	const removePermissionsFromRole = async (
@@ -93,9 +87,7 @@ export const usePermissionsService = () => {
 			return body;
 		}
 
-		return {
-			status: "OK",
-		};
+		return undefined;
 	};
 
 	return {

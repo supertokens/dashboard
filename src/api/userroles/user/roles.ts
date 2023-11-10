@@ -43,9 +43,7 @@ export const useUserRolesService = () => {
 			return body;
 		}
 
-		return {
-			status: "OK",
-		};
+		return undefined;
 	};
 
 	const getRolesForUser = async (
@@ -73,10 +71,7 @@ export const useUserRolesService = () => {
 			return body;
 		}
 
-		return {
-			status: "OK",
-			roles: [],
-		};
+		return undefined;
 	};
 
 	const removeUserRole = async (
@@ -105,9 +100,7 @@ export const useUserRolesService = () => {
 			return body;
 		}
 
-		return {
-			status: "OK",
-		};
+		return undefined;
 	};
 
 	return {

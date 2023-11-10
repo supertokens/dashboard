@@ -46,8 +46,8 @@ SuperTokens.init({
 	},
 	recipeList: [
 		Dashboard.init({
-			// Keep this so that the dev server uses api key based login
 			apiKey: "test",
+			// Keep this so that the dev server uses api key based login
 			override: {
 				functions: (original) => {
 					return {

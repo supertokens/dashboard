@@ -44,7 +44,7 @@ export default function UserRolesList() {
 					) : (
 						<Alert
 							title="Feature is not enabled"
-							content="Please enable this feature first to manage your User Roles and Permissions!"
+							content="Please enable this feature first to manage your user roles and permissions!"
 						/>
 					)}
 				</div>

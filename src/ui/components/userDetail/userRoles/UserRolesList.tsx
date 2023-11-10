@@ -136,7 +136,7 @@ export default function UserRolesList(props: UserRolesListProps) {
 			) : (
 				<Alert
 					title="Feature is not enabled"
-					content="Please enable this feature first to manage your User Roles and Permissions!"
+					content="Please enable this feature first to manage your user roles and permissions!"
 				/>
 			)}
 		</LayoutPanel>
