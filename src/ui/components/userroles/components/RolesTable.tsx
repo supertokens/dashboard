@@ -60,18 +60,26 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 		try {
 			const response = await getRoles({ limit: PAGINATION_LIMIT.toString(), page: page.toString() });
 
-			if (response.status === "OK" && response.totalPages !== undefined) {
-				if (response.roles.length < 1 && page !== 1) {
-					setPage(page - 1);
-					return;
+			if (response !== undefined) {
+				if (response.status === "OK" && response.totalPages !== undefined) {
+					if (response.roles.length < 1 && page !== 1) {
+						setPage(page - 1);
+						return;
+					}
+					setRoles(response.roles);
+					setTotalPages(response.totalPages);
+					setRolesCount(response.rolesCount);
 				}
-				setRoles(response.roles);
-				setTotalPages(response.totalPages);
-				setRolesCount(response.rolesCount);
-			}
 
-			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				setIsFeatureEnabled(false);
+				if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+					setIsFeatureEnabled(false);
+				}
+			} else {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Something went wrong Please try again!</>,
+				});
 			}
 		} catch (_) {
 			showToast({

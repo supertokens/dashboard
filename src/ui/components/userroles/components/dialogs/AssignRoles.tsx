@@ -73,11 +73,19 @@ export default function AssignRolesDialog({
 	const fetchRoles = async () => {
 		setIsLoading(true);
 		const response = await getRoles();
-		if (response.status === "OK" && response.totalPages === undefined) {
-			setRoles(response.roles);
-			const normalizedRoles = response.roles.filter((r) => assignedRoles.includes(r) === false);
-			setNormalizedRoles(normalizedRoles);
-			setFilteredRoles(normalizedRoles);
+		if (response !== undefined) {
+			if (response.status === "OK" && response.totalPages === undefined) {
+				setRoles(response.roles);
+				const normalizedRoles = response.roles.filter((r) => assignedRoles.includes(r) === false);
+				setNormalizedRoles(normalizedRoles);
+				setFilteredRoles(normalizedRoles);
+			}
+		} else {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong Please try again!</>,
+			});
 		}
 		setIsLoading(false);
 	};

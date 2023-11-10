@@ -51,30 +51,38 @@ export default function CreateNewRoleDialog({
 			setIsLoading(true);
 			const response = await createRole(role, permissions);
 
-			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: "This Feature is not enabled.",
-				});
-				closeDialog();
-				return;
-			}
-
-			if (response.status === "OK") {
-				if (response.createdNewRole === false) {
+			if (response !== undefined) {
+				if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
 					showToast({
 						iconImage: getImageUrl("form-field-error-icon.svg"),
 						toastType: "error",
-						children: "Role already exists!",
+						children: "This Feature is not enabled.",
 					});
+					closeDialog();
 					return;
 				}
 
+				if (response.status === "OK") {
+					if (response.createdNewRole === false) {
+						showToast({
+							iconImage: getImageUrl("form-field-error-icon.svg"),
+							toastType: "error",
+							children: "Role already exists!",
+						});
+						return;
+					}
+
+					showToast({
+						iconImage: getImageUrl("checkmark-green.svg"),
+						toastType: "success",
+						children: "Role create successfully!",
+					});
+				}
+			} else {
 				showToast({
-					iconImage: getImageUrl("checkmark-green.svg"),
-					toastType: "success",
-					children: "Role create successfully!",
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Something went wrong Please try again!</>,
 				});
 			}
 			refetchRoles();

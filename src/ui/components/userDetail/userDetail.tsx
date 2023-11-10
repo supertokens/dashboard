@@ -63,14 +63,12 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
 	const { getRolesForUser } = useUserRolesService();
-	const { showModal } = useContext(PopupContentContext);
+	const { showModal, showToast } = useContext(PopupContentContext);
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user);
 		setUserDetail(JSON.parse(JSON.stringify(userDetailsResponse)));
 	}, []);
-
-	const { showToast } = useContext(PopupContentContext);
 
 	const updateUser = useCallback(
 		async (
@@ -158,12 +156,20 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 	async function fetchUserRoles() {
 		const response = await getRolesForUser(user);
-		if (response.status === "OK") {
-			setUserRoles(response.roles);
-		}
+		if (response !== undefined) {
+			if (response.status === "OK") {
+				setUserRoles(response.roles);
+			}
 
-		if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-			setIsUserRolesFeatureEnabled(false);
+			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+				setIsUserRolesFeatureEnabled(false);
+			}
+		} else {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong Please try again!</>,
+			});
 		}
 	}
 

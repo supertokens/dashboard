@@ -21,9 +21,12 @@ export const useUserRolesService = () => {
 	const addRoleToUser = async (
 		userId: string,
 		role: string
-	): Promise<{
-		status: "OK" | "UNKNOWN_ROLE_ERROR";
-	}> => {
+	): Promise<
+		| {
+				status: "OK" | "UNKNOWN_ROLE_ERROR";
+		  }
+		| undefined
+	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/user/roles"),
 			method: "PUT",
@@ -55,6 +58,7 @@ export const useUserRolesService = () => {
 		| {
 				status: "FEATURE_NOT_ENABLED_ERROR";
 		  }
+		| undefined
 	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/user/roles"),
@@ -85,6 +89,7 @@ export const useUserRolesService = () => {
 		| {
 				status: "UNKNOWN_ROLE_ERROR";
 		  }
+		| undefined
 	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/user/roles"),

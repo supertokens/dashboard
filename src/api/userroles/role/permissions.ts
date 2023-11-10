@@ -24,6 +24,7 @@ export const usePermissionsService = () => {
 				permissions: string[];
 		  }
 		| { status: "FEATURE_NOT_ENABLED_ERROR" }
+		| undefined
 	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role/permissions"),
@@ -44,7 +45,7 @@ export const usePermissionsService = () => {
 	const addPermissionsToRole = async (
 		role: string,
 		permissions: string[]
-	): Promise<{ status: "OK"; createdNewRole: boolean } | { status: "FEATURE_NOT_ENABLED_ERROR" }> => {
+	): Promise<{ status: "OK"; createdNewRole: boolean } | { status: "FEATURE_NOT_ENABLED_ERROR" } | undefined> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role"),
 			method: "PUT",
@@ -70,9 +71,12 @@ export const usePermissionsService = () => {
 	const removePermissionsFromRole = async (
 		role: string,
 		permissions: string[]
-	): Promise<{
-		status: "OK" | "UNKNOWN_ROLE_ERROR" | "FEATURE_NOT_ENABLED_ERROR";
-	}> => {
+	): Promise<
+		| {
+				status: "OK" | "UNKNOWN_ROLE_ERROR" | "FEATURE_NOT_ENABLED_ERROR";
+		  }
+		| undefined
+	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role/permissions/remove"),
 			method: "PUT",

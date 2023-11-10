@@ -41,7 +41,7 @@ type GetRolesResponse =
 export const useRolesService = () => {
 	const fetchData = useFetchData();
 
-	const getRoles = async (query?: GetRolesQuery): Promise<GetRolesResponse> => {
+	const getRoles = async (query?: GetRolesQuery): Promise<GetRolesResponse | undefined> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/roles"),
 			method: "GET",
@@ -53,18 +53,13 @@ export const useRolesService = () => {
 			return body;
 		}
 
-		return {
-			status: "OK",
-			roles: [],
-			rolesCount: 0,
-			totalPages: 0,
-		};
+		return undefined;
 	};
 
 	const createRole = async (
 		role: string,
 		permissions: string[]
-	): Promise<{ status: "OK"; createdNewRole: boolean } | { status: "FEATURE_NOT_ENABLED_ERROR" }> => {
+	): Promise<{ status: "OK"; createdNewRole: boolean } | { status: "FEATURE_NOT_ENABLED_ERROR" } | undefined> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role"),
 			method: "PUT",
@@ -81,10 +76,7 @@ export const useRolesService = () => {
 			return body;
 		}
 
-		return {
-			status: "OK",
-			createdNewRole: false,
-		};
+		return undefined;
 	};
 
 	const deleteRole = async (role: string): Promise<void> => {
