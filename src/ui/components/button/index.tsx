@@ -27,7 +27,7 @@ export default function Button(props: ButtonProps) {
 	const { color = "primary", size = "md", className = "", isLoading, children, ...rest } = props;
 	return (
 		<button
-			className={`btn ${size} ${color}`}
+			className={`btn ${size} ${color} ${className}`}
 			{...rest}>
 			{children}
 			{isLoading ? <SpinnerIcon className="spinner" /> : null}
