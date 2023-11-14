@@ -9,11 +9,11 @@ export default function SelectPermissions({
 	permissions,
 	permissionsToDelete,
 	setPermissionsToDelete,
-	addPermissions,
+	addPermission,
 	openDeletePermissionsDialog,
 }: {
 	permissions: string[];
-	addPermissions: (permissions: string[]) => void;
+	addPermission: (permissions: string) => void;
 	permissionsToDelete: string[];
 	setPermissionsToDelete: (permissions: string[]) => void;
 	openDeletePermissionsDialog: () => void;
@@ -40,7 +40,7 @@ export default function SelectPermissions({
 								if (e.key === "Enter") {
 									const newTag = e.currentTarget.value.trim();
 									if (newTag !== "" && permissions.includes(newTag) === false) {
-										addPermissions([newTag]);
+										addPermission(newTag);
 									}
 									e.currentTarget.value = "";
 								}

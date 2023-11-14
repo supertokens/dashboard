@@ -31,10 +31,10 @@ export default function EditRoleDialog({
 	roles,
 	setRoles,
 	onCloseDialog,
-	selectedRole,
+	currentlySelectedRole,
 }: {
 	onCloseDialog: () => void;
-	selectedRole: Role;
+	currentlySelectedRole: Role;
 	roles: Role[];
 	setRoles: (roles: Role[]) => void;
 }) {
@@ -42,25 +42,29 @@ export default function EditRoleDialog({
 
 	//	to toggle between editing and readonly mode.
 	const [isInEditingMode, setIsInEditingMode] = useState(false);
-	//	to track addPermissionsToRole http state.
+	//	to track addPermissionsToRole loading http state.
 	const [isSaving, setIsSaving] = useState(false);
+
+	// to track deleting roles loading http state.
+	const [isDeletingRoles, setIsDeletingRoles] = useState(false);
+
 	const [isDeletePermissionsDialogOpen, setIsDeletePermissionsDialogOpen] = useState(false);
 
-	const [permissions, setPermissions] = useState(selectedRole.permissions);
+	const [permissions, setPermissions] = useState(currentlySelectedRole.permissions);
 
 	//	to store permissions that needs to be deleted
 	const [permissionsToDelete, setPermissionsToDelete] = useState<string[]>([]);
 
-	const { addPermissionsToRole } = usePermissionsService();
+	const { addPermissionsToRole, removePermissionsFromRole } = usePermissionsService();
 
-	function addPermission(newPermissions: string[]) {
-		setPermissions([...permissions, ...newPermissions]);
+	function addPermission(newPermissions: string) {
+		setPermissions([...permissions, newPermissions]);
 	}
 
 	async function handleSave() {
 		setIsSaving(true);
 		try {
-			await addPermissionsToRole(selectedRole.role, permissions);
+			await addPermissionsToRole(currentlySelectedRole.role, permissions);
 
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
@@ -69,7 +73,7 @@ export default function EditRoleDialog({
 			});
 
 			const updatedRolesData = roles.map((role) => {
-				if (role.role === selectedRole.role) {
+				if (role.role === currentlySelectedRole.role) {
 					role.permissions = permissions;
 				}
 				return role;
@@ -88,45 +92,102 @@ export default function EditRoleDialog({
 		}
 	}
 
+	async function handleDeletePermissions() {
+		if (permissionsToDelete.length === 0) {
+			return;
+		}
+		setIsDeletingRoles(true);
+
+		try {
+			await removePermissionsFromRole(currentlySelectedRole.role, permissionsToDelete);
+
+			const filteredPermissions = currentlySelectedRole.permissions.filter(
+				(p) => permissionsToDelete.includes(p) === false
+			);
+
+			const updatedRolesData = roles.map((role) => {
+				if (role.role === currentlySelectedRole.role) {
+					role.permissions = filteredPermissions;
+				}
+				return role;
+			});
+
+			setRoles(updatedRolesData);
+			setPermissions(permissions.filter((p) => permissionsToDelete.includes(p) === false));
+			setPermissionsToDelete([]);
+			showToast({
+				iconImage: getImageUrl("checkmark-green.svg"),
+				toastType: "success",
+				children:
+					permissionsToDelete.length === 1
+						? "Permission deleted successfully!"
+						: "Permissions deleted successfully!",
+			});
+			setIsDeletePermissionsDialogOpen(false);
+		} catch (_) {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong Please try again!</>,
+			});
+		} finally {
+			setIsDeletingRoles(false);
+		}
+	}
+
 	if (isDeletePermissionsDialogOpen) {
 		return (
 			<DeletePermissionDialog
-				roles={roles}
-				setRoles={setRoles}
-				selectedRole={selectedRole}
 				onCloseDialog={() => setIsDeletePermissionsDialogOpen(false)}
-				resetPermissionsToDelete={() => setPermissionsToDelete([])}
 				selectedPermissions={permissionsToDelete}
-				updatePermissions={setPermissions}
+				isDeletingRoles={isDeletingRoles}
+				handleDeletePermissions={handleDeletePermissions}
 			/>
 		);
+	}
+
+	//	 this function will check if the user have any not saved changes
+	//	 promts to confirm if they want discard there changes.
+	function askToDiscardChanges(callback: () => void) {
+		if (permissions.length !== currentlySelectedRole.permissions.length) {
+			if (confirm("Do you want discard the changes you made?")) {
+				callback();
+			}
+			return;
+		} else {
+			callback();
+		}
 	}
 
 	return (
 		<Dialog
 			title="Role Info"
-			onCloseDialog={onCloseDialog}>
+			onCloseDialog={() => askToDiscardChanges(onCloseDialog)}>
 			<DialogContent>
 				{isInEditingMode ? (
 					<>
 						<div className="edit-role-content">
 							<div>
 								<span className="label">Name of the Role</span>
-								<span className="role-name">{selectedRole.role}</span>
+								<span className="role-name">{currentlySelectedRole.role}</span>
 							</div>
 							<div>
 								<SelectPermissions
 									openDeletePermissionsDialog={() => setIsDeletePermissionsDialogOpen(true)}
 									permissionsToDelete={permissionsToDelete}
 									setPermissionsToDelete={setPermissionsToDelete}
-									addPermissions={addPermission}
+									addPermission={addPermission}
 									permissions={permissions}
 								/>
 							</div>
 						</div>
 						<DialogFooter>
 							<Button
-								onClick={() => setIsInEditingMode(false)}
+								onClick={() =>
+									askToDiscardChanges(() => {
+										setIsInEditingMode(false);
+									})
+								}
 								color="gray-outline">
 								Go Back
 							</Button>
@@ -143,7 +204,7 @@ export default function EditRoleDialog({
 						<div className="edit-role-content">
 							<div>
 								<span className="label">Name of the Role</span>
-								<span className="role-name">{selectedRole.role}</span>
+								<span className="role-name">{currentlySelectedRole.role}</span>
 							</div>
 							<div>
 								<span className="label">Permissions</span>

@@ -24,11 +24,11 @@ import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import "./deleteRoles.scss";
 
 export default function DeleteRolesDialog({
-	selectedRole,
+	currentlySelectedRoleName,
 	refetchRoles,
 	onCloseDialog,
 }: {
-	selectedRole: string;
+	currentlySelectedRoleName: string;
 	refetchRoles: () => void;
 	onCloseDialog: () => void;
 }) {
@@ -38,13 +38,10 @@ export default function DeleteRolesDialog({
 	const [isDeletingRoles, setIsDeletingRoles] = useState(false);
 
 	async function handleDeleteRoles() {
-		if (typeof selectedRole !== "string") {
-			return;
-		}
 		setIsDeletingRoles(true);
 
 		try {
-			await deleteRole(selectedRole);
+			await deleteRole(currentlySelectedRoleName);
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
 				toastType: "success",
@@ -69,8 +66,8 @@ export default function DeleteRolesDialog({
 			onCloseDialog={onCloseDialog}>
 			<DialogContent>
 				<p className="you-sure-text">
-					Are you sure you want to delete Role: <span className="red">{selectedRole}</span>? This action is
-					irreversible.
+					Are you sure you want to delete Role: <span className="red">{currentlySelectedRoleName}</span>? This
+					action is irreversible.
 				</p>
 				<DialogFooter border="border-none">
 					<Button

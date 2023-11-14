@@ -13,116 +13,52 @@
  * under the License.
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import useRolesService from "../../../../api/userroles/role";
-import { ReactComponent as PlusIcon } from "../../../../assets/plus.svg";
 import Badge from "../../badge";
 
 import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
 
-import { getImageUrl } from "../../../../utils";
-import { PopupContentContext } from "../../../contexts/PopupContentContext";
+import { PaginationData, USERROLES_PAGINATION_LIMIT } from "../../../pages/userroles";
 import Button from "../../button";
 import Pagination from "../../pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
 import { PlaceholderTableRows } from "../../usersListTable/UsersListTable";
 import { Role } from "../types";
 import NoRolesFound from "./NoRolesFound";
-import CreateNewRole from "./dialogs/CreateNewRole";
 import DeleteRolesDialog from "./dialogs/DeleteRoles";
 import EditRoleDialog from "./dialogs/EditRole";
 import "./rolesTable.scss";
 
-const PAGINATION_LIMIT = 10;
+type RolesTableProps = {
+	roles: Role[];
+	isFetchingRoles: boolean;
+	currentActivePage: number;
+	paginationData?: PaginationData;
+	setCurrentActivePage: (page: number) => void;
+	fetchRoles: () => void;
+	setRoles: (roles: Role[]) => void;
+};
 
-export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (value: boolean) => void }) {
-	const { getRoles } = useRolesService();
-	const { showToast } = useContext(PopupContentContext);
-	//	used to stores roles data from response.
-	const [roles, setRoles] = useState<Role[]>([]);
-
+export function RolesTable({
+	roles,
+	isFetchingRoles,
+	currentActivePage,
+	paginationData,
+	setCurrentActivePage,
+	fetchRoles,
+	setRoles,
+}: RolesTableProps) {
 	//	used to determine what role does user have selected
-	const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
+	const [currentlySelectedRole, setCurrentlySelectedRole] = useState<Role | undefined>(undefined);
 
 	//	used to control opening and closing dialog
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-	const [showCreateNewRoleDialogOpen, setShowCreateNewRoleDialogOpen] = useState(false);
 	const [showEditDialog, setShowEditDialog] = useState(false);
-
-	//	data used to track pagination
-	const [currentActivePage, setCurrentActivePage] = useState(1);
-	const [paginationData, setPaginationData] = useState<
-		| {
-				totalPages: number;
-				rolesCount: number;
-		  }
-		| undefined
-	>(undefined);
-	//	managed fetchRoles http loading state.
-	const [isLoading, setIsLoading] = useState(false);
-
-	const fetchRoles = async () => {
-		setIsLoading(true);
-		setRoles([]);
-		try {
-			const response = await getRoles({ limit: PAGINATION_LIMIT.toString(), page: currentActivePage.toString() });
-
-			if (response !== undefined) {
-				if (response.status === "OK" && response.totalPages !== undefined) {
-					if (response.roles.length < 1 && currentActivePage !== 1) {
-						setCurrentActivePage(currentActivePage - 1);
-						return;
-					}
-					setRoles(response.roles);
-					setPaginationData({
-						rolesCount: response.rolesCount,
-						totalPages: response.totalPages,
-					});
-				}
-
-				if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-					setIsFeatureEnabled(false);
-				}
-			} else {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>Something went wrong Please try again!</>,
-				});
-			}
-		} catch (_) {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children: <>Something went wrong Please try again!</>,
-			});
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		void fetchRoles();
-	}, [currentActivePage]);
 
 	return (
 		<>
-			<div className="search-add-role-container">
-				<Button
-					onClick={() => setShowCreateNewRoleDialogOpen(true)}
-					color="secondary">
-					<PlusIcon />
-					Add Role
-				</Button>
-				{showCreateNewRoleDialogOpen ? (
-					<CreateNewRole
-						refetchRoles={fetchRoles}
-						onCloseDialog={() => setShowCreateNewRoleDialogOpen(false)}
-					/>
-				) : null}
-			</div>
-			{isLoading === false && roles.length < 1 && currentActivePage === 1 ? (
+			{isFetchingRoles === false && roles.length < 1 && currentActivePage === 1 ? (
 				<NoRolesFound />
 			) : (
 				<div className="margin-bottom-36">
@@ -134,7 +70,7 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 									className="roles-list-pagination"
 									handleNext={() => setCurrentActivePage(currentActivePage + 1)}
 									handlePrevious={() => setCurrentActivePage(currentActivePage - 1)}
-									limit={PAGINATION_LIMIT}
+									limit={USERROLES_PAGINATION_LIMIT}
 									currentActivePage={currentActivePage}
 									totalPages={paginationData.totalPages}
 									offset={roles.length}
@@ -151,7 +87,7 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{isLoading ? (
+							{isFetchingRoles ? (
 								<PlaceholderTableRows
 									rowCount={14}
 									colSpan={3}
@@ -163,7 +99,7 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 									<TableRow
 										key={role}
 										onClick={(e) => {
-											setSelectedRole(roles[index]);
+											setCurrentlySelectedRole(roles[index]);
 											setShowEditDialog(true);
 										}}>
 										<TableCell>{role}</TableCell>
@@ -174,7 +110,7 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 													onClick={(e) => {
 														e.stopPropagation();
 														setShowDeleteDialog(true);
-														setSelectedRole(roles[index]);
+														setCurrentlySelectedRole(roles[index]);
 													}}
 													className="delete-role">
 													<TrashIcon />
@@ -186,18 +122,18 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 							})}
 						</TableBody>
 					</Table>
-					{showDeleteDialog && selectedRole !== undefined ? (
+					{showDeleteDialog && currentlySelectedRole !== undefined ? (
 						<DeleteRolesDialog
 							refetchRoles={fetchRoles}
 							onCloseDialog={() => setShowDeleteDialog(false)}
-							selectedRole={selectedRole?.role}
+							currentlySelectedRoleName={currentlySelectedRole.role}
 						/>
 					) : null}
-					{showEditDialog && selectedRole !== undefined ? (
+					{showEditDialog && currentlySelectedRole !== undefined ? (
 						<EditRoleDialog
 							roles={roles}
 							setRoles={setRoles}
-							selectedRole={selectedRole}
+							currentlySelectedRole={currentlySelectedRole}
 							onCloseDialog={() => setShowEditDialog(false)}
 						/>
 					) : null}

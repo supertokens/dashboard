@@ -13,80 +13,20 @@
  * under the License.
  */
 
-import { useContext, useState } from "react";
-import { usePermissionsService } from "../../../../../api/userroles/role/permissions";
-import { getImageUrl } from "../../../../../utils";
-import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
-import { Role } from "../../types";
 
 export default function DeletePermissionDialog({
-	roles,
-	selectedRole,
 	selectedPermissions,
-	setRoles,
+	isDeletingRoles,
 	onCloseDialog,
-	updatePermissions,
-	resetPermissionsToDelete,
+	handleDeletePermissions,
 }: {
-	roles: Role[];
 	selectedPermissions: string[];
-	selectedRole: Role;
 	onCloseDialog: () => void;
-	setRoles: (roles: Role[]) => void;
-	resetPermissionsToDelete: () => void;
-	updatePermissions: (permissions: string[]) => void;
+	handleDeletePermissions: () => void;
+	isDeletingRoles: boolean;
 }) {
-	const { showToast } = useContext(PopupContentContext);
-
-	const { removePermissionsFromRole } = usePermissionsService();
-
-	const [isDeletingRoles, setIsDeletingRoles] = useState(false);
-
-	const { permissions, role } = selectedRole;
-
-	async function handleDeleteRoles() {
-		if (selectedPermissions.length === 0) {
-			return;
-		}
-		setIsDeletingRoles(true);
-
-		try {
-			await removePermissionsFromRole(role, selectedPermissions);
-
-			const filteredPermissions = permissions.filter((p) => selectedPermissions.includes(p) === false);
-
-			const updatedRolesData = roles.map((role) => {
-				if (role.role === selectedRole.role) {
-					role.permissions = filteredPermissions;
-				}
-				return role;
-			});
-
-			setRoles(updatedRolesData);
-			updatePermissions(filteredPermissions);
-			resetPermissionsToDelete();
-			showToast({
-				iconImage: getImageUrl("checkmark-green.svg"),
-				toastType: "success",
-				children:
-					selectedPermissions.length === 1
-						? "Permission deleted successfully!"
-						: "Permissions deleted successfully!",
-			});
-			onCloseDialog();
-		} catch (_) {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children: <>Something went wrong Please try again!</>,
-			});
-		} finally {
-			setIsDeletingRoles(false);
-		}
-	}
-
 	return (
 		<Dialog
 			title="Delete Permission?"
@@ -106,7 +46,7 @@ export default function DeletePermissionDialog({
 						color="danger"
 						isLoading={isDeletingRoles}
 						disabled={isDeletingRoles}
-						onClick={handleDeleteRoles}>
+						onClick={handleDeletePermissions}>
 						Yes, Delete
 					</Button>
 				</DialogFooter>
