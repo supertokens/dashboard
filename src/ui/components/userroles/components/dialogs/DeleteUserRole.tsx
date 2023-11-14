@@ -2,19 +2,19 @@ import { useContext, useState } from "react";
 import { useUserRolesService } from "../../../../../api/userroles/user/roles";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../../dialog";
+import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 
 import { getImageUrl } from "../../../../../utils";
 import "./deleteRoles.scss";
 
 export default function DeleteUserRoleDialog({
-	closeDialog,
+	onCloseDialog,
 	roleToDelete,
 	userId,
 	assignedRoles,
 	setAssignedRoles,
 }: {
-	closeDialog: () => void;
+	onCloseDialog: () => void;
 	roleToDelete: string;
 	userId: string;
 	assignedRoles: string[];
@@ -42,21 +42,22 @@ export default function DeleteUserRoleDialog({
 			});
 		} finally {
 			setIsDeletingRoles(false);
-			closeDialog();
+			onCloseDialog();
 		}
 	}
 
 	return (
-		<Dialog closeDialog={closeDialog}>
+		<Dialog
+			title="Delete Roles?"
+			onCloseDialog={onCloseDialog}>
 			<DialogContent>
-				<DialogHeader>Delete Roles?</DialogHeader>
 				<p className="you-sure-text">
 					Are you sure you want to delete the selected Role: <span className="red">{roleToDelete}</span>? This
 					action is irreversible.
 				</p>
 				<DialogFooter border="border-none">
 					<Button
-						onClick={closeDialog}
+						onClick={onCloseDialog}
 						color="gray-outline">
 						Cancel
 					</Button>

@@ -19,22 +19,20 @@ import useRolesService from "../../../../../api/userroles/role";
 import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../../dialog";
-import { useUserRolesContext } from "../../context/UserRolesContext";
+import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 
 import "./deleteRoles.scss";
 
 export default function DeleteRolesDialog({
 	selectedRole,
 	refetchRoles,
-	closeDialog,
+	onCloseDialog,
 }: {
 	selectedRole: string;
 	refetchRoles: () => void;
-	closeDialog: () => void;
+	onCloseDialog: () => void;
 }) {
 	const { showToast } = useContext(PopupContentContext);
-	const { roles, setRoles } = useUserRolesContext();
 	const { deleteRole } = useRolesService();
 
 	const [isDeletingRoles, setIsDeletingRoles] = useState(false);
@@ -52,13 +50,8 @@ export default function DeleteRolesDialog({
 				toastType: "success",
 				children: "Role deleted successfully!",
 			});
-			const filteredRoles = roles.filter((r) => {
-				return r.role !== selectedRole;
-			});
-
-			setRoles(filteredRoles);
 			refetchRoles();
-			closeDialog();
+			onCloseDialog();
 		} catch (_) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -71,16 +64,17 @@ export default function DeleteRolesDialog({
 	}
 
 	return (
-		<Dialog closeDialog={closeDialog}>
+		<Dialog
+			title="Delete Roles?"
+			onCloseDialog={onCloseDialog}>
 			<DialogContent>
-				<DialogHeader>Delete Roles?</DialogHeader>
 				<p className="you-sure-text">
 					Are you sure you want to delete Role: <span className="red">{selectedRole}</span>? This action is
 					irreversible.
 				</p>
 				<DialogFooter border="border-none">
 					<Button
-						onClick={closeDialog}
+						onClick={onCloseDialog}
 						color="gray-outline">
 						Cancel
 					</Button>

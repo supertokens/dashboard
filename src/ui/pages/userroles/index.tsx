@@ -20,7 +20,6 @@ import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
 import { RolesTable } from "../../components/userroles/components/RolesTable";
 
 import Alert from "../../components/alert";
-import UserRolesContextProvider from "../../components/userroles/context/UserRolesContext";
 import "./index.scss";
 
 export default function UserRolesList() {
@@ -32,23 +31,21 @@ export default function UserRolesList() {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(window as any).connectionURI
 			}>
-			<UserRolesContextProvider>
-				<div className="userroles-container">
-					<h1 className="users-list-title">Roles and Permissions</h1>
-					<p className="text-small users-list-subtitle">
-						One place to manage all your user roles and permissions. Edit roles and permissions according to
-						your needs.
-					</p>
-					{isFeatureEnabled ? (
-						<RolesTable setIsFeatureEnabled={setIsFeatureEnabled} />
-					) : (
-						<Alert
-							title="Feature is not enabled"
-							content="Please enable this feature first to manage your user roles and permissions!"
-						/>
-					)}
-				</div>
-			</UserRolesContextProvider>
+			<div className="userroles-container">
+				<h1 className="users-list-title">Roles and Permissions</h1>
+				<p className="text-small users-list-subtitle">
+					One place to manage all your user roles and permissions. Edit roles and permissions according to
+					your needs.
+				</p>
+				{isFeatureEnabled ? (
+					<RolesTable setIsFeatureEnabled={setIsFeatureEnabled} />
+				) : (
+					<Alert
+						title="Feature is not enabled"
+						content="Please enable this feature first to manage your user roles and permissions!"
+					/>
+				)}
+			</div>
 		</AppEnvContextProvider>
 	);
 }

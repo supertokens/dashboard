@@ -21,23 +21,36 @@ import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Badge from "../../../badge";
 import Button from "../../../button";
 import IconButton from "../../../common/iconButton";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../../dialog";
-import { useUserRolesContext } from "../../context/UserRolesContext";
+import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import { Role } from "../../types";
 import SelectPermissions from "../SelectPermissions";
 import DeletePermissionDialog from "./DeletePermission";
 import "./editRole.scss";
 
-export default function EditRoleDialog({ closeDialog, selectedRole }: { closeDialog: () => void; selectedRole: Role }) {
+export default function EditRoleDialog({
+	roles,
+	setRoles,
+	onCloseDialog,
+	selectedRole,
+}: {
+	onCloseDialog: () => void;
+	selectedRole: Role;
+	roles: Role[];
+	setRoles: (roles: Role[]) => void;
+}) {
 	const { showToast } = useContext(PopupContentContext);
 
-	const { roles, setRoles } = useUserRolesContext();
-
+	//	to toggle between editing and readonly mode.
 	const [isInEditingMode, setIsInEditingMode] = useState(false);
+	//	to track addPermissionsToRole http state.
 	const [isSaving, setIsSaving] = useState(false);
+	const [isDeletePermissionsDialogOpen, setIsDeletePermissionsDialogOpen] = useState(false);
+
 	const [permissions, setPermissions] = useState(selectedRole.permissions);
 
-	const [permissionsSelectedToDelete, setPermissionsToDelete] = useState<string[]>([]);
+	//	to store permissions that needs to be deleted
+	const [permissionsToDelete, setPermissionsToDelete] = useState<string[]>([]);
+
 	const { addPermissionsToRole } = usePermissionsService();
 
 	function addPermission(newPermissions: string[]) {
@@ -63,7 +76,7 @@ export default function EditRoleDialog({ closeDialog, selectedRole }: { closeDia
 			});
 			setRoles(updatedRolesData);
 
-			closeDialog();
+			onCloseDialog();
 		} catch (_) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -75,21 +88,25 @@ export default function EditRoleDialog({ closeDialog, selectedRole }: { closeDia
 		}
 	}
 
-	if (permissionsSelectedToDelete.length >= 1) {
+	if (isDeletePermissionsDialogOpen) {
 		return (
 			<DeletePermissionDialog
+				roles={roles}
+				setRoles={setRoles}
 				selectedRole={selectedRole}
-				closeDialog={() => setPermissionsToDelete([])}
-				selectedPermissions={permissionsSelectedToDelete}
-				resetPermissions={setPermissions}
+				onCloseDialog={() => setIsDeletePermissionsDialogOpen(false)}
+				resetPermissionsToDelete={() => setPermissionsToDelete([])}
+				selectedPermissions={permissionsToDelete}
+				updatePermissions={setPermissions}
 			/>
 		);
 	}
 
 	return (
-		<Dialog closeDialog={closeDialog}>
+		<Dialog
+			title="Role Info"
+			onCloseDialog={onCloseDialog}>
 			<DialogContent>
-				<DialogHeader>Role Info</DialogHeader>
 				{isInEditingMode ? (
 					<>
 						<div className="edit-role-content">
@@ -99,6 +116,8 @@ export default function EditRoleDialog({ closeDialog, selectedRole }: { closeDia
 							</div>
 							<div>
 								<SelectPermissions
+									openDeletePermissionsDialog={() => setIsDeletePermissionsDialogOpen(true)}
+									permissionsToDelete={permissionsToDelete}
 									setPermissionsToDelete={setPermissionsToDelete}
 									addPermissions={addPermission}
 									permissions={permissions}
@@ -158,7 +177,7 @@ export default function EditRoleDialog({ closeDialog, selectedRole }: { closeDia
 								}}
 							/>
 							<Button
-								onClick={closeDialog}
+								onClick={onCloseDialog}
 								color="gray-outline">
 								Go Back
 							</Button>

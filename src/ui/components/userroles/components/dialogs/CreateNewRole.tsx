@@ -16,7 +16,7 @@
 import { useContext, useState } from "react";
 
 import Button from "../../../button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../../dialog";
+import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import InputField from "../../../inputField/InputField";
 
 import useRolesService from "../../../../../api/userroles/role";
@@ -26,10 +26,10 @@ import TagsInputField from "../../../inputField/TagsInputField";
 import "./createNewRole.scss";
 
 export default function CreateNewRoleDialog({
-	closeDialog,
+	onCloseDialog,
 	refetchRoles,
 }: {
-	closeDialog: () => void;
+	onCloseDialog: () => void;
 	refetchRoles: () => void;
 }) {
 	const { createRole } = useRolesService();
@@ -58,7 +58,7 @@ export default function CreateNewRoleDialog({
 						toastType: "error",
 						children: "This Feature is not enabled.",
 					});
-					closeDialog();
+					onCloseDialog();
 					return;
 				}
 
@@ -86,7 +86,7 @@ export default function CreateNewRoleDialog({
 				});
 			}
 			refetchRoles();
-			closeDialog();
+			onCloseDialog();
 		} catch (error) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -107,9 +107,10 @@ export default function CreateNewRoleDialog({
 	}
 
 	return (
-		<Dialog closeDialog={closeDialog}>
+		<Dialog
+			title="Create New Role"
+			onCloseDialog={onCloseDialog}>
 			<DialogContent>
-				<DialogHeader>Create New Role</DialogHeader>
 				<div className="create-role-dialog-container">
 					<div>
 						<InputField
@@ -140,7 +141,7 @@ export default function CreateNewRoleDialog({
 				</div>
 				<DialogFooter>
 					<Button
-						onClick={closeDialog}
+						onClick={onCloseDialog}
 						color="gray-outline">
 						Go Back
 					</Button>

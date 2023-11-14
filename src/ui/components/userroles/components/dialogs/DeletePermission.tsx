@@ -18,23 +18,27 @@ import { usePermissionsService } from "../../../../../api/userroles/role/permiss
 import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../../dialog";
-import { useUserRolesContext } from "../../context/UserRolesContext";
+import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import { Role } from "../../types";
 
 export default function DeletePermissionDialog({
-	closeDialog,
-	selectedPermissions,
+	roles,
 	selectedRole,
-	resetPermissions,
+	selectedPermissions,
+	setRoles,
+	onCloseDialog,
+	updatePermissions,
+	resetPermissionsToDelete,
 }: {
-	closeDialog: () => void;
+	roles: Role[];
 	selectedPermissions: string[];
 	selectedRole: Role;
-	resetPermissions: (permissions: string[]) => void;
+	onCloseDialog: () => void;
+	setRoles: (roles: Role[]) => void;
+	resetPermissionsToDelete: () => void;
+	updatePermissions: (permissions: string[]) => void;
 }) {
 	const { showToast } = useContext(PopupContentContext);
-	const { roles, setRoles } = useUserRolesContext();
 
 	const { removePermissionsFromRole } = usePermissionsService();
 
@@ -50,14 +54,7 @@ export default function DeletePermissionDialog({
 
 		try {
 			await removePermissionsFromRole(role, selectedPermissions);
-			showToast({
-				iconImage: getImageUrl("checkmark-green.svg"),
-				toastType: "success",
-				children:
-					selectedPermissions.length === 1
-						? "Permission deleted successfully!"
-						: "Permissions deleted successfully!",
-			});
+
 			const filteredPermissions = permissions.filter((p) => selectedPermissions.includes(p) === false);
 
 			const updatedRolesData = roles.map((role) => {
@@ -68,8 +65,17 @@ export default function DeletePermissionDialog({
 			});
 
 			setRoles(updatedRolesData);
-			resetPermissions(filteredPermissions);
-			closeDialog();
+			updatePermissions(filteredPermissions);
+			resetPermissionsToDelete();
+			showToast({
+				iconImage: getImageUrl("checkmark-green.svg"),
+				toastType: "success",
+				children:
+					selectedPermissions.length === 1
+						? "Permission deleted successfully!"
+						: "Permissions deleted successfully!",
+			});
+			onCloseDialog();
 		} catch (_) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -82,16 +88,17 @@ export default function DeletePermissionDialog({
 	}
 
 	return (
-		<Dialog closeDialog={closeDialog}>
+		<Dialog
+			title="Delete Permission?"
+			onCloseDialog={onCloseDialog}>
 			<DialogContent>
-				<DialogHeader>Delete Permission?</DialogHeader>
 				<p className="you-sure-text">
 					Are you sure you want to delete selected permission{selectedPermissions.length > 1 ? "s" : ""}? This
 					action is irreversible.
 				</p>
 				<DialogFooter border="border-none">
 					<Button
-						onClick={closeDialog}
+						onClick={onCloseDialog}
 						color="gray-outline">
 						Cancel
 					</Button>

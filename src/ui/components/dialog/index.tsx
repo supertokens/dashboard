@@ -1,24 +1,21 @@
-import { createContext, useContext } from "react";
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
 
 import React from "react";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
 import "./dialog.scss";
-
-type DialogContextType = {
-	closeDialog: () => void;
-};
-
-const DialogContext = createContext<DialogContextType | undefined>(undefined);
-
-function useDialog() {
-	const context = useContext(DialogContext);
-
-	if (context === undefined) {
-		throw Error("useMenubarContext is used outside the MenubarContext provider.");
-	}
-
-	return context;
-}
 
 type DialogCommonProps = {
 	children: React.ReactNode;
@@ -26,24 +23,31 @@ type DialogCommonProps = {
 };
 
 type DialogProps = DialogCommonProps & {
+	title: string;
 	closeOnOverlayClick?: boolean;
-} & DialogContextType;
+	onCloseDialog: () => void;
+};
 
 function Dialog(props: DialogProps) {
-	const { children, className = "", closeOnOverlayClick = false, closeDialog } = props;
+	const { children, className = "", closeOnOverlayClick = false, onCloseDialog, title } = props;
 
 	return (
-		<DialogContext.Provider value={{ closeDialog }}>
+		<>
 			<div
 				className="dialog-overlay"
 				onClick={() => {
 					if (closeOnOverlayClick === true) {
-						closeDialog();
+						onCloseDialog();
 					}
 				}}
 			/>
-			<div className={`dialog-container ${className}`}>{children}</div>
-		</DialogContext.Provider>
+			<div className={`dialog-container ${className}`}>
+				<div className="dialog-header">
+					{title} <CloseIcon onClick={onCloseDialog} />
+				</div>
+				{children}
+			</div>
+		</>
 	);
 }
 
@@ -51,18 +55,6 @@ function DialogContent(props: DialogCommonProps) {
 	const { children, className = "" } = props;
 
 	return <div className={`dialog-content ${className}`}>{children}</div>;
-}
-
-function DialogHeader(props: DialogCommonProps) {
-	const { children, className = "" } = props;
-
-	const { closeDialog } = useDialog();
-
-	return (
-		<div className={`dialog-header ${className}`}>
-			{children} <CloseIcon onClick={closeDialog} />
-		</div>
-	);
 }
 
 type DialogFooterProps = DialogCommonProps & {
@@ -83,4 +75,4 @@ function DialogFooter(props: DialogFooterProps) {
 	return <div className={`dialog-footer ${flexDirection} ${justifyContent} ${border} ${className}`}>{children}</div>;
 }
 
-export { Dialog, DialogContent, DialogFooter, DialogHeader };
+export { Dialog, DialogContent, DialogFooter };

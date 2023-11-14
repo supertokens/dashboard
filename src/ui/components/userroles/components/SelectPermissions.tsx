@@ -7,15 +7,19 @@ import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
 
 export default function SelectPermissions({
 	permissions,
+	permissionsToDelete,
 	setPermissionsToDelete,
 	addPermissions,
+	openDeletePermissionsDialog,
 }: {
 	permissions: string[];
 	addPermissions: (permissions: string[]) => void;
+	permissionsToDelete: string[];
 	setPermissionsToDelete: (permissions: string[]) => void;
+	openDeletePermissionsDialog: () => void;
 }) {
+	//	used to know whether the input is in or out off focus.
 	const [isFocused, setIsFocused] = useState(false);
-	const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
 	return (
 		<>
@@ -35,7 +39,7 @@ export default function SelectPermissions({
 							onKeyDown={(e) => {
 								if (e.key === "Enter") {
 									const newTag = e.currentTarget.value.trim();
-									if (newTag && permissions.includes(newTag) === false) {
+									if (newTag !== "" && permissions.includes(newTag) === false) {
 										addPermissions([newTag]);
 									}
 									e.currentTarget.value = "";
@@ -53,15 +57,15 @@ export default function SelectPermissions({
 				<div className="container-header">
 					Permissions
 					<button
-						disabled={selectedPermissions.length < 1}
+						disabled={permissionsToDelete.length < 1}
 						className="delete-role"
-						onClick={() => setPermissionsToDelete(selectedPermissions)}>
+						onClick={openDeletePermissionsDialog}>
 						<TrashIcon />
 					</button>
 				</div>
 				<div className="permissions-list">
 					{permissions.map((permission) => {
-						const isSelected = selectedPermissions.includes(permission);
+						const isSelected = permissionsToDelete.includes(permission);
 						return (
 							<div
 								key={permission}
@@ -78,9 +82,9 @@ export default function SelectPermissions({
 									defaultChecked={isSelected}
 									onChange={(e) => {
 										if (e.currentTarget.checked) {
-											setSelectedPermissions([...selectedPermissions, permission]);
+											setPermissionsToDelete([...permissionsToDelete, permission]);
 										} else {
-											setSelectedPermissions(selectedPermissions.filter((p) => p !== permission));
+											setPermissionsToDelete(permissionsToDelete.filter((p) => p !== permission));
 										}
 									}}
 								/>

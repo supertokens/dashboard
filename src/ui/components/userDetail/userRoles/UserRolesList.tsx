@@ -117,7 +117,7 @@ export default function UserRolesList(props: UserRolesListProps) {
 							userId={userId}
 							assignedRoles={assignedRoles}
 							setAssignedRoles={setAssignedRoles}
-							closeDialog={() => setShowAddRoleDialog(false)}
+							onCloseDialog={() => setShowAddRoleDialog(false)}
 						/>
 					) : null}
 					{showDeleteRoleDialog && roleToDelete ? (
@@ -126,7 +126,7 @@ export default function UserRolesList(props: UserRolesListProps) {
 							userId={userId}
 							assignedRoles={assignedRoles}
 							setAssignedRoles={setAssignedRoles}
-							closeDialog={() => {
+							onCloseDialog={() => {
 								setRoleToDelete(undefined);
 								setShowDeleteDialogRole(false);
 							}}

@@ -27,7 +27,6 @@ import Button from "../../button";
 import Pagination from "../../pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
 import { PlaceholderTableRows } from "../../usersListTable/UsersListTable";
-import { useUserRolesContext } from "../context/UserRolesContext";
 import { Role } from "../types";
 import NoRolesFound from "./NoRolesFound";
 import CreateNewRole from "./dialogs/CreateNewRole";
@@ -40,35 +39,46 @@ const PAGINATION_LIMIT = 10;
 export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (value: boolean) => void }) {
 	const { getRoles } = useRolesService();
 	const { showToast } = useContext(PopupContentContext);
-	const { roles, setRoles } = useUserRolesContext();
+	//	used to stores roles data from response.
+	const [roles, setRoles] = useState<Role[]>([]);
 
+	//	used to determine what role does user have selected
 	const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
 
+	//	used to control opening and closing dialog
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [showCreateNewRoleDialogOpen, setShowCreateNewRoleDialogOpen] = useState(false);
 	const [showEditDialog, setShowEditDialog] = useState(false);
 
-	const [page, setPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(0);
-	const [rolesCount, setRolesCount] = useState(0);
-
+	//	data used to track pagination
+	const [currentActivePage, setCurrentActivePage] = useState(1);
+	const [paginationData, setPaginationData] = useState<
+		| {
+				totalPages: number;
+				rolesCount: number;
+		  }
+		| undefined
+	>(undefined);
+	//	managed fetchRoles http loading state.
 	const [isLoading, setIsLoading] = useState(false);
 
 	const fetchRoles = async () => {
 		setIsLoading(true);
 		setRoles([]);
 		try {
-			const response = await getRoles({ limit: PAGINATION_LIMIT.toString(), page: page.toString() });
+			const response = await getRoles({ limit: PAGINATION_LIMIT.toString(), page: currentActivePage.toString() });
 
 			if (response !== undefined) {
 				if (response.status === "OK" && response.totalPages !== undefined) {
-					if (response.roles.length < 1 && page !== 1) {
-						setPage(page - 1);
+					if (response.roles.length < 1 && currentActivePage !== 1) {
+						setCurrentActivePage(currentActivePage - 1);
 						return;
 					}
 					setRoles(response.roles);
-					setTotalPages(response.totalPages);
-					setRolesCount(response.rolesCount);
+					setPaginationData({
+						rolesCount: response.rolesCount,
+						totalPages: response.totalPages,
+					});
 				}
 
 				if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
@@ -94,7 +104,7 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 
 	useEffect(() => {
 		void fetchRoles();
-	}, [page]);
+	}, [currentActivePage]);
 
 	return (
 		<>
@@ -108,28 +118,27 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 				{showCreateNewRoleDialogOpen ? (
 					<CreateNewRole
 						refetchRoles={fetchRoles}
-						closeDialog={() => setShowCreateNewRoleDialogOpen(false)}
+						onCloseDialog={() => setShowCreateNewRoleDialogOpen(false)}
 					/>
 				) : null}
 			</div>
-			{isLoading === false && roles.length < 1 && page === 1 ? (
+			{isLoading === false && roles.length < 1 && currentActivePage === 1 ? (
 				<NoRolesFound />
 			) : (
 				<div className="margin-bottom-36">
 					<Table
 						className="theme-blue"
 						pagination={
-							isLoading === false ? (
+							paginationData !== undefined ? (
 								<Pagination
 									className="roles-list-pagination"
-									handleNext={() => setPage(page + 1)}
-									handlePrevious={() => setPage(page - 1)}
-									isLoading={isLoading}
+									handleNext={() => setCurrentActivePage(currentActivePage + 1)}
+									handlePrevious={() => setCurrentActivePage(currentActivePage - 1)}
 									limit={PAGINATION_LIMIT}
-									page={page}
-									totalPages={totalPages}
+									currentActivePage={currentActivePage}
+									totalPages={paginationData.totalPages}
 									offset={roles.length}
-									totalItems={rolesCount}
+									totalItems={paginationData.rolesCount}
 								/>
 							) : null
 						}>
@@ -177,17 +186,19 @@ export function RolesTable({ setIsFeatureEnabled }: { setIsFeatureEnabled: (valu
 							})}
 						</TableBody>
 					</Table>
-					{showDeleteDialog && selectedRole ? (
+					{showDeleteDialog && selectedRole !== undefined ? (
 						<DeleteRolesDialog
 							refetchRoles={fetchRoles}
-							closeDialog={() => setShowDeleteDialog(false)}
+							onCloseDialog={() => setShowDeleteDialog(false)}
 							selectedRole={selectedRole?.role}
 						/>
 					) : null}
-					{showEditDialog && selectedRole ? (
+					{showEditDialog && selectedRole !== undefined ? (
 						<EditRoleDialog
+							roles={roles}
+							setRoles={setRoles}
 							selectedRole={selectedRole}
-							closeDialog={() => setShowEditDialog(false)}
+							onCloseDialog={() => setShowEditDialog(false)}
 						/>
 					) : null}
 				</div>

@@ -29,7 +29,7 @@ type TagsInputFieldProps = Omit<JSX.IntrinsicElements["input"], "onChange"> & {
 };
 
 export default function TagsInputField(props: TagsInputFieldProps) {
-	const { focusText = "", addTag, removeTag, tags, tagProps, ...rest } = props;
+	const { focusText, addTag, removeTag, tags, tagProps, ...rest } = props;
 	const [isFocused, setIsFocused] = useState(false);
 
 	return (
@@ -61,7 +61,7 @@ export default function TagsInputField(props: TagsInputFieldProps) {
 					/>
 				</div>
 			</div>
-			{focusText && isFocused ? <p>{focusText}</p> : null}
+			{focusText !== undefined && isFocused ? <p>{focusText}</p> : null}
 			<div className="tags-container">
 				{tags.map((tag) => {
 					return (

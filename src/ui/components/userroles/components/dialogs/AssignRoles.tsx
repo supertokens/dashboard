@@ -7,7 +7,7 @@ import { ReactComponent as SecuityKeyIcon } from "../../../../../assets/secuity-
 
 import { getImageUrl } from "../../../../../utils";
 import Button from "../../../button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "../../../dialog";
+import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import InputField from "../../../inputField/InputField";
 
 import { Link } from "react-router-dom";
@@ -17,12 +17,12 @@ import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import "./assignRoles.scss";
 
 export default function AssignRolesDialog({
-	closeDialog,
+	onCloseDialog,
 	assignedRoles,
 	userId,
 	setAssignedRoles,
 }: {
-	closeDialog: () => void;
+	onCloseDialog: () => void;
 	assignedRoles: string[];
 	userId: string;
 	setAssignedRoles: (roles: string[]) => void;
@@ -33,12 +33,18 @@ export default function AssignRolesDialog({
 	const { showToast } = useContext(PopupContentContext);
 
 	const [roles, setRoles] = useState<string[]>([]);
-	const [filteredRoles, setFilteredRoles] = useState<string[]>([]);
-	const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
-	const [normalizedRoles, setNormalizedRoles] = useState<string[]>([]);
+	const [searchText, setSearchText] = useState("");
+
+	const [selectedRolesToAssign, setSelectedRolesToAssign] = useState<string[]>([]);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [isAddingRoles, setIsAddingRoles] = useState(false);
+
+	const rolesNotAssigned = roles.filter((r) => assignedRoles.includes(r) === false);
+	const filteredRoles =
+		searchText !== ""
+			? rolesNotAssigned.filter((role) => role.toLowerCase().includes(searchText))
+			: rolesNotAssigned;
 
 	async function assignRoles() {
 		if (roles.length < 1) {
@@ -47,17 +53,17 @@ export default function AssignRolesDialog({
 		setIsAddingRoles(true);
 
 		try {
-			for (let i = 0; i < selectedRoles.length; i++) {
-				await addRoleToUser(userId, selectedRoles[i]);
+			for (let i = 0; i < selectedRolesToAssign.length; i++) {
+				await addRoleToUser(userId, selectedRolesToAssign[i]);
 			}
 
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
 				toastType: "success",
-				children: `${selectedRoles.length > 1 ? "Roles" : "Role"} assigned successfully!`,
+				children: `${selectedRolesToAssign.length > 1 ? "Roles" : "Role"} assigned successfully!`,
 			});
 
-			setAssignedRoles([...assignedRoles, ...selectedRoles]);
+			setAssignedRoles([...assignedRoles, ...selectedRolesToAssign]);
 		} catch (_) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -66,7 +72,7 @@ export default function AssignRolesDialog({
 			});
 		} finally {
 			setIsAddingRoles(false);
-			closeDialog();
+			onCloseDialog();
 		}
 	}
 
@@ -76,9 +82,6 @@ export default function AssignRolesDialog({
 		if (response !== undefined) {
 			if (response.status === "OK" && response.totalPages === undefined) {
 				setRoles(response.roles);
-				const normalizedRoles = response.roles.filter((r) => assignedRoles.includes(r) === false);
-				setNormalizedRoles(normalizedRoles);
-				setFilteredRoles(normalizedRoles);
 			}
 		} else {
 			showToast({
@@ -136,7 +139,7 @@ export default function AssignRolesDialog({
 		}
 
 		return filteredRoles.map((role) => {
-			const isChecked = selectedRoles.includes(role);
+			const isChecked = selectedRolesToAssign.includes(role);
 			return (
 				<div
 					data-selected={isChecked ? "true" : "false"}
@@ -150,9 +153,9 @@ export default function AssignRolesDialog({
 						defaultChecked={isChecked}
 						onChange={(e) => {
 							if (e.currentTarget.checked === true) {
-								setSelectedRoles([...selectedRoles, role]);
+								setSelectedRolesToAssign([...selectedRolesToAssign, role]);
 							} else {
-								setSelectedRoles(selectedRoles.filter((r) => r === role));
+								setSelectedRolesToAssign(selectedRolesToAssign.filter((r) => r === role));
 							}
 						}}
 					/>
@@ -162,9 +165,10 @@ export default function AssignRolesDialog({
 	}
 
 	return (
-		<Dialog closeDialog={closeDialog}>
+		<Dialog
+			title="Assign User Roles"
+			onCloseDialog={onCloseDialog}>
 			<DialogContent>
-				<DialogHeader>Assign User Roles</DialogHeader>
 				<div className="assign-role-dialog-container">
 					<p>Select roles you want to add</p>
 					<div className="roles-container">
@@ -181,14 +185,7 @@ export default function AssignRolesDialog({
 								placeholder="Search"
 								hideColon
 								handleChange={(e) => {
-									const searchText = e.currentTarget.value.trim().toLowerCase();
-									if (typeof searchText === "string") {
-										setFilteredRoles(
-											normalizedRoles.filter((role) => role.toLowerCase().includes(searchText))
-										);
-									} else {
-										setFilteredRoles(normalizedRoles);
-									}
+									setSearchText(e.currentTarget.value.trim().toLowerCase());
 								}}
 							/>
 						</div>
@@ -198,13 +195,17 @@ export default function AssignRolesDialog({
 				</div>
 				<DialogFooter border="border-none">
 					<Button
-						onClick={closeDialog}
+						onClick={onCloseDialog}
 						color="gray-outline">
 						Go Back
 					</Button>
 					<Button
 						disabled={isAddingRoles}
-						color={selectedRoles.length > 0 && roles.length !== assignedRoles.length ? "primary" : "gray"}
+						color={
+							selectedRolesToAssign.length > 0 && roles.length !== assignedRoles.length
+								? "primary"
+								: "gray"
+						}
 						onClick={assignRoles}
 						isLoading={isAddingRoles}>
 						Confirm
