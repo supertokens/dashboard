@@ -153,6 +153,7 @@ const UserTableRow: React.FC<
 	const { user, index, onSelect } = props;
 	return (
 		<tr
+			onClick={() => onSelect(user)}
 			key={index}
 			className="user-row">
 			<td>
