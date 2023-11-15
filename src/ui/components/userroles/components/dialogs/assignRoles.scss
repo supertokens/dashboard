@@ -134,6 +134,16 @@
 				justify-content: space-between;
 				align-items: center;
 
+				.add-icon {
+					fill: #9b9b9b;
+					cursor: pointer;
+
+					&:hover {
+						fill: #007aff;
+						background: rgba(0, 122, 255, 0.1);
+					}
+				}
+
 				& > span {
 					color: var(--light-foregrounds-fg-base, #030712);
 					font-size: 13px;

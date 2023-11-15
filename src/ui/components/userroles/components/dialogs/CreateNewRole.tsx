@@ -98,14 +98,6 @@ export default function CreateNewRoleDialog({
 		}
 	}
 
-	function addPermission(permission: string) {
-		setPermissions([...permissions, permission]);
-	}
-
-	function removePermission(permission: string) {
-		setPermissions(permissions.filter((p) => p !== permission));
-	}
-
 	return (
 		<Dialog
 			title="Create New Role"
@@ -129,8 +121,20 @@ export default function CreateNewRoleDialog({
 					</div>
 					<div>
 						<TagsInputField
-							addTag={addPermission}
-							removeTag={removePermission}
+							addTag={(permission: string) => {
+								if (permission !== "" && permissions.includes(permission) === false) {
+									setPermissions([...permissions, permission]);
+								} else {
+									showToast({
+										iconImage: getImageUrl("form-field-error-icon.svg"),
+										toastType: "error",
+										children: <>Permission already exists!</>,
+									});
+								}
+							}}
+							removeTag={(permission: string) =>
+								setPermissions(permissions.filter((p) => p !== permission))
+							}
 							tags={permissions}
 							label="Add Permissions"
 							name="permisions"

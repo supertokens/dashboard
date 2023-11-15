@@ -74,7 +74,7 @@ export function RolesTable({
 									currentActivePage={currentActivePage}
 									totalPages={paginationData.totalPages}
 									offset={roles.length}
-									totalItems={paginationData.rolesCount}
+									totalItems={paginationData.totalRolesCount}
 								/>
 							) : null
 						}>

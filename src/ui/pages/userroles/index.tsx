@@ -33,7 +33,7 @@ export const USERROLES_PAGINATION_LIMIT = 10;
 
 export type PaginationData = {
 	totalPages: number;
-	rolesCount: number;
+	totalRolesCount: number;
 };
 
 export default function UserRolesList() {
@@ -72,7 +72,7 @@ export default function UserRolesList() {
 					}
 					setRoles(response.roles);
 					setPaginationData({
-						rolesCount: response.rolesCount,
+						totalRolesCount: response.totalRolesCount,
 						totalPages: response.totalPages,
 					});
 				}

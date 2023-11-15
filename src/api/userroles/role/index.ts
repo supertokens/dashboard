@@ -27,7 +27,7 @@ type GetRolesResponse =
 			status: "OK";
 			roles: Roles;
 			totalPages: number;
-			rolesCount: number;
+			totalRolesCount: number;
 	  }
 	| {
 			status: "OK";

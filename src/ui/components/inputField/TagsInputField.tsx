@@ -50,9 +50,7 @@ export default function TagsInputField(props: TagsInputFieldProps) {
 						onKeyDown={(e) => {
 							if (e.key === "Enter") {
 								const newTag = e.currentTarget.value.trim();
-								if (newTag && tags.includes(newTag) === false) {
-									addTag(newTag);
-								}
+								addTag(newTag);
 								e.currentTarget.value = "";
 							}
 						}}

@@ -22,8 +22,9 @@ import Badge from "../../../badge";
 import Button from "../../../button";
 import IconButton from "../../../common/iconButton";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
+import TagsInputField from "../../../inputField/TagsInputField";
 import { Role } from "../../types";
-import SelectPermissions from "../SelectPermissions";
+import DeletePermissions from "../DeletePermissions";
 import DeletePermissionDialog from "./DeletePermission";
 import "./editRole.scss";
 
@@ -50,21 +51,18 @@ export default function EditRoleDialog({
 
 	const [isDeletePermissionsDialogOpen, setIsDeletePermissionsDialogOpen] = useState(false);
 
-	const [permissions, setPermissions] = useState(currentlySelectedRole.permissions);
+	//	new permissions added by the user.
+	const [newlyAddedPermissions, setNewlyAddedPermissions] = useState<string[]>([]);
 
 	//	to store permissions that needs to be deleted
 	const [permissionsToDelete, setPermissionsToDelete] = useState<string[]>([]);
 
 	const { addPermissionsToRole, removePermissionsFromRole } = usePermissionsService();
 
-	function addPermission(newPermissions: string) {
-		setPermissions([...permissions, newPermissions]);
-	}
-
 	async function handleSave() {
 		setIsSaving(true);
 		try {
-			await addPermissionsToRole(currentlySelectedRole.role, permissions);
+			await addPermissionsToRole(currentlySelectedRole.role, newlyAddedPermissions);
 
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
@@ -74,7 +72,7 @@ export default function EditRoleDialog({
 
 			const updatedRolesData = roles.map((role) => {
 				if (role.role === currentlySelectedRole.role) {
-					role.permissions = permissions;
+					role.permissions = [...currentlySelectedRole.permissions, ...newlyAddedPermissions];
 				}
 				return role;
 			});
@@ -113,7 +111,7 @@ export default function EditRoleDialog({
 			});
 
 			setRoles(updatedRolesData);
-			setPermissions(permissions.filter((p) => permissionsToDelete.includes(p) === false));
+			setNewlyAddedPermissions(newlyAddedPermissions.filter((p) => permissionsToDelete.includes(p) === false));
 			setPermissionsToDelete([]);
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
@@ -147,10 +145,11 @@ export default function EditRoleDialog({
 	}
 
 	//	 this function will check if the user have any not saved changes
-	//	 promts to confirm if they want discard there changes.
+	//	 promts to confirm if they want to discard there changes.
 	function askToDiscardChanges(callback: () => void) {
-		if (permissions.length !== currentlySelectedRole.permissions.length) {
-			if (confirm("Do you want discard the changes you made?")) {
+		if (newlyAddedPermissions.length > 0) {
+			if (confirm("You have unsaved changes! \nDo you want to discard the changes you've made?")) {
+				setNewlyAddedPermissions([]);
 				callback();
 			}
 			return;
@@ -172,12 +171,38 @@ export default function EditRoleDialog({
 								<span className="role-name">{currentlySelectedRole.role}</span>
 							</div>
 							<div>
-								<SelectPermissions
-									openDeletePermissionsDialog={() => setIsDeletePermissionsDialogOpen(true)}
+								<TagsInputField
+									addTag={(permision: string) => {
+										if (
+											permision !== "" &&
+											currentlySelectedRole.permissions.includes(permision) === false &&
+											newlyAddedPermissions.includes(permision) === false
+										) {
+											setNewlyAddedPermissions([...newlyAddedPermissions, permision]);
+										} else {
+											showToast({
+												iconImage: getImageUrl("form-field-error-icon.svg"),
+												toastType: "error",
+												children: <>Permission already exists!</>,
+											});
+										}
+									}}
+									removeTag={(permission) => {
+										setNewlyAddedPermissions(newlyAddedPermissions.filter((p) => p !== permission));
+									}}
+									tags={newlyAddedPermissions}
+									label="Add Permissions"
+									placeholder="Write permission name and press enter"
+									name="permisions"
+									type="text"
+									autoComplete="off"
+									focusText="Press “Save” to add this permissions in list below."
+								/>
+								<DeletePermissions
+									onDelete={() => setIsDeletePermissionsDialogOpen(true)}
+									permissions={currentlySelectedRole.permissions}
 									permissionsToDelete={permissionsToDelete}
 									setPermissionsToDelete={setPermissionsToDelete}
-									addPermission={addPermission}
-									permissions={permissions}
 								/>
 							</div>
 						</div>
@@ -192,7 +217,7 @@ export default function EditRoleDialog({
 								Go Back
 							</Button>
 							<Button
-								disabled={permissions.length === 0 || isSaving}
+								disabled={newlyAddedPermissions.length === 0 || isSaving}
 								isLoading={isSaving}
 								onClick={handleSave}>
 								Save
@@ -209,7 +234,7 @@ export default function EditRoleDialog({
 							<div>
 								<span className="label">Permissions</span>
 								<div className="permissions-list-container">
-									{permissions.map((permission) => {
+									{currentlySelectedRole.permissions.map((permission) => {
 										return (
 											<Badge
 												text={permission}
@@ -217,7 +242,7 @@ export default function EditRoleDialog({
 											/>
 										);
 									})}
-									{permissions.length < 1 ? (
+									{currentlySelectedRole.permissions.length < 1 ? (
 										<Button
 											size="xs"
 											color="info">

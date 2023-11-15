@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { ReactComponent as GreenCheckIcon } from "../../../../../assets/green-check.svg";
 import { ReactComponent as LoaderIcon } from "../../../../../assets/loader.svg";
 import { ReactComponent as NoResultsIcon } from "../../../../../assets/no-results.svg";
+import { ReactComponent as PlusAdd } from "../../../../../assets/plus-square.svg";
 import { ReactComponent as SecuityKeyIcon } from "../../../../../assets/secuity-key.svg";
 
 import { getImageUrl } from "../../../../../utils";
@@ -14,6 +15,7 @@ import { Link } from "react-router-dom";
 import useRolesService from "../../../../../api/userroles/role";
 import { useUserRolesService } from "../../../../../api/userroles/user/roles";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
+import AssignRoleConfirmation from "./AssignRoleConfimation";
 import "./assignRoles.scss";
 
 export default function AssignRolesDialog({
@@ -32,12 +34,15 @@ export default function AssignRolesDialog({
 
 	const { showToast } = useContext(PopupContentContext);
 
+	//	list of roles fetched from the api
 	const [roles, setRoles] = useState<string[]>([]);
+	//	searched value
 	const [searchText, setSearchText] = useState("");
 
-	const [selectedRolesToAssign, setSelectedRolesToAssign] = useState<string[]>([]);
-
-	const [isLoading, setIsLoading] = useState(false);
+	//	to handle get roles api loading state
+	const [isFetchingRoles, setIsFetchingRoles] = useState(false);
+	//	role that needs to be assigned and boolean to handle api request loading state.
+	const [roleToAssign, setRoleToAssign] = useState<string | undefined>(undefined);
 	const [isAddingRoles, setIsAddingRoles] = useState(false);
 
 	const rolesNotAssigned = roles.filter((r) => assignedRoles.includes(r) === false);
@@ -46,24 +51,19 @@ export default function AssignRolesDialog({
 			? rolesNotAssigned.filter((role) => role.toLowerCase().includes(searchText))
 			: rolesNotAssigned;
 
-	async function assignRoles() {
-		if (roles.length < 1) {
-			return;
-		}
+	async function assignRoleToUser(roleName: string) {
 		setIsAddingRoles(true);
 
 		try {
-			for (let i = 0; i < selectedRolesToAssign.length; i++) {
-				await addRoleToUser(userId, selectedRolesToAssign[i]);
-			}
+			await addRoleToUser(userId, roleName);
 
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
 				toastType: "success",
-				children: `${selectedRolesToAssign.length > 1 ? "Roles" : "Role"} assigned successfully!`,
+				children: `${roleName} assigned successfully!`,
 			});
 
-			setAssignedRoles([...assignedRoles, ...selectedRolesToAssign]);
+			setAssignedRoles([...assignedRoles, roleName]);
 		} catch (_) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -72,12 +72,12 @@ export default function AssignRolesDialog({
 			});
 		} finally {
 			setIsAddingRoles(false);
-			onCloseDialog();
+			setRoleToAssign(undefined);
 		}
 	}
 
 	const fetchRoles = async () => {
-		setIsLoading(true);
+		setIsFetchingRoles(true);
 		const response = await getRoles();
 		if (response !== undefined) {
 			if (response.status === "OK" && response.totalPages === undefined) {
@@ -90,7 +90,7 @@ export default function AssignRolesDialog({
 				children: <>Something went wrong Please try again!</>,
 			});
 		}
-		setIsLoading(false);
+		setIsFetchingRoles(false);
 	};
 
 	useEffect(() => {
@@ -98,14 +98,14 @@ export default function AssignRolesDialog({
 	}, []);
 
 	function renderRoles() {
-		if (isLoading === true) {
+		if (isFetchingRoles === true) {
 			return (
 				<div className="loading-container">
 					<LoaderIcon />
 				</div>
 			);
 		}
-		if (isLoading === false && roles.length === assignedRoles.length && roles.length > 0) {
+		if (isFetchingRoles === false && roles.length === assignedRoles.length && roles.length > 0) {
 			return (
 				<div className="info-container">
 					<GreenCheckIcon />
@@ -117,7 +117,7 @@ export default function AssignRolesDialog({
 			);
 		}
 
-		if (isLoading === false && roles.length < 1) {
+		if (isFetchingRoles === false && roles.length < 1) {
 			return (
 				<div className="info-container">
 					<SecuityKeyIcon />
@@ -129,7 +129,7 @@ export default function AssignRolesDialog({
 			);
 		}
 
-		if (isLoading === false && filteredRoles.length < 1) {
+		if (isFetchingRoles === false && filteredRoles.length < 1) {
 			return (
 				<div className="info-container">
 					<NoResultsIcon />
@@ -139,29 +139,29 @@ export default function AssignRolesDialog({
 		}
 
 		return filteredRoles.map((role) => {
-			const isChecked = selectedRolesToAssign.includes(role);
 			return (
 				<div
-					data-selected={isChecked ? "true" : "false"}
 					key={role}
 					className="role-item">
 					<span>{role}</span>
-					<input
-						type="checkbox"
-						name={role}
-						id={role}
-						defaultChecked={isChecked}
-						onChange={(e) => {
-							if (e.currentTarget.checked === true) {
-								setSelectedRolesToAssign([...selectedRolesToAssign, role]);
-							} else {
-								setSelectedRolesToAssign(selectedRolesToAssign.filter((r) => r === role));
-							}
-						}}
+					<PlusAdd
+						className="add-icon"
+						onClick={() => setRoleToAssign(role)}
 					/>
 				</div>
 			);
 		});
+	}
+
+	if (roleToAssign !== undefined) {
+		return (
+			<AssignRoleConfirmation
+				assignRoleToUser={assignRoleToUser}
+				isAddingRoles={isAddingRoles}
+				onCloseDialog={() => setRoleToAssign(undefined)}
+				role={roleToAssign}
+			/>
+		);
 	}
 
 	return (
@@ -178,7 +178,7 @@ export default function AssignRolesDialog({
 								alt="search icon"
 							/>
 							<InputField
-								disabled={isLoading}
+								disabled={isFetchingRoles}
 								forceShowError={true}
 								name="search-box"
 								type="text"
@@ -194,22 +194,7 @@ export default function AssignRolesDialog({
 					</div>
 				</div>
 				<DialogFooter border="border-none">
-					<Button
-						onClick={onCloseDialog}
-						color="gray-outline">
-						Go Back
-					</Button>
-					<Button
-						disabled={isAddingRoles}
-						color={
-							selectedRolesToAssign.length > 0 && roles.length !== assignedRoles.length
-								? "primary"
-								: "gray"
-						}
-						onClick={assignRoles}
-						isLoading={isAddingRoles}>
-						Confirm
-					</Button>
+					<Button onClick={onCloseDialog}>Done</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
