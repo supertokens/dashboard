@@ -151,16 +151,36 @@ const UserTableRow: React.FC<
 	} & UserRowActionProps
 > = (props) => {
 	const { user, index, onSelect } = props;
+
+	let isClicked = false;
+	let didDrag = false;
+
 	return (
 		<tr
-			onClick={() => onSelect(user)}
+			//	this code helps users to copy the text available on the row if they want
+			//	and will not accidentally open the user specific page.
+			onMouseDown={() => {
+				isClicked = true;
+			}}
+			onClick={() => {
+				if (!didDrag) {
+					onSelect(user);
+				} else {
+					didDrag = false;
+				}
+			}}
+			onMouseMove={() => {
+				if (isClicked) {
+					didDrag = true;
+				}
+			}}
+			onMouseUp={() => {
+				isClicked = false;
+			}}
 			key={index}
 			className="user-row">
 			<td>
-				<UserInfo
-					user={user}
-					onSelect={onSelect}
-				/>
+				<UserInfo user={user} />
 			</td>
 			<td>
 				<UserRecipePill user={user} />
@@ -172,36 +192,15 @@ const UserTableRow: React.FC<
 	);
 };
 
-const UserInfo = ({ user, onSelect }: { user: User; onSelect: OnSelectUserFunction }) => {
+const UserInfo = ({ user }: { user: User }) => {
 	const { firstName, lastName, emails } = user;
 	const methodFilter = user.loginMethods.filter((el) => el.recipeUserId === user.id);
 	const email = methodFilter.length > 0 ? methodFilter[0].email : user.emails[0];
 	const phone = methodFilter.length > 0 ? methodFilter[0].phoneNumber : user.phoneNumbers[0];
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
-	let isClicked = false;
-	let didDrag = false;
-
 	return (
 		<div className="user-info">
 			<div
-				onMouseDown={() => {
-					isClicked = true;
-				}}
-				onClick={() => {
-					if (!didDrag) {
-						onSelect(user);
-					} else {
-						didDrag = false;
-					}
-				}}
-				onMouseMove={() => {
-					if (isClicked) {
-						didDrag = true;
-					}
-				}}
-				onMouseUp={() => {
-					isClicked = false;
-				}}
 				className="main"
 				title={name || email}>
 				{name || email || (phone && <PhoneDisplay phone={phone} />)}
