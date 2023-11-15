@@ -1302,7 +1302,7 @@ paths:
                                           totalPages:
                                               type: number
                                               default: 5
-                                          rolesCount:
+                                          totalRolesCount:
                                               type: number
                                               default: 50
                                           roles:
