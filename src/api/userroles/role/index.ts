@@ -15,24 +15,10 @@
 
 import { getApiUrl, useFetchData } from "../../../utils";
 
-type Roles = Array<{ role: string; permissions: string[] }>;
-
-type GetRolesQuery = {
-	page: string;
-	limit: string;
-};
-
 type GetRolesResponse =
 	| {
 			status: "OK";
-			roles: Roles;
-			totalPages: number;
-			totalRolesCount: number;
-	  }
-	| {
-			status: "OK";
 			roles: string[];
-			totalPages: undefined;
 	  }
 	| {
 			status: "FEATURE_NOT_ENABLED_ERROR";
@@ -41,11 +27,10 @@ type GetRolesResponse =
 export const useRolesService = () => {
 	const fetchData = useFetchData();
 
-	const getRoles = async (query?: GetRolesQuery): Promise<GetRolesResponse | undefined> => {
+	const getRoles = async (): Promise<GetRolesResponse | undefined> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/roles"),
 			method: "GET",
-			query,
 		});
 
 		if (response.ok) {

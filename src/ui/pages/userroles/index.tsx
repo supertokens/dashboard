@@ -21,6 +21,7 @@ import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { RolesTable } from "../../components/userroles/components/RolesTable";
 
 import useRolesService from "../../../api/userroles/role";
+import { usePermissionsService } from "../../../api/userroles/role/permissions";
 import { getImageUrl } from "../../../utils";
 import Alert from "../../components/alert";
 import Button from "../../components/button";
@@ -41,40 +42,35 @@ export default function UserRolesList() {
 	const [isFeatureEnabled, setIsFeatureEnabled] = useState(true);
 
 	const { getRoles } = useRolesService();
+	const { getPermissionsForRole } = usePermissionsService();
 	const { showToast } = useContext(PopupContentContext);
 
-	//	used to stores roles data from response.
+	//	used to stores raw roles which is only array of role names data from response.
+	const [rolesRawResponse, setRolesRawResponse] = useState<string[]>([]);
+	// used to store roles with permissions data that are fetched on the client side.
 	const [roles, setRoles] = useState<Role[]>([]);
 
 	//	used to control opening and closing dialog
 	const [showCreateNewRoleDialogOpen, setShowCreateNewRoleDialogOpen] = useState(false);
 
-	//	data used to track pagination
+	//	used to track active page user is on.
 	const [currentActivePage, setCurrentActivePage] = useState(1);
-	const [paginationData, setPaginationData] = useState<PaginationData | undefined>(undefined);
 	//	managed fetchRoles http loading state.
-	const [isFetchingRoles, setIsFetchingRoles] = useState(false);
+	const [isFetchingRoles, setIsFetchingRoles] = useState(true);
+
+	//	pagination related.
+	const totalRolesCount = rolesRawResponse.length;
+	const totalPages = Math.ceil(rolesRawResponse.length / USERROLES_PAGINATION_LIMIT);
+	//	skip will decide how many results should be skipped based on the active page number.
+	const rolesToSkip = USERROLES_PAGINATION_LIMIT * (currentActivePage - 1);
 
 	const fetchRoles = async () => {
-		setIsFetchingRoles(true);
-		setRoles([]);
 		try {
-			const response = await getRoles({
-				limit: USERROLES_PAGINATION_LIMIT.toString(),
-				page: currentActivePage.toString(),
-			});
+			const response = await getRoles();
 
 			if (response !== undefined) {
-				if (response.status === "OK" && response.totalPages !== undefined) {
-					if (response.roles.length < 1 && currentActivePage !== 1) {
-						setCurrentActivePage(currentActivePage - 1);
-						return;
-					}
-					setRoles(response.roles);
-					setPaginationData({
-						totalRolesCount: response.totalRolesCount,
-						totalPages: response.totalPages,
-					});
+				if (response.status === "OK") {
+					setRolesRawResponse(response.roles);
 				}
 
 				if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
@@ -98,9 +94,40 @@ export default function UserRolesList() {
 		}
 	};
 
+	const timer = (time: number) => new Promise((res) => setTimeout(res, time));
+
+	async function fetchPermissionsForRoles() {
+		setIsFetchingRoles(true);
+		setRoles([]);
+		const rolesWithPermissions: Role[] = [];
+		//	client side pagination.
+		const paginatedRoles = rolesRawResponse.slice(rolesToSkip, rolesToSkip + USERROLES_PAGINATION_LIMIT);
+		for (let i = 0; i < paginatedRoles.length; i++) {
+			const response = await getPermissionsForRole(paginatedRoles[i]);
+			if (response?.status === "OK") {
+				rolesWithPermissions.push({
+					role: paginatedRoles[i],
+					permissions: response.permissions,
+				});
+			} else {
+				throw new Error("This should never happen.");
+			}
+			//	adding this time interval intentionally to avoid rate limiting.
+			await timer(250);
+		}
+		setRoles(rolesWithPermissions);
+		setIsFetchingRoles(false);
+	}
+
 	useEffect(() => {
+		//	only refetch the permissions when the roleRawResponse and currentActivePage changes.
+		void fetchPermissionsForRoles();
+	}, [currentActivePage, rolesRawResponse]);
+
+	useEffect(() => {
+		//	void represent this function returns nothing.
 		void fetchRoles();
-	}, [currentActivePage]);
+	}, []);
 
 	return (
 		<AppEnvContextProvider
@@ -125,18 +152,23 @@ export default function UserRolesList() {
 							</Button>
 							{showCreateNewRoleDialogOpen ? (
 								<CreateNewRole
-									refetchRoles={fetchRoles}
+									addRoleToRawReponseData={(role) => setRolesRawResponse([role, ...rolesRawResponse])}
 									onCloseDialog={() => setShowCreateNewRoleDialogOpen(false)}
 								/>
 							) : null}
 						</div>
 						<RolesTable
+							deleteRoleFromRawResponse={(role: string) =>
+								setRolesRawResponse(rolesRawResponse.filter((r) => r !== role))
+							}
 							setCurrentActivePage={setCurrentActivePage}
-							fetchRoles={fetchRoles}
 							setRoles={setRoles}
 							currentActivePage={currentActivePage}
 							isFetchingRoles={isFetchingRoles}
-							paginationData={paginationData}
+							paginationData={{
+								totalPages,
+								totalRolesCount,
+							}}
 							roles={roles}
 						/>
 					</>

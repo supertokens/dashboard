@@ -80,7 +80,7 @@ export default function AssignRolesDialog({
 		setIsFetchingRoles(true);
 		const response = await getRoles();
 		if (response !== undefined) {
-			if (response.status === "OK" && response.totalPages === undefined) {
+			if (response.status === "OK") {
 				setRoles(response.roles);
 			}
 		} else {

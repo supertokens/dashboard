@@ -25,11 +25,11 @@ import "./deleteRoles.scss";
 
 export default function DeleteRolesDialog({
 	currentlySelectedRoleName,
-	refetchRoles,
+	deleteRoleFromRawResponse,
 	onCloseDialog,
 }: {
 	currentlySelectedRoleName: string;
-	refetchRoles: () => void;
+	deleteRoleFromRawResponse: (role: string) => void;
 	onCloseDialog: () => void;
 }) {
 	const { showToast } = useContext(PopupContentContext);
@@ -47,7 +47,7 @@ export default function DeleteRolesDialog({
 				toastType: "success",
 				children: "Role deleted successfully!",
 			});
-			refetchRoles();
+			deleteRoleFromRawResponse(currentlySelectedRoleName);
 			onCloseDialog();
 		} catch (_) {
 			showToast({

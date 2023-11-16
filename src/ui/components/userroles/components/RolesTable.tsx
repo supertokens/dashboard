@@ -36,7 +36,7 @@ type RolesTableProps = {
 	currentActivePage: number;
 	paginationData?: PaginationData;
 	setCurrentActivePage: (page: number) => void;
-	fetchRoles: () => void;
+	deleteRoleFromRawResponse: (role: string) => void;
 	setRoles: (roles: Role[]) => void;
 };
 
@@ -46,7 +46,7 @@ export function RolesTable({
 	currentActivePage,
 	paginationData,
 	setCurrentActivePage,
-	fetchRoles,
+	deleteRoleFromRawResponse,
 	setRoles,
 }: RolesTableProps) {
 	//	used to determine what role does user have selected
@@ -124,7 +124,7 @@ export function RolesTable({
 					</Table>
 					{showDeleteDialog && currentlySelectedRole !== undefined ? (
 						<DeleteRolesDialog
-							refetchRoles={fetchRoles}
+							deleteRoleFromRawResponse={deleteRoleFromRawResponse}
 							onCloseDialog={() => setShowDeleteDialog(false)}
 							currentlySelectedRoleName={currentlySelectedRole.role}
 						/>
