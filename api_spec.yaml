@@ -1274,19 +1274,6 @@ paths:
             tags:
                 - User Roles and Permissions
             summary: Get all created roles
-            parameters:
-                - name: page
-                  in: query
-                  required: false
-                  schema:
-                      type: number
-                      example: "1"
-                - name: limit
-                  in: query
-                  required: false
-                  schema:
-                      type: number
-                      example: "10"
             responses:
                 200:
                     description: Success
@@ -1294,30 +1281,6 @@ paths:
                         application/json:
                             schema:
                                 oneOf:
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "OK"
-                                          totalPages:
-                                              type: number
-                                              default: 5
-                                          totalRolesCount:
-                                              type: number
-                                              default: 50
-                                          roles:
-                                              type: array
-                                              items:
-                                                  type: object
-                                                  properties:
-                                                      role:
-                                                          type: string
-                                                          default: "admin"
-                                                      permissions:
-                                                          type: array
-                                                          items:
-                                                              type: string
-                                                              default: "read"
                                     - type: object
                                       properties:
                                           status:
