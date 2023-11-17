@@ -5,7 +5,7 @@ import Button from "../../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 
 import { getImageUrl } from "../../../../../utils";
-import "./deleteRoles.scss";
+import "./deleteRole.scss";
 
 export default function DeleteUserRoleDialog({
 	onCloseDialog,

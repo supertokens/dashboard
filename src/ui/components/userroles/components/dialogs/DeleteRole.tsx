@@ -21,9 +21,9 @@ import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 
-import "./deleteRoles.scss";
+import "./deleteRole.scss";
 
-export default function DeleteRolesDialog({
+export default function DeleteRoleDialog({
 	currentlySelectedRoleName,
 	deleteRoleFromRawResponse,
 	onCloseDialog,

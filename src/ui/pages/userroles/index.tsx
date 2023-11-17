@@ -45,7 +45,6 @@ export default function UserRolesList() {
 	const { getPermissionsForRole } = usePermissionsService();
 	const { showToast } = useContext(PopupContentContext);
 
-	//	used to stores raw roles which is only array of role names data from response.
 	const [rolesRawResponse, setRolesRawResponse] = useState<string[]>([]);
 	// used to store roles with permissions data that are fetched on the client side.
 	const [roles, setRoles] = useState<Role[]>([]);
@@ -158,9 +157,15 @@ export default function UserRolesList() {
 							) : null}
 						</div>
 						<RolesTable
-							deleteRoleFromRawResponse={(role: string) =>
-								setRolesRawResponse(rolesRawResponse.filter((r) => r !== role))
-							}
+							deleteRoleFromRawResponse={(role: string) => {
+								const filteredRoles = rolesRawResponse.filter((r) => r !== role);
+								if (filteredRoles.length > 0) {
+									setRolesRawResponse(filteredRoles);
+								} else {
+									setRoles([]);
+									setRolesRawResponse([]);
+								}
+							}}
 							setCurrentActivePage={setCurrentActivePage}
 							setRoles={setRoles}
 							currentActivePage={currentActivePage}

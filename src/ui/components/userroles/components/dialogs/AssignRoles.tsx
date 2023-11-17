@@ -4,7 +4,7 @@ import { ReactComponent as GreenCheckIcon } from "../../../../../assets/green-ch
 import { ReactComponent as LoaderIcon } from "../../../../../assets/loader.svg";
 import { ReactComponent as NoResultsIcon } from "../../../../../assets/no-results.svg";
 import { ReactComponent as PlusAdd } from "../../../../../assets/plus-square.svg";
-import { ReactComponent as SecuityKeyIcon } from "../../../../../assets/secuity-key.svg";
+import { ReactComponent as SecuityKeyIcon } from "../../../../../assets/roles-and-permissions.svg";
 
 import { getImageUrl } from "../../../../../utils";
 import Button from "../../../button";
@@ -120,7 +120,7 @@ export default function AssignRolesDialog({
 		if (roles.length < 1) {
 			return (
 				<div className="info-container">
-					<SecuityKeyIcon />
+					<SecuityKeyIcon className="security-icon" />
 					<h1>You have not created any User Roles</h1>
 					<p>
 						<Link to="/roles">Click here</Link> to create roles that you can assign to users

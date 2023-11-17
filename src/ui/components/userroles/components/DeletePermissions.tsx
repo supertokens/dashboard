@@ -1,7 +1,7 @@
 import Badge from "../../badge";
 import "./deletePermissions.scss";
 
-import { ReactComponent as SecuityKeyIcon } from "../../../../assets/secuity-key.svg";
+import { ReactComponent as SecuityKeyIcon } from "../../../../assets/roles-and-permissions.svg";
 import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
 
 export default function DeletePermissions({

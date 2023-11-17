@@ -26,7 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { PlaceholderTableRows } from "../../usersListTable/UsersListTable";
 import { Role } from "../types";
 import NoRolesFound from "./NoRolesFound";
-import DeleteRolesDialog from "./dialogs/DeleteRoles";
+import DeleteRoleDialog from "./dialogs/DeleteRole";
 import EditRoleDialog from "./dialogs/EditRole";
 import "./rolesTable.scss";
 
@@ -123,7 +123,7 @@ export function RolesTable({
 						</TableBody>
 					</Table>
 					{showDeleteDialog && currentlySelectedRole !== undefined ? (
-						<DeleteRolesDialog
+						<DeleteRoleDialog
 							deleteRoleFromRawResponse={deleteRoleFromRawResponse}
 							onCloseDialog={() => setShowDeleteDialog(false)}
 							currentlySelectedRoleName={currentlySelectedRole.role}

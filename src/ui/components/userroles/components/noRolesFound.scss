@@ -10,6 +10,12 @@
 	max-width: 100%;
 	padding: 56px 0px;
 
+	.icon {
+		height: 54px;
+		width: 54px;
+		color: var(--color-primary);
+	}
+
 	& > div {
 		display: flex;
 		flex-direction: column;
