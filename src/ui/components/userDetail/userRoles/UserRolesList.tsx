@@ -120,7 +120,7 @@ export default function UserRolesList(props: UserRolesListProps) {
 							onCloseDialog={() => setShowAddRoleDialog(false)}
 						/>
 					) : null}
-					{showDeleteRoleDialog && roleToDelete ? (
+					{showDeleteRoleDialog && roleToDelete !== undefined ? (
 						<DeleteUserRoleDialog
 							roleToDelete={roleToDelete}
 							userId={userId}

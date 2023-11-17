@@ -52,6 +52,9 @@ export default function EditRoleDialog({
 
 	const [isDeletePermissionsDialogOpen, setIsDeletePermissionsDialogOpen] = useState(false);
 
+	//	permissions that are already selected by user and can be deleted
+	const [existingPermissions, setExistingPermssions] = useState(currentlySelectedRole.permissions);
+
 	//	new permissions added by the user.
 	const [newlyAddedPermissions, setNewlyAddedPermissions] = useState<string[]>([]);
 
@@ -74,7 +77,7 @@ export default function EditRoleDialog({
 
 			const updatedRolesData = roles.map((role) => {
 				if (role.role === currentlySelectedRole.role) {
-					role.permissions = [...currentlySelectedRole.permissions, ...newlyAddedPermissions];
+					role.permissions = [...existingPermissions, ...newlyAddedPermissions];
 				}
 				return role;
 			});
@@ -98,9 +101,7 @@ export default function EditRoleDialog({
 		try {
 			await removePermissionsFromRole(currentlySelectedRole.role, permissionsToDelete);
 
-			const filteredPermissions = currentlySelectedRole.permissions.filter(
-				(p) => permissionsToDelete.includes(p) === false
-			);
+			const filteredPermissions = existingPermissions.filter((p) => permissionsToDelete.includes(p) === false);
 
 			const updatedRolesData = roles.map((role) => {
 				if (role.role === currentlySelectedRole.role) {
@@ -111,6 +112,7 @@ export default function EditRoleDialog({
 
 			setRoles(updatedRolesData);
 			setPermissionsToDelete([]);
+			setExistingPermssions(filteredPermissions);
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
 				toastType: "success",
@@ -172,7 +174,7 @@ export default function EditRoleDialog({
 								<TagsInputField
 									addTag={(permision: string) => {
 										if (
-											currentlySelectedRole.permissions.includes(permision) === false &&
+											existingPermissions.includes(permision) === false &&
 											newlyAddedPermissions.includes(permision) === false
 										) {
 											if (permision !== "") {
@@ -199,7 +201,7 @@ export default function EditRoleDialog({
 								/>
 								<DeletePermissions
 									onDelete={() => setIsDeletePermissionsDialogOpen(true)}
-									permissions={currentlySelectedRole.permissions}
+									permissions={existingPermissions}
 									permissionsToDelete={permissionsToDelete}
 									setPermissionsToDelete={setPermissionsToDelete}
 								/>
@@ -233,7 +235,7 @@ export default function EditRoleDialog({
 							<div>
 								<span className="label">Permissions</span>
 								<div className="permissions-list-container">
-									{currentlySelectedRole.permissions.map((permission) => {
+									{existingPermissions.map((permission) => {
 										return (
 											<Badge
 												text={permission}
@@ -241,7 +243,7 @@ export default function EditRoleDialog({
 											/>
 										);
 									})}
-									{currentlySelectedRole.permissions.length < 1 ? (
+									{existingPermissions.length < 1 ? (
 										<Button
 											size="xs"
 											color="info">

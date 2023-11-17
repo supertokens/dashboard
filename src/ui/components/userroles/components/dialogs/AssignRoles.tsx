@@ -46,7 +46,7 @@ export default function AssignRolesDialog({
 	const [isAddingRoles, setIsAddingRoles] = useState(false);
 
 	const rolesNotAssigned = roles.filter((r) => assignedRoles.includes(r) === false);
-	const filteredRoles =
+	const filteredRolesBySearch =
 		searchText !== ""
 			? rolesNotAssigned.filter((role) => role.toLowerCase().includes(searchText))
 			: rolesNotAssigned;
@@ -105,7 +105,7 @@ export default function AssignRolesDialog({
 				</div>
 			);
 		}
-		if (isFetchingRoles === false && roles.length === assignedRoles.length && roles.length > 0) {
+		if (roles.length === assignedRoles.length && roles.length > 0) {
 			return (
 				<div className="info-container">
 					<GreenCheckIcon />
@@ -117,7 +117,7 @@ export default function AssignRolesDialog({
 			);
 		}
 
-		if (isFetchingRoles === false && roles.length < 1) {
+		if (roles.length < 1) {
 			return (
 				<div className="info-container">
 					<SecuityKeyIcon />
@@ -129,7 +129,7 @@ export default function AssignRolesDialog({
 			);
 		}
 
-		if (isFetchingRoles === false && filteredRoles.length < 1) {
+		if (filteredRolesBySearch.length < 1) {
 			return (
 				<div className="info-container">
 					<NoResultsIcon />
@@ -138,7 +138,7 @@ export default function AssignRolesDialog({
 			);
 		}
 
-		return filteredRoles.map((role) => {
+		return filteredRolesBySearch.map((role) => {
 			return (
 				<div
 					key={role}

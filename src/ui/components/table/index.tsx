@@ -20,7 +20,7 @@ import "./table.scss";
 const Table = React.forwardRef<
 	HTMLTableElement,
 	React.HTMLAttributes<HTMLTableElement> & { className?: string; pagination?: React.ReactNode }
->(({ className, pagination, ...props }, ref) => {
+>(({ className = "", pagination, ...props }, ref) => {
 	return (
 		<div className="table-container">
 			<table
