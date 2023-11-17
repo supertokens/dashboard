@@ -41,10 +41,14 @@ export const useRolesService = () => {
 		return undefined;
 	};
 
-	const createRole = async (
+	const createRoleOrUpdateARole = async (
 		role: string,
 		permissions: string[]
-	): Promise<{ status: "OK"; createdNewRole: boolean } | { status: "FEATURE_NOT_ENABLED_ERROR" } | undefined> => {
+	): Promise<
+		| { status: "OK"; createdNewRole: boolean }
+		| { status: "FEATURE_NOT_ENABLED_ERROR" | "UNKNOWN_ROLE_ERROR" }
+		| undefined
+	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role"),
 			method: "PUT",
@@ -64,19 +68,37 @@ export const useRolesService = () => {
 		return undefined;
 	};
 
-	const deleteRole = async (role: string): Promise<void> => {
-		await fetchData({
+	const deleteRole = async (
+		role: string
+	): Promise<
+		| {
+				status: "OK";
+				didRoleExist: boolean;
+		  }
+		| {
+				status: "FEATURE_NOT_ENABLED_ERROR";
+		  }
+		| undefined
+	> => {
+		const response = await fetchData({
 			url: getApiUrl("/api/userroles/role"),
 			method: "DELETE",
 			query: {
 				role,
 			},
 		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
 	};
 
 	return {
 		getRoles,
-		createRole,
+		createRoleOrUpdateARole,
 		deleteRole,
 	};
 };

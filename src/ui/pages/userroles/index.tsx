@@ -70,7 +70,8 @@ export default function UserRolesList() {
 
 			if (response !== undefined) {
 				if (response.status === "OK") {
-					setRolesRawResponse(response.roles);
+					//	reversing roles response to show latest roles first.
+					setRolesRawResponse(response.roles.reverse());
 				}
 
 				if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
@@ -94,8 +95,6 @@ export default function UserRolesList() {
 		}
 	};
 
-	const timer = (time: number) => new Promise((res) => setTimeout(res, time));
-
 	async function fetchPermissionsForRoles() {
 		setIsFetchingRoles(true);
 		setRoles([]);
@@ -112,8 +111,7 @@ export default function UserRolesList() {
 			} else {
 				throw new Error("This should never happen.");
 			}
-			//	adding this time interval intentionally to avoid rate limiting.
-			await timer(250);
+			await new Promise((res) => setTimeout(res, 250));
 		}
 		setRoles(rolesWithPermissions);
 		setIsFetchingRoles(false);
@@ -121,7 +119,9 @@ export default function UserRolesList() {
 
 	useEffect(() => {
 		//	only refetch the permissions when the roleRawResponse and currentActivePage changes.
-		void fetchPermissionsForRoles();
+		if (rolesRawResponse.length > 0) {
+			void fetchPermissionsForRoles();
+		}
 	}, [currentActivePage, rolesRawResponse]);
 
 	useEffect(() => {

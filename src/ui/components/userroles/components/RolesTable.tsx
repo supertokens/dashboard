@@ -34,7 +34,7 @@ type RolesTableProps = {
 	roles: Role[];
 	isFetchingRoles: boolean;
 	currentActivePage: number;
-	paginationData?: PaginationData;
+	paginationData: PaginationData;
 	setCurrentActivePage: (page: number) => void;
 	deleteRoleFromRawResponse: (role: string) => void;
 	setRoles: (roles: Role[]) => void;
@@ -58,14 +58,14 @@ export function RolesTable({
 
 	return (
 		<>
-			{isFetchingRoles === false && roles.length < 1 && currentActivePage === 1 ? (
+			{isFetchingRoles === false && roles.length < 1 ? (
 				<NoRolesFound />
 			) : (
 				<div className="margin-bottom-36">
 					<Table
 						className="theme-blue"
 						pagination={
-							paginationData !== undefined ? (
+							isFetchingRoles === false ? (
 								<Pagination
 									className="roles-list-pagination"
 									handleNext={() => setCurrentActivePage(currentActivePage + 1)}
@@ -94,12 +94,12 @@ export function RolesTable({
 									className={"user-info"}
 								/>
 							) : null}
-							{roles.map(({ role, permissions }, index) => {
+							{roles.map(({ role, permissions }) => {
 								return (
 									<TableRow
 										key={role}
 										onClick={(e) => {
-											setCurrentlySelectedRole(roles[index]);
+											setCurrentlySelectedRole({ role, permissions });
 											setShowEditDialog(true);
 										}}>
 										<TableCell>{role}</TableCell>
@@ -110,7 +110,7 @@ export function RolesTable({
 													onClick={(e) => {
 														e.stopPropagation();
 														setShowDeleteDialog(true);
-														setCurrentlySelectedRole(roles[index]);
+														setCurrentlySelectedRole({ role, permissions });
 													}}
 													className="delete-role">
 													<TrashIcon />
@@ -160,10 +160,10 @@ function Permissions({ permissions }: { permissions: string[] }) {
 			}
 		}
 
-		handleResizeEvent();
 		window.addEventListener("resize", handleResizeEvent);
 
 		() => {
+			//	cleanup
 			window.removeEventListener("resize", handleResizeEvent);
 		};
 	}, []);

@@ -44,33 +44,6 @@ export const usePermissionsService = () => {
 		return undefined;
 	};
 
-	const addPermissionsToRole = async (
-		role: string,
-		permissions: string[]
-	): Promise<
-		| { status: "OK"; createdNewRole: boolean }
-		| { status: "FEATURE_NOT_ENABLED_ERROR" | "UNKNOWN_ROLE_ERROR" }
-		| undefined
-	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/userroles/role"),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({
-					role,
-					permissions,
-				}),
-			},
-		});
-
-		if (response.ok) {
-			const body = await response.json();
-			return body;
-		}
-
-		return undefined;
-	};
-
 	const removePermissionsFromRole = async (
 		role: string,
 		permissions: string[]
@@ -101,7 +74,6 @@ export const usePermissionsService = () => {
 
 	return {
 		getPermissionsForRole,
-		addPermissionsToRole,
 		removePermissionsFromRole,
 	};
 };

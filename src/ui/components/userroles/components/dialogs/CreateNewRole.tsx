@@ -32,24 +32,24 @@ export default function CreateNewRoleDialog({
 	onCloseDialog: () => void;
 	addRoleToRawReponseData: (role: string) => void;
 }) {
-	const { createRole } = useRolesService();
+	const { createRoleOrUpdateARole } = useRolesService();
 	const { showToast } = useContext(PopupContentContext);
 
-	const [roleError, setRoleError] = useState<string | undefined>(undefined);
-	const [isLoading, setIsLoading] = useState(false);
+	const [roleCreationError, setRoleCreationError] = useState<string | undefined>(undefined);
+	const [isCreatingRole, setIsCreatingRole] = useState(false);
 
 	const [role, setRole] = useState("");
 	const [permissions, setPermissions] = useState<string[]>([]);
 
 	async function handleCreateRole() {
 		if (role.length < 1) {
-			setRoleError("Please enter a valid role name!");
+			setRoleCreationError("Please enter a valid role name!");
 			return;
 		}
 
 		try {
-			setIsLoading(true);
-			const response = await createRole(role, permissions);
+			setIsCreatingRole(true);
+			const response = await createRoleOrUpdateARole(role, permissions);
 
 			if (response !== undefined) {
 				if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
@@ -94,7 +94,7 @@ export default function CreateNewRoleDialog({
 				children: <>Something went wrong Please try again!</>,
 			});
 		} finally {
-			setIsLoading(false);
+			setIsCreatingRole(false);
 		}
 	}
 
@@ -106,7 +106,7 @@ export default function CreateNewRoleDialog({
 				<div className="create-role-dialog-container">
 					<div>
 						<InputField
-							error={roleError}
+							error={roleCreationError}
 							forceShowError={true}
 							label="Name of Role"
 							name="roleName"
@@ -114,7 +114,7 @@ export default function CreateNewRoleDialog({
 							value={role}
 							hideColon
 							handleChange={(e) => {
-								setRoleError(undefined);
+								setRoleCreationError(undefined);
 								setRole(e.currentTarget.value.trim());
 							}}
 						/>
@@ -150,8 +150,8 @@ export default function CreateNewRoleDialog({
 						Go Back
 					</Button>
 					<Button
-						isLoading={isLoading}
-						disabled={isLoading}
+						isLoading={isCreatingRole}
+						disabled={isCreatingRole}
 						onClick={handleCreateRole}>
 						Create now
 					</Button>

@@ -15,6 +15,7 @@
 
 import { useContext, useState } from "react";
 
+import useRolesService from "../../../../../api/userroles/role";
 import { usePermissionsService } from "../../../../../api/userroles/role/permissions";
 import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
@@ -57,12 +58,13 @@ export default function EditRoleDialog({
 	//	to store permissions that needs to be deleted
 	const [permissionsToDelete, setPermissionsToDelete] = useState<string[]>([]);
 
-	const { addPermissionsToRole, removePermissionsFromRole } = usePermissionsService();
+	const { removePermissionsFromRole } = usePermissionsService();
+	const { createRoleOrUpdateARole } = useRolesService();
 
-	async function handleSave() {
+	async function handleAddingNewPermissionsToARole() {
 		setIsSaving(true);
 		try {
-			await addPermissionsToRole(currentlySelectedRole.role, newlyAddedPermissions);
+			await createRoleOrUpdateARole(currentlySelectedRole.role, newlyAddedPermissions);
 
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
@@ -91,9 +93,6 @@ export default function EditRoleDialog({
 	}
 
 	async function handleDeletePermissions() {
-		if (permissionsToDelete.length === 0) {
-			return;
-		}
 		setIsDeletingRoles(true);
 
 		try {
@@ -111,7 +110,6 @@ export default function EditRoleDialog({
 			});
 
 			setRoles(updatedRolesData);
-			setNewlyAddedPermissions(newlyAddedPermissions.filter((p) => permissionsToDelete.includes(p) === false));
 			setPermissionsToDelete([]);
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
@@ -174,11 +172,12 @@ export default function EditRoleDialog({
 								<TagsInputField
 									addTag={(permision: string) => {
 										if (
-											permision !== "" &&
 											currentlySelectedRole.permissions.includes(permision) === false &&
 											newlyAddedPermissions.includes(permision) === false
 										) {
-											setNewlyAddedPermissions([...newlyAddedPermissions, permision]);
+											if (permision !== "") {
+												setNewlyAddedPermissions([...newlyAddedPermissions, permision]);
+											}
 										} else {
 											showToast({
 												iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -219,7 +218,7 @@ export default function EditRoleDialog({
 							<Button
 								disabled={newlyAddedPermissions.length === 0 || isSaving}
 								isLoading={isSaving}
-								onClick={handleSave}>
+								onClick={handleAddingNewPermissionsToARole}>
 								Save
 							</Button>
 						</DialogFooter>
