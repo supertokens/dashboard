@@ -15,6 +15,7 @@
 
 import { useContext, useEffect, useState } from "react";
 
+import { ReactComponent as RefreshIcon } from "../../../../assets/refresh.svg";
 import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
 
 import { usePermissionsService } from "../../../../api/userroles/role/permissions";
@@ -24,6 +25,7 @@ import { PaginationData, RoleWithOrWithoutPermissions, USERROLES_PAGINATION_LIMI
 import Badge from "../../badge";
 import Button from "../../button";
 import Pagination from "../../pagination";
+import Shimmer from "../../shimmer";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
 import { PlaceholderTableRows } from "../../usersListTable/UsersListTable";
 import NoRolesFound from "./NoRolesFound";
@@ -66,23 +68,45 @@ export function RolesTable({
 		return <NoRolesFound />;
 	}
 
+	if (isFetchingRoles === true) {
+		return (
+			<div className="margin-bottom-36">
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead className="roles-column">User Roles</TableHead>
+							<TableHead>
+								<div className="delete-btn-container">Permissions</div>
+							</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						<PlaceholderTableRows
+							rowCount={14}
+							colSpan={3}
+							className={"user-info"}
+						/>
+					</TableBody>
+				</Table>
+			</div>
+		);
+	}
+
 	return (
 		<div className="margin-bottom-36">
 			<Table
 				className="theme-blue"
 				pagination={
-					isFetchingRoles === false && paginatedRoles !== undefined ? (
-						<Pagination
-							className="roles-list-pagination"
-							handleNext={() => setCurrentActivePage(currentActivePage + 1)}
-							handlePrevious={() => setCurrentActivePage(currentActivePage - 1)}
-							limit={USERROLES_PAGINATION_LIMIT}
-							currentActivePage={currentActivePage}
-							totalPages={paginationData.totalPages}
-							offset={paginatedRoles.length}
-							totalItems={paginationData.totalRolesCount}
-						/>
-					) : null
+					<Pagination
+						className="roles-list-pagination"
+						handleNext={() => setCurrentActivePage(currentActivePage + 1)}
+						handlePrevious={() => setCurrentActivePage(currentActivePage - 1)}
+						limit={USERROLES_PAGINATION_LIMIT}
+						currentActivePage={currentActivePage}
+						totalPages={paginationData.totalPages}
+						offset={paginatedRoles?.length || 0}
+						totalItems={paginationData.totalRolesCount}
+					/>
 				}>
 				<TableHeader>
 					<TableRow>
@@ -93,13 +117,6 @@ export function RolesTable({
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{isFetchingRoles ? (
-						<PlaceholderTableRows
-							rowCount={14}
-							colSpan={3}
-							className={"user-info"}
-						/>
-					) : null}
 					{roles !== undefined &&
 						paginatedRoles?.map(({ role, permissions }) => {
 							return (
@@ -126,106 +143,42 @@ type RolesTableRowProps = {
 };
 
 function RolesTableRow({ permissions, role, roles, setRoles }: RolesTableRowProps) {
+	const { showToast } = useContext(PopupContentContext);
 	//	used to control opening and closing dialog
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [showEditDialog, setShowEditDialog] = useState(false);
 
-	function setPermissionsToARole(role: string, permissions: string[]) {
-		if (roles !== undefined) {
-			const updatedRoleWithPermissions = roles.map((r) => {
-				if (r.role === role) {
-					r.permissions = permissions;
-				}
-				return r;
-			});
-			setRoles(updatedRoleWithPermissions);
-		}
-	}
+	//	fetchPermissions network states
+	const [isErrorWhileFetchingPermissions, setIsErrorWhileFetchingPermissions] = useState(false);
+	const [isFetchingPermissions, setIsFetchingPermissions] = useState(false);
 
-	return (
-		<>
-			<TableRow
-				className={permissions === undefined ? "disable-row" : undefined}
-				key={role}
-				onClick={() => {
-					setShowEditDialog(true);
-				}}>
-				<TableCell>{role}</TableCell>
-				<TableCell>
-					<div className="permissions-container">
-						<Permissions
-							role={role}
-							permissions={permissions}
-							setPermissionToARole={setPermissionsToARole}
-						/>
-						<button
-							onClick={(e) => {
-								e.stopPropagation();
-								setShowDeleteDialog(true);
-							}}
-							className="delete-role">
-							<TrashIcon />
-						</button>
-					</div>
-				</TableCell>
-			</TableRow>
-			{showDeleteDialog ? (
-				<DeleteRoleDialog
-					deleteRole={(role: string) => {
-						const filteredRoles = roles.filter((r) => r.role !== role);
-						setRoles(filteredRoles);
-					}}
-					onCloseDialog={() => setShowDeleteDialog(false)}
-					currentlySelectedRoleName={role}
-				/>
-			) : null}
-			{showEditDialog ? (
-				<EditRoleDialog
-					roles={roles}
-					setRoles={setRoles}
-					currentlySelectedRole={{
-						role,
-						permissions,
-					}}
-					onCloseDialog={() => {
-						setShowEditDialog(false);
-					}}
-				/>
-			) : null}
-		</>
-	);
-}
-
-function Permissions({
-	permissions,
-	role,
-	setPermissionToARole,
-}: {
-	permissions: string[] | undefined;
-	role: string;
-	setPermissionToARole: (role: string, permissions: string[]) => void;
-}) {
-	const { showToast } = useContext(PopupContentContext);
+	//	to determine how many permissions fits into the row for given screen width.
 	const [badgeRenderLimit, setBadgeRenderLimit] = useState(4);
 	const { getPermissionsForRole } = usePermissionsService();
 
 	async function fetchPermissionsForRoles() {
+		//	only fetch permissions when the permissions are undefined for a give role
+		//
 		if (permissions === undefined) {
 			try {
+				setIsFetchingPermissions(true);
+				setIsErrorWhileFetchingPermissions(false);
 				const response = await getPermissionsForRole(role);
 				if (response?.status === "OK") {
-					setPermissionToARole(role, response.permissions);
-				} else if (response?.status === "FEATURE_NOT_ENABLED_ERROR") {
-					showToast({
-						iconImage: getImageUrl("form-field-error-icon.svg"),
-						toastType: "error",
-						children: <>Feature not enabled!</>,
-					});
+					if (roles !== undefined) {
+						const updatedRoleWithPermissions = roles.map((r) => {
+							if (r.role === role) {
+								r.permissions = response.permissions;
+							}
+							return r;
+						});
+						setRoles(updatedRoleWithPermissions);
+					}
 				} else if (response?.status === "UNKNOWN_ROLE_ERROR") {
 					showToast({
 						iconImage: getImageUrl("form-field-error-icon.svg"),
 						toastType: "error",
-						children: <>This role doesn't exists!</>,
+						children: <>This role does not exists!</>,
 					});
 				}
 			} catch (_) {
@@ -234,6 +187,9 @@ function Permissions({
 					toastType: "error",
 					children: <>Something went wrong Please try again!</>,
 				});
+				setIsErrorWhileFetchingPermissions(true);
+			} finally {
+				setIsFetchingPermissions(false);
 			}
 		}
 	}
@@ -260,37 +216,115 @@ function Permissions({
 		};
 	}, []);
 
-	if (permissions === undefined) {
-		return <div>Loading...</div>;
+	function renderPermissions() {
+		if (isErrorWhileFetchingPermissions) {
+			return (
+				<div style={{ color: "#ED344E" }}>
+					<img
+						src={getImageUrl("form-field-error-icon.svg")}
+						alt="alert icon"
+					/>{" "}
+					Something went wrong!
+				</div>
+			);
+		}
+
+		if (isFetchingPermissions) {
+			return <Shimmer />;
+		}
+
+		return (
+			<>
+				{permissions !== undefined ? (
+					<div
+						id="permissions"
+						className="permissions">
+						{permissions.slice(0, badgeRenderLimit).map((permission) => {
+							return (
+								<Badge
+									className="badge-width"
+									key={permission}
+									text={permission}
+								/>
+							);
+						})}
+						{badgeRenderLimit < permissions.length ? (
+							<Button
+								size="sm"
+								color="info">
+								...
+							</Button>
+						) : null}
+						{permissions.length < 1 ? (
+							<Button
+								color="info"
+								size="xs">
+								No Permissions
+							</Button>
+						) : null}
+					</div>
+				) : null}
+			</>
+		);
 	}
 
 	return (
-		<div
-			id="permissions"
-			className="permissions">
-			{permissions.slice(0, badgeRenderLimit).map((permission) => {
-				return (
-					<Badge
-						className="badge-width"
-						key={permission}
-						text={permission}
-					/>
-				);
-			})}
-			{badgeRenderLimit < permissions.length ? (
-				<Button
-					size="sm"
-					color="info">
-					...
-				</Button>
+		<>
+			<TableRow
+				className={isFetchingPermissions ? "disable-row" : undefined}
+				key={role}
+				onClick={() => {
+					setShowEditDialog(true);
+				}}>
+				<TableCell>{role}</TableCell>
+				<TableCell>
+					<div className="permissions-container">
+						{renderPermissions()}
+						{isErrorWhileFetchingPermissions ? (
+							<button
+								className="refresh-btn"
+								onClick={(e) => {
+									e.stopPropagation();
+									void fetchPermissionsForRoles();
+								}}>
+								<RefreshIcon />
+							</button>
+						) : (
+							<button
+								onClick={(e) => {
+									e.stopPropagation();
+									setShowDeleteDialog(true);
+								}}
+								className="delete-role">
+								<TrashIcon />
+							</button>
+						)}
+					</div>
+				</TableCell>
+			</TableRow>
+			{showDeleteDialog ? (
+				<DeleteRoleDialog
+					deleteRole={(role: string) => {
+						const filteredRoles = roles.filter((r) => r.role !== role);
+						setRoles(filteredRoles);
+					}}
+					onCloseDialog={() => setShowDeleteDialog(false)}
+					currentlySelectedRoleName={role}
+				/>
 			) : null}
-			{permissions.length < 1 ? (
-				<Button
-					color="info"
-					size="xs">
-					No Permissions
-				</Button>
+			{showEditDialog && permissions !== undefined ? (
+				<EditRoleDialog
+					roles={roles}
+					setRoles={setRoles}
+					currentlySelectedRole={{
+						role,
+						permissions,
+					}}
+					onCloseDialog={() => {
+						setShowEditDialog(false);
+					}}
+				/>
 			) : null}
-		</div>
+		</>
 	);
 }

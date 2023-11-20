@@ -25,6 +25,7 @@ import Button from "../../../button";
 import IconButton from "../../../common/iconButton";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import TagsInputField from "../../../inputField/TagsInputField";
+import { Role } from "../../types";
 import DeletePermissions from "../DeletePermissions";
 import DeletePermissionDialog from "./DeletePermission";
 import "./editRole.scss";
@@ -36,7 +37,7 @@ export default function EditRoleDialog({
 	currentlySelectedRole,
 }: {
 	onCloseDialog: () => void;
-	currentlySelectedRole: RoleWithOrWithoutPermissions;
+	currentlySelectedRole: Role;
 	roles: RoleWithOrWithoutPermissions[];
 	setRoles: (roles: RoleWithOrWithoutPermissions[]) => void;
 }) {
@@ -73,7 +74,7 @@ export default function EditRoleDialog({
 			});
 
 			const updatedRolesData = roles.map((role) => {
-				if (role.role === currentlySelectedRole.role && currentlySelectedRole.permissions !== undefined) {
+				if (role.role === currentlySelectedRole.role) {
 					role.permissions = [...currentlySelectedRole.permissions, ...newlyAddedPermissions];
 				}
 				return role;
@@ -93,9 +94,6 @@ export default function EditRoleDialog({
 	}
 
 	async function handleDeletePermissions() {
-		if (currentlySelectedRole.permissions === undefined) {
-			return;
-		}
 		setIsDeletingRoles(true);
 
 		try {
@@ -132,12 +130,6 @@ export default function EditRoleDialog({
 		} finally {
 			setIsDeletingRoles(false);
 		}
-	}
-
-	//	if the permissions for the selected role is still undefined it means that
-	//	we still need to fetch the permissions for this role. so we do not allow the users to see this dialog itself.
-	if (currentlySelectedRole.permissions === undefined) {
-		return null;
 	}
 
 	if (isDeletePermissionsDialogOpen) {
@@ -181,7 +173,7 @@ export default function EditRoleDialog({
 								<TagsInputField
 									addTag={(permision: string) => {
 										if (
-											currentlySelectedRole.permissions?.includes(permision) === false &&
+											currentlySelectedRole.permissions.includes(permision) === false &&
 											newlyAddedPermissions.includes(permision) === false
 										) {
 											if (permision !== "") {

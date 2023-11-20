@@ -159,6 +159,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		if (response !== undefined) {
 			if (response.status === "OK") {
 				setUserRoles(response.roles);
+				setIsUserRolesFeatureEnabled(true);
 			}
 
 			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
