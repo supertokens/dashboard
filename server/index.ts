@@ -16,7 +16,7 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
-import SuperTokens, { RecipeUserId } from "supertokens-node";
+import SuperTokens from "supertokens-node";
 import { errorHandler, middleware } from "supertokens-node/framework/express";
 import Dashboard from "supertokens-node/lib/build/recipe/dashboard/recipe";
 import AccountLinking from "supertokens-node/recipe/accountlinking";
@@ -27,8 +27,6 @@ import Session from "supertokens-node/recipe/session";
 import ThirdParty from "supertokens-node/recipe/thirdparty";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
 import UserRoles from "supertokens-node/recipe/userroles";
-
-import Multitenancy from "supertokens-node/recipe/multitenancy";
 
 const websiteDomain = "http://localhost:3000";
 
@@ -121,14 +119,4 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 app.listen(3001, () => {
 	console.log("Server started on port 3001");
-});
-
-app.get("/add-user-to-tenant", async (req, res) => {
-	const tenantId = "customer2";
-	const recipeUserId = new RecipeUserId("0d05fc9d-d1fd-4114-8893-ca59b21e57b4");
-	console.log({ recipeUserId });
-	let resp = await Multitenancy.associateUserToTenant(tenantId, recipeUserId);
-
-	console.log(resp);
-	return res.status(200).json(resp);
 });
