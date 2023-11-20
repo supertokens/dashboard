@@ -22,6 +22,7 @@ import InputField from "../../../inputField/InputField";
 import useRolesService from "../../../../../api/userroles/role";
 import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
+import { RoleWithOrWithoutPermissions } from "../../../../pages/userroles";
 import TagsInputField from "../../../inputField/TagsInputField";
 import "./createNewRole.scss";
 
@@ -30,7 +31,7 @@ export default function CreateNewRoleDialog({
 	addRoleToRawReponseData,
 }: {
 	onCloseDialog: () => void;
-	addRoleToRawReponseData: (role: string) => void;
+	addRoleToRawReponseData: (role: RoleWithOrWithoutPermissions) => void;
 }) {
 	const { createRoleOrUpdateARole } = useRolesService();
 	const { showToast } = useContext(PopupContentContext);
@@ -85,7 +86,7 @@ export default function CreateNewRoleDialog({
 					children: <>Something went wrong Please try again!</>,
 				});
 			}
-			addRoleToRawReponseData(role);
+			addRoleToRawReponseData({ role, permissions });
 			onCloseDialog();
 		} catch (error) {
 			showToast({

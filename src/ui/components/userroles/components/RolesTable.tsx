@@ -13,31 +13,33 @@
  * under the License.
  */
 
-import { useEffect, useState } from "react";
-
-import Badge from "../../badge";
+import { useContext, useEffect, useState } from "react";
 
 import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
 
-import { PaginationData, USERROLES_PAGINATION_LIMIT } from "../../../pages/userroles";
+import { usePermissionsService } from "../../../../api/userroles/role/permissions";
+import { getImageUrl } from "../../../../utils";
+import { PopupContentContext } from "../../../contexts/PopupContentContext";
+import { PaginationData, RoleWithOrWithoutPermissions, USERROLES_PAGINATION_LIMIT } from "../../../pages/userroles";
+import Badge from "../../badge";
 import Button from "../../button";
 import Pagination from "../../pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
 import { PlaceholderTableRows } from "../../usersListTable/UsersListTable";
-import { Role } from "../types";
 import NoRolesFound from "./NoRolesFound";
 import DeleteRoleDialog from "./dialogs/DeleteRole";
 import EditRoleDialog from "./dialogs/EditRole";
 import "./rolesTable.scss";
 
+type SetRoles = (roles: RoleWithOrWithoutPermissions[]) => void;
+
 type RolesTableProps = {
-	roles: Role[];
+	roles: RoleWithOrWithoutPermissions[] | undefined;
+	setRoles: SetRoles;
 	isFetchingRoles: boolean;
 	currentActivePage: number;
 	paginationData: PaginationData;
 	setCurrentActivePage: (page: number) => void;
-	deleteRoleFromRawResponse: (role: string) => void;
-	setRoles: (roles: Role[]) => void;
 };
 
 export function RolesTable({
@@ -46,105 +48,195 @@ export function RolesTable({
 	currentActivePage,
 	paginationData,
 	setCurrentActivePage,
-	deleteRoleFromRawResponse,
 	setRoles,
 }: RolesTableProps) {
-	//	used to determine what role does user have selected
-	const [currentlySelectedRole, setCurrentlySelectedRole] = useState<Role | undefined>(undefined);
+	//	skip will decide how many results should be skipped based on the active page number.
+	const rolesToSkip = USERROLES_PAGINATION_LIMIT * (currentActivePage - 1);
+	const paginatedRoles = roles?.slice(rolesToSkip, rolesToSkip + USERROLES_PAGINATION_LIMIT);
 
+	useEffect(() => {
+		//	if the role is deleted and the role is in the last page of pagination and not the first page
+		//	we should set currentPage to previous as this page not have any results now.
+		if (currentActivePage !== 1 && paginatedRoles?.length === 0) {
+			setCurrentActivePage(currentActivePage - 1);
+		}
+	}, [roles]);
+
+	if (isFetchingRoles === false && roles !== undefined && roles?.length === 0) {
+		return <NoRolesFound />;
+	}
+
+	return (
+		<div className="margin-bottom-36">
+			<Table
+				className="theme-blue"
+				pagination={
+					isFetchingRoles === false && paginatedRoles !== undefined ? (
+						<Pagination
+							className="roles-list-pagination"
+							handleNext={() => setCurrentActivePage(currentActivePage + 1)}
+							handlePrevious={() => setCurrentActivePage(currentActivePage - 1)}
+							limit={USERROLES_PAGINATION_LIMIT}
+							currentActivePage={currentActivePage}
+							totalPages={paginationData.totalPages}
+							offset={paginatedRoles.length}
+							totalItems={paginationData.totalRolesCount}
+						/>
+					) : null
+				}>
+				<TableHeader>
+					<TableRow>
+						<TableHead className="roles-column">User Roles</TableHead>
+						<TableHead>
+							<div className="delete-btn-container">Permissions</div>
+						</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{isFetchingRoles ? (
+						<PlaceholderTableRows
+							rowCount={14}
+							colSpan={3}
+							className={"user-info"}
+						/>
+					) : null}
+					{roles !== undefined &&
+						paginatedRoles?.map(({ role, permissions }) => {
+							return (
+								<RolesTableRow
+									permissions={permissions}
+									role={role}
+									roles={roles}
+									setRoles={setRoles}
+									key={role}
+								/>
+							);
+						})}
+				</TableBody>
+			</Table>
+		</div>
+	);
+}
+
+type RolesTableRowProps = {
+	permissions: string[] | undefined;
+	role: string;
+	roles: RoleWithOrWithoutPermissions[];
+	setRoles: SetRoles;
+};
+
+function RolesTableRow({ permissions, role, roles, setRoles }: RolesTableRowProps) {
 	//	used to control opening and closing dialog
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [showEditDialog, setShowEditDialog] = useState(false);
 
+	function setPermissionsToARole(role: string, permissions: string[]) {
+		if (roles !== undefined) {
+			const updatedRoleWithPermissions = roles.map((r) => {
+				if (r.role === role) {
+					r.permissions = permissions;
+				}
+				return r;
+			});
+			setRoles(updatedRoleWithPermissions);
+		}
+	}
+
 	return (
 		<>
-			{isFetchingRoles === false && roles.length < 1 ? (
-				<NoRolesFound />
-			) : (
-				<div className="margin-bottom-36">
-					<Table
-						className="theme-blue"
-						pagination={
-							isFetchingRoles === false ? (
-								<Pagination
-									className="roles-list-pagination"
-									handleNext={() => setCurrentActivePage(currentActivePage + 1)}
-									handlePrevious={() => setCurrentActivePage(currentActivePage - 1)}
-									limit={USERROLES_PAGINATION_LIMIT}
-									currentActivePage={currentActivePage}
-									totalPages={paginationData.totalPages}
-									offset={roles.length}
-									totalItems={paginationData.totalRolesCount}
-								/>
-							) : null
-						}>
-						<TableHeader>
-							<TableRow>
-								<TableHead className="roles-column">User Roles</TableHead>
-								<TableHead>
-									<div className="delete-btn-container">Permissions</div>
-								</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{isFetchingRoles ? (
-								<PlaceholderTableRows
-									rowCount={14}
-									colSpan={3}
-									className={"user-info"}
-								/>
-							) : null}
-							{roles.map(({ role, permissions }) => {
-								return (
-									<TableRow
-										key={role}
-										onClick={(e) => {
-											setCurrentlySelectedRole({ role, permissions });
-											setShowEditDialog(true);
-										}}>
-										<TableCell>{role}</TableCell>
-										<TableCell>
-											<div className="permissions-container">
-												<Permissions permissions={permissions} />
-												<button
-													onClick={(e) => {
-														e.stopPropagation();
-														setShowDeleteDialog(true);
-														setCurrentlySelectedRole({ role, permissions });
-													}}
-													className="delete-role">
-													<TrashIcon />
-												</button>
-											</div>
-										</TableCell>
-									</TableRow>
-								);
-							})}
-						</TableBody>
-					</Table>
-					{showDeleteDialog && currentlySelectedRole !== undefined ? (
-						<DeleteRoleDialog
-							deleteRoleFromRawResponse={deleteRoleFromRawResponse}
-							onCloseDialog={() => setShowDeleteDialog(false)}
-							currentlySelectedRoleName={currentlySelectedRole.role}
+			<TableRow
+				className={permissions === undefined ? "disable-row" : undefined}
+				key={role}
+				onClick={() => {
+					setShowEditDialog(true);
+				}}>
+				<TableCell>{role}</TableCell>
+				<TableCell>
+					<div className="permissions-container">
+						<Permissions
+							role={role}
+							permissions={permissions}
+							setPermissionToARole={setPermissionsToARole}
 						/>
-					) : null}
-					{showEditDialog && currentlySelectedRole !== undefined ? (
-						<EditRoleDialog
-							roles={roles}
-							setRoles={setRoles}
-							currentlySelectedRole={currentlySelectedRole}
-							onCloseDialog={() => setShowEditDialog(false)}
-						/>
-					) : null}
-				</div>
-			)}
+						<button
+							onClick={(e) => {
+								e.stopPropagation();
+								setShowDeleteDialog(true);
+							}}
+							className="delete-role">
+							<TrashIcon />
+						</button>
+					</div>
+				</TableCell>
+			</TableRow>
+			{showDeleteDialog ? (
+				<DeleteRoleDialog
+					deleteRole={(role: string) => {
+						const filteredRoles = roles.filter((r) => r.role !== role);
+						setRoles(filteredRoles);
+					}}
+					onCloseDialog={() => setShowDeleteDialog(false)}
+					currentlySelectedRoleName={role}
+				/>
+			) : null}
+			{showEditDialog ? (
+				<EditRoleDialog
+					roles={roles}
+					setRoles={setRoles}
+					currentlySelectedRole={{
+						role,
+						permissions,
+					}}
+					onCloseDialog={() => {
+						setShowEditDialog(false);
+					}}
+				/>
+			) : null}
 		</>
 	);
 }
 
-function Permissions({ permissions }: { permissions: string[] }) {
+function Permissions({
+	permissions,
+	role,
+	setPermissionToARole,
+}: {
+	permissions: string[] | undefined;
+	role: string;
+	setPermissionToARole: (role: string, permissions: string[]) => void;
+}) {
+	const { showToast } = useContext(PopupContentContext);
 	const [badgeRenderLimit, setBadgeRenderLimit] = useState(4);
+	const { getPermissionsForRole } = usePermissionsService();
+
+	async function fetchPermissionsForRoles() {
+		if (permissions === undefined) {
+			try {
+				const response = await getPermissionsForRole(role);
+				if (response?.status === "OK") {
+					setPermissionToARole(role, response.permissions);
+				} else if (response?.status === "FEATURE_NOT_ENABLED_ERROR") {
+					showToast({
+						iconImage: getImageUrl("form-field-error-icon.svg"),
+						toastType: "error",
+						children: <>Feature not enabled!</>,
+					});
+				} else if (response?.status === "UNKNOWN_ROLE_ERROR") {
+					showToast({
+						iconImage: getImageUrl("form-field-error-icon.svg"),
+						toastType: "error",
+						children: <>This role doesn't exists!</>,
+					});
+				}
+			} catch (_) {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Something went wrong Please try again!</>,
+				});
+			}
+		}
+	}
 
 	useEffect(() => {
 		function handleResizeEvent() {
@@ -161,12 +253,16 @@ function Permissions({ permissions }: { permissions: string[] }) {
 		}
 
 		window.addEventListener("resize", handleResizeEvent);
-
+		void fetchPermissionsForRoles();
 		() => {
 			//	cleanup
 			window.removeEventListener("resize", handleResizeEvent);
 		};
 	}, []);
+
+	if (permissions === undefined) {
+		return <div>Loading...</div>;
+	}
 
 	return (
 		<div

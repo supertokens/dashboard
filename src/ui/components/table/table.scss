@@ -77,6 +77,12 @@
 }
 
 .table.theme-blue tbody tr {
+	&.disable-row {
+		cursor: none;
+		pointer-events: none;
+		opacity: 0.6;
+	}
+
 	&:hover {
 		background: var(--color-secondary-light);
 	}

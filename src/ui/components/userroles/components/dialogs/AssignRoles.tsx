@@ -64,6 +64,7 @@ export default function AssignRolesDialog({
 			});
 
 			setAssignedRoles([...assignedRoles, roleName]);
+			setSearchText("");
 		} catch (_) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),

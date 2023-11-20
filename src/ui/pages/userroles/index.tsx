@@ -21,12 +21,10 @@ import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { RolesTable } from "../../components/userroles/components/RolesTable";
 
 import useRolesService from "../../../api/userroles/role";
-import { usePermissionsService } from "../../../api/userroles/role/permissions";
 import { getImageUrl } from "../../../utils";
 import Alert from "../../components/alert";
 import Button from "../../components/button";
 import CreateNewRole from "../../components/userroles/components/dialogs/CreateNewRole";
-import { Role } from "../../components/userroles/types";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import "./index.scss";
 
@@ -37,17 +35,21 @@ export type PaginationData = {
 	totalRolesCount: number;
 };
 
+export type RoleWithOrWithoutPermissions = {
+	role: string;
+	//	 undefined suggests that the permissions for this particular role is not being fetched.
+	permissions: undefined | string[];
+};
+
 export default function UserRolesList() {
 	//	boolean to check whether the roles and permissions recipe is enabled or not.
-	const [isFeatureEnabled, setIsFeatureEnabled] = useState(true);
+	const [isFeatureEnabled, setIsFeatureEnabled] = useState<boolean | undefined>(undefined);
 
 	const { getRoles } = useRolesService();
-	const { getPermissionsForRole } = usePermissionsService();
 	const { showToast } = useContext(PopupContentContext);
 
-	const [rolesRawResponse, setRolesRawResponse] = useState<string[]>([]);
 	// used to store roles with permissions data that are fetched on the client side.
-	const [roles, setRoles] = useState<Role[]>([]);
+	const [roles, setRoles] = useState<RoleWithOrWithoutPermissions[] | undefined>(undefined);
 
 	//	used to control opening and closing dialog
 	const [showCreateNewRoleDialogOpen, setShowCreateNewRoleDialogOpen] = useState(false);
@@ -58,10 +60,8 @@ export default function UserRolesList() {
 	const [isFetchingRoles, setIsFetchingRoles] = useState(true);
 
 	//	pagination related.
-	const totalRolesCount = rolesRawResponse.length;
-	const totalPages = Math.ceil(rolesRawResponse.length / USERROLES_PAGINATION_LIMIT);
-	//	skip will decide how many results should be skipped based on the active page number.
-	const rolesToSkip = USERROLES_PAGINATION_LIMIT * (currentActivePage - 1);
+	const totalRolesCount = roles !== undefined ? roles.length : 0;
+	const totalPages = Math.ceil(totalRolesCount / USERROLES_PAGINATION_LIMIT);
 
 	const fetchRoles = async () => {
 		try {
@@ -70,7 +70,14 @@ export default function UserRolesList() {
 			if (response !== undefined) {
 				if (response.status === "OK") {
 					//	reversing roles response to show latest roles first.
-					setRolesRawResponse(response.roles.reverse());
+					const rolesWithUndefinedPermissions = response.roles.reverse().map((role) => {
+						return {
+							role,
+							permissions: undefined,
+						};
+					});
+					setRoles(rolesWithUndefinedPermissions);
+					setIsFeatureEnabled(true);
 				}
 
 				if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
@@ -94,39 +101,51 @@ export default function UserRolesList() {
 		}
 	};
 
-	async function fetchPermissionsForRoles() {
-		setIsFetchingRoles(true);
-		setRoles([]);
-		const rolesWithPermissions: Role[] = [];
-		//	client side pagination.
-		const paginatedRoles = rolesRawResponse.slice(rolesToSkip, rolesToSkip + USERROLES_PAGINATION_LIMIT);
-		for (let i = 0; i < paginatedRoles.length; i++) {
-			const response = await getPermissionsForRole(paginatedRoles[i]);
-			if (response?.status === "OK") {
-				rolesWithPermissions.push({
-					role: paginatedRoles[i],
-					permissions: response.permissions,
-				});
-			} else {
-				throw new Error("This should never happen.");
-			}
-			await new Promise((res) => setTimeout(res, 250));
-		}
-		setRoles(rolesWithPermissions);
-		setIsFetchingRoles(false);
-	}
-
-	useEffect(() => {
-		//	only refetch the permissions when the roleRawResponse and currentActivePage changes.
-		if (rolesRawResponse.length > 0) {
-			void fetchPermissionsForRoles();
-		}
-	}, [currentActivePage, rolesRawResponse]);
-
 	useEffect(() => {
 		//	void represent this function returns nothing.
 		void fetchRoles();
 	}, []);
+
+	function renderContent() {
+		if (isFeatureEnabled !== undefined && isFeatureEnabled === false) {
+			return (
+				<Alert
+					title="Feature is not enabled"
+					content="Please enable this feature first to manage your user roles and permissions!"
+				/>
+			);
+		}
+
+		return (
+			<>
+				<div className="search-add-role-container">
+					<Button
+						onClick={() => setShowCreateNewRoleDialogOpen(true)}
+						color="secondary">
+						<PlusIcon />
+						Add Role
+					</Button>
+					{showCreateNewRoleDialogOpen && roles !== undefined ? (
+						<CreateNewRole
+							addRoleToRawReponseData={(role) => setRoles([role, ...roles])}
+							onCloseDialog={() => setShowCreateNewRoleDialogOpen(false)}
+						/>
+					) : null}
+				</div>
+				<RolesTable
+					setCurrentActivePage={setCurrentActivePage}
+					setRoles={setRoles}
+					currentActivePage={currentActivePage}
+					isFetchingRoles={isFetchingRoles}
+					paginationData={{
+						totalPages,
+						totalRolesCount,
+					}}
+					roles={roles}
+				/>
+			</>
+		);
+	}
 
 	return (
 		<AppEnvContextProvider
@@ -140,49 +159,7 @@ export default function UserRolesList() {
 					One place to manage all your user roles and permissions. Edit roles and permissions according to
 					your needs.
 				</p>
-				{isFeatureEnabled ? (
-					<>
-						<div className="search-add-role-container">
-							<Button
-								onClick={() => setShowCreateNewRoleDialogOpen(true)}
-								color="secondary">
-								<PlusIcon />
-								Add Role
-							</Button>
-							{showCreateNewRoleDialogOpen ? (
-								<CreateNewRole
-									addRoleToRawReponseData={(role) => setRolesRawResponse([role, ...rolesRawResponse])}
-									onCloseDialog={() => setShowCreateNewRoleDialogOpen(false)}
-								/>
-							) : null}
-						</div>
-						<RolesTable
-							deleteRoleFromRawResponse={(role: string) => {
-								const filteredRoles = rolesRawResponse.filter((r) => r !== role);
-								if (filteredRoles.length > 0) {
-									setRolesRawResponse(filteredRoles);
-								} else {
-									setRoles([]);
-									setRolesRawResponse([]);
-								}
-							}}
-							setCurrentActivePage={setCurrentActivePage}
-							setRoles={setRoles}
-							currentActivePage={currentActivePage}
-							isFetchingRoles={isFetchingRoles}
-							paginationData={{
-								totalPages,
-								totalRolesCount,
-							}}
-							roles={roles}
-						/>
-					</>
-				) : (
-					<Alert
-						title="Feature is not enabled"
-						content="Please enable this feature first to manage your user roles and permissions!"
-					/>
-				)}
+				{renderContent()}
 			</div>
 		</AppEnvContextProvider>
 	);
