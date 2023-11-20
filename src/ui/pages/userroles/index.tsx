@@ -129,7 +129,7 @@ export default function UserRolesList() {
 					</Button>
 					{showCreateNewRoleDialogOpen && roles !== undefined ? (
 						<CreateNewRole
-							addRoleToRawReponseData={(role) => setRoles([role, ...roles])}
+							addRoleToReponseData={(role) => setRoles([role, ...roles])}
 							onCloseDialog={() => setShowCreateNewRoleDialogOpen(false)}
 						/>
 					) : null}

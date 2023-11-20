@@ -28,10 +28,10 @@ import "./createNewRole.scss";
 
 export default function CreateNewRoleDialog({
 	onCloseDialog,
-	addRoleToRawReponseData,
+	addRoleToReponseData,
 }: {
 	onCloseDialog: () => void;
-	addRoleToRawReponseData: (role: RoleWithOrWithoutPermissions) => void;
+	addRoleToReponseData: (role: RoleWithOrWithoutPermissions) => void;
 }) {
 	const { createRoleOrUpdateARole } = useRolesService();
 	const { showToast } = useContext(PopupContentContext);
@@ -86,7 +86,7 @@ export default function CreateNewRoleDialog({
 					children: <>Something went wrong Please try again!</>,
 				});
 			}
-			addRoleToRawReponseData({ role, permissions });
+			addRoleToReponseData({ role, permissions });
 			onCloseDialog();
 		} catch (error) {
 			showToast({
