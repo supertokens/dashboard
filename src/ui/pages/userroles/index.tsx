@@ -37,7 +37,7 @@ export type PaginationData = {
 
 export type RoleWithOrWithoutPermissions = {
 	role: string;
-	//	 undefined suggests that the permissions for this particular role is not being fetched.
+	//	 undefined suggests that the permissions for this particular role is not being fetched on client.
 	permissions: undefined | string[];
 };
 
@@ -73,6 +73,7 @@ export default function UserRolesList() {
 					const rolesWithUndefinedPermissions = response.roles.reverse().map((role) => {
 						return {
 							role,
+							//	by default every role has permissions as undefined.
 							permissions: undefined,
 						};
 					});
@@ -120,6 +121,7 @@ export default function UserRolesList() {
 			<>
 				<div className="search-add-role-container">
 					<Button
+						disabled={isFetchingRoles}
 						onClick={() => setShowCreateNewRoleDialogOpen(true)}
 						color="secondary">
 						<PlusIcon />

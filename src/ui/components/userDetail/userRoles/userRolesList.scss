@@ -47,7 +47,7 @@
 
 .subtext {
 	color: var(--color-secondary-text);
-	font-size: 14px;
+	font-size: 12px;
 	font-style: normal;
 	font-weight: 400;
 	line-height: 23px;
@@ -57,7 +57,6 @@
 	}
 
 	@media (max-width: 440px) {
-		font-size: 12px;
 		line-height: 18px;
 	}
 }
