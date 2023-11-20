@@ -69,6 +69,7 @@ import "./assets/provider-apple.svg";
 import "./assets/provider-facebook.svg";
 import "./assets/provider-github.svg";
 import "./assets/provider-google.svg";
+import "./assets/refresh.svg";
 import "./assets/right_arrow_icon.svg";
 import "./assets/roles-and-permissions.svg";
 import "./assets/search.png";
