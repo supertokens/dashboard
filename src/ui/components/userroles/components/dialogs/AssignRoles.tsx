@@ -23,8 +23,10 @@ export default function AssignRolesDialog({
 	assignedRoles,
 	userId,
 	setAssignedRoles,
+	currentlySelectedTenantId,
 }: {
 	onCloseDialog: () => void;
+	currentlySelectedTenantId: string;
 	assignedRoles: string[];
 	userId: string;
 	setAssignedRoles: (roles: string[]) => void;
@@ -35,27 +37,19 @@ export default function AssignRolesDialog({
 	const { showToast } = useContext(PopupContentContext);
 
 	//	list of roles fetched from the api
-	const [roles, setRoles] = useState<string[]>([]);
+	const [roles, setRoles] = useState<string[] | undefined>(undefined);
 	//	searched value
 	const [searchText, setSearchText] = useState("");
 
-	//	to handle get roles api loading state
-	const [isFetchingRoles, setIsFetchingRoles] = useState(false);
 	//	role that needs to be assigned and boolean to handle api request loading state.
 	const [roleToAssign, setRoleToAssign] = useState<string | undefined>(undefined);
 	const [isAddingRoles, setIsAddingRoles] = useState(false);
-
-	const rolesNotAssigned = roles.filter((r) => assignedRoles.includes(r) === false);
-	const filteredRolesBySearch =
-		searchText !== ""
-			? rolesNotAssigned.filter((role) => role.toLowerCase().includes(searchText))
-			: rolesNotAssigned;
 
 	async function assignRoleToUser(roleName: string) {
 		setIsAddingRoles(true);
 
 		try {
-			await addRoleToUser(userId, roleName);
+			await addRoleToUser(userId, roleName, currentlySelectedTenantId);
 
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
@@ -78,7 +72,6 @@ export default function AssignRolesDialog({
 	}
 
 	const fetchRoles = async () => {
-		setIsFetchingRoles(true);
 		const response = await getRoles();
 		if (response !== undefined) {
 			if (response.status === "OK") {
@@ -91,7 +84,6 @@ export default function AssignRolesDialog({
 				children: <>Something went wrong Please try again!</>,
 			});
 		}
-		setIsFetchingRoles(false);
 	};
 
 	useEffect(() => {
@@ -99,7 +91,7 @@ export default function AssignRolesDialog({
 	}, []);
 
 	function renderRoles() {
-		if (isFetchingRoles === true) {
+		if (roles === undefined) {
 			return (
 				<div className="loading-container">
 					<LoaderIcon />
@@ -129,6 +121,12 @@ export default function AssignRolesDialog({
 				</div>
 			);
 		}
+
+		const rolesNotAssigned = roles.filter((r) => assignedRoles.includes(r) === false);
+		const filteredRolesBySearch =
+			searchText !== ""
+				? rolesNotAssigned?.filter((role) => role.toLowerCase().includes(searchText))
+				: rolesNotAssigned;
 
 		if (filteredRolesBySearch.length < 1) {
 			return (
@@ -179,7 +177,7 @@ export default function AssignRolesDialog({
 								alt="search icon"
 							/>
 							<InputField
-								disabled={isFetchingRoles}
+								disabled={roles === undefined}
 								forceShowError={true}
 								name="search-box"
 								type="text"

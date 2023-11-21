@@ -19,20 +19,23 @@ import Badge from "../../badge";
 import { LayoutPanel } from "../../layout/layoutPanel";
 import { UserRolesListHeader } from "./UserRolesListHeader";
 
-import { UserRolesResponse } from "../../../../api/userroles/user/roles";
 import Alert from "../../alert";
+import Select from "../../select";
 import AssignRolesDialog from "../../userroles/components/dialogs/AssignRoles";
 import DeleteUserRoleDialog from "../../userroles/components/dialogs/DeleteUserRole";
+import { useUserDetailContext } from "../context/UserDetailContext";
 import "./userRolesList.scss";
 
 type UserRolesListProps = {
+	currentlySelectedTenantId: string;
 	userId: string;
-	userRolesData: UserRolesResponse;
+	roles: string[];
+	isFeatureEnabled: boolean;
+	onTenantIdChange: (tenantId: string) => void;
 };
 
 export default function UserRolesList(props: UserRolesListProps) {
-	const { userRolesData, userId } = props;
-	const roles = userRolesData.status === "OK" ? userRolesData.roles : [];
+	const { roles, isFeatureEnabled, userId } = props;
 
 	const [assignedRoles, setAssignedRoles] = useState<string[]>(roles);
 
@@ -42,20 +45,36 @@ export default function UserRolesList(props: UserRolesListProps) {
 
 	const [isEditing, setIsEditing] = useState(false);
 
+	const { userDetail } = useUserDetailContext();
+	const tenantIdsThatUserIsPartOf = userDetail.details.tenantIds;
+
 	return (
 		<LayoutPanel
 			header={
 				<UserRolesListHeader
 					setIsEditing={setIsEditing}
 					isEditing={isEditing}
-					isFeatureEnabled={userRolesData.status !== "FEATURE_NOT_ENABLED_ERROR"}
+					isFeatureEnabled={isFeatureEnabled}
 				/>
-			}
-			headerBorder>
+			}>
 			<>
 				<div className="user-roles-list-wrapper">
-					{userRolesData.status !== "FEATURE_NOT_ENABLED_ERROR" ? (
+					{isFeatureEnabled ? (
 						<>
+							<div className="select-tenantId-container">
+								All roles assigned to the user for tenant:{" "}
+								{tenantIdsThatUserIsPartOf.length > 1 ? (
+									<Select
+										onOptionSelect={props.onTenantIdChange}
+										options={tenantIdsThatUserIsPartOf.map((id) => {
+											return { name: id, value: id };
+										})}
+										selectedOption={props.currentlySelectedTenantId}
+									/>
+								) : (
+									<span>{props.currentlySelectedTenantId}</span>
+								)}
+							</div>
 							{isEditing ? (
 								<div className="roles-list-container">
 									{assignedRoles.map((role) => {
@@ -109,6 +128,7 @@ export default function UserRolesList(props: UserRolesListProps) {
 				</div>
 				{showAddRoleDialog ? (
 					<AssignRolesDialog
+						currentlySelectedTenantId={props.currentlySelectedTenantId}
 						userId={userId}
 						assignedRoles={assignedRoles}
 						setAssignedRoles={setAssignedRoles}
@@ -117,6 +137,7 @@ export default function UserRolesList(props: UserRolesListProps) {
 				) : null}
 				{showDeleteRoleDialog && roleToDelete !== undefined ? (
 					<DeleteUserRoleDialog
+						currentlySelectedTenantId={props.currentlySelectedTenantId}
 						roleToDelete={roleToDelete}
 						userId={userId}
 						assignedRoles={assignedRoles}

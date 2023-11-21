@@ -13,11 +13,13 @@ export default function DeleteUserRoleDialog({
 	userId,
 	assignedRoles,
 	setAssignedRoles,
+	currentlySelectedTenantId,
 }: {
 	onCloseDialog: () => void;
 	roleToDelete: string;
 	userId: string;
 	assignedRoles: string[];
+	currentlySelectedTenantId: string;
 	setAssignedRoles: (roles: string[]) => void;
 }) {
 	const { showToast } = useContext(PopupContentContext);
@@ -27,7 +29,7 @@ export default function DeleteUserRoleDialog({
 	async function handleDeleteUserRole() {
 		setIsDeletingRoles(true);
 		try {
-			await removeUserRole(userId, roleToDelete);
+			await removeUserRole(userId, roleToDelete, currentlySelectedTenantId);
 			showToast({
 				iconImage: getImageUrl("checkmark-green.svg"),
 				toastType: "success",

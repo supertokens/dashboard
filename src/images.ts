@@ -24,6 +24,7 @@ import "./assets/ST_icon_dark_theme.svg";
 import "./assets/ST_icon_light_theme.svg";
 import "./assets/Union-yellow.png";
 import "./assets/Union.png";
+import "./assets/arrow-down.svg";
 import "./assets/auth-background-portrait.png";
 import "./assets/auth-background.png";
 import "./assets/auth-method.svg";

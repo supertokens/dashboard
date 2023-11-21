@@ -29,7 +29,8 @@ export const useUserRolesService = () => {
 
 	const addRoleToUser = async (
 		userId: string,
-		role: string
+		role: string,
+		tenantId: string
 	): Promise<
 		| {
 				status: "OK" | "UNKNOWN_ROLE_ERROR";
@@ -37,7 +38,7 @@ export const useUserRolesService = () => {
 		| undefined
 	> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/userroles/user/roles"),
+			url: getApiUrl("/api/userroles/user/roles", tenantId),
 			method: "PUT",
 			config: {
 				body: JSON.stringify({
@@ -55,9 +56,9 @@ export const useUserRolesService = () => {
 		return undefined;
 	};
 
-	const getRolesForUser = async (userId: string): Promise<UserRolesResponse | undefined> => {
+	const getRolesForUser = async (userId: string, tenantId: string): Promise<UserRolesResponse | undefined> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/userroles/user/roles"),
+			url: getApiUrl("/api/userroles/user/roles", tenantId),
 			method: "GET",
 			query: {
 				userId,
@@ -74,7 +75,8 @@ export const useUserRolesService = () => {
 
 	const removeUserRole = async (
 		userId: string,
-		role: string
+		role: string,
+		tenantId: string
 	): Promise<
 		| {
 				status: "OK";
@@ -85,7 +87,7 @@ export const useUserRolesService = () => {
 		| undefined
 	> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/userroles/user/roles"),
+			url: getApiUrl("/api/userroles/user/roles", tenantId),
 			method: "DELETE",
 			query: {
 				userId,

@@ -19,7 +19,7 @@ import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
 import { UserRolesResponse, useUserRolesService } from "../../../api/userroles/user/roles";
-import { getImageUrl, getRecipeNameFromid } from "../../../utils";
+import { getImageUrl, getRecipeNameFromid, getSelectedTenantId } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
@@ -57,6 +57,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [userRolesData, setUserRolesData] = useState<UserRolesResponse | undefined>(undefined);
+	const [currentlySelectedTenantId, setCurrentlySelectedTenantId] = useState(getSelectedTenantId() ?? "public");
 
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
@@ -154,7 +155,8 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	}, []);
 
 	async function fetchUserRoles() {
-		const response = await getRolesForUser(user);
+		setUserRolesData(undefined);
+		const response = await getRolesForUser(user, currentlySelectedTenantId);
 		if (response !== undefined) {
 			setUserRolesData(response);
 		} else {
@@ -195,6 +197,10 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	useEffect(() => {
 		void fetchData();
 	}, []);
+
+	useEffect(() => {
+		void fetchUserRoles();
+	}, [currentlySelectedTenantId]);
 
 	if (userDetail === undefined || userRolesData === undefined || isLoading) {
 		return (
@@ -272,7 +278,13 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				<UserDetailInfoGrid {...props} />
 
 				<UserRolesList
-					userRolesData={userRolesData}
+					key={currentlySelectedTenantId}
+					currentlySelectedTenantId={currentlySelectedTenantId}
+					onTenantIdChange={(tenantId: string) => {
+						setCurrentlySelectedTenantId(tenantId);
+					}}
+					isFeatureEnabled={userRolesData.status !== "FEATURE_NOT_ENABLED_ERROR"}
+					roles={userRolesData.status === "OK" ? userRolesData.roles : []}
 					userId={user}
 				/>
 
