@@ -14,7 +14,10 @@ export default function Select({ onOptionSelect, options, selectedOption }: Sele
 		<div
 			className="select-container"
 			onMouseLeave={() => setShowOptions(false)}
-			onMouseEnter={() => setShowOptions(true)}>
+			onMouseEnter={() => setShowOptions(true)}
+			//	this code make sure that the select options show up in the mobile view
+			//	since there will be no onMouseEnter event there.
+			onClick={() => setShowOptions(true)}>
 			<div className="select-action">
 				{selectedOption}{" "}
 				<ArrowDown

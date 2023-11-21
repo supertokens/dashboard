@@ -12,41 +12,70 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ReactComponent as CrossIcon } from "../../../../assets/cross.svg";
 import { ReactComponent as PlusSquareIcon } from "../../../../assets/plus-square.svg";
 import Badge from "../../badge";
 import { LayoutPanel } from "../../layout/layoutPanel";
 import { UserRolesListHeader } from "./UserRolesListHeader";
 
+import { useUserRolesService } from "../../../../api/userroles/user/roles";
+import { getImageUrl } from "../../../../utils";
+import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import Alert from "../../alert";
 import Select from "../../select";
+import Shimmer from "../../shimmer";
 import AssignRolesDialog from "../../userroles/components/dialogs/AssignRoles";
 import DeleteUserRoleDialog from "../../userroles/components/dialogs/DeleteUserRole";
 import { useUserDetailContext } from "../context/UserDetailContext";
 import "./userRolesList.scss";
 
 type UserRolesListProps = {
-	currentlySelectedTenantId: string;
 	userId: string;
-	roles: string[];
-	isFeatureEnabled: boolean;
-	onTenantIdChange: (tenantId: string) => void;
 };
 
-export default function UserRolesList(props: UserRolesListProps) {
-	const { roles, isFeatureEnabled, userId } = props;
+export default function UserRolesList({ userId }: UserRolesListProps) {
+	const { getRolesForUser } = useUserRolesService();
+	const { userDetail } = useUserDetailContext();
+	const { showToast } = useContext(PopupContentContext);
 
-	const [assignedRoles, setAssignedRoles] = useState<string[]>(roles);
+	const [assignedRoles, setAssignedRoles] = useState<string[] | undefined>(undefined);
+	const [isFeatureEnabled, setIsFeatureEnabled] = useState<boolean | undefined>(undefined);
 
 	const [showAddRoleDialog, setShowAddRoleDialog] = useState(false);
 	const [roleToDelete, setRoleToDelete] = useState<undefined | string>(undefined);
 	const [showDeleteRoleDialog, setShowDeleteDialogRole] = useState(true);
 
+	const tenantIdsThatUserIsPartOf = userDetail.details.tenantIds;
+	const [currentlySelectedTenantId, setCurrentlySelectedTenantId] = useState(tenantIdsThatUserIsPartOf[0]);
+
 	const [isEditing, setIsEditing] = useState(false);
 
-	const { userDetail } = useUserDetailContext();
-	const tenantIdsThatUserIsPartOf = userDetail.details.tenantIds;
+	async function fetchUserRoles() {
+		setAssignedRoles(undefined);
+		setIsFeatureEnabled(undefined);
+
+		const response = await getRolesForUser(userId, currentlySelectedTenantId);
+		if (response !== undefined) {
+			if (response.status === "OK") {
+				setIsFeatureEnabled(true);
+				setAssignedRoles(response.roles);
+			} else if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+				setIsFeatureEnabled(false);
+				setAssignedRoles(undefined);
+			}
+		} else {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong Please try again!</>,
+			});
+		}
+	}
+
+	useEffect(() => {
+		void fetchUserRoles();
+	}, [currentlySelectedTenantId]);
 
 	return (
 		<LayoutPanel
@@ -57,22 +86,28 @@ export default function UserRolesList(props: UserRolesListProps) {
 					isFeatureEnabled={isFeatureEnabled}
 				/>
 			}>
-			<>
-				<div className="user-roles-list-wrapper">
-					{isFeatureEnabled ? (
+			<div className="user-roles-list-wrapper">
+				<>
+					{isFeatureEnabled === undefined && assignedRoles === undefined ? (
+						<div className="shimmer-container">
+							<Shimmer />
+							<Shimmer />
+							<Shimmer />
+						</div>
+					) : isFeatureEnabled && assignedRoles !== undefined ? (
 						<>
 							<div className="select-tenantId-container">
 								All roles assigned to the user for tenant:{" "}
 								{tenantIdsThatUserIsPartOf.length > 1 ? (
 									<Select
-										onOptionSelect={props.onTenantIdChange}
+										onOptionSelect={setCurrentlySelectedTenantId}
 										options={tenantIdsThatUserIsPartOf.map((id) => {
 											return { name: id, value: id };
 										})}
-										selectedOption={props.currentlySelectedTenantId}
+										selectedOption={currentlySelectedTenantId}
 									/>
 								) : (
-									<span>{props.currentlySelectedTenantId}</span>
+									<span>{currentlySelectedTenantId}</span>
 								)}
 							</div>
 							{isEditing ? (
@@ -118,6 +153,28 @@ export default function UserRolesList(props: UserRolesListProps) {
 									})}
 								</div>
 							)}
+							{showAddRoleDialog ? (
+								<AssignRolesDialog
+									currentlySelectedTenantId={currentlySelectedTenantId}
+									userId={userId}
+									assignedRoles={assignedRoles}
+									setAssignedRoles={setAssignedRoles}
+									onCloseDialog={() => setShowAddRoleDialog(false)}
+								/>
+							) : null}
+							{showDeleteRoleDialog && roleToDelete !== undefined ? (
+								<DeleteUserRoleDialog
+									currentlySelectedTenantId={currentlySelectedTenantId}
+									roleToDelete={roleToDelete}
+									userId={userId}
+									assignedRoles={assignedRoles}
+									setAssignedRoles={setAssignedRoles}
+									onCloseDialog={() => {
+										setRoleToDelete(undefined);
+										setShowDeleteDialogRole(false);
+									}}
+								/>
+							) : null}
 						</>
 					) : (
 						<Alert
@@ -125,30 +182,8 @@ export default function UserRolesList(props: UserRolesListProps) {
 							content="Please enable this feature first to manage your user roles and permissions!"
 						/>
 					)}
-				</div>
-				{showAddRoleDialog ? (
-					<AssignRolesDialog
-						currentlySelectedTenantId={props.currentlySelectedTenantId}
-						userId={userId}
-						assignedRoles={assignedRoles}
-						setAssignedRoles={setAssignedRoles}
-						onCloseDialog={() => setShowAddRoleDialog(false)}
-					/>
-				) : null}
-				{showDeleteRoleDialog && roleToDelete !== undefined ? (
-					<DeleteUserRoleDialog
-						currentlySelectedTenantId={props.currentlySelectedTenantId}
-						roleToDelete={roleToDelete}
-						userId={userId}
-						assignedRoles={assignedRoles}
-						setAssignedRoles={setAssignedRoles}
-						onCloseDialog={() => {
-							setRoleToDelete(undefined);
-							setShowDeleteDialogRole(false);
-						}}
-					/>
-				) : null}
-			</>
+				</>
+			</div>
 		</LayoutPanel>
 	);
 }

@@ -18,8 +18,7 @@ import { Tenant } from "../../../api/tenants/list";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
-import { UserRolesResponse, useUserRolesService } from "../../../api/userroles/user/roles";
-import { getImageUrl, getRecipeNameFromid, getSelectedTenantId } from "../../../utils";
+import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
@@ -56,17 +55,17 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
 	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState(false);
-	const [userRolesData, setUserRolesData] = useState<UserRolesResponse | undefined>(undefined);
-	const [currentlySelectedTenantId, setCurrentlySelectedTenantId] = useState(getSelectedTenantId() ?? "public");
 
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
-	const { getRolesForUser } = useUserRolesService();
 	const { showModal, showToast } = useContext(PopupContentContext);
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user);
+		if (userDetailsResponse.status == "OK") {
+			userDetailsResponse.user.tenantIds;
+		}
 		setUserDetail(JSON.parse(JSON.stringify(userDetailsResponse)));
 	}, []);
 
@@ -154,20 +153,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		setSessionList(response);
 	}, []);
 
-	async function fetchUserRoles() {
-		setUserRolesData(undefined);
-		const response = await getRolesForUser(user, currentlySelectedTenantId);
-		if (response !== undefined) {
-			setUserRolesData(response);
-		} else {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children: <>Something went wrong Please try again!</>,
-			});
-		}
-	}
-
 	const showLoadingOverlay = () => {
 		setShowLoadingOverlay(true);
 	};
@@ -181,14 +166,12 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		await loadUserDetail();
 		await fetchUserMetaData();
 		await fetchSession();
-		await fetchUserRoles();
 		setIsLoading(false);
 	};
 
 	const refetchAllData = async () => {
 		setShowLoadingOverlay(true);
 		await loadUserDetail();
-		await fetchUserRoles();
 		await fetchUserMetaData();
 		await fetchSession();
 		setShowLoadingOverlay(false);
@@ -198,11 +181,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		void fetchData();
 	}, []);
 
-	useEffect(() => {
-		void fetchUserRoles();
-	}, [currentlySelectedTenantId]);
-
-	if (userDetail === undefined || userRolesData === undefined || isLoading) {
+	if (userDetail === undefined || isLoading) {
 		return (
 			<div className="user-detail-page-loader">
 				<div className="loader"></div>
@@ -277,16 +256,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 				<UserDetailInfoGrid {...props} />
 
-				<UserRolesList
-					key={currentlySelectedTenantId}
-					currentlySelectedTenantId={currentlySelectedTenantId}
-					onTenantIdChange={(tenantId: string) => {
-						setCurrentlySelectedTenantId(tenantId);
-					}}
-					isFeatureEnabled={userRolesData.status !== "FEATURE_NOT_ENABLED_ERROR"}
-					roles={userRolesData.status === "OK" ? userRolesData.roles : []}
-					userId={user}
-				/>
+				<UserRolesList userId={user} />
 
 				<LoginMethods refetchAllData={refetchAllData} />
 

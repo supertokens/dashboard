@@ -1,4 +1,11 @@
 .user-roles-list-wrapper {
+	.shimmer-container {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		width: 100%;
+	}
+
 	& > .roles-list-container {
 		display: flex;
 		justify-content: flex-start;
