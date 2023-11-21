@@ -49,11 +49,14 @@ export default function UserRolesList({ userId }: UserRolesListProps) {
 	const tenantIdsThatUserIsPartOf = userDetail.details.tenantIds;
 	const [currentlySelectedTenantId, setCurrentlySelectedTenantId] = useState(tenantIdsThatUserIsPartOf[0]);
 
+	const isLoading = isFeatureEnabled === undefined && assignedRoles === undefined;
+
 	const [isEditing, setIsEditing] = useState(false);
 
 	async function fetchUserRoles() {
 		setAssignedRoles(undefined);
 		setIsFeatureEnabled(undefined);
+		setIsEditing(false);
 
 		const response = await getRolesForUser(userId, currentlySelectedTenantId);
 		if (response !== undefined) {
@@ -88,7 +91,23 @@ export default function UserRolesList({ userId }: UserRolesListProps) {
 			}>
 			<div className="user-roles-list-wrapper">
 				<>
-					{isFeatureEnabled === undefined && assignedRoles === undefined ? (
+					{isLoading || isFeatureEnabled ? (
+						<div className="select-tenantId-container">
+							All roles assigned to the user for tenant:{" "}
+							{tenantIdsThatUserIsPartOf.length > 1 ? (
+								<Select
+									onOptionSelect={setCurrentlySelectedTenantId}
+									options={tenantIdsThatUserIsPartOf.map((id) => {
+										return { name: id, value: id };
+									})}
+									selectedOption={currentlySelectedTenantId}
+								/>
+							) : (
+								<span>{currentlySelectedTenantId}</span>
+							)}
+						</div>
+					) : null}
+					{isLoading ? (
 						<div className="shimmer-container">
 							<Shimmer />
 							<Shimmer />
@@ -96,20 +115,6 @@ export default function UserRolesList({ userId }: UserRolesListProps) {
 						</div>
 					) : isFeatureEnabled && assignedRoles !== undefined ? (
 						<>
-							<div className="select-tenantId-container">
-								All roles assigned to the user for tenant:{" "}
-								{tenantIdsThatUserIsPartOf.length > 1 ? (
-									<Select
-										onOptionSelect={setCurrentlySelectedTenantId}
-										options={tenantIdsThatUserIsPartOf.map((id) => {
-											return { name: id, value: id };
-										})}
-										selectedOption={currentlySelectedTenantId}
-									/>
-								) : (
-									<span>{currentlySelectedTenantId}</span>
-								)}
-							</div>
 							{isEditing ? (
 								<div className="roles-list-container">
 									{assignedRoles.map((role) => {
