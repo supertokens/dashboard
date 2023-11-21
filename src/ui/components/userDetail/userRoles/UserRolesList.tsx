@@ -44,7 +44,7 @@ export default function UserRolesList({ userId }: UserRolesListProps) {
 
 	const [showAddRoleDialog, setShowAddRoleDialog] = useState(false);
 	const [roleToDelete, setRoleToDelete] = useState<undefined | string>(undefined);
-	const [showDeleteRoleDialog, setShowDeleteDialogRole] = useState(true);
+	const [showDeleteRoleDialog, setShowDeleteDialogRole] = useState(false);
 
 	const tenantIdsThatUserIsPartOf = userDetail.details.tenantIds;
 	const [currentlySelectedTenantId, setCurrentlySelectedTenantId] = useState(tenantIdsThatUserIsPartOf[0]);
