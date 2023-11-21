@@ -18,7 +18,7 @@ import { Tenant } from "../../../api/tenants/list";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
-import { useUserRolesService } from "../../../api/userroles/user/roles";
+import { UserRolesResponse, useUserRolesService } from "../../../api/userroles/user/roles";
 import { getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
@@ -56,8 +56,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
 	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState(false);
-	const [userRoles, setUserRoles] = useState<string[] | undefined>(undefined);
-	const [isUserRolesFeatureEnabled, setIsUserRolesFeatureEnabled] = useState<boolean | undefined>(undefined);
+	const [userRolesData, setUserRolesData] = useState<UserRolesResponse | undefined>(undefined);
 
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
@@ -157,14 +156,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	async function fetchUserRoles() {
 		const response = await getRolesForUser(user);
 		if (response !== undefined) {
-			if (response.status === "OK") {
-				setUserRoles(response.roles);
-				setIsUserRolesFeatureEnabled(true);
-			}
-
-			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				setIsUserRolesFeatureEnabled(false);
-			}
+			setUserRolesData(response);
 		} else {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -204,7 +196,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 		void fetchData();
 	}, []);
 
-	if (userDetail === undefined || isLoading) {
+	if (userDetail === undefined || userRolesData === undefined || isLoading) {
 		return (
 			<div className="user-detail-page-loader">
 				<div className="loader"></div>
@@ -280,8 +272,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				<UserDetailInfoGrid {...props} />
 
 				<UserRolesList
-					isFeatureEnabled={isUserRolesFeatureEnabled}
-					roles={userRoles}
+					userRolesData={userRolesData}
 					userId={user}
 				/>
 

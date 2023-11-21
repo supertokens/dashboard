@@ -15,6 +15,15 @@
 
 import { getApiUrl, useFetchData } from "../../../utils";
 
+export type UserRolesResponse =
+	| {
+			status: "OK";
+			roles: string[];
+	  }
+	| {
+			status: "FEATURE_NOT_ENABLED_ERROR";
+	  };
+
 export const useUserRolesService = () => {
 	const fetchData = useFetchData();
 
@@ -46,18 +55,7 @@ export const useUserRolesService = () => {
 		return undefined;
 	};
 
-	const getRolesForUser = async (
-		userId: string
-	): Promise<
-		| {
-				status: "OK";
-				roles: string[];
-		  }
-		| {
-				status: "FEATURE_NOT_ENABLED_ERROR";
-		  }
-		| undefined
-	> => {
+	const getRolesForUser = async (userId: string): Promise<UserRolesResponse | undefined> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/userroles/user/roles"),
 			method: "GET",

@@ -28,7 +28,6 @@ export type SetRoles = (roles: RoleWithOrWithoutPermissions[]) => void;
 type RolesTableProps = {
 	roles: RoleWithOrWithoutPermissions[] | undefined;
 	setRoles: SetRoles;
-	isFetchingRoles: boolean;
 	currentActivePage: number;
 	paginationData: PaginationData;
 	setCurrentActivePage: (page: number) => void;
@@ -36,29 +35,20 @@ type RolesTableProps = {
 
 export function RolesTable({
 	roles,
-	isFetchingRoles,
 	currentActivePage,
 	paginationData,
 	setCurrentActivePage,
 	setRoles,
 }: RolesTableProps) {
-	//	skip will decide how many results should be skipped based on the active page number.
-	const rolesToSkip = USERROLES_PAGINATION_LIMIT * (currentActivePage - 1);
-	const paginatedRoles = roles?.slice(rolesToSkip, rolesToSkip + USERROLES_PAGINATION_LIMIT);
-
 	useEffect(() => {
 		//	if the role is deleted and the role is in the last page of pagination and not the first page
 		//	we should set currentPage to previous as this page not have any results now.
-		if (currentActivePage !== 1 && paginatedRoles?.length === 0) {
+		if (currentActivePage !== 1 && paginatedRoles.length === 0) {
 			setCurrentActivePage(currentActivePage - 1);
 		}
 	}, [roles]);
 
-	if (isFetchingRoles === false && roles?.length === 0) {
-		return <NoRolesFound />;
-	}
-
-	if (isFetchingRoles === true) {
+	if (roles === undefined) {
 		return (
 			<div className="margin-bottom-36">
 				<Table>
@@ -81,6 +71,13 @@ export function RolesTable({
 			</div>
 		);
 	}
+	//	skip will decide how many results should be skipped based on the active page number.
+	const rolesToSkip = USERROLES_PAGINATION_LIMIT * (currentActivePage - 1);
+	const paginatedRoles = roles.slice(rolesToSkip, rolesToSkip + USERROLES_PAGINATION_LIMIT);
+
+	if (roles !== undefined && roles.length === 0) {
+		return <NoRolesFound />;
+	}
 
 	return (
 		<div className="margin-bottom-36">
@@ -94,7 +91,7 @@ export function RolesTable({
 						limit={USERROLES_PAGINATION_LIMIT}
 						currentActivePage={currentActivePage}
 						totalPages={paginationData.totalPages}
-						offset={paginatedRoles?.length || 0}
+						offset={paginatedRoles.length || 0}
 						totalItems={paginationData.totalRolesCount}
 					/>
 				}>
@@ -107,18 +104,17 @@ export function RolesTable({
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{roles !== undefined &&
-						paginatedRoles?.map(({ role, permissions }) => {
-							return (
-								<RolesTableRow
-									permissions={permissions}
-									role={role}
-									roles={roles}
-									setRoles={setRoles}
-									key={role}
-								/>
-							);
-						})}
+					{paginatedRoles.map(({ role, permissions }) => {
+						return (
+							<RolesTableRow
+								permissions={permissions}
+								role={role}
+								roles={roles}
+								setRoles={setRoles}
+								key={role}
+							/>
+						);
+					})}
 				</TableBody>
 			</Table>
 		</div>

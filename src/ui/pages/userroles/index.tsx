@@ -56,8 +56,6 @@ export default function UserRolesList() {
 
 	//	used to track active page user is on.
 	const [currentActivePage, setCurrentActivePage] = useState(1);
-	//	managed fetchRoles http loading state.
-	const [isFetchingRoles, setIsFetchingRoles] = useState(true);
 
 	//	pagination related.
 	const totalRolesCount = roles !== undefined ? roles.length : 0;
@@ -97,8 +95,6 @@ export default function UserRolesList() {
 				toastType: "error",
 				children: <>Something went wrong Please try again!</>,
 			});
-		} finally {
-			setIsFetchingRoles(false);
 		}
 	};
 
@@ -108,7 +104,7 @@ export default function UserRolesList() {
 	}, []);
 
 	function renderContent() {
-		if (isFeatureEnabled !== undefined && isFeatureEnabled === false) {
+		if (isFeatureEnabled === false) {
 			return (
 				<Alert
 					title="Feature is not enabled"
@@ -121,7 +117,7 @@ export default function UserRolesList() {
 			<>
 				<div className="search-add-role-container">
 					<Button
-						disabled={isFetchingRoles}
+						disabled={roles === undefined}
 						onClick={() => setShowCreateNewRoleDialogOpen(true)}
 						color="secondary">
 						<PlusIcon />
@@ -138,7 +134,6 @@ export default function UserRolesList() {
 					setCurrentActivePage={setCurrentActivePage}
 					setRoles={setRoles}
 					currentActivePage={currentActivePage}
-					isFetchingRoles={isFetchingRoles}
 					paginationData={{
 						totalPages,
 						totalRolesCount,

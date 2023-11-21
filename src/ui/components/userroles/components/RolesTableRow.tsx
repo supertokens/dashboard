@@ -43,15 +43,13 @@ export default function RolesTableRow({ permissions, role, roles, setRoles }: Ro
 				setIsErrorWhileFetchingPermissions(false);
 				const response = await getPermissionsForRole(role);
 				if (response?.status === "OK") {
-					if (roles !== undefined) {
-						const updatedRoleWithPermissions = roles.map((r) => {
-							if (r.role === role) {
-								r.permissions = response.permissions;
-							}
-							return r;
-						});
-						setRoles(updatedRoleWithPermissions);
-					}
+					const updatedRoleWithPermissions = roles.map((r) => {
+						if (r.role === role) {
+							r.permissions = response.permissions;
+						}
+						return r;
+					});
+					setRoles(updatedRoleWithPermissions);
 				} else if (response?.status === "UNKNOWN_ROLE_ERROR") {
 					showToast({
 						iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -109,42 +107,38 @@ export default function RolesTableRow({ permissions, role, roles, setRoles }: Ro
 		}
 
 		//	while api request to fetch permissions for a role is still in progress.
-		if (isFetchingPermissions) {
+		if (isFetchingPermissions || permissions === undefined) {
 			return <Shimmer />;
 		}
 
 		return (
-			<>
-				{permissions !== undefined ? (
-					<div
-						id="permissions"
-						className="permissions">
-						{permissions.slice(0, badgeRenderLimit).map((permission) => {
-							return (
-								<Badge
-									className="badge-width"
-									key={permission}
-									text={permission}
-								/>
-							);
-						})}
-						{badgeRenderLimit < permissions.length ? (
-							<Button
-								size="sm"
-								color="info">
-								...
-							</Button>
-						) : null}
-						{permissions.length < 1 ? (
-							<Button
-								color="info"
-								size="xs">
-								No Permissions
-							</Button>
-						) : null}
-					</div>
+			<div
+				id="permissions"
+				className="permissions">
+				{permissions.slice(0, badgeRenderLimit).map((permission) => {
+					return (
+						<Badge
+							className="badge-width"
+							key={permission}
+							text={permission}
+						/>
+					);
+				})}
+				{badgeRenderLimit < permissions.length ? (
+					<Button
+						size="sm"
+						color="info">
+						...
+					</Button>
 				) : null}
-			</>
+				{permissions.length < 1 ? (
+					<Button
+						color="info"
+						size="xs">
+						No Permissions
+					</Button>
+				) : null}
+			</div>
 		);
 	}
 

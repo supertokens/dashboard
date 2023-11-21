@@ -19,21 +19,22 @@ import Badge from "../../badge";
 import { LayoutPanel } from "../../layout/layoutPanel";
 import { UserRolesListHeader } from "./UserRolesListHeader";
 
+import { UserRolesResponse } from "../../../../api/userroles/user/roles";
 import Alert from "../../alert";
 import AssignRolesDialog from "../../userroles/components/dialogs/AssignRoles";
 import DeleteUserRoleDialog from "../../userroles/components/dialogs/DeleteUserRole";
 import "./userRolesList.scss";
 
 type UserRolesListProps = {
-	roles: string[] | undefined;
 	userId: string;
-	isFeatureEnabled: boolean | undefined;
+	userRolesData: UserRolesResponse;
 };
 
 export default function UserRolesList(props: UserRolesListProps) {
-	const { roles, userId } = props;
+	const { userRolesData, userId } = props;
+	const roles = userRolesData.status === "OK" ? userRolesData.roles : [];
 
-	const [assignedRoles, setAssignedRoles] = useState<string[] | undefined>(roles);
+	const [assignedRoles, setAssignedRoles] = useState<string[]>(roles);
 
 	const [showAddRoleDialog, setShowAddRoleDialog] = useState(false);
 	const [roleToDelete, setRoleToDelete] = useState<undefined | string>(undefined);
@@ -41,80 +42,72 @@ export default function UserRolesList(props: UserRolesListProps) {
 
 	const [isEditing, setIsEditing] = useState(false);
 
-	function renderContent() {
-		if (isEditing === true) {
-			return (
-				<div className="roles-list-container">
-					{assignedRoles !== undefined &&
-						assignedRoles.map((role) => {
-							return (
-								<Badge
-									key={role}
-									type="success"
-									text={role}>
-									<CrossIcon
-										onClick={() => {
-											setRoleToDelete(role);
-											setShowDeleteDialogRole(true);
-										}}
-									/>
-								</Badge>
-							);
-						})}
-					<button
-						className="add-role-btn"
-						onClick={() => setShowAddRoleDialog(true)}>
-						Assign Role <PlusSquareIcon />
-					</button>
-				</div>
-			);
-		}
-
-		return (
-			<div className="roles-list-container">
-				{assignedRoles !== undefined && assignedRoles.length < 1 ? (
-					<button
-						data-disable-hover="true"
-						className="add-role-btn">
-						No assigned User Roles
-					</button>
-				) : null}
-				{assignedRoles !== undefined &&
-					assignedRoles.map((role) => {
-						return (
-							<Badge
-								key={role}
-								type="success"
-								text={role}
-							/>
-						);
-					})}
-			</div>
-		);
-	}
-
-	if (props.isFeatureEnabled !== undefined && props.isFeatureEnabled === false) {
-		return (
-			<Alert
-				title="Feature is not enabled"
-				content="Please enable this feature first to manage your user roles and permissions!"
-			/>
-		);
-	}
-
 	return (
 		<LayoutPanel
 			header={
 				<UserRolesListHeader
 					setIsEditing={setIsEditing}
 					isEditing={isEditing}
-					isFeatureEnabled={props.isFeatureEnabled}
+					isFeatureEnabled={userRolesData.status !== "FEATURE_NOT_ENABLED_ERROR"}
 				/>
 			}
 			headerBorder>
 			<>
-				<div className="user-roles-list-wrapper">{renderContent()}</div>
-				{assignedRoles !== undefined && showAddRoleDialog ? (
+				<div className="user-roles-list-wrapper">
+					{userRolesData.status !== "FEATURE_NOT_ENABLED_ERROR" ? (
+						<>
+							{isEditing ? (
+								<div className="roles-list-container">
+									{assignedRoles.map((role) => {
+										return (
+											<Badge
+												key={role}
+												type="success"
+												text={role}>
+												<CrossIcon
+													onClick={() => {
+														setRoleToDelete(role);
+														setShowDeleteDialogRole(true);
+													}}
+												/>
+											</Badge>
+										);
+									})}
+									<button
+										className="add-role-btn"
+										onClick={() => setShowAddRoleDialog(true)}>
+										Assign Role <PlusSquareIcon />
+									</button>
+								</div>
+							) : (
+								<div className="roles-list-container">
+									{assignedRoles.length < 1 ? (
+										<button
+											data-disable-hover="true"
+											className="add-role-btn">
+											No assigned User Roles
+										</button>
+									) : null}
+									{assignedRoles.map((role) => {
+										return (
+											<Badge
+												key={role}
+												type="success"
+												text={role}
+											/>
+										);
+									})}
+								</div>
+							)}
+						</>
+					) : (
+						<Alert
+							title="Feature is not enabled"
+							content="Please enable this feature first to manage your user roles and permissions!"
+						/>
+					)}
+				</div>
+				{showAddRoleDialog ? (
 					<AssignRolesDialog
 						userId={userId}
 						assignedRoles={assignedRoles}
@@ -122,7 +115,7 @@ export default function UserRolesList(props: UserRolesListProps) {
 						onCloseDialog={() => setShowAddRoleDialog(false)}
 					/>
 				) : null}
-				{assignedRoles !== undefined && showDeleteRoleDialog && roleToDelete !== undefined ? (
+				{showDeleteRoleDialog && roleToDelete !== undefined ? (
 					<DeleteUserRoleDialog
 						roleToDelete={roleToDelete}
 						userId={userId}
