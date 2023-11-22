@@ -63,9 +63,6 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user);
-		if (userDetailsResponse.status == "OK") {
-			userDetailsResponse.user.tenantIds;
-		}
 		setUserDetail(JSON.parse(JSON.stringify(userDetailsResponse)));
 	}, []);
 
