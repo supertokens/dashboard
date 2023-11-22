@@ -30,11 +30,7 @@ import DeleteUserRoleDialog from "../../userroles/components/dialogs/DeleteUserR
 import { useUserDetailContext } from "../context/UserDetailContext";
 import "./userRolesList.scss";
 
-type UserRolesListProps = {
-	userId: string;
-};
-
-export default function UserRolesList({ userId }: UserRolesListProps) {
+export default function UserRolesList() {
 	const { getRolesForUser } = useUserRolesService();
 	const { userDetail } = useUserDetailContext();
 	const { showToast } = useContext(PopupContentContext);
@@ -47,7 +43,11 @@ export default function UserRolesList({ userId }: UserRolesListProps) {
 	const [showDeleteRoleDialog, setShowDeleteDialogRole] = useState(false);
 
 	const tenantIdsThatUserIsPartOf = userDetail.details.tenantIds;
-	const [currentlySelectedTenantId, setCurrentlySelectedTenantId] = useState(tenantIdsThatUserIsPartOf[0]);
+
+	const defaultTenantId =
+		tenantIdsThatUserIsPartOf.find((id) => id === "public") !== undefined ? "public" : tenantIdsThatUserIsPartOf[0];
+
+	const [currentlySelectedTenantId, setCurrentlySelectedTenantId] = useState(defaultTenantId);
 
 	const isLoading = isFeatureEnabled === undefined && assignedRoles === undefined;
 
@@ -58,7 +58,7 @@ export default function UserRolesList({ userId }: UserRolesListProps) {
 		setIsFeatureEnabled(undefined);
 		setIsEditing(false);
 
-		const response = await getRolesForUser(userId, currentlySelectedTenantId);
+		const response = await getRolesForUser(userDetail.userId, currentlySelectedTenantId);
 		if (response !== undefined) {
 			if (response.status === "OK") {
 				setIsFeatureEnabled(true);
@@ -161,7 +161,7 @@ export default function UserRolesList({ userId }: UserRolesListProps) {
 							{showAddRoleDialog ? (
 								<AssignRolesDialog
 									currentlySelectedTenantId={currentlySelectedTenantId}
-									userId={userId}
+									userId={userDetail.userId}
 									assignedRoles={assignedRoles}
 									setAssignedRoles={setAssignedRoles}
 									onCloseDialog={() => setShowAddRoleDialog(false)}
@@ -171,7 +171,7 @@ export default function UserRolesList({ userId }: UserRolesListProps) {
 								<DeleteUserRoleDialog
 									currentlySelectedTenantId={currentlySelectedTenantId}
 									roleToDelete={roleToDelete}
-									userId={userId}
+									userId={userDetail.userId}
 									assignedRoles={assignedRoles}
 									setAssignedRoles={setAssignedRoles}
 									onCloseDialog={() => {
