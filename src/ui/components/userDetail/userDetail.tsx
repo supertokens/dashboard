@@ -33,6 +33,7 @@ import UserDetailHeader from "./userDetailHeader";
 import UserDetailInfoGrid from "./userDetailInfoGrid";
 import { SessionInfo, UserDetailsSessionList } from "./userDetailSessionList";
 import { UserMetaDataSection } from "./userMetaDataSection";
+import UserRolesList from "./userRoles/UserRolesList";
 
 export type UserDetailProps = {
 	user: string;
@@ -58,14 +59,12 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	const { getUser, updateUserInformation } = useUserService();
 	const { getUserMetaData } = useMetadataService();
 	const { getSessionsForUser } = useSessionsForUserService();
-	const { showModal } = useContext(PopupContentContext);
+	const { showModal, showToast } = useContext(PopupContentContext);
 
 	const loadUserDetail = useCallback(async () => {
 		const userDetailsResponse = await getUser(user);
 		setUserDetail(JSON.parse(JSON.stringify(userDetailsResponse)));
 	}, []);
-
-	const { showToast } = useContext(PopupContentContext);
 
 	const updateUser = useCallback(
 		async (
@@ -253,6 +252,8 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				{/* {userDetail.user.tenantIds.length > 0 && <UserTenantsList tenantIds={userDetail.user.tenantIds} />}*/}
 
 				<UserDetailInfoGrid {...props} />
+
+				<UserRolesList />
 
 				<LoginMethods refetchAllData={refetchAllData} />
 

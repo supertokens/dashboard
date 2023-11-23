@@ -15,10 +15,11 @@
 
 .footer {
 	bottom: 0;
-	width: 100%;
+	width: 100vw;
 	min-height: 62px;
 	display: flex;
 	padding: 20px 32px;
+	z-index: 20;
 
 	.logo {
 		height: 23px;

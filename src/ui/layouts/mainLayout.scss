@@ -1,0 +1,17 @@
+.main-layout-container {
+	display: block;
+
+	.main-content {
+		margin-top: 44px;
+		margin-left: var(--sidebar-width);
+		min-height: 100vh;
+	}
+}
+
+@media (max-width: 1024px) {
+	.main-layout-container {
+		.main-content {
+			margin-left: 0;
+		}
+	}
+}

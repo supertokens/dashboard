@@ -84,7 +84,8 @@ $container-width: 829;
 	--copy-text-color: rgb(214, 80, 120);
 
 	padding: 72px #{$container-padding-horizontal}px 48px;
-	max-width: 100vw;
+	max-width: var(--container-width);
+	margin: auto;
 
 	&.center-children {
 		display: flex;
@@ -261,13 +262,6 @@ $container-width: 829;
 			}
 		}
 	}
-
-	@media only screen and (min-width: #{$container-width + 2 * $container-padding-horizontal}px) {
-		width: #{$container-width}px;
-		padding-left: 0px;
-		padding-right: 0px;
-		margin: 0 auto;
-	}
 }
 
 .user-detail-title {
@@ -298,4 +292,10 @@ $container-width: 829;
 
 .pill {
 	margin-top: 4px;
+}
+
+@media (max-width: 425px) {
+	.user-detail {
+		padding: 72px 12px 48px;
+	}
 }

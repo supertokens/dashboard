@@ -233,7 +233,8 @@
 
 .button.flat,
 button.flat {
-	display: inline;
+	display: inline-flex;
+	align-items: center;
 	background: none;
 	padding: 0px;
 	margin: 0px;

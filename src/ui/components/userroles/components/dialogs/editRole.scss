@@ -1,0 +1,53 @@
+.edit-role-content {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+
+	padding: 32px 0 24px 0;
+
+	& > div {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.permissions-list-container {
+		display: flex;
+		flex-wrap: wrap;
+
+		gap: 14px 18px;
+		overflow: scroll;
+		max-height: 14vh;
+	}
+
+	.label {
+		color: var(--color-secondary-text);
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 500;
+		line-height: normal;
+
+		margin-bottom: 10px;
+	}
+
+	.role-name {
+		color: var(--color-black);
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 600;
+		line-height: normal;
+	}
+
+	.delete-badge {
+		&:hover {
+			border-radius: 6px;
+			border: 1px solid var(--light-tags-tag-red-border, #fecdd3);
+			background: var(--light-tags-tag-red-bg-hover, #fecdd3);
+			color: rgba(225, 29, 72, 1);
+
+			& > svg {
+				stroke: rgba(225, 29, 72, 1);
+				cursor: pointer;
+			}
+		}
+	}
+}

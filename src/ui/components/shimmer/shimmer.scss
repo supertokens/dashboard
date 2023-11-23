@@ -1,0 +1,12 @@
+.shimmer {
+	width: 100%;
+	background-color: var(--color-loader-placeholder-bg);
+	min-height: 1em;
+	opacity: 0.4;
+	animation: blinker 2s linear infinite;
+	@keyframes blinker {
+		50% {
+			opacity: 0.1;
+		}
+	}
+}

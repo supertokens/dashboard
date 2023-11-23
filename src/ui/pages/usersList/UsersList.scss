@@ -14,7 +14,6 @@
  */
 
 $container-padding-horizontal: 40;
-$container-width: 829;
 
 .users-list {
 	padding: 72px #{$container-padding-horizontal}px 48px;
@@ -83,11 +82,17 @@ $container-width: 829;
 	margin-right: 8px;
 }
 
-@media only screen and (min-width: #{$container-width + 2 * $container-padding-horizontal}px) {
+@media (min-width: 1126px) {
 	.users-list {
-		width: #{$container-width}px;
+		width: var(--container-width);
 		padding-left: 0px;
 		padding-right: 0px;
 		margin: 0 auto;
+	}
+}
+
+@media (max-width: 480px) {
+	.users-list {
+		padding: 72px 18px 48px;
 	}
 }

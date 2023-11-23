@@ -1,0 +1,70 @@
+.delete-btn-container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.roles-column {
+	width: 20% !important;
+}
+
+.permissions-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 14px;
+
+	& > .permissions {
+		display: flex;
+		gap: 24px;
+		overflow: hidden;
+
+		.badge-width {
+			width: 80px !important;
+		}
+	}
+
+	& > .delete-role {
+		padding: 6px;
+		border-radius: 3px;
+		border: 1px solid #ddd;
+		background: #fff;
+
+		& > svg > path {
+			fill: rgba(141, 141, 141, 1) !important;
+		}
+
+		&:hover {
+			border: 1px solid #ed344e;
+			background: rgba(237, 52, 78, 0.15);
+
+			& > svg > path {
+				fill: rgba(237, 52, 78, 1) !important;
+			}
+		}
+	}
+
+	& > .refresh-btn {
+		padding: 6px;
+		border-radius: 3px;
+
+		border: 1px solid #ddd;
+		color: rgba(141, 141, 141, 1);
+		background: #fff;
+
+		&:hover {
+			border: 1px solid var(--color-primary);
+			color: var(--color-primary);
+			background: rgba(255, 153, 51, 0.06);
+		}
+	}
+}
+
+.roles-list-pagination {
+	justify-content: flex-end;
+	padding: 24px;
+}
+
+.margin-bottom-36 {
+	margin-bottom: 36px;
+}

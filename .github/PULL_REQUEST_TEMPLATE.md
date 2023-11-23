@@ -88,6 +88,17 @@
 -   [ ] Multi tenant testing
     -   [ ] Create one tenant (tenant1), and add 3 users to them. In the dashboard, when you switch to that tenant, it should list those users.
     -   [ ] Create a user in tenant1 and using backend sdk's(Go, Python, Node) associate the user to a different tenant and select that tenant on the dashboard from the tenants dropdown, it should show that user in the list
+-   [ ] User Roles and Permissions testing
+    -   [ ] UserRoles page testing
+        -   [ ] Test the empty state when there are no roles created on the roles page.
+        -   [ ] Test creation, delete and updating functionality of the roles are working properly.
+        -   [ ] Test pagination of the roles list with more than 2 or 3 pages of data atleast.
+        -   [ ] Test that the permissions per role are rendering properly without overflowing the parent table.
+        -   [ ] Check for the `feature_not_enabled` state on both userDetails page and user roles page.
+    -   [ ] userDetails page testing with respect to roles and permissions.
+        -   [ ] Test adding and deleting roles to a user.
+        -   [ ] Test the roles search feature and make sure that the list does not include any assigned roles in it.
+        -   [ ] Test by associating the user with multiple tenants and assigning roles to the user in each tenant separately.
 
 ## Documentation changes
 

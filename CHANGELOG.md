@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.9.0] - 2023-11-17
+
+-   Adds user roles and permissions feature to dashboard.
+
 ## [0.8.6] - 2023-11-15
 
 -   Adds click action to the entire user row.
