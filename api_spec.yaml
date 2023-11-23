@@ -3,8 +3,10 @@ openapi: 3.0.0
 info:
     version: 0.0.0
     title: Dashboard Interface
-    description: Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
-    note: "All the POST api's would give 403 status code back when user permissions are enabled."
+    description: |
+        Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
+
+        `Note:` All the POST api's would give 403 status code back when user permissions are enabled.
 
 tags:
     - name: "User Authentication"
@@ -19,9 +21,11 @@ tags:
       description: APIs related to recording telemetry from the dashboard
     - name: "Multitenancy"
       description: APIs related to multitenancy
+    - name: "User Roles and Permissions"
+      description: APIs related to user roles and permisssions
 
 paths:
-    /signin:
+    /dashboard/api/signin:
         post:
             tags:
                 - User Authentication
@@ -90,7 +94,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /signout:
+    /dashboard/api/signout:
         post:
             tags:
                 - User Authentication
@@ -125,7 +129,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /users:
+    /<tenantId>/dashboard/api/users:
         get:
             tags:
                 - User Management
@@ -271,7 +275,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /users/count:
+    /<tenantId>/dashboard/api/users/count:
         get:
             tags:
                 - User Management
@@ -320,7 +324,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /user:
+    /dashboard/api/user:
         get:
             tags:
                 - User Details
@@ -610,7 +614,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /user/unlink:
+    /dashboard/api/user/unlink:
         get:
             tags:
                 - User Details
@@ -661,7 +665,63 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /user/email/verify:
+    /<tenantId>/dashboard/api/user/email/verify:
+        put:
+            tags:
+                - User Details
+            summary: Set a user's email as verified
+            operationId: userEmailVerifyPut
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                userId:
+                                    type: string
+                                verified:
+                                    type: boolean
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                404:
+                    description: error code 404
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Not Found
+    /dashboard/api/user/email/verify:
         get:
             tags:
                 - User Details
@@ -721,62 +781,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-        put:
-            tags:
-                - User Details
-            summary: Set a user's email as verified
-            operationId: userEmailVerifyPut
-            parameters:
-                - name: authorization
-                  in: header
-                  required: true
-                  schema:
-                      type: string
-                      example: "Bearer API_KEY"
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                userId:
-                                    type: string
-                                verified:
-                                    type: boolean
-            responses:
-                200:
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    status:
-                                        type: string
-                                        default: "OK"
-                400:
-                    description: error code 400
-                    content:
-                        text/plain:
-                            schema:
-                                type: string
-                401:
-                    description: Unauthorised access
-                    content:
-                        text/plain:
-                            schema:
-                                type: string
-                                enum:
-                                    - Unauthorised access
-                404:
-                    description: error code 404
-                    content:
-                        text/plain:
-                            schema:
-                                type: string
-                                enum:
-                                    - Not Found
-    /user/email/verify/token:
+    /<tenantId>/dashboard/api/user/email/verify/token:
         post:
             tags:
                 - User Details
@@ -836,7 +841,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /user/metadata:
+    /dashboard/api/user/metadata:
         get:
             tags:
                 - User Details
@@ -958,7 +963,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /user/password:
+    /<tenantId>/dashboard/api/user/password:
         put:
             tags:
                 - User Details
@@ -1022,7 +1027,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /user/sessions:
+    /dashboard/api/user/sessions:
         get:
             tags:
                 - User Details
@@ -1151,7 +1156,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /api/analytics:
+    /dashboard/api/analytics:
         post:
             tags:
                 - Telemetry
@@ -1209,7 +1214,7 @@ paths:
                                 type: string
                                 enum:
                                     - Not Found
-    /search/tags:
+    /dashboard/api/search/tags:
         get:
             tags:
                 - Search
@@ -1226,8 +1231,7 @@ paths:
                                         type: array
                                         items:
                                             type: string
-
-    /tenants/list:
+    /dashboard/api/tenants/list:
         get:
             tags:
                 - Multitenancy
@@ -1267,6 +1271,398 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
+    /dashboard/api/userroles/roles:
+        get:
+            tags:
+                - User Roles and Permissions
+            summary: Get all created roles
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          roles:
+                                              type: array
+                                              items:
+                                                  type: string
+                                                  example:
+                                                      - "admin"
+                                                      - "user"
+
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+    /dashboard/api/userroles/role:
+        put:
+            tags:
+                - User Roles and Permissions
+            summary: Creates a role with permissions or Adds permissions to a existing role if already exits
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                role:
+                                    type: string
+                                    example: "admin"
+                                permissions:
+                                    type: array
+                                    items:
+                                        type: string
+                                        example:
+                                            - "read"
+                                            - "write"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNewRole:
+                                              type: boolean
+                                              default: true
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+        delete:
+            tags:
+                - User Roles and Permissions
+            summary: Deletes a role.
+            parameters:
+                - name: role
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: admin
+
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          didRoleExists:
+                                              type: boolean
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+    /dashboard/api/userroles/role/permissions:
+        get:
+            tags:
+                - User Roles and Permissions
+            summary: Get permissions associated with a role
+            parameters:
+                - name: role
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "admin"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          permissions:
+                                              type: array
+                                              items:
+                                                  type: string
+
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_ROLE_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+    /dashboard/api/userroles/role/permissions/remove:
+        put:
+            tags:
+                - User Roles and Permissions
+            summary: Remove permissions associated with a role
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                role:
+                                    type: string
+                                    example: "admin"
+                                permissions:
+                                    type: array
+                                    items:
+                                        type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_ROLE_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+    /<tenantId>/dashboard/api/userroles/user/roles:
+        get:
+            tags:
+                - User Roles and Permissions
+            summary: Get all roles that are assigned to a user
+            parameters:
+                - name: userId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                - name: tenantId
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                      example: "public"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          roles:
+                                              type: array
+                                              items:
+                                                  type: string
+                                                  example:
+                                                      - "admin"
+                                                      - "user"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+        put:
+            tags:
+                - User Roles and Permissions
+            summary: Add a new role to a user
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required: ["userId", "role"]
+                            properties:
+                                userId:
+                                    type: string
+                                    example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                                role:
+                                    type: string
+                                    example: "admin"
+                                tenantId:
+                                    type: string
+                                    example: "public"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          didUserAlreadyHaveRole:
+                                              type: string
+                                              default: "false"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_ROLE_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
+        delete:
+            tags:
+                - User Roles and Permissions
+            summary: Remove a role assigned to a user
+            parameters:
+                - name: userId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "fa7a0841-b533-4478-95533-0fde890c3483"
+                - name: role
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "admin"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          didUserHaveRole:
+                                              type: boolean
+                                              default: false
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_ROLE_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+                400:
+                    description: error code 400
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Method not supported
 
 servers:
     # Added by API Auto Mocking Plugin
