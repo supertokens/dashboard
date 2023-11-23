@@ -1,0 +1,86 @@
+.user-roles-list-wrapper {
+	.shimmer-container {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		width: 100%;
+		margin-top: 5px;
+	}
+
+	& > .roles-list-container {
+		display: flex;
+		justify-content: flex-start;
+		gap: 14px;
+		flex-wrap: wrap;
+		align-items: center;
+		border-top: 1px solid var(--color-border);
+		padding-top: 20px;
+		margin-top: 20px;
+
+		.no-roles-found {
+			padding: 20px 0px;
+			font-size: 14px;
+			color: var(--color-black);
+		}
+
+		.add-role-btn {
+			display: flex;
+			padding: 2px 8px;
+			align-items: center;
+			gap: 10px;
+			border-radius: 6px;
+			border: 1px solid rgb(217, 217, 217);
+			background: rgb(249, 249, 249);
+
+			color: var(--color-secondary-tex);
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 400;
+			line-height: 21px;
+
+			& > svg {
+				fill: #6e6a65;
+			}
+
+			&:hover:not([data-disable-hover="true"]) {
+				border: 1px solid rgba(0, 122, 255, 0.5);
+
+				color: var(--color-secondary);
+				font-size: 14px;
+
+				& > svg {
+					fill: var(--color-secondary);
+				}
+			}
+		}
+	}
+}
+
+.select-tenantId-container {
+	color: var(--color-secondary-text);
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 23px;
+
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin-top: -32px;
+
+	& > span {
+		font-weight: 500;
+	}
+
+	@media (max-width: 440px) {
+		font-size: 12px;
+		line-height: 18px;
+	}
+}
+
+.feature-not-enabled {
+	margin-top: -10px;
+	color: #6e6a65;
+	font-size: 14px;
+}

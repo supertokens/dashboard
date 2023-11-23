@@ -26,7 +26,6 @@ import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
 import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
-import { Footer, LOGO_ICON_LIGHT } from "../../components/footer/footer";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
 import Search from "../../components/search";
@@ -253,11 +252,6 @@ export const UsersList: React.FC<UserListProps> = ({
 		<div
 			className="users-list"
 			style={css}>
-			<img
-				className="title-image"
-				src={LOGO_ICON_LIGHT}
-				alt="Auth Page"
-			/>
 			<h1 className="users-list-title">
 				User Management <span className="pill paid-feature-badge">Beta</span>
 			</h1>
@@ -327,7 +321,6 @@ export const UserListPage = () => {
 	const navigate = useNavigate();
 	const currentLocation = useLocation();
 	const [selectedUser, setSelectedUser] = useState<string>();
-	const [selectedRecipeId, setSelectedRecipeId] = useState<string>();
 	const [selectedUserEmailVerification, setSelectedUserEmailVerification] = useState<
 		EmailVerificationStatus | undefined
 	>();
@@ -351,7 +344,6 @@ export const UserListPage = () => {
 				replace: true,
 			}
 		);
-		void reloadListRef.current?.();
 		setSelectedUser(undefined);
 	}, []);
 
@@ -408,6 +400,12 @@ export const UserListPage = () => {
 		}
 	}, []);
 
+	useEffect(() => {
+		if (currentLocation && currentLocation.search.includes("userid") === false) {
+			backToList();
+		}
+	}, [currentLocation.search]);
+
 	const onUserSelected = (user: User) => {
 		navigate(
 			{
@@ -452,11 +450,6 @@ export const UserListPage = () => {
 				reloadRef={reloadListRef}
 				onChangePasswordCallback={changePassword}
 				onDeleteCallback={({ id }) => onUserDelete(id)}
-			/>
-			<Footer
-				colorMode="dark"
-				horizontalAlignment="center"
-				verticalAlignment="center"
 			/>
 		</AppEnvContextProvider>
 	);

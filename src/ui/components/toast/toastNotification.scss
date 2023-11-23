@@ -91,6 +91,7 @@
 	max-height: 100vh;
 	justify-content: flex-end;
 	width: max-content;
+	z-index: 9999;
 }
 
 @keyframes notificationScale {

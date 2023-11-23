@@ -27,6 +27,7 @@ export type InputFieldPropTypes = {
 	isRequired?: boolean;
 	hideColon?: boolean;
 	forceShowError?: boolean;
+	disabled?: boolean;
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 };
 
@@ -71,6 +72,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					defaultValue={props.value}
 					onFocus={() => setIsFocused(true)}
 					onBlur={() => setIsFocused(false)}
+					disabled={props.disabled}
 					className={`text-small text-black input-field ${showError ? "input-field-error-state" : ""}`}
 					placeholder={props.placeholder}
 				/>

@@ -1,0 +1,131 @@
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.st-header-desktop {
+	position: fixed;
+	width: 100%;
+	z-index: 100;
+
+	display: flex;
+	padding: 16px 18px;
+	justify-content: space-between;
+	align-items: center;
+
+	background: #fff;
+	box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.16);
+}
+
+.st-header-mobile {
+	display: none;
+
+	.overlay {
+		background: rgba(0, 0, 0, 0.4);
+		position: fixed;
+		inset: 0;
+		height: 100vh;
+
+		z-index: 9999;
+
+		margin-top: 70px;
+	}
+
+	svg {
+		cursor: pointer;
+	}
+
+	.close-btn {
+		background: rgba(95, 95, 95, 0.08);
+		border-radius: 50%;
+		border: none;
+
+		height: 40px;
+		width: 40px;
+	}
+
+	.menu-container {
+		width: 400px;
+
+		height: fit-content;
+
+		border-radius: 12px;
+		background: #fff;
+		box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.16);
+
+		position: fixed;
+		inset: 0;
+		margin: 16px;
+		margin-top: 80px;
+		z-index: 9999;
+
+		padding: 36px 40px;
+
+		.divider {
+			background: #aaa;
+			height: 1px;
+			width: 100%;
+			margin: 40px auto;
+		}
+
+		button {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+
+	.menu-content {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+
+		.sidebar-list {
+			margin-top: 0;
+
+			& > li {
+				margin-left: 0;
+				margin-right: 0;
+			}
+		}
+	}
+}
+
+@media (max-width: 1024px) {
+	.st-header-desktop {
+		display: none;
+	}
+
+	.st-header-mobile {
+		position: fixed;
+		width: 100%;
+		z-index: 9999;
+		background: var(--color-white);
+
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		gap: 14px;
+
+		padding: 14px 12px;
+	}
+}
+
+@media (max-width: 532px) {
+	.st-header-mobile {
+		.menu-container {
+			width: 95%;
+			margin: auto;
+			margin-top: 80px;
+		}
+	}
+}
