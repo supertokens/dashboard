@@ -3,8 +3,10 @@ openapi: 3.0.0
 info:
     version: 0.0.0
     title: Dashboard Interface
-    description: Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
-    note: "All the POST api's would give 403 status code back when user permissions are enabled."
+    description: |
+        Interface for dashboard and backend SDK to communicate with each other. All APIs must be prefixed by `{apiDomain}/{apiBasePath}`
+
+        `Note:` All the POST api's would give 403 status code back when user permissions are enabled.
 
 tags:
     - name: "User Authentication"
