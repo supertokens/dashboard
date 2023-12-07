@@ -1773,24 +1773,45 @@ paths:
                 content:
                     application/json:
                         schema:
-                            type: object
-                            properties:
-                                email:
-                                    type: string
-                                password:
-                                    type: string
+                            oneOf:
+                                - type: object
+                                  properties:
+                                      email:
+                                          $ref: "#/components/schemas/email"
+                                  example:
+                                      email: "test@example.com"
+                                  required:
+                                      - email
+                                - type: object
+                                  properties:
+                                      phoneNumber:
+                                          $ref: "#/components/schemas/phoneNumber"
+                                  required:
+                                      - phoneNumber
             responses:
                 200:
-                    description: Success
+                    description: signup response
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    tags:
-                                        type: array
-                                        items:
-                                            type: string
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNewRecipeUser:
+                                              type: boolean
+                                              default: true
+                                          user:
+                                              $ref: "#/components/schemas/authRecipeUser"
+                                          recipeUserId:
+                                              $ref: "#/components/schemas/userId"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
 
 components:
     schemas:
