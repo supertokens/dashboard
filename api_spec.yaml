@@ -1706,64 +1706,6 @@ paths:
                                               type: string
                                               default: "FEATURE_NOT_ENABLED_ERROR"
 
-    /<tenantId>/dashboard/api/user/create/thirdparty:
-        post:
-            tags:
-                - User Creation
-            summary: Creates a new thirdparty user.
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                thirdPartyId:
-                                    type: string
-                                thirdPartyUserId:
-                                    type: string
-                                email:
-                                    type: string
-                                isVerified:
-                                    type: boolean
-            responses:
-                200:
-                    description: signup response
-                    content:
-                        application/json:
-                            schema:
-                                oneOf:
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "OK"
-                                          createdNewRecipeUser:
-                                              type: boolean
-                                              default: true
-                                          user:
-                                              $ref: "#/components/schemas/authRecipeUser"
-                                          recipeUserId:
-                                              $ref: "#/components/schemas/userId"
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "EMAIL_CHANGE_NOT_ALLOWED_ERROR"
-                                          reason:
-                                              type: string
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "SIGN_IN_UP_NOT_ALLOWED"
-                                          reason:
-                                              type: string
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "FEATURE_NOT_ENABLED_ERROR"
-
     /<tenantId>/dashboard/api/user/create/passwordless:
         post:
             tags:
@@ -1812,6 +1754,39 @@ paths:
                                           status:
                                               type: string
                                               default: "FEATURE_NOT_ENABLED_ERROR"
+    /<tenantId>/dashboard/api/login-methods:
+        get:
+            tags:
+                - Login Methods
+            summary: Gets all the available login methods for a tenant.
+            responses:
+                200:
+                    description: login methods response.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    loginMethods:
+                                        type: array
+                                        items:
+                                            oneOf:
+                                                - type: object
+                                                  properties:
+                                                      methodType:
+                                                          type: string
+                                                          default: "passwordless"
+                                                      contactMethod:
+                                                          type: string
+                                                          enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
+                                                - type: object
+                                                  properties:
+                                                      methodType:
+                                                          type: string
+                                                          default: "emailPassword"
 
 components:
     schemas:
