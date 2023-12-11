@@ -1664,6 +1664,225 @@ paths:
                                 enum:
                                     - Method not supported
 
+    /<tenantId>/dashboard/api/user/create/emailpassword:
+        post:
+            tags:
+                - User Creation
+            summary: Creates a new emailpassword user.
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                email:
+                                    type: string
+                                password:
+                                    type: string
+            responses:
+                200:
+                    description: signup response
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          user:
+                                              $ref: "#/components/schemas/authRecipeUser"
+                                          recipeUserId:
+                                              $ref: "#/components/schemas/userId"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "EMAIL_ALREADY_EXISTS_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+
+    /<tenantId>/dashboard/api/user/create/passwordless:
+        post:
+            tags:
+                - User Creation
+            summary: Creates a new passwordless user
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            oneOf:
+                                - type: object
+                                  properties:
+                                      email:
+                                          $ref: "#/components/schemas/email"
+                                  example:
+                                      email: "test@example.com"
+                                  required:
+                                      - email
+                                - type: object
+                                  properties:
+                                      phoneNumber:
+                                          $ref: "#/components/schemas/phoneNumber"
+                                  required:
+                                      - phoneNumber
+            responses:
+                200:
+                    description: signup response
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNewRecipeUser:
+                                              type: boolean
+                                              default: true
+                                          user:
+                                              $ref: "#/components/schemas/authRecipeUser"
+                                          recipeUserId:
+                                              $ref: "#/components/schemas/userId"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "FEATURE_NOT_ENABLED_ERROR"
+    /<tenantId>/dashboard/api/login-methods:
+        get:
+            tags:
+                - Login Methods
+            summary: Gets all the available login methods for a tenant.
+            responses:
+                200:
+                    description: login methods response.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    loginMethods:
+                                        type: array
+                                        items:
+                                            oneOf:
+                                                - type: object
+                                                  properties:
+                                                      methodType:
+                                                          type: string
+                                                          default: "passwordless"
+                                                      contactMethod:
+                                                          type: string
+                                                          enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
+                                                - type: object
+                                                  properties:
+                                                      methodType:
+                                                          type: string
+                                                          default: "emailpassword"
+                                                - type: object
+                                                  properties:
+                                                      methodType:
+                                                          type: string
+                                                          default: "thirdparty"
+
+components:
+    schemas:
+        authRecipeUser:
+            type: object
+            properties:
+                id:
+                    $ref: "#/components/schemas/userId"
+                isPrimaryUser:
+                    type: boolean
+                    example: true
+                tenantIds:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/tenantId"
+                timeJoined:
+                    $ref: "#/components/schemas/timeJoined"
+                emails:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/email"
+                phoneNumbers:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/phoneNumber"
+                thirdParty:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            id:
+                                $ref: "#/components/schemas/thirdPartyId"
+                            userId:
+                                $ref: "#/components/schemas/thirdPartyUserId"
+                loginMethods:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            tenantIds:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/tenantId"
+                            recipeUserId:
+                                $ref: "#/components/schemas/userId"
+                            verified:
+                                type: boolean
+                                example: true
+                            timeJoined:
+                                $ref: "#/components/schemas/timeJoined"
+                            recipeId:
+                                $ref: "#/components/schemas/recipeId"
+                            email:
+                                $ref: "#/components/schemas/email"
+                            phoneNumber:
+                                $ref: "#/components/schemas/phoneNumber"
+                            thirdParty:
+                                type: object
+                                properties:
+                                    id:
+                                        $ref: "#/components/schemas/thirdPartyId"
+                                    userId:
+                                        $ref: "#/components/schemas/thirdPartyUserId"
+        recipeId:
+            type: string
+            enum:
+                - emailpassword
+                - passwordless
+                - thirdparty
+        thirdPartyId:
+            type: string
+            example: google
+        thirdPartyUserId:
+            type: string
+            example: 106347997792363865062
+        email:
+            type: string
+            example: johndoe@gmail.com
+        userId:
+            type: string
+            example: fa7a0841-b533-4478-95533-0fde890c3483
+        timeJoined:
+            type: number
+            example: 1623918032231
+        phoneNumber:
+            type: string
+            example: "+14155552671"
+        tenantId:
+            type: string
+            example: "customer1"
+
 servers:
     # Added by API Auto Mocking Plugin
     - description: SwaggerHub API Auto Mocking
