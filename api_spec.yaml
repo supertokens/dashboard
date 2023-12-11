@@ -1786,7 +1786,12 @@ paths:
                                                   properties:
                                                       methodType:
                                                           type: string
-                                                          default: "emailPassword"
+                                                          default: "emailpassword"
+                                                - type: object
+                                                  properties:
+                                                      methodType:
+                                                          type: string
+                                                          default: "thirdparty"
 
 components:
     schemas:
