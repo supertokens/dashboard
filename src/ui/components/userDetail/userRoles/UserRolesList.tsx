@@ -182,10 +182,13 @@ export default function UserRolesList() {
 							) : null}
 						</>
 					) : (
-						<Alert
-							title="Feature is not enabled"
-							content="Please enable this feature first to manage your user roles and permissions!"
-						/>
+						<Alert title="Feature is not enabled">
+							Enable this feature to manage user roles and permissions. Start by initializing the
+							UserRoles recipe in the recipeList on the backend. For more details, see{" "}
+							<a href="https://supertokens.com/docs/userdashboard/managing-user-roles-and-permissions">
+								this page.
+							</a>
+						</Alert>
 					)}
 				</>
 			</div>

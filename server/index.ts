@@ -26,7 +26,6 @@ import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
 import ThirdParty from "supertokens-node/recipe/thirdparty";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
-import UserRoles from "supertokens-node/recipe/userroles";
 
 const websiteDomain = "http://localhost:3000";
 
@@ -89,7 +88,7 @@ SuperTokens.init({
 		}),
 		Session.init(),
 		AccountLinking.init(),
-		UserRoles.init(),
+		// UserRoles.init(),
 	],
 });
 
