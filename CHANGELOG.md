@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.9.1] - 2023-12-19
+
+-   Improve UX when showing feature not enabled message for UserRoles recipe.
+
 ## [0.9.0] - 2023-11-17
 
 -   Adds user roles and permissions feature to dashboard.
