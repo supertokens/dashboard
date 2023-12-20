@@ -18,14 +18,14 @@ import "./alert.scss";
 type AlertProps = {
 	type?: "primary";
 	title: string;
-	content: string;
+	children: React.ReactNode;
 };
 
-export default function Alert({ content, title, type = "primary" }: AlertProps) {
+export default function Alert({ children, title, type = "primary" }: AlertProps) {
 	return (
 		<div className={`alert ${type}`}>
 			<span>{title}</span>
-			<div>{content}</div>
+			<div>{children}</div>
 		</div>
 	);
 }
