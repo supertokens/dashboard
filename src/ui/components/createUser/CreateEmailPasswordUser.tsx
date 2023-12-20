@@ -13,28 +13,63 @@
  * under the License.
  */
 
-import { useState } from "react";
+import { useContext, useState } from "react";
+import useCreateUserService from "../../../api/user/create";
+import { getApiUrl, getImageUrl } from "../../../utils";
+import { PopupContentContext } from "../../contexts/PopupContentContext";
 import Button from "../button";
 import { Dialog, DialogContent, DialogFooter } from "../dialog";
 import InputField from "../inputField/InputField";
 import { CreateUserDialogStepType } from "./CreateUserDialog";
 
 type CreateEmailPasswordUserProps = {
+	tenantId: string;
 	onCloseDialog: () => void;
 	setCurrentStep: (step: CreateUserDialogStepType) => void;
 };
 
-export default function CreateEmailPasswordUser({ onCloseDialog, setCurrentStep }: CreateEmailPasswordUserProps) {
-	const [email, setEmail] = useState<string | undefined>("");
-	const [password, setPassword] = useState<string | undefined>("");
-
+export default function CreateEmailPasswordUser({
+	tenantId,
+	onCloseDialog,
+	setCurrentStep,
+}: CreateEmailPasswordUserProps) {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [isCreatingUser, setIsCreatingUser] = useState(false);
 
-	function createUser() {
+	const { createEmailPasswordUser } = useCreateUserService();
+	const { showToast } = useContext(PopupContentContext);
+
+	async function createUser() {
 		setIsCreatingUser(true);
-		setTimeout(() => {
+
+		try {
+			const response = await createEmailPasswordUser(tenantId, email, password);
+			if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>User with this email already exists in {tenantId} tenant.</>,
+				});
+				return;
+			}
+			if (response.status === "OK") {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "success",
+					children: <>User created successfully!</>,
+				});
+				window.open(getApiUrl(`?userid=${response.user.id}`), "_blank");
+			}
+		} catch (_) {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong, please try again!</>,
+			});
+		} finally {
 			setIsCreatingUser(false);
-		}, 3000);
+		}
 	}
 
 	return (
@@ -43,7 +78,7 @@ export default function CreateEmailPasswordUser({ onCloseDialog, setCurrentStep 
 			title="User Info"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
-				<div className="email-password-dialog-content-container">
+				<div className="dialog-form-content-container">
 					<InputField
 						label="Email"
 						hideColon

@@ -13,23 +13,38 @@
  * under the License.
  */
 
+import { useState } from "react";
+import { PasswordlessContactMethod } from "../../../api/tenants/list";
 import Button from "../button";
 import { Dialog, DialogContent, DialogFooter } from "../dialog";
+import InputField from "../inputField/InputField";
 import { CreateUserDialogStepType } from "./CreateUserDialog";
 
 type CreatePasswordlessUserProps = {
+	authMethod: PasswordlessContactMethod | undefined;
 	onCloseDialog: () => void;
 	setCurrentStep: (step: CreateUserDialogStepType) => void;
 };
 
 export default function CreatePasswordlessUser({ onCloseDialog, setCurrentStep }: CreatePasswordlessUserProps) {
+	const [email, setEmail] = useState("");
+
 	return (
 		<Dialog
 			className="max-width-410"
 			title="User Info"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
-				Create passwordless user..
+				<div className="dialog-form-content-container">
+					<InputField
+						label="Email Or Phone"
+						hideColon
+						value={email}
+						handleChange={(e) => setEmail(e.currentTarget.value)}
+						name="email"
+						type="email"
+					/>
+				</div>
 				<DialogFooter border="border-top">
 					<Button
 						color="gray-outline"

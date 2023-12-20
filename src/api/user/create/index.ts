@@ -39,9 +39,9 @@ const useCreateUserService = (): ICreateUserService => {
 	const fetchData = useFetchData();
 
 	const createEmailPasswordUser = async (
+		tenantId: string | undefined,
 		email: string,
-		password: string,
-		tenantId: string | undefined
+		password: string
 	): Promise<CreateEmailPasswordUserResponse> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/user/create/emailpassword", tenantId),

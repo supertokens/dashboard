@@ -15,6 +15,8 @@
 
 import { getApiUrl, useFetchData } from "../../utils";
 
+export type PasswordlessContactMethod = "PHONE" | "EMAIL" | "EMAIL_OR_PHONE";
+
 export type Tenant = {
 	tenantId: string;
 	emailPassword: {
@@ -22,7 +24,7 @@ export type Tenant = {
 	};
 	passwordless: {
 		enabled: boolean;
-		contactMethod?: "PHONE" | "EMAIL" | "EMAIL_OR_PHONE";
+		contactMethod?: PasswordlessContactMethod;
 	};
 	thirdParty: {
 		enabled: boolean;

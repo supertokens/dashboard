@@ -17,9 +17,14 @@ import "./createUserDialog.scss";
 
 import { useState } from "react";
 import { Tenant } from "../../../api/tenants/list";
+import Alert from "../alert";
+import Button from "../button";
+import { Dialog, DialogContent, DialogFooter } from "../dialog";
+import Select from "../select";
 import CreateEmailPasswordUser from "./CreateEmailPasswordUser";
 import CreatePasswordlessUser from "./CreatePasswordlessUser";
-import SelectTenantAndAuthMethod from "./SelectTenantAndAuthMethod";
+
+export type AuthMethod = "emailpassword" | "passwordless";
 
 export type CreateUserDialogStepType =
 	| "select-auth-method-and-tenant"
@@ -36,40 +41,118 @@ export default function CreateUserDialog({
 	currentSelectedTenantId: string;
 }) {
 	const [currentStep, setCurrentStep] = useState<CreateUserDialogStepType>("create-email-password-user");
+	const [selectedTenantId, setSelectedTenantId] = useState(currentSelectedTenantId);
+	const [selectedAuthMethod, setSelectedAuthMethod] = useState<AuthMethod | undefined>(undefined);
 
-	switch (currentStep) {
-		case "select-auth-method-and-tenant":
-			return (
-				//  TODO: add no auth methods initlized error on frontend...
-				<SelectTenantAndAuthMethod
-					currentSelectedTenantId={currentSelectedTenantId}
-					onCloseDialog={onCloseDialog}
-					tenantsList={tenantsList}
-					setCurrentStep={setCurrentStep}
-				/>
-			);
-		case "create-email-password-user":
-			return (
-				<CreateEmailPasswordUser
-					setCurrentStep={setCurrentStep}
-					onCloseDialog={onCloseDialog}
-				/>
-			);
-		case "create-passwordless-user":
-			return (
-				<CreatePasswordlessUser
-					setCurrentStep={setCurrentStep}
-					onCloseDialog={onCloseDialog}
-				/>
-			);
-		default:
-			return (
-				<SelectTenantAndAuthMethod
-					currentSelectedTenantId={currentSelectedTenantId}
-					onCloseDialog={onCloseDialog}
-					tenantsList={tenantsList}
-					setCurrentStep={setCurrentStep}
-				/>
-			);
+	const selectedTenantObject = tenantsList.find((tenant) => tenant.tenantId === selectedTenantId)!;
+
+	function getSelectableAuthMethods() {
+		const selectableAuthMethods: { name: string; value: string }[] = [];
+
+		if (selectedTenantObject.emailPassword.enabled === true) {
+			selectableAuthMethods.push({
+				name: "emailpassword",
+				value: "emailpassword",
+			});
+		}
+
+		if (selectedTenantObject.passwordless.enabled === true) {
+			selectableAuthMethods.push({
+				name: "passwordless",
+				value: "passwordless",
+			});
+		}
+
+		return selectableAuthMethods;
 	}
+
+	if (currentStep === "create-passwordless-user") {
+		return (
+			<CreatePasswordlessUser
+				authMethod={selectedTenantObject.passwordless.contactMethod}
+				setCurrentStep={setCurrentStep}
+				onCloseDialog={onCloseDialog}
+			/>
+		);
+	}
+
+	if (currentStep === "create-email-password-user") {
+		return (
+			<CreateEmailPasswordUser
+				tenantId={selectedTenantId}
+				setCurrentStep={setCurrentStep}
+				onCloseDialog={onCloseDialog}
+			/>
+		);
+	}
+
+	return (
+		<Dialog
+			className="max-width-410"
+			title="Create New Use"
+			onCloseDialog={onCloseDialog}>
+			<DialogContent className="text-small text-semi-bold">
+				<div className="create-user-modal-content">
+					<Alert
+						padding="sm"
+						title="info"
+						type="secondary">
+						Custom overrides for the sign up recipe function on the backend will be run when a user is
+						created, however, the sign up API override will not run, for more info regarding this{" "}
+						<a
+							rel="noreferrer"
+							href="https://suppertokens.com/docs/"
+							target="_blank">
+							click here.
+						</a>
+					</Alert>
+					<div className="select-container mb-12">
+						<p className="text-label">
+							Selected Tenant:{" "}
+							{tenantsList.length === 1 ? <span className="text-black ">Public</span> : null}
+						</p>{" "}
+						{tenantsList.length > 1 ? (
+							<Select
+								onOptionSelect={(value) => {
+									setSelectedTenantId(value);
+									setSelectedAuthMethod(undefined);
+								}}
+								options={tenantsList.map((tenant) => {
+									return {
+										name: tenant.tenantId,
+										value: tenant.tenantId,
+									};
+								})}
+								selectedOption={selectedTenantId}
+							/>
+						) : null}
+					</div>
+					<div className="select-container mb-28">
+						<span className="text-label">Select Auth Method:</span>
+						<Select
+							onOptionSelect={(value) => setSelectedAuthMethod(value as AuthMethod)}
+							options={getSelectableAuthMethods()}
+							selectedOption={selectedAuthMethod}
+						/>
+					</div>
+				</div>
+				<DialogFooter border="border-top">
+					<Button
+						disabled={selectedAuthMethod === undefined}
+						color={selectedAuthMethod === undefined ? "gray" : "primary"}
+						onClick={() => {
+							if (selectedAuthMethod === "emailpassword") {
+								setCurrentStep("create-email-password-user");
+							} else if (selectedAuthMethod === "passwordless") {
+								setCurrentStep("create-passwordless-user");
+							} else {
+								alert("Please select a auth method to continue");
+							}
+						}}>
+						Next
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
 }
