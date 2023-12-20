@@ -22,6 +22,7 @@ export type Tenant = {
 	};
 	passwordless: {
 		enabled: boolean;
+		contactMethod?: "PHONE" | "EMAIL" | "EMAIL_OR_PHONE";
 	};
 	thirdParty: {
 		enabled: boolean;

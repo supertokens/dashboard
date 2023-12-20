@@ -1266,6 +1266,10 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
+                                                        contactMethod:
+                                                            type: string
+                                                            enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
+                                                            nullable: true
                                                 thirdParty:
                                                     type: object
                                                     properties:
@@ -1754,44 +1758,6 @@ paths:
                                           status:
                                               type: string
                                               default: "FEATURE_NOT_ENABLED_ERROR"
-    /<tenantId>/dashboard/api/login-methods:
-        get:
-            tags:
-                - Login Methods
-            summary: Gets all the available login methods for a tenant.
-            responses:
-                200:
-                    description: login methods response.
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    status:
-                                        type: string
-                                        default: "OK"
-                                    loginMethods:
-                                        type: array
-                                        items:
-                                            oneOf:
-                                                - type: object
-                                                  properties:
-                                                      methodType:
-                                                          type: string
-                                                          default: "passwordless"
-                                                      contactMethod:
-                                                          type: string
-                                                          enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
-                                                - type: object
-                                                  properties:
-                                                      methodType:
-                                                          type: string
-                                                          default: "emailpassword"
-                                                - type: object
-                                                  properties:
-                                                      methodType:
-                                                          type: string
-                                                          default: "thirdparty"
 
 components:
     schemas:

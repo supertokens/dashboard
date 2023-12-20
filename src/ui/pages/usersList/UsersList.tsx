@@ -187,7 +187,6 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	const fetchAndSetCurrentTenant = async () => {
 		const result = await fetchTenants();
-
 		setTenantsListToStore(result.tenants);
 
 		if (result.tenants.length === 0) {

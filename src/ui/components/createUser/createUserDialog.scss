@@ -33,6 +33,13 @@
 	}
 }
 
+.email-password-dialog-content-container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	padding: 30px 0px;
+}
+
 .max-width-410 {
 	max-width: 410px !important;
 }

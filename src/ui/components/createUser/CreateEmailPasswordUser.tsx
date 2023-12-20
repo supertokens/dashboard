@@ -13,8 +13,10 @@
  * under the License.
  */
 
+import { useState } from "react";
 import Button from "../button";
 import { Dialog, DialogContent, DialogFooter } from "../dialog";
+import InputField from "../inputField/InputField";
 import { CreateUserDialogStepType } from "./CreateUserDialog";
 
 type CreateEmailPasswordUserProps = {
@@ -23,13 +25,42 @@ type CreateEmailPasswordUserProps = {
 };
 
 export default function CreateEmailPasswordUser({ onCloseDialog, setCurrentStep }: CreateEmailPasswordUserProps) {
+	const [email, setEmail] = useState<string | undefined>("");
+	const [password, setPassword] = useState<string | undefined>("");
+
+	const [isCreatingUser, setIsCreatingUser] = useState(false);
+
+	function createUser() {
+		setIsCreatingUser(true);
+		setTimeout(() => {
+			setIsCreatingUser(false);
+		}, 3000);
+	}
+
 	return (
 		<Dialog
 			className="max-width-410"
 			title="User Info"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
-				Create email password user..
+				<div className="email-password-dialog-content-container">
+					<InputField
+						label="Email"
+						hideColon
+						value={email}
+						handleChange={(e) => setEmail(e.currentTarget.value)}
+						name="email"
+						type="email"
+					/>
+					<InputField
+						label="Password"
+						hideColon
+						value={password}
+						handleChange={(e) => setPassword(e.currentTarget.value)}
+						name="password"
+						type="password"
+					/>
+				</div>
 				<DialogFooter border="border-top">
 					<Button
 						color="gray-outline"
@@ -38,7 +69,12 @@ export default function CreateEmailPasswordUser({ onCloseDialog, setCurrentStep 
 						}}>
 						Go Back
 					</Button>
-					<Button>Create</Button>
+					<Button
+						onClick={createUser}
+						isLoading={isCreatingUser}
+						disabled={isCreatingUser}>
+						Create
+					</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
