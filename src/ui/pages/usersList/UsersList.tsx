@@ -21,11 +21,14 @@ import useVerifyEmailService from "../../../api/user/email/verify";
 import useVerifyUserTokenService from "../../../api/user/email/verify/token";
 import useFetchUsersService from "../../../api/users";
 import useFetchCount from "../../../api/users/count";
+import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
 import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
+import Button from "../../components/button";
+import CreateUserDialog from "../../components/createUser/CreateUserDialog";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
 import Search from "../../components/search";
@@ -75,6 +78,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
 	const [isSearch, setIsSearch] = useState<boolean>(false);
+	const [showCreateUserDialog, setShowCreateUserDialog] = useState(true);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
 	const { fetchUsers } = useFetchUsersService();
 	const { fetchCount } = useFetchCount();
@@ -284,13 +288,27 @@ export const UsersList: React.FC<UserListProps> = ({
 				</div>
 			)}
 
-			{isSearchEnabled() && (
-				<Search
-					onSearch={loadUsers}
-					loading={loading}
-				/>
-			)}
-
+			<div className="search-container">
+				{isSearchEnabled() && (
+					<Search
+						onSearch={loadUsers}
+						loading={loading}
+					/>
+				)}
+				<Button
+					color="secondary"
+					onClick={() => setShowCreateUserDialog(true)}>
+					<PlusIcon />
+					Add User
+				</Button>
+				{showCreateUserDialog && selectedTenant !== undefined && tenantsListFromStore !== undefined ? (
+					<CreateUserDialog
+						currentSelectedTenantId={selectedTenant}
+						tenantsList={tenantsListFromStore}
+						onCloseDialog={() => setShowCreateUserDialog(false)}
+					/>
+				) : null}
+			</div>
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (
 					<NoUsers isSearch={isSearch} />

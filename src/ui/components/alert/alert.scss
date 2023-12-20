@@ -63,6 +63,30 @@
 		}
 	}
 
+	&.secondary {
+		border-radius: 6px;
+		border: 1px solid #0062e1;
+		background: rgba(0, 98, 225, 0.05);
+
+		& > span {
+			background: #0062e1;
+			color: #fff;
+		}
+
+		& > div {
+			color: #104993;
+		}
+
+		a {
+			color: #007aff;
+			font-weight: 500;
+		}
+	}
+
+	&.sm {
+		padding: 20px 14px;
+	}
+
 	a:hover {
 		background: transparent !important;
 	}

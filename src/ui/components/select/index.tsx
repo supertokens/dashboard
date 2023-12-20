@@ -5,7 +5,7 @@ import "./select.scss";
 
 type SelectProps = {
 	options: { value: string; name: string }[];
-	selectedOption: string;
+	selectedOption: string | undefined;
 	onOptionSelect: (value: string) => void;
 };
 export default function Select({ onOptionSelect, options, selectedOption }: SelectProps) {
@@ -19,7 +19,7 @@ export default function Select({ onOptionSelect, options, selectedOption }: Sele
 			//	since there will be no onMouseEnter event there.
 			onClick={() => setShowOptions(true)}>
 			<div className="select-action">
-				{selectedOption}{" "}
+				{selectedOption === undefined ? "Please select" : selectedOption}{" "}
 				<ArrowDown
 					color="#000"
 					style={{ rotate: showOptions ? "180deg" : undefined }}

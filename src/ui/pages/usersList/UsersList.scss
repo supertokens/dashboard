@@ -82,6 +82,12 @@ $container-padding-horizontal: 40;
 	margin-right: 8px;
 }
 
+.search-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
 @media (min-width: 1126px) {
 	.users-list {
 		width: var(--container-width);

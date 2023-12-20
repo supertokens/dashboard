@@ -13,20 +13,26 @@
  * under the License.
  */
 
-import "./alert.scss";
+.create-user-modal-content {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
 
-type AlertProps = {
-	type?: "primary" | "secondary";
-	padding?: "sm" | "md";
-	title: string;
-	children: React.ReactNode;
-};
+	.select-container {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+	}
 
-export default function Alert({ children, title, type = "primary", padding = "md" }: AlertProps) {
-	return (
-		<div className={`alert ${type} ${padding}`}>
-			<span>{title}</span>
-			<div>{children}</div>
-		</div>
-	);
+	.mb-28 {
+		margin-bottom: 28px;
+	}
+	.mb-12 {
+		margin-bottom: 12px;
+	}
+}
+
+.max-width-410 {
+	max-width: 410px !important;
 }
