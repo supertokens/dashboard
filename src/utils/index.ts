@@ -298,3 +298,17 @@ export const setSelectedTenantId = (tenantId: string) => {
 export const getSelectedTenantId = (): string | undefined => {
 	return localStorageHandler.getItem(StorageKeys.TENANT_ID);
 };
+
+//	https://github.com/supertokens/supertokens-auth-react/blob/master/lib/ts/recipe/passwordless/validators.ts#L22
+
+export function isValidEmail(value: string): boolean {
+	const defaultEmailValidatorRegexp =
+		// eslint-disable-next-line no-useless-escape
+		/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+	if (value.trim().match(defaultEmailValidatorRegexp) === null) {
+		return false;
+	}
+
+	return true;
+}

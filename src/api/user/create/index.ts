@@ -1,6 +1,11 @@
 import { User } from "../../../ui/pages/usersList/types";
 import { getApiUrl, useFetchData } from "../../../utils";
 
+export type CreatePasswordlessUserPayload = {
+	email?: string;
+	phoneNumber?: string;
+};
+
 interface ICreateUserService {
 	createEmailPasswordUser: (
 		tenantId: string,
@@ -9,8 +14,7 @@ interface ICreateUserService {
 	) => Promise<CreateEmailPasswordUserResponse>;
 	createPasswordlessUser: (
 		tenantId: string,
-		email: string | undefined,
-		phone: string | undefined
+		data: CreatePasswordlessUserPayload
 	) => Promise<CreatePasswordlessUserResponse>;
 }
 
@@ -58,16 +62,17 @@ const useCreateUserService = (): ICreateUserService => {
 
 	const createPasswordlessUser = async (
 		tenantId: string,
-		email: string | undefined,
-		phone: string | undefined
+		data: {
+			email?: string;
+			phoneNumber?: string;
+		}
 	): Promise<CreatePasswordlessUserResponse> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/user/create/passwordless", tenantId),
 			method: "POST",
 			config: {
 				body: JSON.stringify({
-					email,
-					phone,
+					...data,
 				}),
 			},
 		});

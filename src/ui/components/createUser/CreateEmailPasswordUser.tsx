@@ -55,7 +55,7 @@ export default function CreateEmailPasswordUser({
 			}
 			if (response.status === "OK") {
 				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
+					iconImage: getImageUrl("checkmark-green.svg"),
 					toastType: "success",
 					children: <>User created successfully!</>,
 				});
