@@ -40,7 +40,7 @@ export default function CreateUserDialog({
 	tenantsList: Tenant[];
 	currentSelectedTenantId: string;
 }) {
-	const [currentStep, setCurrentStep] = useState<CreateUserDialogStepType>("select-auth-method-and-tenant");
+	const [currentStep, setCurrentStep] = useState<CreateUserDialogStepType>("create-passwordless-user");
 	const [selectedTenantId, setSelectedTenantId] = useState(currentSelectedTenantId);
 	const [selectedAuthMethod, setSelectedAuthMethod] = useState<AuthMethod | undefined>(undefined);
 

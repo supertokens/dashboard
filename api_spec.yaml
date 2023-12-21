@@ -1758,6 +1758,13 @@ paths:
                                           status:
                                               type: string
                                               default: "FEATURE_NOT_ENABLED_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INPUT_VALIDATION_ERROR"
+                                          message:
+                                              type: string
 
 components:
     schemas:

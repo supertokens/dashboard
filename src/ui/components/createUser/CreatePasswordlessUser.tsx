@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { isValidNumber } from "libphonenumber-js";
+import { isValidPhoneNumber } from "libphonenumber-js";
 import { useContext, useState } from "react";
 import { PasswordlessContactMethod } from "../../../api/tenants/list";
 import useCreateUserService, { CreatePasswordlessUserPayload } from "../../../api/user/create";
@@ -45,6 +45,7 @@ export default function CreatePasswordlessUser({
 	const [generalErrorMessage, setGeneralErrorMessage] = useState<string | undefined>(undefined);
 
 	const [isCreatingUser, setIsCreatingUser] = useState(false);
+	const [isPhoneNumber, setIsPhoneNumber] = useState(false);
 
 	const { createPasswordlessUser } = useCreateUserService();
 	const { showToast } = useContext(PopupContentContext);
@@ -63,24 +64,35 @@ export default function CreatePasswordlessUser({
 					return;
 				}
 			} else if (authMethod === "PHONE") {
-				if (isValidNumber(phoneNumber) === true) {
+				if (isValidPhoneNumber(phoneNumber) === true) {
 					payload.phoneNumber = phoneNumber;
 				} else {
-					setGeneralErrorMessage("Please enter a valid phone number");
+					setGeneralErrorMessage("Please enter a valid phone number.");
 					return;
 				}
-			} else if (authMethod === "EMAIL_OR_PHONE" && emailOrPhone) {
+			} else if (authMethod === "EMAIL_OR_PHONE") {
 				// same valuidate email or phone before sending to the backend..
 				if (isValidEmail(emailOrPhone) === true) {
-					payload.email = email;
-				} else if (isValidNumber(emailOrPhone) === true) {
-					payload.phoneNumber = phoneNumber;
+					payload.email = emailOrPhone;
+				} else if (isValidPhoneNumber(emailOrPhone) === true) {
+					setIsPhoneNumber(true);
+					payload.phoneNumber = emailOrPhone;
+				} else if (emailOrPhone.length !== 0 && isNaN(Number(emailOrPhone)) === false) {
+					setGeneralErrorMessage("Please enter a valid phone number");
+
+					if (emailOrPhone.startsWith("+") === false) {
+						setEmailOrPhone("+91 " + emailOrPhone);
+					}
+
+					setIsPhoneNumber(true);
+					return;
 				} else {
-					setGeneralErrorMessage("Please enter a valid email or phone number");
+					setGeneralErrorMessage("Please enter a valid email or phone number.");
 					return;
 				}
 			} else {
 				alert("No matching auth method found!");
+				return;
 			}
 
 			const response = await createPasswordlessUser(tenantId, payload);
@@ -134,7 +146,10 @@ export default function CreatePasswordlessUser({
 							label="Email"
 							hideColon
 							value={email}
-							handleChange={(e) => setEmail(e.currentTarget.value)}
+							handleChange={(e) => {
+								setGeneralErrorMessage(undefined);
+								setEmail(e.currentTarget.value);
+							}}
 							name="email"
 							type="email"
 						/>
@@ -143,21 +158,47 @@ export default function CreatePasswordlessUser({
 						<PhoneNumberInput
 							error={generalErrorMessage}
 							name="phone"
-							onChange={(phNumber) => setPhoneNumber(phNumber)}
+							onChange={(phNumber) => {
+								setGeneralErrorMessage(undefined);
+								setPhoneNumber(phNumber);
+							}}
 							label="Phone Number"
 							hideColon
 						/>
 					)}
 					{authMethod === "EMAIL_OR_PHONE" && (
-						<InputField
-							error={generalErrorMessage}
-							label="Email or Phone"
-							hideColon
-							value={email}
-							handleChange={(e) => setEmail(e.currentTarget.value)}
-							name="email"
-							type="email"
-						/>
+						<>
+							{isPhoneNumber ? (
+								<PhoneNumberInput
+									error={generalErrorMessage}
+									value={emailOrPhone}
+									name="phone"
+									onChange={(phNumber) => {
+										setGeneralErrorMessage(undefined);
+										setEmailOrPhone(phNumber);
+									}}
+									label="Phone Number"
+									forceShowError
+									hideColon
+								/>
+							) : (
+								<InputField
+									error={generalErrorMessage}
+									label="Email or Phone"
+									hideColon
+									value={emailOrPhone}
+									handleChange={(e) => {
+										setGeneralErrorMessage(undefined);
+										const value = e.currentTarget.value.replaceAll(" ", "").trim();
+										if (value) {
+											setEmailOrPhone(value);
+										}
+									}}
+									name="emailOrPhone"
+									type="text"
+								/>
+							)}
+						</>
 					)}
 				</div>
 				<DialogFooter border="border-top">

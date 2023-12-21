@@ -64,7 +64,7 @@ SuperTokens.init({
 		// These are initialised so that functionailty works in the node SDK
 		EmailPassword.init(),
 		Passwordless.init({
-			contactMethod: "PHONE",
+			contactMethod: "EMAIL_OR_PHONE",
 			flowType: "USER_INPUT_CODE_AND_MAGIC_LINK",
 		}),
 		ThirdParty.init({
