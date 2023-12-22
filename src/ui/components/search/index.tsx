@@ -175,7 +175,7 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 					/>
 					<input
 						type="text"
-						placeholder="Search"
+						placeholder="Type here"
 						onFocus={() => setActive(true)}
 						onBlur={() => setActive(false)}
 						onKeyDown={(e) => search(e)}
