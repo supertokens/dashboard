@@ -42,7 +42,7 @@ export type PhoneNumberCountrySelectProps = {
 	onChange: (value: string | undefined) => void;
 	options: {
 		value: CountryCode;
-		label: ReactNode;
+		label: string;
 	}[];
 	iconComponent: React.ComponentClass<{ country: CountryCode; label?: ReactNode }>;
 };
@@ -91,10 +91,10 @@ export const PhoneNumberCountrySelect: FC<PhoneNumberCountrySelectProps> = (prop
 		[onChange]
 	);
 
-	const openPopup = useCallback((event: BaseSyntheticEvent) => {
+	const togglePopUp = (event: BaseSyntheticEvent) => {
 		event.stopPropagation();
-		setIsPopupActive(true);
-	}, []);
+		setIsPopupActive(!isPopupActive);
+	};
 
 	const updateDropdownOptionPosition = useCallback(() => {
 		setPopUpPosition(
@@ -132,10 +132,48 @@ export const PhoneNumberCountrySelect: FC<PhoneNumberCountrySelectProps> = (prop
 		return () => window.removeEventListener("scroll", updateDropdownOptionPosition);
 	}, [updateDropdownOptionPosition]);
 
+	// Inplace search implementation.
+	useEffect(() => {
+		let searchString = "";
+		let timeout: NodeJS.Timeout | null = null;
+
+		function searchHandler(e: KeyboardEvent) {
+			if (e.key.length === 1 && countrySelectPopupRef.current !== null) {
+				searchString += e.key.toLowerCase();
+				const scrollTopPosition =
+					getRowOptionheight() *
+					Math.max(
+						options.findIndex(({ label }) => {
+							return label.toLowerCase().startsWith(searchString);
+						}),
+						0
+					);
+				countrySelectPopupRef.current.scrollTop = scrollTopPosition;
+			}
+		}
+
+		function resetSearchString() {
+			if (timeout !== null) {
+				clearTimeout(timeout);
+			}
+			timeout = setTimeout(() => {
+				searchString = "";
+			}, 500);
+		}
+
+		window.addEventListener("keydown", searchHandler);
+		window.addEventListener("keyup", resetSearchString);
+
+		return () => {
+			window.removeEventListener("keydown", searchHandler);
+			window.removeEventListener("keyup", resetSearchString);
+		};
+	}, []);
+
 	return (
 		<div
 			className="phone-input__country-select"
-			onClick={openPopup}
+			onClick={togglePopUp}
 			onBlur={() => setIsPopupActive(false)}
 			ref={countrySelectRef}>
 			<div className="phone-input__country-select__current-value">

@@ -30,13 +30,17 @@ type CreateEmailPasswordUserResponse =
 
 type CreatePasswordlessUserResponse =
 	| {
-			status: string;
+			status: "OK";
 			createdNewRecipeUser: boolean;
 			user: User;
 			recipeUserId: string;
 	  }
 	| {
 			status: "FEATURE_NOT_ENABLED_ERROR";
+	  }
+	| {
+			status: "INPUT_VALIDATION_ERROR";
+			message: string;
 	  };
 
 const useCreateUserService = (): ICreateUserService => {
