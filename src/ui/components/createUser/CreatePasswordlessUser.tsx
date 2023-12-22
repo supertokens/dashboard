@@ -89,6 +89,9 @@ export default function CreatePasswordlessUser({
 					setIsPhoneNumber(true);
 					payload.phoneNumber = emailOrPhone;
 				} else if (validatePhoneNumber(emailOrPhone)) {
+					if (emailOrPhone.startsWith("+") === false) {
+						setEmailOrPhone("+ " + emailOrPhone);
+					}
 					setGeneralErrorMessage("Please enter a valid phone number");
 					setIsPhoneNumber(true);
 					return;

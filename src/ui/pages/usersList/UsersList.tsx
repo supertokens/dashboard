@@ -78,7 +78,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
 	const [isSearch, setIsSearch] = useState<boolean>(false);
-	const [showCreateUserDialog, setShowCreateUserDialog] = useState(true);
+	const [showCreateUserDialog, setShowCreateUserDialog] = useState(false);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
 	const { fetchUsers } = useFetchUsersService();
 	const { fetchCount } = useFetchCount();
@@ -295,6 +295,8 @@ export const UsersList: React.FC<UserListProps> = ({
 					/>
 				)}
 				<Button
+					id="add-user"
+					className="ml-auto"
 					color="secondary"
 					onClick={() => setShowCreateUserDialog(true)}>
 					<PlusIcon />

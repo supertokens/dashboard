@@ -15,7 +15,7 @@
 
 import { useContext, useState } from "react";
 import useCreateUserService from "../../../api/user/create";
-import { getApiUrl, getImageUrl } from "../../../utils";
+import { getApiUrl, getImageUrl, isValidEmail, isValidPassword } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import Button from "../button";
 import { Dialog, DialogContent, DialogFooter } from "../dialog";
@@ -37,6 +37,9 @@ export default function CreateEmailPasswordUser({
 	const [password, setPassword] = useState("");
 	const [isCreatingUser, setIsCreatingUser] = useState(false);
 
+	const [emailValidationErrorMessage, setEmailValidationErrorMessage] = useState<string | undefined>(undefined);
+	const [passwordValidationErrorMessage, setPasswordValidationErrorMessage] = useState<string | undefined>(undefined);
+
 	const { createEmailPasswordUser } = useCreateUserService();
 	const { showToast } = useContext(PopupContentContext);
 
@@ -44,6 +47,17 @@ export default function CreateEmailPasswordUser({
 		setIsCreatingUser(true);
 
 		try {
+			if (isValidEmail(email) === false) {
+				setEmailValidationErrorMessage("Please enter a valid email address.");
+				return;
+			}
+			const errorMessage = isValidPassword(password);
+
+			if (errorMessage !== undefined) {
+				setPasswordValidationErrorMessage(errorMessage);
+				return;
+			}
+
 			const response = await createEmailPasswordUser(tenantId, email, password);
 			if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
 				showToast({
@@ -80,6 +94,7 @@ export default function CreateEmailPasswordUser({
 			<DialogContent className="text-small text-semi-bold">
 				<div className="dialog-form-content-container">
 					<InputField
+						error={emailValidationErrorMessage}
 						label="Email"
 						hideColon
 						value={email}
@@ -88,6 +103,7 @@ export default function CreateEmailPasswordUser({
 						type="email"
 					/>
 					<InputField
+						error={passwordValidationErrorMessage}
 						label="Password"
 						hideColon
 						value={password}

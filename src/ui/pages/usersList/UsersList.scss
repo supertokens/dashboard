@@ -86,6 +86,17 @@ $container-padding-horizontal: 40;
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
+	margin-bottom: 20px;
+
+	@media (max-width: 486px) {
+		flex-direction: column;
+		gap: 16px;
+		#add-user {
+			margin-left: 0;
+			width: 100%;
+			justify-content: center;
+		}
+	}
 }
 
 @media (min-width: 1126px) {

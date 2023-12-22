@@ -312,3 +312,31 @@ export function isValidEmail(value: string): boolean {
 
 	return true;
 }
+
+export function isValidPassword(value: string): string | undefined {
+	const doesContainNumber = value.match(/^.*[0-9]+.*$/) !== null;
+	const doesContainCharacter = value.match(/^.*[A-Za-z]+.*$/) !== null;
+	const passwordLength = value.length;
+
+	if (passwordLength > 100) {
+		return "Password's length must be lesser than 100 characters.";
+	}
+
+	if (doesContainCharacter === false) {
+		return "Password must contain at least one alphabet.";
+	}
+
+	if (passwordLength < 8 && !doesContainNumber) {
+		return "Password must contain at least 8 characters, including a number.";
+	}
+
+	if (passwordLength < 8 && doesContainNumber) {
+		return "Password must contain at least 8 characters.";
+	}
+
+	if (passwordLength >= 8 && !doesContainNumber) {
+		return "Password must include a number.";
+	}
+
+	return undefined;
+}
