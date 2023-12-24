@@ -1668,7 +1668,7 @@ paths:
                                 enum:
                                     - Method not supported
 
-    /<tenantId>/dashboard/api/user/create/emailpassword:
+    /<tenantId>/dashboard/api/user/emailpassword:
         post:
             tags:
                 - User Creation
@@ -1709,8 +1709,14 @@ paths:
                                           status:
                                               type: string
                                               default: "FEATURE_NOT_ENABLED_ERROR"
-
-    /<tenantId>/dashboard/api/user/create/passwordless:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INPUT_VALIDATION_ERROR"
+                                          message:
+                                              type: string
+    /<tenantId>/dashboard/api/user/passwordless:
         post:
             tags:
                 - User Creation

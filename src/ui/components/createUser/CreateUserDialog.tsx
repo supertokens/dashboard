@@ -46,24 +46,20 @@ export default function CreateUserDialog({
 
 	const selectedTenantObject = tenantsList.find((tenant) => tenant.tenantId === selectedTenantId)!;
 
-	function getSelectableAuthMethods() {
-		const selectableAuthMethods: { name: string; value: string }[] = [];
+	const selectableAuthMethods: { name: string; value: string }[] = [];
 
-		if (selectedTenantObject.emailPassword.enabled === true) {
-			selectableAuthMethods.push({
-				name: "emailpassword",
-				value: "emailpassword",
-			});
-		}
+	if (selectedTenantObject.emailPassword.enabled === true) {
+		selectableAuthMethods.push({
+			name: "emailpassword",
+			value: "emailpassword",
+		});
+	}
 
-		if (selectedTenantObject.passwordless.enabled === true) {
-			selectableAuthMethods.push({
-				name: "passwordless",
-				value: "passwordless",
-			});
-		}
-
-		return selectableAuthMethods;
+	if (selectedTenantObject.passwordless.enabled === true) {
+		selectableAuthMethods.push({
+			name: "passwordless",
+			value: "passwordless",
+		});
 	}
 
 	if (currentStep === "create-passwordless-user" && selectedTenantObject.passwordless.contactMethod !== undefined) {
@@ -90,7 +86,7 @@ export default function CreateUserDialog({
 	return (
 		<Dialog
 			className="max-width-410"
-			title="Create New Use"
+			title="Create New User"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
 				<div className="create-user-modal-content">
@@ -130,11 +126,45 @@ export default function CreateUserDialog({
 					</div>
 					<div className="select-container mb-28">
 						<span className="text-label">Select Auth Method:</span>
-						<Select
-							onOptionSelect={(value) => setSelectedAuthMethod(value as AuthMethod)}
-							options={getSelectableAuthMethods()}
-							selectedOption={selectedAuthMethod}
-						/>
+						{selectableAuthMethods.length >= 1 ? (
+							<Select
+								onOptionSelect={(value) => setSelectedAuthMethod(value as AuthMethod)}
+								options={selectableAuthMethods}
+								selectedOption={selectedAuthMethod}
+							/>
+						) : (
+							<div className="input-field-error block-small block-error w-100">
+								<p className="text-xs text-error">
+									{selectedTenantId === "public" ? (
+										<>
+											Currently, neither the Passwordless nor EmailPassword auth methods are
+											enabled in your backend SDK. Refer to the{" "}
+											<a
+												target="_blank"
+												className="text-command bg-transparent"
+												rel="noreferrer"
+												href="https://supertokens.com/docs/emailpassword/pre-built-ui/setup/backend#2-initialise-supertokens">
+												documentation
+											</a>{" "}
+											to enable one of them.
+										</>
+									) : (
+										<>
+											Currently, neither the Passwordless nor EmailPassword auth methods are
+											enabled for this tenant. Refer to the{" "}
+											<a
+												target="_blank"
+												rel="noreferrer"
+												className="text-command bg-transparent"
+												href="https://supertokens.com/docs/multitenancy/new-tenant#basic-tenant-creation">
+												documentation
+											</a>{" "}
+											to enable one of them.
+										</>
+									)}
+								</p>
+							</div>
+						)}
 					</div>
 				</div>
 				<DialogFooter border="border-top">

@@ -67,6 +67,16 @@ export default function CreateEmailPasswordUser({
 				});
 				return;
 			}
+
+			if (response.status === "INPUT_VALIDATION_ERROR") {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>{response.message}</>,
+				});
+				return;
+			}
+
 			if (response.status === "OK") {
 				showToast({
 					iconImage: getImageUrl("checkmark-green.svg"),

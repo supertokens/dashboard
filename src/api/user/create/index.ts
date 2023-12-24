@@ -26,6 +26,10 @@ type CreateEmailPasswordUserResponse =
 	  }
 	| {
 			status: "EMAIL_ALREADY_EXISTS_ERROR" | "FEATURE_NOT_ENABLED_ERROR";
+	  }
+	| {
+			status: "INPUT_VALIDATION_ERROR";
+			message: string;
 	  };
 
 type CreatePasswordlessUserResponse =
@@ -52,7 +56,7 @@ const useCreateUserService = (): ICreateUserService => {
 		password: string
 	): Promise<CreateEmailPasswordUserResponse> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/user/create/emailpassword", tenantId),
+			url: getApiUrl("/api/user/emailpassword", tenantId),
 			method: "POST",
 			config: {
 				body: JSON.stringify({
@@ -72,7 +76,7 @@ const useCreateUserService = (): ICreateUserService => {
 		}
 	): Promise<CreatePasswordlessUserResponse> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/user/create/passwordless", tenantId),
+			url: getApiUrl("/api/user/passwordless", tenantId),
 			method: "POST",
 			config: {
 				body: JSON.stringify({

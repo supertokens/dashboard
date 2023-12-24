@@ -330,6 +330,11 @@ button.link,
 	font-weight: 600;
 }
 
+.text-xs {
+	font-size: 12px;
+	line-height: 16px;
+}
+
 .text-small {
 	font-size: 14px;
 	line-height: 16px;
@@ -370,6 +375,10 @@ button.link,
 	color: var(--color-secondary-text);
 }
 
+.text-command {
+	color: var(--color-command);
+}
+
 .mr-auto {
 	margin-right: auto;
 }
@@ -380,6 +389,14 @@ button.link,
 
 .m-auto {
 	margin: auto;
+}
+
+.w-100 {
+	width: 100%;
+}
+
+.bg-transparent {
+	background: transparent !important;
 }
 /* classes for images */
 .title-image {
