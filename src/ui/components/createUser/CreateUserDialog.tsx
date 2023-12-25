@@ -106,7 +106,9 @@ export default function CreateUserDialog({
 					<div className="select-container mb-12">
 						<p className="text-label">
 							Selected Tenant:{" "}
-							{tenantsList.length === 1 ? <span className="text-black ">Public</span> : null}
+							{tenantsList.length === 1 ? (
+								<span className="text-black ">{currentSelectedTenantId}</span>
+							) : null}
 						</p>{" "}
 						{tenantsList.length > 1 ? (
 							<Select
