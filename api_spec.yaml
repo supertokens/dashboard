@@ -1266,6 +1266,47 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
+
+                                                thirdParty:
+                                                    type: object
+                                                    properties:
+                                                        enabled:
+                                                            type: boolean
+    /dashboard/api/tenants/login-methods:
+        get:
+            tags:
+                - Multitenancy
+            summary: Get all tenants and available login methods.
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    coreConfig:
+                                        type: object
+                                    tenants:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                tenantId:
+                                                    type: string
+                                                emailPassword:
+                                                    type: object
+                                                    properties:
+                                                        enabled:
+                                                            type: boolean
+                                                passwordless:
+                                                    type: object
+                                                    properties:
+                                                        enabled:
+                                                            type: boolean
                                                         contactMethod:
                                                             type: string
                                                             enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
@@ -1275,6 +1316,7 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
+
     /dashboard/api/userroles/roles:
         get:
             tags:
@@ -1713,7 +1755,14 @@ paths:
                                       properties:
                                           status:
                                               type: string
-                                              default: "INPUT_VALIDATION_ERROR"
+                                              default: "EMAIL_VALIDATION_ERROR"
+                                          message:
+                                              type: string
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "PASSWORD_VALIDATION_ERROR"
                                           message:
                                               type: string
     /<tenantId>/dashboard/api/user/passwordless:
@@ -1769,6 +1818,20 @@ paths:
                                           status:
                                               type: string
                                               default: "INPUT_VALIDATION_ERROR"
+                                          message:
+                                              type: string
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "EMAIL_VALIDATION_ERROR"
+                                          message:
+                                              type: string
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "PHONE_VALIDATION_ERROR"
                                           message:
                                               type: string
 

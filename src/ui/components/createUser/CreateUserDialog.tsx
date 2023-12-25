@@ -16,7 +16,7 @@
 import "./createUserDialog.scss";
 
 import { useState } from "react";
-import { Tenant } from "../../../api/tenants/list";
+import { Tenant } from "../../../api/tenants/login-methods";
 import Alert from "../alert";
 import Button from "../button";
 import { Dialog, DialogContent, DialogFooter } from "../dialog";
@@ -34,17 +34,17 @@ export type CreateUserDialogStepType =
 export default function CreateUserDialog({
 	onCloseDialog,
 	currentSelectedTenantId,
-	tenantsList,
+	tenantsLoginMethods,
 }: {
 	onCloseDialog: () => void;
-	tenantsList: Tenant[];
+	tenantsLoginMethods: Tenant[];
 	currentSelectedTenantId: string;
 }) {
 	const [currentStep, setCurrentStep] = useState<CreateUserDialogStepType>("select-auth-method-and-tenant");
 	const [selectedTenantId, setSelectedTenantId] = useState(currentSelectedTenantId);
 	const [selectedAuthMethod, setSelectedAuthMethod] = useState<AuthMethod | undefined>(undefined);
 
-	const selectedTenantObject = tenantsList.find((tenant) => tenant.tenantId === selectedTenantId)!;
+	const selectedTenantObject = tenantsLoginMethods.find((tenant) => tenant.tenantId === selectedTenantId)!;
 
 	const selectableAuthMethods: { name: string; value: string }[] = [];
 
@@ -106,17 +106,17 @@ export default function CreateUserDialog({
 					<div className="select-container mb-12">
 						<p className="text-label">
 							Selected Tenant:{" "}
-							{tenantsList.length === 1 ? (
+							{tenantsLoginMethods.length === 1 ? (
 								<span className="text-black ">{currentSelectedTenantId}</span>
 							) : null}
 						</p>{" "}
-						{tenantsList.length > 1 ? (
+						{tenantsLoginMethods.length > 1 ? (
 							<Select
 								onOptionSelect={(value) => {
 									setSelectedTenantId(value);
 									setSelectedAuthMethod(undefined);
 								}}
-								options={tenantsList.map((tenant) => {
+								options={tenantsLoginMethods.map((tenant) => {
 									return {
 										name: tenant.tenantId,
 										value: tenant.tenantId,
@@ -136,32 +136,50 @@ export default function CreateUserDialog({
 							/>
 						) : (
 							<div className="input-field-error block-small block-error w-100">
-								<p className="text-xs text-error">
+								<p className="text-xs text-command">
 									{selectedTenantId === "public" ? (
 										<>
 											Currently, neither the Passwordless nor EmailPassword auth methods are
 											enabled in your backend SDK. Refer to the{" "}
 											<a
 												target="_blank"
-												className="text-command bg-transparent"
+												className="text-error bg-transparent"
 												rel="noreferrer"
-												href="https://supertokens.com/docs/emailpassword/pre-built-ui/setup/backend#2-initialise-supertokens">
+												href="https://supertokens.com/docs/guides">
 												documentation
 											</a>{" "}
-											to enable one of them.
+											to enable them.
 										</>
 									) : (
 										<>
-											Currently, neither the Passwordless nor EmailPassword auth methods are
-											enabled for this tenant. Refer to the{" "}
-											<a
-												target="_blank"
-												rel="noreferrer"
-												className="text-command bg-transparent"
-												href="https://supertokens.com/docs/multitenancy/new-tenant#basic-tenant-creation">
-												documentation
-											</a>{" "}
-											to enable one of them.
+											Currently, both the Passwordless and EmailPassword authentication methods
+											are not configured for this tenant in the core or in your backend SDK.
+											<ul style={{ padding: "8px 16px" }}>
+												<li>
+													If you haven't configured your tenant to support either of the
+													mentioned authentication methods, please follow this{" "}
+													<a
+														target="_blank"
+														rel="noreferrer"
+														className="text-error bg-transparent"
+														href="https://supertokens.com/docs/multitenancy/new-tenant#basic-tenant-creation">
+														guide
+													</a>{" "}
+													to enable them.
+												</li>
+												<li>
+													If you have already configured these methods in your core, please
+													refer to this{" "}
+													<a
+														target="_blank"
+														rel="noreferrer"
+														className="text-error bg-transparent"
+														href="https://supertokens.com/docs/guides">
+														guide
+													</a>{" "}
+													to enable on your backend based on your prefered auth method.
+												</li>
+											</ul>
 										</>
 									)}
 								</p>

@@ -28,7 +28,11 @@ type CreateEmailPasswordUserResponse =
 			status: "EMAIL_ALREADY_EXISTS_ERROR" | "FEATURE_NOT_ENABLED_ERROR";
 	  }
 	| {
-			status: "INPUT_VALIDATION_ERROR";
+			status: "EMAIL_VALIDATION_ERROR";
+			message: string;
+	  }
+	| {
+			status: "PASSWORD_VALIDATION_ERROR";
 			message: string;
 	  };
 
@@ -43,7 +47,11 @@ type CreatePasswordlessUserResponse =
 			status: "FEATURE_NOT_ENABLED_ERROR";
 	  }
 	| {
-			status: "INPUT_VALIDATION_ERROR";
+			status: "EMAIL_VALIDATION_ERROR";
+			message: string;
+	  }
+	| {
+			status: "PHONE_VALIDATION_ERROR";
 			message: string;
 	  };
 

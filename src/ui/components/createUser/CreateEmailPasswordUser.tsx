@@ -68,12 +68,13 @@ export default function CreateEmailPasswordUser({
 				return;
 			}
 
-			if (response.status === "INPUT_VALIDATION_ERROR") {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>{response.message}</>,
-				});
+			if (response.status === "EMAIL_VALIDATION_ERROR") {
+				setEmailValidationErrorMessage(response.message);
+				return;
+			}
+
+			if (response.status === "PASSWORD_VALIDATION_ERROR") {
+				setPasswordValidationErrorMessage(response.message);
 				return;
 			}
 

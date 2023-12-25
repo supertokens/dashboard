@@ -15,7 +15,7 @@
 
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { useContext, useState } from "react";
-import { PasswordlessContactMethod } from "../../../api/tenants/list";
+import { PasswordlessContactMethod } from "../../../api/tenants/login-methods";
 import useCreateUserService, { CreatePasswordlessUserPayload } from "../../../api/user/create";
 import { getApiUrl, getImageUrl, isValidEmail } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
@@ -32,7 +32,7 @@ type CreatePasswordlessUserProps = {
 	setCurrentStep: (step: CreateUserDialogStepType) => void;
 };
 
-function validatePhoneNumber(value: string): boolean {
+function validateNumber(value: string): boolean {
 	const trimmedString = value.replaceAll(/\s/g, "").trim();
 
 	if (trimmedString.length < 1) {
@@ -88,9 +88,9 @@ export default function CreatePasswordlessUser({
 				} else if (isValidPhoneNumber(emailOrPhone) === true) {
 					setIsPhoneNumber(true);
 					payload.phoneNumber = emailOrPhone;
-				} else if (validatePhoneNumber(emailOrPhone)) {
+				} else if (validateNumber(emailOrPhone)) {
 					if (emailOrPhone.startsWith("+") === false) {
-						setEmailOrPhone("+ " + emailOrPhone);
+						setEmailOrPhone("+" + emailOrPhone);
 					}
 					setGeneralErrorMessage("Please enter a valid phone number");
 					setIsPhoneNumber(true);
@@ -110,7 +110,7 @@ export default function CreatePasswordlessUser({
 
 			const response = await createPasswordlessUser(tenantId, payload);
 
-			if (response.status === "INPUT_VALIDATION_ERROR") {
+			if (response.status === "EMAIL_VALIDATION_ERROR" || response.status === "PHONE_VALIDATION_ERROR") {
 				setGeneralErrorMessage(response.message);
 				return;
 			}
@@ -156,9 +156,7 @@ export default function CreatePasswordlessUser({
 			title="User Info"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
-				<form
-					className="dialog-form-content-container"
-					onSubmit={createUser}>
+				<div className="dialog-form-content-container">
 					{authMethod === "EMAIL" && (
 						<InputField
 							error={generalErrorMessage}
@@ -216,7 +214,7 @@ export default function CreatePasswordlessUser({
 							)}
 						</>
 					)}
-				</form>
+				</div>
 				<DialogFooter border="border-top">
 					<Button
 						color="gray-outline"
@@ -226,7 +224,6 @@ export default function CreatePasswordlessUser({
 						Go Back
 					</Button>
 					<Button
-						type="submit"
 						onClick={createUser}
 						isLoading={isCreatingUser}
 						disabled={isCreatingUser}>

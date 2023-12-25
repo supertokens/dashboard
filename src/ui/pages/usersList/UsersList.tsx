@@ -16,6 +16,7 @@
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useGetTenantsList } from "../../../api/tenants/list";
+import { Tenant, useGetTenantsLoginMethods } from "../../../api/tenants/login-methods";
 import useDeleteUserService from "../../../api/user/delete";
 import useVerifyEmailService from "../../../api/user/email/verify";
 import useVerifyUserTokenService from "../../../api/user/email/verify/token";
@@ -25,7 +26,7 @@ import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
-import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
+import { getApiUrl, getAuthMode, getImageUrl, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
 import Button from "../../components/button";
 import CreateUserDialog from "../../components/createUser/CreateUserDialog";
@@ -80,13 +81,17 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [isSearch, setIsSearch] = useState<boolean>(false);
 	const [showCreateUserDialog, setShowCreateUserDialog] = useState(false);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
+	const [tenantsLoginMethods, setTenantsLoginMethods] = useState<Tenant[] | undefined>(undefined);
+
 	const { fetchUsers } = useFetchUsersService();
+	const { fetchTenantsLoginMethods } = useGetTenantsLoginMethods();
 	const { fetchCount } = useFetchCount();
 	const { fetchTenants } = useGetTenantsList();
 	const fetchData = useFetchData();
 	const { setTenantsListToStore, tenantsListFromStore, getSelectedTenant, setSelectedTenant } =
 		useTenantsListContext();
 	const selectedTenant = getSelectedTenant();
+	const { showToast } = useContext(PopupContentContext);
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: User[], paramOffset?: number, isSearch?: boolean) => {
@@ -229,9 +234,23 @@ export const UsersList: React.FC<UserListProps> = ({
 		[paginationTokenByOffset, loadUsers]
 	);
 
+	async function getAndSetTenantsLoginMethods() {
+		try {
+			const response = await fetchTenantsLoginMethods();
+			setTenantsLoginMethods(response.tenants);
+		} catch (_) {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong!, Failed to fetch tenants login methods!</>,
+			});
+		}
+	}
+
 	const onMount = async () => {
 		await fetchAndSetCurrentTenant();
 		await loadCount();
+		await getAndSetTenantsLoginMethods();
 		await fireAnalyticsEvent();
 	};
 
@@ -302,10 +321,10 @@ export const UsersList: React.FC<UserListProps> = ({
 					<PlusIcon />
 					Add User
 				</Button>
-				{showCreateUserDialog && selectedTenant !== undefined && tenantsListFromStore !== undefined ? (
+				{showCreateUserDialog && selectedTenant !== undefined && tenantsLoginMethods !== undefined ? (
 					<CreateUserDialog
 						currentSelectedTenantId={selectedTenant}
-						tenantsList={tenantsListFromStore}
+						tenantsLoginMethods={tenantsLoginMethods}
 						onCloseDialog={() => setShowCreateUserDialog(false)}
 					/>
 				) : null}

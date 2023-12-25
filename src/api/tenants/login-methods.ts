@@ -15,6 +15,8 @@
 
 import { getApiUrl, useFetchData } from "../../utils";
 
+export type PasswordlessContactMethod = "PHONE" | "EMAIL" | "EMAIL_OR_PHONE";
+
 export type Tenant = {
 	tenantId: string;
 	emailPassword: {
@@ -22,27 +24,28 @@ export type Tenant = {
 	};
 	passwordless: {
 		enabled: boolean;
+		contactMethod?: PasswordlessContactMethod;
 	};
 	thirdParty: {
 		enabled: boolean;
 	};
 };
 
-type TenantsListResponse = {
+type TenantsLoginMethodsResponse = {
 	status: "OK";
 	tenants: Tenant[];
 };
 
 type TenantsListService = {
-	fetchTenants: () => Promise<TenantsListResponse>;
+	fetchTenantsLoginMethods: () => Promise<TenantsLoginMethodsResponse>;
 };
 
-export const useGetTenantsList = (): TenantsListService => {
+export const useGetTenantsLoginMethods = (): TenantsListService => {
 	const fetchData = useFetchData();
-	const fetchTenants = async (): Promise<TenantsListResponse> => {
+	const fetchTenantsLoginMethods = async (): Promise<TenantsLoginMethodsResponse> => {
 		const response = await fetchData({
 			method: "GET",
-			url: getApiUrl("/api/tenants/list"),
+			url: getApiUrl("/api/tenants/login-methods"),
 		});
 
 		return response.ok
@@ -54,6 +57,6 @@ export const useGetTenantsList = (): TenantsListService => {
 	};
 
 	return {
-		fetchTenants,
+		fetchTenantsLoginMethods,
 	};
 };
