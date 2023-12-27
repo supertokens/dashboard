@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { PasswordlessContactMethod } from "../../../api/tenants/login-methods";
 import useCreateUserService, { CreatePasswordlessUserPayload } from "../../../api/user/create";
 import { getApiUrl, getImageUrl } from "../../../utils";
@@ -29,6 +29,7 @@ type CreatePasswordlessUserProps = {
 	authMethod: PasswordlessContactMethod;
 	onCloseDialog: () => void;
 	setCurrentStep: (step: CreateUserDialogStepType) => void;
+	loadCount: () => void;
 };
 
 function isNumber(value: string): boolean {
@@ -47,6 +48,7 @@ export default function CreatePasswordlessUser({
 	authMethod,
 	onCloseDialog,
 	setCurrentStep,
+	loadCount,
 }: CreatePasswordlessUserProps) {
 	const [email, setEmail] = useState("");
 	const [phoneNumber, setPhoneNumber] = useState("");
@@ -56,12 +58,13 @@ export default function CreatePasswordlessUser({
 
 	const [isCreatingUser, setIsCreatingUser] = useState(false);
 	const [isPhoneNumber, setIsPhoneNumber] = useState(false);
-	const [isEmail, setIsEmail] = useState(false);
 
 	const { createPasswordlessUser } = useCreateUserService();
 	const { showToast } = useContext(PopupContentContext);
 
-	async function createUser() {
+	async function createUser(e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) {
+		e.preventDefault();
+
 		setIsCreatingUser(true);
 		setGeneralErrorMessage(undefined);
 		try {
@@ -75,14 +78,13 @@ export default function CreatePasswordlessUser({
 				payload.phoneNumber = phoneNumber;
 			} else if (authMethod === "EMAIL_OR_PHONE") {
 				if (isNumber(emailOrPhone) === true) {
-					payload.phoneNumber = emailOrPhone;
-					if (emailOrPhone.startsWith("+") === false) {
-						setEmailOrPhone("+" + emailOrPhone);
-					}
+					const normalisedPhoneNumber =
+						emailOrPhone.startsWith("+") === false ? "+" + emailOrPhone : emailOrPhone;
+					payload.phoneNumber = normalisedPhoneNumber;
+					setEmailOrPhone(normalisedPhoneNumber);
 					setIsPhoneNumber(true);
 				} else {
 					payload.email = emailOrPhone;
-					setIsEmail(true);
 				}
 			} else {
 				showToast({
@@ -92,10 +94,17 @@ export default function CreatePasswordlessUser({
 				});
 				return;
 			}
-
 			const response = await createPasswordlessUser(tenantId, payload);
 
 			if (response.status === "EMAIL_VALIDATION_ERROR" || response.status === "PHONE_VALIDATION_ERROR") {
+				if (
+					authMethod === "EMAIL_OR_PHONE" &&
+					response.status === "EMAIL_VALIDATION_ERROR" &&
+					isNumber(emailOrPhone) === false
+				) {
+					setGeneralErrorMessage("Please enter a valid email or phone number.");
+					return;
+				}
 				setGeneralErrorMessage(response.message);
 				return;
 			}
@@ -108,7 +117,10 @@ export default function CreatePasswordlessUser({
 					} else if (authMethod === "PHONE") {
 						message = "User with this phone number already exists!";
 					} else {
-						message = "User with these credentials already exists!";
+						message =
+							isNumber(emailOrPhone) === false
+								? "User with this email already exists!"
+								: "User with this phone number already exists!";
 					}
 					showToast({
 						iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -121,6 +133,7 @@ export default function CreatePasswordlessUser({
 						toastType: "success",
 						children: <>User created successfully!</>,
 					});
+					loadCount();
 					window.open(getApiUrl(`?userid=${response.user.id}`), "_blank");
 				}
 			}
@@ -135,13 +148,24 @@ export default function CreatePasswordlessUser({
 		}
 	}
 
+	function handlePhoneNumberChange(value: string | undefined) {
+		const phNumber = value !== undefined ? value : "";
+		setPhoneNumber(phNumber);
+	}
+
+	useEffect(() => {
+		setGeneralErrorMessage(undefined);
+	}, [email, phoneNumber, emailOrPhone]);
+
 	return (
 		<Dialog
 			className="max-width-436"
 			title="User Info"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
-				<div className="dialog-form-content-container">
+				<form
+					onSubmit={createUser}
+					className="dialog-form-content-container">
 					{authMethod === "EMAIL" && (
 						<InputField
 							error={generalErrorMessage}
@@ -149,22 +173,20 @@ export default function CreatePasswordlessUser({
 							hideColon
 							value={email}
 							handleChange={(e) => {
-								setGeneralErrorMessage(undefined);
 								setEmail(e.currentTarget.value);
 							}}
+							forceShowError
 							name="email"
-							type="email"
+							type="text"
 						/>
 					)}
 					{authMethod === "PHONE" && (
 						<PhoneNumberInput
 							error={generalErrorMessage}
 							name="phone"
-							onChange={(phNumber) => {
-								setGeneralErrorMessage(undefined);
-								setPhoneNumber(phNumber);
-							}}
+							onChange={handlePhoneNumberChange}
 							label="Phone Number"
+							forceShowError
 							hideColon
 						/>
 					)}
@@ -175,10 +197,7 @@ export default function CreatePasswordlessUser({
 									error={generalErrorMessage}
 									value={emailOrPhone}
 									name="phone"
-									onChange={(phNumber) => {
-										setGeneralErrorMessage(undefined);
-										setEmailOrPhone(phNumber);
-									}}
+									onChange={handlePhoneNumberChange}
 									label="Phone Number"
 									forceShowError
 									hideColon
@@ -186,20 +205,20 @@ export default function CreatePasswordlessUser({
 							) : (
 								<InputField
 									error={generalErrorMessage}
-									label={isEmail ? "Email" : "Email or Phone"}
+									label="Email or Phone"
 									hideColon
 									value={emailOrPhone}
 									handleChange={(e) => {
-										setGeneralErrorMessage(undefined);
 										setEmailOrPhone(e.currentTarget.value);
 									}}
+									forceShowError
 									name="emailOrPhone"
 									type="text"
 								/>
 							)}
 						</>
 					)}
-				</div>
+				</form>
 				<DialogFooter border="border-top">
 					<Button
 						color="gray-outline"
@@ -209,6 +228,7 @@ export default function CreatePasswordlessUser({
 						Go Back
 					</Button>
 					<Button
+						type="submit"
 						onClick={createUser}
 						isLoading={isCreatingUser}
 						disabled={isCreatingUser}>

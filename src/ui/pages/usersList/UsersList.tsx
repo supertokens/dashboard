@@ -329,6 +329,7 @@ export const UsersList: React.FC<UserListProps> = ({
 						currentSelectedTenantId={selectedTenant}
 						tenantsLoginMethods={tenantsLoginMethods}
 						onCloseDialog={() => setShowCreateUserDialog(false)}
+						loadCount={loadCount}
 					/>
 				) : null}
 			</div>

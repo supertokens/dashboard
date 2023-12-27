@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import useCreateUserService from "../../../api/user/create";
 import { getApiUrl, getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
@@ -25,6 +25,7 @@ import { CreateUserDialogStepType } from "./CreateUserDialog";
 type CreateEmailPasswordUserProps = {
 	tenantId: string;
 	onCloseDialog: () => void;
+	loadCount: () => void;
 	setCurrentStep: (step: CreateUserDialogStepType) => void;
 };
 
@@ -32,6 +33,7 @@ export default function CreateEmailPasswordUser({
 	tenantId,
 	onCloseDialog,
 	setCurrentStep,
+	loadCount,
 }: CreateEmailPasswordUserProps) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -43,7 +45,8 @@ export default function CreateEmailPasswordUser({
 	const { createEmailPasswordUser } = useCreateUserService();
 	const { showToast } = useContext(PopupContentContext);
 
-	async function createUser() {
+	async function createUser(e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) {
+		e.preventDefault();
 		setIsCreatingUser(true);
 
 		try {
@@ -75,6 +78,9 @@ export default function CreateEmailPasswordUser({
 					toastType: "success",
 					children: <>User created successfully!</>,
 				});
+				setEmail("");
+				setPassword("");
+				loadCount();
 				window.open(getApiUrl(`?userid=${response.user.id}`), "_blank");
 			}
 		} catch (_) {
@@ -88,20 +94,29 @@ export default function CreateEmailPasswordUser({
 		}
 	}
 
+	useEffect(() => {
+		setEmailValidationErrorMessage(undefined);
+	}, [email]);
+
+	useEffect(() => {
+		setPasswordValidationErrorMessage(undefined);
+	}, [password]);
+
 	return (
 		<Dialog
 			className="max-width-436"
 			title="User Info"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
-				<div className="dialog-form-content-container">
+				<form
+					onSubmit={createUser}
+					className="dialog-form-content-container pb-0">
 					<InputField
 						error={emailValidationErrorMessage}
 						label="Email"
 						hideColon
 						value={email}
 						handleChange={(e) => {
-							setEmailValidationErrorMessage(undefined);
 							setEmail(e.currentTarget.value);
 						}}
 						name="email"
@@ -113,28 +128,31 @@ export default function CreateEmailPasswordUser({
 						hideColon
 						value={password}
 						handleChange={(e) => {
-							setPasswordValidationErrorMessage(undefined);
 							setPassword(e.currentTarget.value);
 						}}
 						name="password"
 						type="password"
 					/>
-				</div>
-				<DialogFooter border="border-top">
-					<Button
-						color="gray-outline"
-						onClick={() => {
-							setCurrentStep("select-auth-method-and-tenant");
-						}}>
-						Go Back
-					</Button>
-					<Button
-						onClick={createUser}
-						isLoading={isCreatingUser}
-						disabled={isCreatingUser}>
-						Create
-					</Button>
-				</DialogFooter>
+					<DialogFooter
+						border="border-top"
+						className="mt-10">
+						<Button
+							type="button"
+							color="gray-outline"
+							onClick={() => {
+								setCurrentStep("select-auth-method-and-tenant");
+							}}>
+							Go Back
+						</Button>
+						<Button
+							type="submit"
+							onClick={createUser}
+							isLoading={isCreatingUser}
+							disabled={isCreatingUser}>
+							Create
+						</Button>
+					</DialogFooter>
+				</form>
 			</DialogContent>
 		</Dialog>
 	);
