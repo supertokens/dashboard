@@ -48,7 +48,6 @@ export default function CreateEmailPasswordUser({
 	async function createUser(e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) {
 		e.preventDefault();
 		setIsCreatingUser(true);
-
 		try {
 			// Note: We're intentionally skipping frontend input validation in favor of users' defined custom validators running on the backend.
 

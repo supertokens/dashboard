@@ -134,6 +134,9 @@ export default function CreatePasswordlessUser({
 						children: <>User created successfully!</>,
 					});
 					loadCount();
+					setEmail("");
+					setPhoneNumber("");
+					setEmailOrPhone("");
 					window.open(getApiUrl(`?userid=${response.user.id}`), "_blank");
 				}
 			}
@@ -148,9 +151,8 @@ export default function CreatePasswordlessUser({
 		}
 	}
 
-	function handlePhoneNumberChange(value: string | undefined) {
-		const phNumber = value !== undefined ? value : "";
-		setPhoneNumber(phNumber);
+	function checkUndefined(value: string | undefined) {
+		return value !== undefined ? value : "";
 	}
 
 	useEffect(() => {
@@ -184,7 +186,9 @@ export default function CreatePasswordlessUser({
 						<PhoneNumberInput
 							error={generalErrorMessage}
 							name="phone"
-							onChange={handlePhoneNumberChange}
+							onChange={(value: string | undefined) => {
+								setPhoneNumber(checkUndefined(value));
+							}}
 							label="Phone Number"
 							forceShowError
 							hideColon
@@ -197,7 +201,9 @@ export default function CreatePasswordlessUser({
 									error={generalErrorMessage}
 									value={emailOrPhone}
 									name="phone"
-									onChange={handlePhoneNumberChange}
+									onChange={(value: string | undefined) => {
+										setEmailOrPhone(checkUndefined(value));
+									}}
 									label="Phone Number"
 									forceShowError
 									hideColon
