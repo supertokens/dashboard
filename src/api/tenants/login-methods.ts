@@ -37,7 +37,7 @@ type TenantsLoginMethodsResponse = {
 };
 
 type TenantsListService = {
-	fetchTenantsLoginMethods: () => Promise<TenantsLoginMethodsResponse>;
+	fetchTenantsLoginMethods: () => Promise<TenantsLoginMethodsResponse | undefined>;
 };
 
 export const useGetTenantsLoginMethods = (): TenantsListService => {
@@ -48,12 +48,7 @@ export const useGetTenantsLoginMethods = (): TenantsListService => {
 			url: getApiUrl("/api/tenants/login-methods"),
 		});
 
-		return response.ok
-			? await response.json()
-			: {
-					status: "OK",
-					tenants: [],
-			  };
+		return response.ok ? await response.json() : undefined;
 	};
 
 	return {

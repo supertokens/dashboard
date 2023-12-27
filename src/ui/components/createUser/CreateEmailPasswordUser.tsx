@@ -15,7 +15,7 @@
 
 import { useContext, useState } from "react";
 import useCreateUserService from "../../../api/user/create";
-import { getApiUrl, getImageUrl, isValidEmail, isValidPassword } from "../../../utils";
+import { getApiUrl, getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import Button from "../button";
 import { Dialog, DialogContent, DialogFooter } from "../dialog";
@@ -47,16 +47,7 @@ export default function CreateEmailPasswordUser({
 		setIsCreatingUser(true);
 
 		try {
-			if (isValidEmail(email) === false) {
-				setEmailValidationErrorMessage("Please enter a valid email address.");
-				return;
-			}
-			const errorMessage = isValidPassword(password);
-
-			if (errorMessage !== undefined) {
-				setPasswordValidationErrorMessage(errorMessage);
-				return;
-			}
+			// Note: We're intentionally skipping frontend input validation in favor of users' defined custom validators running on the backend.
 
 			const response = await createEmailPasswordUser(tenantId, email, password);
 			if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
@@ -99,7 +90,7 @@ export default function CreateEmailPasswordUser({
 
 	return (
 		<Dialog
-			className="max-width-410"
+			className="max-width-436"
 			title="User Info"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
@@ -109,7 +100,10 @@ export default function CreateEmailPasswordUser({
 						label="Email"
 						hideColon
 						value={email}
-						handleChange={(e) => setEmail(e.currentTarget.value)}
+						handleChange={(e) => {
+							setEmailValidationErrorMessage(undefined);
+							setEmail(e.currentTarget.value);
+						}}
 						name="email"
 						type="email"
 					/>
@@ -118,7 +112,10 @@ export default function CreateEmailPasswordUser({
 						label="Password"
 						hideColon
 						value={password}
-						handleChange={(e) => setPassword(e.currentTarget.value)}
+						handleChange={(e) => {
+							setPasswordValidationErrorMessage(undefined);
+							setPassword(e.currentTarget.value);
+						}}
 						name="password"
 						type="password"
 					/>

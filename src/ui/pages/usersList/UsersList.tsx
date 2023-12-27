@@ -237,7 +237,9 @@ export const UsersList: React.FC<UserListProps> = ({
 	async function getAndSetTenantsLoginMethods() {
 		try {
 			const response = await fetchTenantsLoginMethods();
-			setTenantsLoginMethods(response.tenants);
+			if (response !== undefined) {
+				setTenantsLoginMethods(response.tenants);
+			}
 		} catch (_) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -314,6 +316,7 @@ export const UsersList: React.FC<UserListProps> = ({
 					/>
 				)}
 				<Button
+					disabled={selectedTenant === undefined || tenantsLoginMethods === undefined}
 					id="add-user"
 					className="ml-auto"
 					color="secondary"

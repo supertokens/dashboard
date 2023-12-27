@@ -13,11 +13,10 @@
  * under the License.
  */
 
-import { isValidPhoneNumber } from "libphonenumber-js";
 import { useContext, useState } from "react";
 import { PasswordlessContactMethod } from "../../../api/tenants/login-methods";
 import useCreateUserService, { CreatePasswordlessUserPayload } from "../../../api/user/create";
-import { getApiUrl, getImageUrl, isValidEmail } from "../../../utils";
+import { getApiUrl, getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import Button from "../button";
 import { Dialog, DialogContent, DialogFooter } from "../dialog";
@@ -32,9 +31,10 @@ type CreatePasswordlessUserProps = {
 	setCurrentStep: (step: CreateUserDialogStepType) => void;
 };
 
-function validateNumber(value: string): boolean {
+function isNumber(value: string): boolean {
 	const trimmedString = value.replaceAll(/\s/g, "").trim();
 
+	// added this check since parsing a empty string to a number returns 0.
 	if (trimmedString.length < 1) {
 		return false;
 	}
@@ -56,48 +56,33 @@ export default function CreatePasswordlessUser({
 
 	const [isCreatingUser, setIsCreatingUser] = useState(false);
 	const [isPhoneNumber, setIsPhoneNumber] = useState(false);
+	const [isEmail, setIsEmail] = useState(false);
 
 	const { createPasswordlessUser } = useCreateUserService();
 	const { showToast } = useContext(PopupContentContext);
 
-	async function createUser(e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) {
-		e.preventDefault();
-
+	async function createUser() {
 		setIsCreatingUser(true);
 		setGeneralErrorMessage(undefined);
 		try {
 			const payload: CreatePasswordlessUserPayload = {};
 
+			// Note: We're intentionally skipping frontend input validation in favor of user defined custom validators running on the backend.
+
 			if (authMethod === "EMAIL") {
-				if (isValidEmail(email) === true) {
-					payload.email = email;
-				} else {
-					setGeneralErrorMessage("Please enter a valid email address.");
-					return;
-				}
+				payload.email = email;
 			} else if (authMethod === "PHONE") {
-				if (isValidPhoneNumber(phoneNumber) === true) {
-					payload.phoneNumber = phoneNumber;
-				} else {
-					setGeneralErrorMessage("Please enter a valid phone number.");
-					return;
-				}
+				payload.phoneNumber = phoneNumber;
 			} else if (authMethod === "EMAIL_OR_PHONE") {
-				if (isValidEmail(emailOrPhone) === true) {
-					payload.email = emailOrPhone;
-				} else if (isValidPhoneNumber(emailOrPhone) === true) {
-					setIsPhoneNumber(true);
+				if (isNumber(emailOrPhone) === true) {
 					payload.phoneNumber = emailOrPhone;
-				} else if (validateNumber(emailOrPhone)) {
 					if (emailOrPhone.startsWith("+") === false) {
 						setEmailOrPhone("+" + emailOrPhone);
 					}
-					setGeneralErrorMessage("Please enter a valid phone number");
 					setIsPhoneNumber(true);
-					return;
 				} else {
-					setGeneralErrorMessage("Please enter a valid email or phone number.");
-					return;
+					payload.email = emailOrPhone;
+					setIsEmail(true);
 				}
 			} else {
 				showToast({
@@ -152,7 +137,7 @@ export default function CreatePasswordlessUser({
 
 	return (
 		<Dialog
-			className="max-width-410"
+			className="max-width-436"
 			title="User Info"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
@@ -201,7 +186,7 @@ export default function CreatePasswordlessUser({
 							) : (
 								<InputField
 									error={generalErrorMessage}
-									label="Email or Phone"
+									label={isEmail ? "Email" : "Email or Phone"}
 									hideColon
 									value={emailOrPhone}
 									handleChange={(e) => {

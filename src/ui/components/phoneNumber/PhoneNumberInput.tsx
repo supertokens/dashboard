@@ -148,6 +148,7 @@ export const PhoneNumberCountrySelect: FC<PhoneNumberCountrySelectProps> = (prop
 						}),
 						0
 					);
+
 				countrySelectPopupRef.current.scrollTop = scrollTopPosition;
 			}
 		}
@@ -260,7 +261,7 @@ export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberIn
 				international={true}
 				addInternationalOption={false}
 				withCountryCallingCode={false}
-				countryCallingCodeEditable={false}
+				countryCallingCodeEditable={true}
 				countrySelectComponent={
 					PhoneNumberCountrySelect // use custom component because the default one doesn't display country calling code
 				}

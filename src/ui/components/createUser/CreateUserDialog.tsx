@@ -85,7 +85,7 @@ export default function CreateUserDialog({
 
 	return (
 		<Dialog
-			className="max-width-410"
+			className="max-width-436"
 			title="Create New User"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
@@ -140,15 +140,15 @@ export default function CreateUserDialog({
 									{selectedTenantId === "public" ? (
 										<>
 											Currently, neither the Passwordless nor EmailPassword auth methods are
-											enabled in your backend SDK. Refer to the{" "}
+											initialized in your backend SDK. Please refer{" "}
 											<a
 												target="_blank"
 												className="text-error bg-transparent"
 												rel="noreferrer"
 												href="https://supertokens.com/docs/guides">
-												documentation
+												here
 											</a>{" "}
-											to enable them.
+											to initialize them on your backend.
 										</>
 									) : (
 										<>
@@ -157,7 +157,8 @@ export default function CreateUserDialog({
 											<ul style={{ padding: "8px 16px" }}>
 												<li>
 													If you haven't configured your tenant to support either of the
-													mentioned authentication methods, please follow this{" "}
+													mentioned authentication methods in your core above, please follow
+													this{" "}
 													<a
 														target="_blank"
 														rel="noreferrer"
@@ -167,17 +168,17 @@ export default function CreateUserDialog({
 													</a>{" "}
 													to enable them.
 												</li>
-												<li>
+												<li style={{ marginTop: "8px" }}>
 													If you have already configured these methods in your core, please
-													refer to this{" "}
+													refer{" "}
 													<a
 														target="_blank"
 														rel="noreferrer"
 														className="text-error bg-transparent"
 														href="https://supertokens.com/docs/guides">
-														guide
+														here
 													</a>{" "}
-													to enable on your backend based on your prefered auth method.
+													to initialize them on your backend.
 												</li>
 											</ul>
 										</>
