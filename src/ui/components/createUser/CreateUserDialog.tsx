@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -99,13 +99,8 @@ export default function CreateUserDialog({
 						title="info"
 						type="secondary">
 						Custom overrides for the sign up recipe function on the backend will be run when a user is
-						created, however, the sign up API override will not run, for more info regarding this{" "}
-						<a
-							rel="noreferrer"
-							href="https://suppertokens.com/docs/"
-							target="_blank">
-							click here.
-						</a>
+						created, however, the sign up API override will not run. So if possible, try and move all your
+						custom post sign up logic into the recipe function override.
 					</Alert>
 					<div className="select-container mb-12">
 						<p className="text-label">

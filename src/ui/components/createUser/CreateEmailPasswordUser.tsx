@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -104,7 +104,7 @@ export default function CreateEmailPasswordUser({
 	return (
 		<Dialog
 			className="max-width-436"
-			title="User Info"
+			title="Email Password sign up"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
 				<form
