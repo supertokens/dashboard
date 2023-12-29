@@ -22,6 +22,10 @@
 	align-items: flex-start;
 	gap: 12px;
 
+	ul {
+		padding: 0px 18px;
+	}
+
 	& > span {
 		display: flex;
 		padding: 1px 8px;
@@ -61,6 +65,14 @@
 			color: #a44915;
 			font-weight: 500;
 		}
+
+		code {
+			padding: 2px;
+			background: rgba(227, 122, 63, 0.1);
+			border: 1px solid rgba(227, 122, 63, 0.2);
+			border-radius: 4px;
+			font-size: 12px;
+		}
 	}
 
 	&.secondary {
@@ -80,6 +92,14 @@
 		a {
 			color: #007aff;
 			font-weight: 500;
+		}
+
+		code {
+			padding: 2px;
+			background: rgba(0, 98, 225, 0.1);
+			border: 1px solid rgba(0, 98, 225, 0.2);
+			border-radius: 4px;
+			font-size: 12px;
 		}
 	}
 

@@ -1302,11 +1302,17 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
+                                                        isThirdParty:
+                                                            type: boolean
+                                                            nullable: true
                                                 passwordless:
                                                     type: object
                                                     properties:
                                                         enabled:
                                                             type: boolean
+                                                        isThirdParty:
+                                                            type: boolean
+                                                            nullable: true
                                                         contactMethod:
                                                             type: string
                                                             enum: [PHONE, EMAIL, EMAIL_OR_PHONE]

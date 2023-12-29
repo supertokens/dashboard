@@ -94,14 +94,67 @@ export default function CreateUserDialog({
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
 				<div className="create-user-modal-content">
-					<Alert
-						padding="sm"
-						title="info"
-						type="secondary">
-						Custom overrides for the sign up recipe function on the backend will be run when a user is
-						created, however, the sign up API override will not run. So if possible, try and move all your
-						custom post sign up logic into the recipe function override.
-					</Alert>
+					{selectedAuthMethod === "passwordless" ? (
+						<Alert
+							padding="sm"
+							title="Warning"
+							type="primary">
+							Custom API overrides for the <code>consumeCodePOST</code> API won’t run as the API to create
+							a user via the dashboard is different. However, custom functions override for{" "}
+							<code>consumeCode</code> will run.
+						</Alert>
+					) : null}
+					{selectedAuthMethod === "emailpassword" ? (
+						selectedTenantObject.emailPassword.isThirdParty === true ? (
+							<Alert
+								padding="sm"
+								title="Warning"
+								type="primary">
+								<ul>
+									<li>
+										Custom API overrides for the <code>emailPasswordSignUpPOST</code> API won’t be
+										run as the API to create a user via the dashboard is different. However, custom
+										functions override for <code>emailPasswordSignUp</code> will run.
+									</li>{" "}
+									<li>
+										If you have custom form fields in your sign up form, those will not be included
+										when adding a user via the dashboard. Please call the{" "}
+										<a
+											href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/ThirdPartyEmailPassword%20Recipe/thirdPartyEmailPasswordsignUp"
+											target="_blank"
+											rel="noreferrer">
+											sign up API manually
+										</a>{" "}
+										instead.
+									</li>
+								</ul>
+							</Alert>
+						) : (
+							<Alert
+								padding="sm"
+								title="Warning"
+								type="primary">
+								<ul>
+									<li>
+										Custom API overrides for the <code>signUpPOST</code> API won’t be run as the API
+										to create a user via the dashboard is different. However, custom functions
+										override for <code>signUp</code> will run.
+									</li>{" "}
+									<li>
+										If you have custom form fields in your sign up form, those will not be included
+										when adding a user via the dashboard. Please call the{" "}
+										<a
+											href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/EmailPassword%20Recipe/signUp"
+											target="_blank"
+											rel="noreferrer">
+											sign up API manually
+										</a>{" "}
+										instead.
+									</li>
+								</ul>
+							</Alert>
+						)
+					) : null}
 					<div className="select-container mb-12">
 						<p className="text-label">
 							Selected Tenant:{" "}
@@ -138,7 +191,7 @@ export default function CreateUserDialog({
 								<p className="text-xs text-command">
 									{selectedTenantId === "public" ? (
 										<>
-											Currently, neither the Passwordless nor EmailPassword auth methods are
+											Currently, neither the Passwordless nor EmailPassword recipes are
 											initialized in your backend SDK. Please refer{" "}
 											<a
 												target="_blank"
@@ -151,13 +204,12 @@ export default function CreateUserDialog({
 										</>
 									) : (
 										<>
-											Currently, both the Passwordless and EmailPassword authentication methods
-											are not configured for this tenant in the core or in your backend SDK.
+											The Passwordless or EmailPassword recipes are not currently configured for
+											this tenant in either the core or your backend SDK.
 											<ul style={{ padding: "8px 16px" }}>
 												<li>
 													If you haven't configured your tenant to support either of the
-													mentioned authentication methods in your core above, please follow
-													this{" "}
+													mentioned recipes in your core, please follow this{" "}
 													<a
 														target="_blank"
 														rel="noreferrer"
@@ -168,7 +220,7 @@ export default function CreateUserDialog({
 													to enable them.
 												</li>
 												<li style={{ marginTop: "8px" }}>
-													If you have already configured these methods in your core, please
+													If you have already configured these recipes in your core, please
 													refer{" "}
 													<a
 														target="_blank"

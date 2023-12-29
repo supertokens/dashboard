@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -21,9 +21,11 @@ export type Tenant = {
 	tenantId: string;
 	emailPassword: {
 		enabled: boolean;
+		isThirdParty?: boolean;
 	};
 	passwordless: {
 		enabled: boolean;
+		isThirdParty?: boolean;
 		contactMethod?: PasswordlessContactMethod;
 	};
 	thirdParty: {

@@ -250,9 +250,9 @@ export const UsersList: React.FC<UserListProps> = ({
 	}
 
 	const onMount = async () => {
+		await getAndSetTenantsLoginMethods();
 		await fetchAndSetCurrentTenant();
 		await loadCount();
-		await getAndSetTenantsLoginMethods();
 		await fireAnalyticsEvent();
 	};
 
