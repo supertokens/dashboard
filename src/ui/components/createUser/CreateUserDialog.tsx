@@ -105,7 +105,7 @@ export default function CreateUserDialog({
 						</Alert>
 					) : null}
 					{selectedAuthMethod === "emailpassword" ? (
-						selectedTenantObject.emailPassword.isThirdParty === true ? (
+						selectedTenantObject.thirdPartyEmailPasssword?.enabled === true ? (
 							<Alert
 								padding="sm"
 								title="Warning"

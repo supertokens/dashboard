@@ -1288,8 +1288,6 @@ paths:
                                     status:
                                         type: string
                                         default: "OK"
-                                    coreConfig:
-                                        type: object
                                     tenants:
                                         type: array
                                         items:
@@ -1302,21 +1300,27 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
-                                                        isThirdParty:
+                                                thirdPartyEmailPassword:
+                                                    type: object
+                                                    properties:
+                                                        enabled:
                                                             type: boolean
-                                                            nullable: true
+                                                    nullable: true
                                                 passwordless:
                                                     type: object
                                                     properties:
                                                         enabled:
                                                             type: boolean
-                                                        isThirdParty:
-                                                            type: boolean
-                                                            nullable: true
                                                         contactMethod:
                                                             type: string
                                                             enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
                                                             nullable: true
+                                                thirdPartPasswordless:
+                                                    type: object
+                                                    properties:
+                                                        enabled:
+                                                            type: boolean
+                                                    nullable: true
                                                 thirdParty:
                                                     type: object
                                                     properties:
