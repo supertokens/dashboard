@@ -109,6 +109,14 @@ export default function CreatePasswordlessUser({
 				return;
 			}
 
+			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Feature not enabled!</>,
+				});
+			}
+
 			if (response.status === "OK") {
 				if (response.createdNewRecipeUser === false) {
 					let message = "";

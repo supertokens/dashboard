@@ -71,6 +71,14 @@ export default function CreateEmailPasswordUser({
 				return;
 			}
 
+			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Feature not enabled!</>,
+				});
+			}
+
 			if (response.status === "OK") {
 				showToast({
 					iconImage: getImageUrl("checkmark-green.svg"),
