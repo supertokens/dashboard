@@ -26,7 +26,7 @@ import { CreateUserDialogStepType } from "./CreateUserDialog";
 
 type CreatePasswordlessUserProps = {
 	tenantId: string;
-	authMethod: PasswordlessContactMethod;
+	authMethod: PasswordlessContactMethod | undefined;
 	onCloseDialog: () => void;
 	setCurrentStep: (step: CreateUserDialogStepType) => void;
 	loadCount: () => void;

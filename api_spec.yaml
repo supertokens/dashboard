@@ -1320,6 +1320,10 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
+                                                        contactMethod:
+                                                            type: string
+                                                            enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
+                                                            nullable: true
                                                     nullable: true
                                                 thirdParty:
                                                     type: object

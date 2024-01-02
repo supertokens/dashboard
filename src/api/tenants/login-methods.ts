@@ -22,15 +22,16 @@ export type Tenant = {
 	emailPassword: {
 		enabled: boolean;
 	};
-	thirdPartyEmailPasssword?: {
+	thirdPartyEmailPasssword: {
 		enabled: boolean;
 	};
 	passwordless: {
 		enabled: boolean;
 		contactMethod?: PasswordlessContactMethod;
 	};
-	thirdPartyPasswordless?: {
+	thirdPartyPasswordless: {
 		enabled: boolean;
+		contactMethod?: PasswordlessContactMethod;
 	};
 	thirdParty: {
 		enabled: boolean;

@@ -50,26 +50,37 @@ export default function CreateUserDialog({
 
 	const selectableAuthMethods: { name: string; value: string }[] = [];
 
-	if (selectedTenantObject.emailPassword.enabled === true) {
+	if (
+		selectedTenantObject.emailPassword.enabled === true ||
+		selectedTenantObject.thirdPartyEmailPasssword.enabled === true
+	) {
 		selectableAuthMethods.push({
 			name: "emailpassword",
 			value: "emailpassword",
 		});
 	}
 
-	if (selectedTenantObject.passwordless.enabled === true) {
+	if (
+		selectedTenantObject.passwordless.enabled === true ||
+		selectedTenantObject.thirdPartyPasswordless.enabled === true
+	) {
 		selectableAuthMethods.push({
 			name: "passwordless",
 			value: "passwordless",
 		});
 	}
 
-	if (currentStep === "create-passwordless-user" && selectedTenantObject.passwordless.contactMethod !== undefined) {
+	if (currentStep === "create-passwordless-user") {
+		const contactMethod =
+			selectedTenantObject.passwordless.contactMethod !== undefined
+				? selectedTenantObject.passwordless.contactMethod
+				: selectedTenantObject.thirdPartyPasswordless.contactMethod;
+
 		return (
 			<CreatePasswordlessUser
 				loadCount={loadCount}
 				tenantId={selectedTenantId}
-				authMethod={selectedTenantObject.passwordless.contactMethod}
+				authMethod={contactMethod}
 				setCurrentStep={setCurrentStep}
 				onCloseDialog={onCloseDialog}
 			/>
