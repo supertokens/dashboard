@@ -25,8 +25,6 @@ import EmailVerification from "supertokens-node/recipe/emailverification";
 import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
 import ThirdParty from "supertokens-node/recipe/thirdparty";
-import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
-import ThirdPartyPasswordless from "supertokens-node/recipe/thirdpartypasswordless";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
 import UserRoles from "supertokens-node/recipe/userroles";
 
@@ -38,10 +36,7 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		// connectionURI: "https://st-dev-d771e1f1-9829-11ee-84fe-67fdc165bb46.aws.supertokens.io",
-		// apiKey: "S7ZFk9nTuTd=2BRpJ8RkeaU-Ud",
-		connectionURI: "https://st-prod-dd9533d0-9a53-11ee-8a37-b501d662a23d.aws.supertokens.io/",
-		apiKey: "2ws3Kg6LCPZaIKHl7iiXFNoFDO",
+		connectionURI: "try.supertokens.com",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",
@@ -66,44 +61,10 @@ SuperTokens.init({
 		}),
 		UserMetaData.init(),
 		// These are initialised so that functionailty works in the node SDK
-		EmailPassword.init({
-			// signUpFeature: {
-			// 	formFields: [
-			// 		{
-			// 			id: "email",
-			// 			async validate(value, tenantId, userContext) {
-			// 				return undefined;
-			// 			},
-			// 		},
-			// 		// {
-			// 		// 	id: "password",
-			// 		// 	async validate(value, tenantId, userContext) {
-			// 		// 		return "NO_PASSWORD";
-			// 		// 	},
-			// 		// },
-			// 	],
-			// },
-		}),
-		ThirdPartyEmailPassword.init({}),
+		EmailPassword.init(),
 		Passwordless.init({
-			contactMethod: "PHONE",
+			contactMethod: "EMAIL_OR_PHONE",
 			flowType: "USER_INPUT_CODE_AND_MAGIC_LINK",
-			// async validateEmailAddress(email, tenantId) {
-			// 	return "PHONE_ERROR";
-			// },
-			// async validatePhoneNumber(phoneNumber, tenantId) {
-			// 	return "PHONE_ERROR";
-			// },
-		}),
-		ThirdPartyPasswordless.init({
-			contactMethod: "PHONE",
-			flowType: "USER_INPUT_CODE_AND_MAGIC_LINK",
-			// async validatePhoneNumber(phoneNumber, tenantId) {
-			// 	return "PHONE_ERROR";
-			// },
-			// async validateEmailAddress(phone, tenantId) {
-			// 	return "PHONE_ERROR";
-			// },
 		}),
 		ThirdParty.init({
 			signInAndUpFeature: {
@@ -127,14 +88,7 @@ SuperTokens.init({
 			mode: "REQUIRED",
 		}),
 		Session.init(),
-		AccountLinking.init({
-			async shouldDoAutomaticAccountLinking(newAccountInfo, user, tenantId, userContext) {
-				return {
-					shouldAutomaticallyLink: true,
-					shouldRequireVerification: false,
-				};
-			},
-		}),
+		AccountLinking.init(),
 		UserRoles.init(),
 	],
 });
