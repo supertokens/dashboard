@@ -33,17 +33,17 @@ export type CreateUserDialogStepType =
 
 export default function CreateUserDialog({
 	onCloseDialog,
-	currentSelectedTenantId,
+	defaultSelectedTenantId,
 	tenantsLoginMethods,
 	loadCount,
 }: {
 	onCloseDialog: () => void;
 	tenantsLoginMethods: Tenant[];
-	currentSelectedTenantId: string;
+	defaultSelectedTenantId: string;
 	loadCount: () => void;
 }) {
 	const [currentStep, setCurrentStep] = useState<CreateUserDialogStepType>("select-auth-method-and-tenant");
-	const [selectedTenantId, setSelectedTenantId] = useState(currentSelectedTenantId);
+	const [selectedTenantId, setSelectedTenantId] = useState(defaultSelectedTenantId);
 	const [selectedAuthMethod, setSelectedAuthMethod] = useState<AuthMethod | undefined>(undefined);
 
 	const selectedTenantObject = tenantsLoginMethods.find((tenant) => tenant.tenantId === selectedTenantId)!;
@@ -68,6 +68,81 @@ export default function CreateUserDialog({
 			name: "passwordless",
 			value: "passwordless",
 		});
+	}
+
+	function renderAlertMessage() {
+		if (selectedAuthMethod === "passwordless") {
+			return (
+				<Alert
+					padding="sm"
+					title="Warning"
+					type="primary">
+					Custom API overrides for the <code>consumeCodePOST</code> API won’t run as the API to create a user
+					via the dashboard is different. However, custom functions override for <code>consumeCode</code> will
+					run.
+				</Alert>
+			);
+		}
+
+		if (selectedAuthMethod === "emailpassword") {
+			if (selectedTenantObject.thirdPartyEmailPasssword.enabled === true) {
+				return (
+					<Alert
+						padding="sm"
+						title="Warning"
+						type="primary">
+						<ul>
+							<li>
+								Custom API overrides for the <code>emailPasswordSignUpPOST</code> API won’t be run as
+								the API to create a user via the dashboard is different. However, custom functions
+								override for <code>emailPasswordSignUp</code> will run.
+							</li>{" "}
+							<li>
+								If you have custom form fields in your sign up form, those will not be included when
+								adding a user via the dashboard. If you want to include any custom form fields in the
+								request, please call the{" "}
+								<a
+									href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/ThirdPartyEmailPassword%20Recipe/thirdPartyEmailPasswordsignUp"
+									target="_blank"
+									rel="noreferrer">
+									sign up API manually
+								</a>{" "}
+								instead.
+							</li>
+						</ul>
+					</Alert>
+				);
+			} else {
+				return (
+					<Alert
+						padding="sm"
+						title="Warning"
+						type="primary">
+						<ul>
+							<li>
+								Custom API overrides for the <code>signUpPOST</code> API won’t be run as the API to
+								create a user via the dashboard is different. However, custom functions override for{" "}
+								<code>signUp</code> will run.
+							</li>{" "}
+							<li>
+								If you have custom form fields in your sign up form, those will not be included when
+								adding a user via the dashboard. If you want to include any custom form fields in the
+								request, please call the{" "}
+								<a
+									href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/EmailPassword%20Recipe/signUp"
+									target="_blank"
+									rel="noreferrer">
+									sign up API manually.
+								</a>{" "}
+								instead.
+							</li>
+						</ul>
+					</Alert>
+				);
+			}
+		}
+
+		return null;
 	}
 
 	if (currentStep === "create-passwordless-user") {
@@ -105,72 +180,12 @@ export default function CreateUserDialog({
 			onCloseDialog={onCloseDialog}>
 			<DialogContent className="text-small text-semi-bold">
 				<div className="create-user-modal-content">
-					{selectedAuthMethod === "passwordless" ? (
-						<Alert
-							padding="sm"
-							title="Warning"
-							type="primary">
-							Custom API overrides for the <code>consumeCodePOST</code> API won’t run as the API to create
-							a user via the dashboard is different. However, custom functions override for{" "}
-							<code>consumeCode</code> will run.
-						</Alert>
-					) : null}
-					{selectedAuthMethod === "emailpassword" ? (
-						selectedTenantObject.thirdPartyEmailPasssword?.enabled === true ? (
-							<Alert
-								padding="sm"
-								title="Warning"
-								type="primary">
-								<ul>
-									<li>
-										Custom API overrides for the <code>emailPasswordSignUpPOST</code> API won’t be
-										run as the API to create a user via the dashboard is different. However, custom
-										functions override for <code>emailPasswordSignUp</code> will run.
-									</li>{" "}
-									<li>
-										If you have custom form fields in your sign up form, those will not be included
-										when adding a user via the dashboard. Please call the{" "}
-										<a
-											href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/ThirdPartyEmailPassword%20Recipe/thirdPartyEmailPasswordsignUp"
-											target="_blank"
-											rel="noreferrer">
-											sign up API manually
-										</a>{" "}
-										instead.
-									</li>
-								</ul>
-							</Alert>
-						) : (
-							<Alert
-								padding="sm"
-								title="Warning"
-								type="primary">
-								<ul>
-									<li>
-										Custom API overrides for the <code>signUpPOST</code> API won’t be run as the API
-										to create a user via the dashboard is different. However, custom functions
-										override for <code>signUp</code> will run.
-									</li>{" "}
-									<li>
-										If you have custom form fields in your sign up form, those will not be included
-										when adding a user via the dashboard. Please call the{" "}
-										<a
-											href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/EmailPassword%20Recipe/signUp"
-											target="_blank"
-											rel="noreferrer">
-											sign up API manually
-										</a>{" "}
-										instead.
-									</li>
-								</ul>
-							</Alert>
-						)
-					) : null}
+					{renderAlertMessage()}
 					<div className="select-container mb-12">
 						<p className="text-label">
 							Selected Tenant:{" "}
 							{tenantsLoginMethods.length === 1 ? (
-								<span className="text-black ">{currentSelectedTenantId}</span>
+								<span className="text-black ">{defaultSelectedTenantId}</span>
 							) : null}
 						</p>{" "}
 						{tenantsLoginMethods.length > 1 ? (
@@ -200,51 +215,16 @@ export default function CreateUserDialog({
 						) : (
 							<div className="input-field-error block-small block-error w-100">
 								<p className="text-xs text-command">
-									{selectedTenantId === "public" ? (
-										<>
-											Currently, neither the Passwordless nor EmailPassword recipes are
-											initialized in your backend SDK. Please refer{" "}
-											<a
-												target="_blank"
-												className="text-error bg-transparent"
-												rel="noreferrer"
-												href="https://supertokens.com/docs/guides">
-												here
-											</a>{" "}
-											to initialize them on your backend.
-										</>
-									) : (
-										<>
-											The Passwordless or EmailPassword recipes are not currently configured for
-											this tenant in either the core or your backend SDK.
-											<ul style={{ padding: "8px 16px" }}>
-												<li>
-													If you haven't configured your tenant to support either of the
-													mentioned recipes in your core, please follow this{" "}
-													<a
-														target="_blank"
-														rel="noreferrer"
-														className="text-error bg-transparent"
-														href="https://supertokens.com/docs/multitenancy/new-tenant#basic-tenant-creation">
-														guide
-													</a>{" "}
-													to enable them.
-												</li>
-												<li style={{ marginTop: "8px" }}>
-													If you have already configured these recipes in your core, please
-													refer{" "}
-													<a
-														target="_blank"
-														rel="noreferrer"
-														className="text-error bg-transparent"
-														href="https://supertokens.com/docs/guides">
-														here
-													</a>{" "}
-													to initialize them on your backend.
-												</li>
-											</ul>
-										</>
-									)}
+									Please configure passwordless or the emailpassword recipe on the backend SDK and
+									this tenant. Refer to the{" "}
+									<a
+										className="text-error"
+										target="_blank"
+										rel="noreferrer"
+										href="https://supertokens.com/docs/guides">
+										docs
+									</a>{" "}
+									for detailed instructions.
 								</p>
 							</div>
 						)}

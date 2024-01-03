@@ -326,7 +326,7 @@ export const UsersList: React.FC<UserListProps> = ({
 				</Button>
 				{showCreateUserDialog && selectedTenant !== undefined && tenantsLoginMethods !== undefined ? (
 					<CreateUserDialog
-						currentSelectedTenantId={selectedTenant}
+						defaultSelectedTenantId={selectedTenant}
 						tenantsLoginMethods={tenantsLoginMethods}
 						onCloseDialog={() => setShowCreateUserDialog(false)}
 						loadCount={loadCount}
