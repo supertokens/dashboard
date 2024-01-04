@@ -4,7 +4,7 @@
 		"prefix": ["copyright"],
 		"description": "Add copyright to typescript, javascript, or css file format",
 		"body": [
-			"/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.\r",
+			"/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.\r",
 			" *\r",
 			" * This software is licensed under the Apache License, Version 2.0 (the\r",
 			" * \"License\") as published by the Apache Software Foundation.\r",

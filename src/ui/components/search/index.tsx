@@ -21,6 +21,7 @@ import { getImageUrl } from "../../../utils";
 import "./search.scss";
 
 import { useFetchSearchTags } from "../../../api/search/searchTags";
+import Button from "../button";
 
 const searchIcon = getImageUrl("search.png");
 const clearIcon = getImageUrl("clear.svg");
@@ -174,7 +175,7 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 					/>
 					<input
 						type="text"
-						placeholder="Search"
+						placeholder="Type here"
 						onFocus={() => setActive(true)}
 						onBlur={() => setActive(false)}
 						onKeyDown={(e) => search(e)}
@@ -188,11 +189,12 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 						/>
 					)}
 				</div>
-				<button
+				<Button
+					color="gray-outline"
 					onClick={searchButton}
 					id="search-btn">
 					Search
-				</button>
+				</Button>
 			</div>
 			<div className="search__entries">
 				{searches.map((el, index) => (

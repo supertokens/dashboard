@@ -16,16 +16,20 @@
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useGetTenantsList } from "../../../api/tenants/list";
+import { Tenant, useGetTenantsLoginMethods } from "../../../api/tenants/login-methods";
 import useDeleteUserService from "../../../api/user/delete";
 import useVerifyEmailService from "../../../api/user/email/verify";
 import useVerifyUserTokenService from "../../../api/user/email/verify/token";
 import useFetchUsersService from "../../../api/users";
 import useFetchCount from "../../../api/users/count";
+import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
 import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
-import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
+import { getApiUrl, getAuthMode, getImageUrl, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
+import Button from "../../components/button";
+import CreateUserDialog from "../../components/createUser/CreateUserDialog";
 import InfoConnection from "../../components/info-connection/info-connection";
 import NoUsers from "../../components/noUsers/NoUsers";
 import Search from "../../components/search";
@@ -75,14 +79,19 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [loading, setLoading] = useState<boolean>(true);
 	const [errorOffsets, setErrorOffsets] = useState<number[]>([]);
 	const [isSearch, setIsSearch] = useState<boolean>(false);
+	const [showCreateUserDialog, setShowCreateUserDialog] = useState(false);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
+	const [tenantsLoginMethods, setTenantsLoginMethods] = useState<Tenant[] | undefined>(undefined);
+
 	const { fetchUsers } = useFetchUsersService();
+	const { fetchTenantsLoginMethods } = useGetTenantsLoginMethods();
 	const { fetchCount } = useFetchCount();
 	const { fetchTenants } = useGetTenantsList();
 	const fetchData = useFetchData();
 	const { setTenantsListToStore, tenantsListFromStore, getSelectedTenant, setSelectedTenant } =
 		useTenantsListContext();
 	const selectedTenant = getSelectedTenant();
+	const { showToast } = useContext(PopupContentContext);
 
 	const insertUsersAtOffset = useCallback(
 		(paramUsers: User[], paramOffset?: number, isSearch?: boolean) => {
@@ -183,7 +192,6 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	const fetchAndSetCurrentTenant = async () => {
 		const result = await fetchTenants();
-
 		setTenantsListToStore(result.tenants);
 
 		if (result.tenants.length === 0) {
@@ -226,7 +234,23 @@ export const UsersList: React.FC<UserListProps> = ({
 		[paginationTokenByOffset, loadUsers]
 	);
 
+	async function getAndSetTenantsLoginMethods() {
+		try {
+			const response = await fetchTenantsLoginMethods();
+			if (response !== undefined) {
+				setTenantsLoginMethods(response.tenants);
+			}
+		} catch (_) {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong!, Failed to fetch tenants login methods!</>,
+			});
+		}
+	}
+
 	const onMount = async () => {
+		await getAndSetTenantsLoginMethods();
 		await fetchAndSetCurrentTenant();
 		await loadCount();
 		await fireAnalyticsEvent();
@@ -284,13 +308,31 @@ export const UsersList: React.FC<UserListProps> = ({
 				</div>
 			)}
 
-			{isSearchEnabled() && (
-				<Search
-					onSearch={loadUsers}
-					loading={loading}
-				/>
-			)}
-
+			<div className="search-container">
+				{isSearchEnabled() && (
+					<Search
+						onSearch={loadUsers}
+						loading={loading}
+					/>
+				)}
+				<Button
+					disabled={selectedTenant === undefined || tenantsLoginMethods === undefined}
+					id="add-user"
+					className="ml-auto"
+					color="secondary"
+					onClick={() => setShowCreateUserDialog(true)}>
+					<PlusIcon />
+					Add User
+				</Button>
+				{showCreateUserDialog && selectedTenant !== undefined && tenantsLoginMethods !== undefined ? (
+					<CreateUserDialog
+						defaultSelectedTenantId={selectedTenant}
+						tenantsLoginMethods={tenantsLoginMethods}
+						onCloseDialog={() => setShowCreateUserDialog(false)}
+						loadCount={loadCount}
+					/>
+				) : null}
+			</div>
 			<div className="users-list-paper">
 				{users.length === 0 && !loading && !errorOffsets.includes(0) ? (
 					<NoUsers isSearch={isSearch} />

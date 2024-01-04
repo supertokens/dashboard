@@ -35,13 +35,11 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 	const handleChange = props.handleChange;
 	const [isFocused, setIsFocused] = useState<boolean>(false);
 	const [showPassword, setShowPassword] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState(props.value ?? "");
 	const [isTouched, setIsTouched] = useState(false);
 
 	const onChange = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>) => {
 			setIsTouched(true);
-			setInputValue(event.target.value);
 			handleChange(event);
 		},
 		[handleChange]
@@ -69,7 +67,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					name={props.name}
 					onChange={onChange}
 					onKeyUp={onChange}
-					defaultValue={props.value}
+					value={props.value}
 					onFocus={() => setIsFocused(true)}
 					onBlur={() => setIsFocused(false)}
 					disabled={props.disabled}
@@ -77,7 +75,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					placeholder={props.placeholder}
 				/>
 				<div className="input-field-suffix">
-					{props.type === "password" && inputValue.length > 0 && (
+					{props.type === "password" && props.value !== undefined && props.value.length > 0 && (
 						<img
 							className="icon"
 							onClick={() => setShowPassword(!showPassword)}

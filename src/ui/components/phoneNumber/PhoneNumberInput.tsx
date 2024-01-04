@@ -13,15 +13,15 @@
  * under the License.
  */
 
-import { CountryCode, E164Number, format, formatIncompletePhoneNumber, isValidPhoneNumber } from "libphonenumber-js";
+import { CountryCode, E164Number } from "libphonenumber-js";
 import {
 	BaseSyntheticEvent,
 	ChangeEvent,
 	FC,
 	FocusEventHandler,
 	ForwardedRef,
-	forwardRef,
 	ReactNode,
+	forwardRef,
 	useCallback,
 	useEffect,
 	useRef,
@@ -30,7 +30,7 @@ import {
 import PhoneInputWithCountrySelect, { getCountryCallingCode } from "react-phone-number-input";
 import { getImageUrl, useClickOutside } from "../../../utils";
 import { InputFieldPropTypes } from "../inputField/InputField";
-import { getPopupPosition, PopUpPositionProperties } from "../tooltip/tooltip-util";
+import { PopUpPositionProperties, getPopupPosition } from "../tooltip/tooltip-util";
 import "./PhoneNumber.scss";
 
 export type PhoneNumberInputProps = Omit<InputFieldPropTypes, "type" | "handleChange"> & {
@@ -42,7 +42,7 @@ export type PhoneNumberCountrySelectProps = {
 	onChange: (value: string | undefined) => void;
 	options: {
 		value: CountryCode;
-		label: ReactNode;
+		label: string;
 	}[];
 	iconComponent: React.ComponentClass<{ country: CountryCode; label?: ReactNode }>;
 };
@@ -91,10 +91,10 @@ export const PhoneNumberCountrySelect: FC<PhoneNumberCountrySelectProps> = (prop
 		[onChange]
 	);
 
-	const openPopup = useCallback((event: BaseSyntheticEvent) => {
+	const togglePopUp = (event: BaseSyntheticEvent) => {
 		event.stopPropagation();
-		setIsPopupActive(true);
-	}, []);
+		setIsPopupActive(!isPopupActive);
+	};
 
 	const updateDropdownOptionPosition = useCallback(() => {
 		setPopUpPosition(
@@ -132,10 +132,49 @@ export const PhoneNumberCountrySelect: FC<PhoneNumberCountrySelectProps> = (prop
 		return () => window.removeEventListener("scroll", updateDropdownOptionPosition);
 	}, [updateDropdownOptionPosition]);
 
+	// Inplace search implementation.
+	useEffect(() => {
+		let searchString = "";
+		let timeout: NodeJS.Timeout | null = null;
+
+		function searchHandler(e: KeyboardEvent) {
+			if (e.key.length === 1 && countrySelectPopupRef.current !== null) {
+				searchString += e.key.toLowerCase();
+				const scrollTopPosition =
+					getRowOptionheight() *
+					Math.max(
+						options.findIndex(({ label }) => {
+							return label.toLowerCase().startsWith(searchString);
+						}),
+						0
+					);
+
+				countrySelectPopupRef.current.scrollTop = scrollTopPosition;
+			}
+		}
+
+		function resetSearchString() {
+			if (timeout !== null) {
+				clearTimeout(timeout);
+			}
+			timeout = setTimeout(() => {
+				searchString = "";
+			}, 500);
+		}
+
+		window.addEventListener("keydown", searchHandler);
+		window.addEventListener("keyup", resetSearchString);
+
+		return () => {
+			window.removeEventListener("keydown", searchHandler);
+			window.removeEventListener("keyup", resetSearchString);
+		};
+	}, []);
+
 	return (
 		<div
 			className="phone-input__country-select"
-			onClick={openPopup}
+			onClick={togglePopUp}
 			onBlur={() => setIsPopupActive(false)}
 			ref={countrySelectRef}>
 			<div className="phone-input__country-select__current-value">
@@ -143,9 +182,6 @@ export const PhoneNumberCountrySelect: FC<PhoneNumberCountrySelectProps> = (prop
 					country={selectedValue ?? emptyValue}
 					label={selectedValue !== undefined ? getCountryCallingCode(selectedValue) : ""}
 				/>
-				<span className="country-calling-code">
-					+{selectedValue !== undefined ? getCountryCallingCode(selectedValue) : 1}
-				</span>
 				<span>
 					<img
 						src={getImageUrl("triangle-down.svg")}
@@ -186,39 +222,16 @@ const PhoneNumberTextField: FC<PhoneNumberTextFieldProps> = forwardRef(
 	(props: PhoneNumberTextFieldProps, ref: ForwardedRef<HTMLInputElement>) => {
 		const { value, onChange, onBlur, onFocus } = props;
 
-		// the formatted number always have country calling code separated by space
-		const [countryCallingCode, ...nationalPhoneNumber] = value?.split(" ") ?? [];
-
-		/** handle the textfield value changes */
-		const handleChange = useCallback(
-			(event: ChangeEvent<HTMLInputElement>) => {
-				onChange({
-					...event,
-					target: {
-						...event.target,
-						value: formatIncompletePhoneNumber([countryCallingCode, event.target.value].join(" ")),
-					},
-				});
-			},
-			[onChange, countryCallingCode]
-		);
-
-		/** if the value is valid one then format as national number,
-		 * otherwise format with some space(` `) every 3 chars for better reading
-		 **/
-		const displayedNationalNumber =
-			value && isValidPhoneNumber(value) ? format(value, "NATIONAL") : nationalPhoneNumber.join(" ");
-
 		return (
 			<input
 				ref={ref}
 				type="tel"
 				autoComplete="tel"
 				className="PhoneInputInput"
-				value={displayedNationalNumber}
+				value={value}
 				onBlur={onBlur}
 				onFocus={onFocus}
-				onChange={handleChange}
+				onChange={onChange}
 			/>
 		);
 	}
@@ -226,7 +239,7 @@ const PhoneNumberTextField: FC<PhoneNumberTextFieldProps> = forwardRef(
 PhoneNumberTextField.displayName = "PhoneNumberTextField";
 
 export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberInputProps) => {
-	const { onChange, value, error } = props;
+	const { onChange, value, error, forceShowError } = props;
 	const [isTouched, setIsTouched] = useState(false);
 
 	// call the `onChange` and set form as touched
@@ -239,7 +252,8 @@ export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberIn
 	);
 
 	return (
-		<>
+		<div>
+			<label htmlFor={props.name}>{props.label}</label>
 			<PhoneInputWithCountrySelect
 				className={`phone-input ${error !== undefined ? "phone-input-error" : ""}`}
 				value={value}
@@ -247,14 +261,14 @@ export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberIn
 				international={true}
 				addInternationalOption={false}
 				withCountryCallingCode={false}
-				countryCallingCodeEditable={false}
+				countryCallingCodeEditable={true}
 				countrySelectComponent={
 					PhoneNumberCountrySelect // use custom component because the default one doesn't display country calling code
 				}
 				inputComponent={
 					PhoneNumberTextField // use custom component because the default one always show country calling code in the text field
 				}></PhoneInputWithCountrySelect>
-			{isTouched && error !== undefined && (
+			{(isTouched || forceShowError) && error !== undefined && (
 				<div className="input-field-error block-small block-error">
 					<img
 						className="input-field-error-icon"
@@ -264,6 +278,6 @@ export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberIn
 					<p className="input-field-error-text text-small text-error">{error}</p>
 				</div>
 			)}
-		</>
+		</div>
 	);
 };

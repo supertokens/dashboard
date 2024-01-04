@@ -77,7 +77,7 @@ interface IFetchDataArgs {
 	ignoreErrors?: boolean;
 }
 
-export const useFetchData = () => {
+export const useFetchData = (skipTriggeringErrorBoundary = false) => {
 	const [statusCode, setStatusCode] = useState<number>(0);
 
 	const fetchData = async ({
@@ -140,7 +140,12 @@ export const useFetchData = () => {
 		return response;
 	};
 
-	if (statusCode < 300 || statusCode === HTTPStatusCodes.UNAUTHORIZED || statusCode === HTTPStatusCodes.FORBIDDEN) {
+	if (
+		statusCode < 300 ||
+		statusCode === HTTPStatusCodes.UNAUTHORIZED ||
+		statusCode === HTTPStatusCodes.FORBIDDEN ||
+		skipTriggeringErrorBoundary === true
+	) {
 		return fetchData;
 	}
 

@@ -82,6 +82,9 @@
 						color: var(--color-secondary-text);
 					}
 				}
+				&:hover {
+					background-color: var(--color-window-bg);
+				}
 			}
 
 			&.popup-active {
