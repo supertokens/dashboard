@@ -71,7 +71,7 @@ type CreatePasswordlessUserResponse =
 	  };
 
 const useCreateUserService = (): ICreateUserService => {
-	const fetchData = useFetchData();
+	const fetchData = useFetchData(true);
 
 	const createEmailPasswordUser = async (
 		tenantId: string | undefined,
@@ -87,14 +87,13 @@ const useCreateUserService = (): ICreateUserService => {
 					password,
 				}),
 			},
-			ignoreErrors: true,
 		});
 
 		if (response.ok) {
 			return await response.json();
 		}
 
-		throw new Error();
+		throw new Error("Something went wrong!");
 	};
 
 	const createPasswordlessUser = async (
@@ -112,14 +111,13 @@ const useCreateUserService = (): ICreateUserService => {
 					...data,
 				}),
 			},
-			ignoreErrors: true,
 		});
 
 		if (response.ok) {
 			return await response.json();
 		}
 
-		throw new Error();
+		throw new Error("Something went wrong!");
 	};
 
 	return { createEmailPasswordUser, createPasswordlessUser };
