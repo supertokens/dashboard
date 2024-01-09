@@ -38,6 +38,11 @@
 
 ### Feature tests:
 
+-   [ ] Dashboard Admin access.
+
+    -   [ ] Test all the `POST`, `PUT` and `DELETE` endpoints with admins only access enabled for the dashboard recipe.
+    -   [ ] Test all `POST`, `PUT` and `DELETE` endpoints without the admins only access enabled.
+
 -   [ ] Search
     -   [ ] Search with anything that results in an empty state in the UI (Should show an empty state explaining that there were no results)
     -   [ ] Search with an empty string (Dashboard should not allow this)
@@ -89,6 +94,7 @@
     -   [ ] Create one tenant (tenant1), and add 3 users to them. In the dashboard, when you switch to that tenant, it should list those users.
     -   [ ] Create a user in tenant1 and using backend sdk's(Go, Python, Node) associate the user to a different tenant and select that tenant on the dashboard from the tenants dropdown, it should show that user in the list
 -   [ ] User Roles and Permissions testing
+
     -   [ ] UserRoles page testing
         -   [ ] Test the empty state when there are no roles created on the roles page.
         -   [ ] Test creation, delete and updating functionality of the roles are working properly.
@@ -99,6 +105,21 @@
         -   [ ] Test adding and deleting roles to a user.
         -   [ ] Test the roles search feature and make sure that the list does not include any assigned roles in it.
         -   [ ] Test by associating the user with multiple tenants and assigning roles to the user in each tenant separately.
+
+-   [ ] User creation
+    -   [ ] Test without initializing any recipes on the backend SDK and ensure that the UI responds with correct alert errors.
+    -   [ ] Ensure the relevant warning message is shown while switching between authentication methods.
+    -   [ ] EmailPassword user creation.
+        -   [ ] Test EmailPassword user creation by enabling both `emailpassword` and `thirdpartyemailpassword` together and individually.
+        -   [ ] Test with custom form field validators; make sure that the overrides are working properly.
+        -   [ ] Test default email and password validations to ensure they are working properly.
+        -   [ ] Test that no duplicate users are created with the same email address.
+    -   [ ] Passwordless user creation.
+        -   [ ] Test Passwordless user creation by enabling both `passwordless` and `thirdpartypasswordless` together and individually.
+        -   [ ] Test creating a user with different `contactMethod`'s ensure that the frontend displays relevant UI based on the `contactMethod` selected.
+        -   [ ] Test default email and phoneNumber validations to ensure they are working properly.
+        -   [ ] Test user-defined custom email and phoneNumber validators to ensure they are working properly.
+    -   [ ] Test AccountLinking by creating an `emailpassword` and `passwordless` user with the same email and make sure that the accounts are linked.
 
 ## Documentation changes
 
