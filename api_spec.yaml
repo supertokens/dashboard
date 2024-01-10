@@ -1231,6 +1231,166 @@ paths:
                                         type: array
                                         items:
                                             type: string
+    /dashboard/api/tenants/list-with-user-count:
+        get:
+            tags:
+                - Multitenancy
+            summary: Get all tenants created in the core with the number of users for each tenant
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    tenants:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                tenantId:
+                                                    type: string
+                                                userCount:
+                                                    type: number
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+    /dashboard/api/tenant:
+        get:
+            tags:
+                - Multitenancy
+            summary: Get tenant info from the core
+            parameters:
+                - name: tenantId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "tenant1"
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                        status:
+                                            type: string
+                                            default: "OK"
+                                        coreConfig:
+                                            type: object
+                                        tenants:
+                                            type: array
+                                            items:
+                                                type: object
+                                                properties:
+                                                    tenantId:
+                                                        type: string
+                                                    emailPassword:
+                                                        type: object
+                                                        properties:
+                                                            enabled:
+                                                                type: boolean
+                                                    passwordless:
+                                                        type: object
+                                                        properties:
+                                                            enabled:
+                                                                type: boolean
+                                                    thirdParty:
+                                                        type: object
+                                                        properties:
+                                                            enabled:
+                                                                type: boolean
+                                                            providers:
+                                                                type: array
+                                                                items:
+                                                                    type: object
+                                                                    properties:
+                                                                        name:
+                                                                            type: string
+                                                                        id:
+                                                                            type: string
+                                                    coreConfig:
+                                                        type: object
+                                    - type: object
+                                      properties:
+                                        status:
+                                            type: string
+                                            default: "UNKNOWN_TENANT_ERROR"
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+        delete:
+            tags:
+                - Multitenancy
+            summary: Delete the tenant
+            parameters:
+                - name: tenantId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "tenant1"
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_TENANT_ERROR"
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
     /dashboard/api/tenants/list:
         get:
             tags:
