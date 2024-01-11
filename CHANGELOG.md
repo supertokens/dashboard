@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+-   Added API spec for certain multitenancy APIs which include getting all tenants with their user counts, getting all the info for a particular tenant and deleting a tenant
+
 ## [0.10.1] - 2024-01-09
 
 -   Fixed access denied modals zIndex value.
