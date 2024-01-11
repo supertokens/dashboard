@@ -1298,49 +1298,45 @@ paths:
                                 oneOf:
                                     - type: object
                                       properties:
-                                        status:
-                                            type: string
-                                            default: "OK"
-                                        coreConfig:
-                                            type: object
-                                        tenants:
-                                            type: array
-                                            items:
-                                                type: object
-                                                properties:
-                                                    tenantId:
-                                                        type: string
-                                                    emailPassword:
-                                                        type: object
-                                                        properties:
-                                                            enabled:
-                                                                type: boolean
-                                                    passwordless:
-                                                        type: object
-                                                        properties:
-                                                            enabled:
-                                                                type: boolean
-                                                    thirdParty:
-                                                        type: object
-                                                        properties:
-                                                            enabled:
-                                                                type: boolean
-                                                            providers:
-                                                                type: array
-                                                                items:
-                                                                    type: object
-                                                                    properties:
-                                                                        name:
-                                                                            type: string
-                                                                        id:
-                                                                            type: string
-                                                    coreConfig:
-                                                        type: object
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          tenant:
+                                              type: object
+                                              properties:
+                                                  id:
+                                                      type: string
+                                                  emailPassword:
+                                                      type: object
+                                                      properties:
+                                                          enabled:
+                                                              type: boolean
+                                                  passwordless:
+                                                      type: object
+                                                      properties:
+                                                          enabled:
+                                                              type: boolean
+                                                  thirdParty:
+                                                      type: object
+                                                      properties:
+                                                          enabled:
+                                                              type: boolean
+                                                          providers:
+                                                              type: array
+                                                              items:
+                                                                  type: object
+                                                                  properties:
+                                                                      name:
+                                                                          type: string
+                                                                      id:
+                                                                          type: string
+                                                  coreConfig:
+                                                      type: object
                                     - type: object
                                       properties:
-                                        status:
-                                            type: string
-                                            default: "UNKNOWN_TENANT_ERROR"
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_TENANT_ERROR"
                 401:
                     description: Unauthorised access
                     content:
