@@ -1477,6 +1477,125 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
+    /dashboard/api/tenants/user/associate:
+        put:
+            tags:
+                - Multitenancy
+            summary: Associate a user to a tenant
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                tenantId:
+                                    type: string
+                                userId:
+                                    type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          wasAlreadyAssociated:
+                                              type: boolean
+                                              default: false
+
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_USER_ID_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "EMAIL_ALREADY_EXISTS_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "PHONE_NUMBER_ALREADY_EXISTS_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "THIRD_PARTY_USER_ALREADY_EXISTS_ERROR"
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "ASSOCIATION_NOT_ALLOWED_ERROR"
+                                          reason:
+                                              type: string
+
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+    /dashboard/api/tenants/user/disassociate:
+        put:
+            tags:
+                - Multitenancy
+            summary: Disassociate a user from a tenant
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                tenantId:
+                                    type: string
+                                userId:
+                                    type: string
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    wasAssociated:
+                                        type: boolean
+                                        default: true
+
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
     /dashboard/api/tenants/login-methods:
         get:
             tags:
