@@ -1387,6 +1387,55 @@ paths:
                                 type: string
                                 enum:
                                     - Unauthorised access
+        post:
+            tags:
+                - Multitenancy
+            summary: Create or update a tenant
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                tenantId:
+                                    type: string
+                                emailPasswordEnabled:
+                                    type: boolean
+                                passwordlessEnabled:
+                                    type: boolean
+                                thirdPartyEnabled:
+                                    type: boolean
+                                coreConfig:
+                                    type: object
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    createdNew:
+                                        type: boolean
+
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
     /dashboard/api/tenants/list:
         get:
             tags:
