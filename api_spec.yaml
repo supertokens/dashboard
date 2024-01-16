@@ -1231,46 +1231,6 @@ paths:
                                         type: array
                                         items:
                                             type: string
-    /dashboard/api/tenants/list-with-user-count:
-        get:
-            tags:
-                - Multitenancy
-            summary: Get all tenants created in the core with the number of users for each tenant
-            parameters:
-                - name: authorization
-                  in: header
-                  required: true
-                  schema:
-                      type: string
-                      example: "Bearer API_KEY"
-            responses:
-                200:
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    status:
-                                        type: string
-                                        default: "OK"
-                                    tenants:
-                                        type: array
-                                        items:
-                                            type: object
-                                            properties:
-                                                tenantId:
-                                                    type: string
-                                                userCount:
-                                                    type: number
-                401:
-                    description: Unauthorised access
-                    content:
-                        text/plain:
-                            schema:
-                                type: string
-                                enum:
-                                    - Unauthorised access
     /dashboard/api/tenant:
         get:
             tags:
@@ -1328,8 +1288,50 @@ paths:
                                                                   properties:
                                                                       name:
                                                                           type: string
-                                                                      id:
+                                                                      thirdPartyId:
                                                                           type: string
+                                                                      authorisationEndpoint:
+                                                                          type: string
+                                                                      authorizationEndpointQueryParams:
+                                                                          type: object
+                                                                      tokenEndpoint:
+                                                                          type: string
+                                                                      tokenEndpointBodyParams:
+                                                                          type: object
+                                                                      userInfoEndpoint:
+                                                                          type: string
+                                                                      userInfoEndpointQueryParams:
+                                                                          type: object
+                                                                      userInfoEndpointHeaders:
+                                                                          type: object
+                                                                      jwksURI:
+                                                                          type: string
+                                                                      oidcDiscoveryEndpoint:
+                                                                          type: string
+                                                                      userInfoMap:
+                                                                          type: object
+                                                                      requireEmail:
+                                                                          type: boolean
+                                                                      clients:
+                                                                          type: array
+                                                                          items:
+                                                                              type: object
+                                                                              properties:
+                                                                                  clientType:
+                                                                                      type: string
+                                                                                  clientId:
+                                                                                      type: string
+                                                                                  clientSecret:
+                                                                                      type: string
+                                                                                  scope:
+                                                                                      type: array
+                                                                                      items:
+                                                                                          type: string
+                                                                                  forcePKCE:
+                                                                                      type: boolean
+                                                                                  additionalConfig:
+                                                                                      type: object
+
                                                   coreConfig:
                                                       type: object
                                     - type: object
@@ -1420,13 +1422,19 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    status:
-                                        type: string
-                                        default: "OK"
-                                    createdNew:
-                                        type: boolean
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNew:
+                                              type: boolean
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INVALID_TENANT_ID"
 
                 401:
                     description: Unauthorised access
@@ -1441,6 +1449,19 @@ paths:
             tags:
                 - Multitenancy
             summary: Get all tenants created in the core
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+                - name: withUserCount
+                  in: query
+                  required: false
+                  schema:
+                      type: boolean
+                      default: false
             responses:
                 200:
                     description: Success
@@ -1471,12 +1492,14 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
-
                                                 thirdParty:
                                                     type: object
                                                     properties:
                                                         enabled:
                                                             type: boolean
+                                                usersCount:
+                                                    type: number
+                                                    example: 1000
     /dashboard/api/tenants/user/associate:
         put:
             tags:
