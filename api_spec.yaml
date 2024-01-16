@@ -1370,17 +1370,11 @@ paths:
                     content:
                         application/json:
                             schema:
-                                oneOf:
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "OK"
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "UNKNOWN_TENANT_ERROR"
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
                 401:
                     description: Unauthorised access
                     content:
@@ -1619,11 +1613,157 @@ paths:
                                 type: string
                                 enum:
                                     - Unauthorised access
+    /dashboard/api/tenants/third-party:
+        post:
+            tags:
+                - Multitenancy
+            summary: Create or update third party config for a tenant
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                tenantId:
+                                    type: string
+                                providerConfig:
+                                    type: object
+                                    properties:
+                                        name:
+                                            type: string
+                                        thirdPartyId:
+                                            type: string
+                                        authorisationEndpoint:
+                                            type: string
+                                        authorizationEndpointQueryParams:
+                                            type: object
+                                        tokenEndpoint:
+                                            type: string
+                                        tokenEndpointBodyParams:
+                                            type: object
+                                        userInfoEndpoint:
+                                            type: string
+                                        userInfoEndpointQueryParams:
+                                            type: object
+                                        userInfoEndpointHeaders:
+                                            type: object
+                                        jwksURI:
+                                            type: string
+                                        oidcDiscoveryEndpoint:
+                                            type: string
+                                        userInfoMap:
+                                            type: object
+                                        requireEmail:
+                                            type: boolean
+                                        clients:
+                                            type: array
+                                            items:
+                                                type: object
+                                                properties:
+                                                    clientType:
+                                                        type: string
+                                                    clientId:
+                                                        type: string
+                                                    clientSecret:
+                                                        type: string
+                                                    scope:
+                                                        type: array
+                                                        items:
+                                                            type: string
+                                                    forcePKCE:
+                                                        type: boolean
+                                                    additionalConfig:
+                                                        type: object
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNew:
+                                              type: boolean
+                                              default: true
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INVALID_PROVIDER_CONFIG"
+
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+        delete:
+            tags:
+                - Multitenancy
+            summary: Delete thirdParty config for a tenant
+            parameters:
+                - name: tenantId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "tenant1"
+                - name: thirdPartyId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "google"
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
     /dashboard/api/tenants/login-methods:
         get:
             tags:
                 - Multitenancy
             summary: Get all tenants and available login methods.
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
             responses:
                 200:
                     description: Success
