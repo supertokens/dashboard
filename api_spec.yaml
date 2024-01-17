@@ -1760,11 +1760,11 @@ paths:
                                 type: string
                                 enum:
                                     - Unauthorised access
-    /dashboard/api/tenants/third-party/boxy-saml:
+    /dashboard/api/tenants/third-party/boxy-saml/clients-with-saml-metadata:
         put:
             tags:
                 - Multitenancy
-            summary: Create or update third party config for a tenant with BoxyHQ
+            summary: Create or update client of Boxy SAML provider using SAML XML.
             parameters:
                 - name: authorization
                   in: header
@@ -1773,6 +1773,7 @@ paths:
                       type: string
                       example: "Bearer API_KEY"
             requestBody:
+                description: Learn more about the options and how it works [here](https://supertokens.com/docs/thirdpartyemailpassword/common-customizations/saml/with-boxyhq/flow-diagram).
                 content:
                     application/json:
                         schema:
@@ -1780,13 +1781,20 @@ paths:
                             properties:
                                 thirdPartyIdSuffix:
                                     type: string
-                                boxyUrl:
+                                    description: Optional suffix for the thirdPartyId
+                                boxyURL:
                                     type: string
-                                boxyApiKey:
+                                    description: Base URL of the SAML Jackson server
+                                boxyAPIKey:
                                     type: string
+                                    description: API key of the SAML Jackson server
                                 encodedRawMetadata:
                                     type: string
-                                redirectUrl:
+                                    description: Base64 encoded XML metadata file. Not required if samlMetadataURL is provided.
+                                samlMetadataURL:
+                                    type: string
+                                    description: URL of the XML metadata file. Not required if encodedRawMetadata is provided.
+                                redirectURL:
                                     type: string
                                 tenantId:
                                     type: string
@@ -1799,7 +1807,6 @@ paths:
                             required:
                                 - boxyUrl
                                 - boxyApiKey
-                                - encodedRawMetadata
                                 - redirectUrl
                                 - tenantId
                                 - product
