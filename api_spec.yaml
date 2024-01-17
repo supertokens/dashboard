@@ -1331,6 +1331,10 @@ paths:
                                                                                       type: boolean
                                                                                   additionalConfig:
                                                                                       type: object
+                                                                              required:
+                                                                                  - clientId
+                                                                  required:
+                                                                      - thirdPartyId
 
                                                   coreConfig:
                                                       type: object
@@ -1450,7 +1454,7 @@ paths:
                   schema:
                       type: string
                       example: "Bearer API_KEY"
-                - name: withUserCount
+                - name: includeUserCount
                   in: query
                   required: false
                   schema:
@@ -1681,6 +1685,10 @@ paths:
                                                         type: boolean
                                                     additionalConfig:
                                                         type: object
+                                                required:
+                                                    - clientId
+                                    required:
+                                        - thirdPartyId
             responses:
                 200:
                     description: Success
@@ -1744,6 +1752,81 @@ paths:
                                     status:
                                         type: string
                                         default: "OK"
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+    /dashboard/api/tenants/third-party/boxy-saml:
+        put:
+            tags:
+                - Multitenancy
+            summary: Create or update third party config for a tenant with BoxyHQ
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                thirdPartyIdSuffix:
+                                    type: string
+                                boxyUrl:
+                                    type: string
+                                boxyApiKey:
+                                    type: string
+                                encodedRawMetadata:
+                                    type: string
+                                redirectUrl:
+                                    type: string
+                                tenantId:
+                                    type: string
+                                product:
+                                    type: string
+                                name:
+                                    type: string
+                                description:
+                                    type: string
+                            required:
+                                - boxyUrl
+                                - boxyApiKey
+                                - encodedRawMetadata
+                                - redirectUrl
+                                - tenantId
+                                - product
+                                - name
+                                - description
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNew:
+                                              type: boolean
+                                              default: true
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "INVALID_CONFIG"
+                                          reason:
+                                              type: string
                 401:
                     description: Unauthorised access
                     content:
