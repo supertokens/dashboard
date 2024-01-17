@@ -1773,7 +1773,7 @@ paths:
                       type: string
                       example: "Bearer API_KEY"
             requestBody:
-                description: Learn more about the options and how it works [here](https://supertokens.com/docs/thirdpartyemailpassword/common-customizations/saml/with-boxyhq/flow-diagram).
+                description: Learn more about the options and how it works [here](https://supertokens.com/docs/thirdpartyemailpassword/common-customizations/saml/with-boxyhq/integration-steps).
                 content:
                     application/json:
                         schema:
@@ -1790,8 +1790,8 @@ paths:
                                     description: API key of the SAML Jackson server
                                 encodedRawMetadata:
                                     type: string
-                                    description: Base64 encoded XML metadata file. Not required if samlMetadataURL is provided.
-                                samlMetadataURL:
+                                    description: Base64 encoded XML metadata file. Not required if metadataURL is provided.
+                                metadataURL:
                                     type: string
                                     description: URL of the XML metadata file. Not required if encodedRawMetadata is provided.
                                 redirectURL:
