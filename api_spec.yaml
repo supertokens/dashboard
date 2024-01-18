@@ -1755,6 +1755,9 @@ paths:
                                     status:
                                         type: string
                                         default: "OK"
+                                    didConfigExist:
+                                        type: boolean
+                                        default: true
                 401:
                     description: Unauthorised access
                     content:
