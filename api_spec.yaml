@@ -1781,66 +1781,24 @@ paths:
                     application/json:
                         schema:
                             oneOf:
-                                - type: object
-                                  properties:
-                                      thirdPartyIdSuffix:
-                                          type: string
-                                          description: Optional suffix for the thirdPartyId
-                                      boxyURL:
-                                          type: string
-                                          description: Base URL of the SAML Jackson server
-                                      boxyAPIKey:
-                                          type: string
-                                          description: API key of the SAML Jackson server
-                                      base64EncodedSAMLMetadata:
-                                          type: string
-                                          description: Base64 encoded XML metadata file. Not required if metadataURL is provided.
-                                      tenantId:
-                                          type: string
-                                      product:
-                                          type: string
-                                      name:
-                                          type: string
-                                      description:
-                                          type: string
-                                  required:
-                                      - boxyURL
-                                      - boxyAPIKey
-                                      - base64EncodedSAMLMetadata
-                                      - tenantId
-                                      - product
-                                      - name
-                                      - description
-                                - type: object
-                                  properties:
-                                      thirdPartyIdSuffix:
-                                          type: string
-                                          description: Optional suffix for the thirdPartyId
-                                      boxyURL:
-                                          type: string
-                                          description: Base URL of the SAML Jackson server
-                                      boxyAPIKey:
-                                          type: string
-                                          description: API key of the SAML Jackson server
-                                      SAMLMetadataURL:
-                                          type: string
-                                          description: URL of the XML metadata file. Not required if encodedRawMetadata is provided.
-                                      tenantId:
-                                          type: string
-                                      product:
-                                          type: string
-                                      name:
-                                          type: string
-                                      description:
-                                          type: string
-                                  required:
-                                      - boxyURL
-                                      - boxyAPIKey
-                                      - SAMLMetadataURL
-                                      - tenantId
-                                      - product
-                                      - name
-                                      - description
+                                - allOf:
+                                      - $ref: "#/components/schemas/boxySAMLBaseConfig"
+                                      - type: object
+                                        properties:
+                                            base64EncodedSAMLMetadata:
+                                                type: string
+                                                description: Base64 encoded XML metadata file. Not required if metadataURL is provided.
+                                        required:
+                                            - base64EncodedSAMLMetadata
+                                - allOf:
+                                      - $ref: "#/components/schemas/boxySAMLBaseConfig"
+                                      - type: object
+                                        properties:
+                                            SAMLMetadataURL:
+                                                type: string
+                                                description: URL of the XML metadata file. Not required if encodedRawMetadata is provided.
+                                        required:
+                                            - SAMLMetadataURL
             responses:
                 200:
                     description: Success
@@ -2544,7 +2502,33 @@ components:
         tenantId:
             type: string
             example: "customer1"
-
+        boxySAMLBaseConfig:
+            type: object
+            properties:
+                thirdPartyIdSuffix:
+                    type: string
+                    description: Optional suffix for the thirdPartyId
+                boxyURL:
+                    type: string
+                    description: Base URL of the SAML Jackson server
+                boxyAPIKey:
+                    type: string
+                    description: API key of the SAML Jackson server
+                tenantId:
+                    type: string
+                product:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+            required:
+                - boxyURL
+                - boxyAPIKey
+                - tenantId
+                - product
+                - name
+                - description
 servers:
     # Added by API Auto Mocking Plugin
     - description: SwaggerHub API Auto Mocking
