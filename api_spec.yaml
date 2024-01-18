@@ -1264,7 +1264,7 @@ paths:
                                           tenant:
                                               type: object
                                               properties:
-                                                  id:
+                                                  tenantId:
                                                       type: string
                                                   emailPassword:
                                                       type: object
@@ -1379,6 +1379,9 @@ paths:
                                     status:
                                         type: string
                                         default: "OK"
+                                    didExist:
+                                        type: boolean
+                                        default: true
                 401:
                     description: Unauthorised access
                     content:
