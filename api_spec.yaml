@@ -1777,41 +1777,67 @@ paths:
                 content:
                     application/json:
                         schema:
-                            type: object
-                            properties:
-                                thirdPartyIdSuffix:
-                                    type: string
-                                    description: Optional suffix for the thirdPartyId
-                                boxyURL:
-                                    type: string
-                                    description: Base URL of the SAML Jackson server
-                                boxyAPIKey:
-                                    type: string
-                                    description: API key of the SAML Jackson server
-                                encodedRawMetadata:
-                                    type: string
-                                    description: Base64 encoded XML metadata file. Not required if metadataURL is provided.
-                                metadataURL:
-                                    type: string
-                                    description: URL of the XML metadata file. Not required if encodedRawMetadata is provided.
-                                redirectURL:
-                                    type: string
-                                tenantId:
-                                    type: string
-                                product:
-                                    type: string
-                                name:
-                                    type: string
-                                description:
-                                    type: string
-                            required:
-                                - boxyUrl
-                                - boxyApiKey
-                                - redirectUrl
-                                - tenantId
-                                - product
-                                - name
-                                - description
+                            oneOf:
+                                - type: object
+                                  properties:
+                                      thirdPartyIdSuffix:
+                                          type: string
+                                          description: Optional suffix for the thirdPartyId
+                                      boxyURL:
+                                          type: string
+                                          description: Base URL of the SAML Jackson server
+                                      boxyAPIKey:
+                                          type: string
+                                          description: API key of the SAML Jackson server
+                                      base64EncodedSAMLMetadata:
+                                          type: string
+                                          description: Base64 encoded XML metadata file. Not required if metadataURL is provided.
+                                      tenantId:
+                                          type: string
+                                      product:
+                                          type: string
+                                      name:
+                                          type: string
+                                      description:
+                                          type: string
+                                  required:
+                                      - boxyURL
+                                      - boxyAPIKey
+                                      - base64EncodedSAMLMetadata
+                                      - tenantId
+                                      - product
+                                      - name
+                                      - description
+                                - type: object
+                                  properties:
+                                      thirdPartyIdSuffix:
+                                          type: string
+                                          description: Optional suffix for the thirdPartyId
+                                      boxyURL:
+                                          type: string
+                                          description: Base URL of the SAML Jackson server
+                                      boxyAPIKey:
+                                          type: string
+                                          description: API key of the SAML Jackson server
+                                      SAMLMetadataURL:
+                                          type: string
+                                          description: URL of the XML metadata file. Not required if encodedRawMetadata is provided.
+                                      tenantId:
+                                          type: string
+                                      product:
+                                          type: string
+                                      name:
+                                          type: string
+                                      description:
+                                          type: string
+                                  required:
+                                      - boxyURL
+                                      - boxyAPIKey
+                                      - SAMLMetadataURL
+                                      - tenantId
+                                      - product
+                                      - name
+                                      - description
             responses:
                 200:
                     description: Success
