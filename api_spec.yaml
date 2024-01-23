@@ -1335,7 +1335,19 @@ paths:
                                                                                   - clientId
                                                                   required:
                                                                       - thirdPartyId
-
+                                                  firstFactors:
+                                                      type: array
+                                                      items:
+                                                          type: string
+                                                      example:
+                                                          - "emailpassword"
+                                                          - "thirdparty"
+                                                  requiredSecondaryFactors:
+                                                      type: array
+                                                      items:
+                                                          type: string
+                                                      example:
+                                                          - "otp-email"
                                                   coreConfig:
                                                       type: object
                                     - type: object
@@ -1417,6 +1429,21 @@ paths:
                                     type: boolean
                                 coreConfig:
                                     type: object
+                                firstFactors:
+                                    type: array
+                                    items:
+                                        type: string
+                                    example:
+                                        - "emailpassword"
+                                        - "thirdparty"
+                                requiredSecondaryFactors:
+                                    type: array
+                                    items:
+                                        type: string
+                                    example:
+                                        - "otp-email"
+                            required:
+                                - tenantId
             responses:
                 200:
                     description: Success
@@ -1457,12 +1484,6 @@ paths:
                   schema:
                       type: string
                       example: "Bearer API_KEY"
-                - name: includeUserCount
-                  in: query
-                  required: false
-                  schema:
-                      type: boolean
-                      default: false
             responses:
                 200:
                     description: Success
@@ -1498,9 +1519,6 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
-                                                usersCount:
-                                                    type: number
-                                                    example: 1000
     /dashboard/api/tenants/user/associate:
         put:
             tags:
@@ -1824,6 +1842,60 @@ paths:
                                               default: "INVALID_CONFIG"
                                           reason:
                                               type: string
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+    /dashboard/api/tenants/core-config/list:
+        get:
+            tags:
+                - Multitenancy
+            summary: Gets all the possible core config options.
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    oneOf:
+                                        - allOf:
+                                              - $ref: "#/components/schemas/coreConfigType"
+                                              - type: object
+                                                properties:
+                                                    type:
+                                                        type: string
+                                                        enum:
+                                                            - string
+                                                            - boolean
+                                                            - number
+                                                        description: Data type of the property
+                                        - allOf:
+                                              - $ref: "#/components/schemas/coreConfigType"
+                                              - type: object
+                                                properties:
+                                                    type:
+                                                        type: string
+                                                        enum:
+                                                            - enum
+                                                        description: Data type of the property
+                                                    options:
+                                                        type: array
+                                                        items:
+                                                            type: string
+                                                        description: List of possible values for the property in case it is of enum type
                 401:
                     description: Unauthorised access
                     content:
@@ -2532,6 +2604,29 @@ components:
                 - product
                 - name
                 - description
+        coreConfigType:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Name of the property
+                defaultValue:
+                    oneOf:
+                        - type: string
+                        - type: boolean
+                        - type: number
+                    nullable: true
+                    description: Default value of the property
+                description:
+                    type: string
+                    description: Description of the property
+                differentAcrossTenants:
+                    type: boolean
+                    description: True if the property is different across tenants
+                isNullable:
+                    type: boolean
+                    description: True if the property is nullable
+
 servers:
     # Added by API Auto Mocking Plugin
     - description: SwaggerHub API Auto Mocking
