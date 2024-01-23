@@ -1284,57 +1284,7 @@ paths:
                                                           providers:
                                                               type: array
                                                               items:
-                                                                  type: object
-                                                                  properties:
-                                                                      name:
-                                                                          type: string
-                                                                      thirdPartyId:
-                                                                          type: string
-                                                                      authorisationEndpoint:
-                                                                          type: string
-                                                                      authorizationEndpointQueryParams:
-                                                                          type: object
-                                                                      tokenEndpoint:
-                                                                          type: string
-                                                                      tokenEndpointBodyParams:
-                                                                          type: object
-                                                                      userInfoEndpoint:
-                                                                          type: string
-                                                                      userInfoEndpointQueryParams:
-                                                                          type: object
-                                                                      userInfoEndpointHeaders:
-                                                                          type: object
-                                                                      jwksURI:
-                                                                          type: string
-                                                                      oidcDiscoveryEndpoint:
-                                                                          type: string
-                                                                      userInfoMap:
-                                                                          type: object
-                                                                      requireEmail:
-                                                                          type: boolean
-                                                                      clients:
-                                                                          type: array
-                                                                          items:
-                                                                              type: object
-                                                                              properties:
-                                                                                  clientType:
-                                                                                      type: string
-                                                                                  clientId:
-                                                                                      type: string
-                                                                                  clientSecret:
-                                                                                      type: string
-                                                                                  scope:
-                                                                                      type: array
-                                                                                      items:
-                                                                                          type: string
-                                                                                  forcePKCE:
-                                                                                      type: boolean
-                                                                                  additionalConfig:
-                                                                                      type: object
-                                                                              required:
-                                                                                  - clientId
-                                                                  required:
-                                                                      - thirdPartyId
+                                                                  $ref: "#/components/schemas/thirdPartyProvider"
                                                   firstFactors:
                                                       type: array
                                                       items:
@@ -1350,6 +1300,8 @@ paths:
                                                           - "otp-email"
                                                   coreConfig:
                                                       type: object
+                                                  usersCount:
+                                                      type: number
                                     - type: object
                                       properties:
                                           status:
@@ -1659,57 +1611,7 @@ paths:
                                 tenantId:
                                     type: string
                                 providerConfig:
-                                    type: object
-                                    properties:
-                                        name:
-                                            type: string
-                                        thirdPartyId:
-                                            type: string
-                                        authorisationEndpoint:
-                                            type: string
-                                        authorizationEndpointQueryParams:
-                                            type: object
-                                        tokenEndpoint:
-                                            type: string
-                                        tokenEndpointBodyParams:
-                                            type: object
-                                        userInfoEndpoint:
-                                            type: string
-                                        userInfoEndpointQueryParams:
-                                            type: object
-                                        userInfoEndpointHeaders:
-                                            type: object
-                                        jwksURI:
-                                            type: string
-                                        oidcDiscoveryEndpoint:
-                                            type: string
-                                        userInfoMap:
-                                            type: object
-                                        requireEmail:
-                                            type: boolean
-                                        clients:
-                                            type: array
-                                            items:
-                                                type: object
-                                                properties:
-                                                    clientType:
-                                                        type: string
-                                                    clientId:
-                                                        type: string
-                                                    clientSecret:
-                                                        type: string
-                                                    scope:
-                                                        type: array
-                                                        items:
-                                                            type: string
-                                                    forcePKCE:
-                                                        type: boolean
-                                                    additionalConfig:
-                                                        type: object
-                                                required:
-                                                    - clientId
-                                    required:
-                                        - thirdPartyId
+                                    $ref: "#/components/schemas/thirdPartyProvider"
             responses:
                 200:
                     description: Success
@@ -1896,6 +1798,35 @@ paths:
                                                         items:
                                                             type: string
                                                         description: List of possible values for the property in case it is of enum type
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+    /dashboard/api/tenants/built-in-factors/list:
+        get:
+            tags:
+                - Multitenancy
+            summary: Gets the list of built-in factors that can be used for firstFactor and requiredSecondaryFactors.
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: string
                 401:
                     description: Unauthorised access
                     content:
@@ -2577,6 +2508,58 @@ components:
         tenantId:
             type: string
             example: "customer1"
+        thirdPartyProvider:
+            type: object
+            properties:
+                name:
+                    type: string
+                thirdPartyId:
+                    type: string
+                authorisationEndpoint:
+                    type: string
+                authorizationEndpointQueryParams:
+                    type: object
+                tokenEndpoint:
+                    type: string
+                tokenEndpointBodyParams:
+                    type: object
+                userInfoEndpoint:
+                    type: string
+                userInfoEndpointQueryParams:
+                    type: object
+                userInfoEndpointHeaders:
+                    type: object
+                jwksURI:
+                    type: string
+                oidcDiscoveryEndpoint:
+                    type: string
+                userInfoMap:
+                    type: object
+                requireEmail:
+                    type: boolean
+                clients:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            clientType:
+                                type: string
+                            clientId:
+                                type: string
+                            clientSecret:
+                                type: string
+                            scope:
+                                type: array
+                                items:
+                                    type: string
+                            forcePKCE:
+                                type: boolean
+                            additionalConfig:
+                                type: object
+                        required:
+                            - clientId
+            required:
+                - thirdPartyId
         boxySAMLBaseConfig:
             type: object
             properties:
