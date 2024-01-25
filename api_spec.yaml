@@ -2603,6 +2603,7 @@ components:
                 - product
                 - name
                 - description
+                - redirectURI
         coreConfigType:
             type: object
             properties:
