@@ -1300,7 +1300,7 @@ paths:
                                                           - "otp-email"
                                                   coreConfig:
                                                       type: object
-                                                  usersCount:
+                                                  userCount:
                                                       type: number
                                     - type: object
                                       properties:
@@ -1415,6 +1415,15 @@ paths:
                                           status:
                                               type: string
                                               default: "INVALID_TENANT_ID"
+                                          message:
+                                              type: string
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_TENANT_ERROR"
+                                          message:
+                                              type: string
 
                 401:
                     description: Unauthorised access
@@ -1632,6 +1641,8 @@ paths:
                                           status:
                                               type: string
                                               default: "INVALID_PROVIDER_CONFIG"
+                                          message:
+                                              type: string
 
                 401:
                     description: Unauthorised access
@@ -2572,6 +2583,9 @@ components:
                 boxyAPIKey:
                     type: string
                     description: API key of the SAML Jackson server
+                redirectURI:
+                    type: string
+                    description: The URL to redirect to after completing the login flow
                 tenantId:
                     type: string
                 product:
@@ -2579,6 +2593,8 @@ components:
                 name:
                     type: string
                 description:
+                    type: string
+                clientType:
                     type: string
             required:
                 - boxyURL
