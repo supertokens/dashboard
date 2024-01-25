@@ -1752,7 +1752,7 @@ paths:
                                 type: string
                                 enum:
                                     - Unauthorised access
-    /dashboard/api/tenants/core-config/list:
+    /dashboard/api/multitenancy/core-config/list:
         get:
             tags:
                 - Multitenancy
@@ -1806,7 +1806,7 @@ paths:
                                 type: string
                                 enum:
                                     - Unauthorised access
-    /dashboard/api/tenants/built-in-factors/list:
+    /dashboard/api/mfa/built-in-factors/list:
         get:
             tags:
                 - Multitenancy
