@@ -12,7 +12,7 @@ export const UserRolesListHeader = ({ setIsEditing, isEditing, isFeatureEnabled 
 	return (
 		<>
 			<div>
-				<div className="title">Asssigned User Roles</div>
+				<div className="title">Assigned User Roles</div>
 			</div>
 			{isFeatureEnabled ? (
 				<>
