@@ -2622,7 +2622,7 @@ components:
                     description: Description of the property
                 differentAcrossTenants:
                     type: boolean
-                    description: True if the property is different across tenants
+                    description: True if the property can be set different values per tenant
                 isNullable:
                     type: boolean
                     description: True if the property is nullable
