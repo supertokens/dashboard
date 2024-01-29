@@ -77,6 +77,7 @@ import "./assets/search.png";
 import "./assets/secuity-key.svg";
 import "./assets/spinner.svg";
 import "./assets/star_sparkle.svg";
+import "./assets/tenant-management.svg";
 import "./assets/trash-opened.svg";
 import "./assets/trash.svg";
 import "./assets/triangle-down.svg";

@@ -29,6 +29,7 @@ import { AccessDeniedContextProvider } from "./ui/contexts/AccessDeniedContext";
 import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
 import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
 import MainLayout from "./ui/layouts/mainLayout";
+import TenantManagement from "./ui/pages/tenants";
 import UserRolesList from "./ui/pages/userroles";
 
 function App() {
@@ -50,6 +51,10 @@ function App() {
 											<Route
 												path="/roles"
 												element={<UserRolesList />}
+											/>
+											<Route
+												path="/tenants"
+												element={<TenantManagement />}
 											/>
 											<Route
 												path="*"
