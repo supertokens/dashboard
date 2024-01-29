@@ -1354,7 +1354,7 @@ paths:
                                 type: string
                                 enum:
                                     - Unauthorised access
-        post:
+        put:
             tags:
                 - Multitenancy
             summary: Create or update a tenant
@@ -1402,28 +1402,13 @@ paths:
                     content:
                         application/json:
                             schema:
-                                oneOf:
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "OK"
-                                          createdNew:
-                                              type: boolean
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "INVALID_TENANT_ID"
-                                          message:
-                                              type: string
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "UNKNOWN_TENANT_ERROR"
-                                          message:
-                                              type: string
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    createdNew:
+                                        type: boolean
 
                 401:
                     description: Unauthorised access
@@ -1600,7 +1585,7 @@ paths:
                                 enum:
                                     - Unauthorised access
     /dashboard/api/tenants/third-party:
-        post:
+        put:
             tags:
                 - Multitenancy
             summary: Create or update third party config for a tenant
@@ -1627,23 +1612,14 @@ paths:
                     content:
                         application/json:
                             schema:
-                                oneOf:
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "OK"
-                                          createdNew:
-                                              type: boolean
-                                              default: true
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "INVALID_PROVIDER_CONFIG"
-                                          message:
-                                              type: string
-
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    createdNew:
+                                        type: boolean
+                                        default: true
                 401:
                     description: Unauthorised access
                     content:

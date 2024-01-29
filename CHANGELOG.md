@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Fix typo on user roles section on user details page.
 
-
 ## [0.10.1] - 2024-01-09
 
 -   Fixed access denied modals zIndex value.
