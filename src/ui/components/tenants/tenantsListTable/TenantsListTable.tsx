@@ -53,14 +53,14 @@ function TenantLoginMethods({ tenant }: { tenant: Tenant }) {
 	);
 }
 
-export function TenantsListTable({
+export const TenantsListTable = ({
 	tenants,
 	currentActivePage,
 	totalPages,
 	totalTenantsCount,
 	pageLimit,
 	setCurrentActivePage,
-}: TenantsListTableProps) {
+}: TenantsListTableProps) => {
 	const paginatedTenants = tenants?.slice((currentActivePage - 1) * pageLimit, currentActivePage * pageLimit);
 
 	return (
@@ -68,7 +68,7 @@ export function TenantsListTable({
 			className="theme-blue"
 			pagination={
 				<Pagination
-					className="roles-list-pagination"
+					className="tenant-list-table-pagination"
 					handleNext={() => setCurrentActivePage(currentActivePage + 1)}
 					handlePrevious={() => setCurrentActivePage(currentActivePage - 1)}
 					limit={pageLimit}
@@ -105,4 +105,4 @@ export function TenantsListTable({
 			</TableBody>
 		</Table>
 	);
-}
+};

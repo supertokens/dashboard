@@ -16,6 +16,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useGetTenantsList, type Tenant } from "../../../api/tenants/list";
 import { getImageUrl } from "../../../utils";
+import { SearchInput } from "../../components/searchInput/SearchInput";
 import { TenantsListTable } from "../../components/tenants/tenantsListTable/TenantsListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import "./index.scss";
@@ -58,6 +59,15 @@ export default function TenantManagement() {
 				One place to manage all your tenants. Create or edit tenants and their login methods according to your
 				needs.
 			</p>
+			<div className="search-container">
+				<SearchInput
+					placeholder="Search"
+					onClear={() => {
+						// eslint-disable-next-line no-console
+						console.log("clear");
+					}}
+				/>
+			</div>
 			<TenantsListTable
 				tenants={tenants}
 				currentActivePage={currentActivePage}

@@ -19,7 +19,7 @@ type RecipePillProps = {
 	thirdpartyId?: string;
 };
 
-export function RecipePill({ recipeId, label, thirdpartyId }: RecipePillProps) {
+export const RecipePill = ({ recipeId, label, thirdpartyId }: RecipePillProps) => {
 	return (
 		<div className={`pill ${recipeId} ${thirdpartyId}`}>
 			<span>{label}</span>
@@ -33,4 +33,4 @@ export function RecipePill({ recipeId, label, thirdpartyId }: RecipePillProps) {
 			)}
 		</div>
 	);
-}
+};
