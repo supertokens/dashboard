@@ -18,6 +18,7 @@ import React from "react";
 import { formatLongDate, formatNumber, getImageUrl } from "../../../utils";
 import { User, UserRecipeType } from "../../pages/usersList/types";
 import PhoneDisplay from "../phoneNumber/PhoneNumber";
+import { RecipePill } from "../recipePill/RecipePill";
 import { UserDetailProps } from "../userDetail/userDetail";
 import "./UsersListTable.scss";
 
@@ -226,17 +227,11 @@ export const UserRecipePill = ({ user }: { user: User }) => {
 	const thirdpartyId = loginMethods.length > 1 ? "" : user.thirdParty[0]?.id;
 	const recipeId = loginMethods.length > 1 ? "multiple" : loginMethods[0].recipeId;
 	return (
-		<div className={`pill ${recipeId} ${thirdpartyId}`}>
-			<span>{UserRecipeTypeText[recipeId]}</span>
-			{thirdpartyId && (
-				<span
-					className="thirdparty-name"
-					title={thirdpartyId}>
-					{" "}
-					- {thirdpartyId}
-				</span>
-			)}
-		</div>
+		<RecipePill
+			recipeId={recipeId}
+			label={UserRecipeTypeText[recipeId]}
+			thirdpartyId={thirdpartyId}
+		/>
 	);
 };
 

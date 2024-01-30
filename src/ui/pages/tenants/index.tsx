@@ -16,13 +16,20 @@
 import { useContext, useEffect, useState } from "react";
 import { useGetTenantsList, type Tenant } from "../../../api/tenants/list";
 import { getImageUrl } from "../../../utils";
+import { TenantsListTable } from "../../components/tenants/tenantsListTable/TenantsListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import "./index.scss";
+
+const TENANTS_PAGINATION_LIMIT = 10;
 
 export default function TenantManagement() {
 	const { fetchTenants } = useGetTenantsList();
 	const { showToast } = useContext(PopupContentContext);
 	const [tenants, setTenants] = useState<Array<Tenant> | undefined>(undefined);
+
+	const [currentActivePage, setCurrentActivePage] = useState(1);
+	const totalTenantsCount = Array.isArray(tenants) ? tenants.length : 0;
+	const totalPages = Math.ceil(totalTenantsCount / TENANTS_PAGINATION_LIMIT);
 
 	useEffect(() => {
 		const getTenants = async () => {
@@ -51,7 +58,14 @@ export default function TenantManagement() {
 				One place to manage all your tenants. Create or edit tenants and their login methods according to your
 				needs.
 			</p>
-			{/* {renderContent()} */}
+			<TenantsListTable
+				tenants={tenants}
+				currentActivePage={currentActivePage}
+				totalPages={totalPages}
+				totalTenantsCount={totalTenantsCount}
+				setCurrentActivePage={setCurrentActivePage}
+				pageLimit={TENANTS_PAGINATION_LIMIT}
+			/>
 		</div>
 	);
 }
