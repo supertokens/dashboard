@@ -13,24 +13,45 @@
  * under the License.
  */
 
-import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
+import { useContext, useEffect, useState } from "react";
+import { useGetTenantsList, type Tenant } from "../../../api/tenants/list";
+import { getImageUrl } from "../../../utils";
+import { PopupContentContext } from "../../contexts/PopupContentContext";
 import "./index.scss";
 
 export default function TenantManagement() {
+	const { fetchTenants } = useGetTenantsList();
+	const { showToast } = useContext(PopupContentContext);
+	const [tenants, setTenants] = useState<Array<Tenant> | undefined>(undefined);
+
+	useEffect(() => {
+		const getTenants = async () => {
+			try {
+				const response = await fetchTenants();
+				if (response?.status === "OK") {
+					setTenants(response.tenants);
+				} else {
+					throw new Error("Failed to fetch tenants");
+				}
+			} catch (err) {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Something went wrong Please try again!</>,
+				});
+			}
+		};
+		void getTenants();
+	}, []);
+
 	return (
-		<AppEnvContextProvider
-			connectionURI={
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(window as any).connectionURI
-			}>
-			<div className="tenants-container">
-				<h1 className="tenants-title">Tenant Management</h1>
-				<p className="text-small tenants-subtitle">
-					One place to manage all your tenants. Create or edit tenants and their login methods according to
-					your needs.
-				</p>
-				{/* {renderContent()} */}
-			</div>
-		</AppEnvContextProvider>
+		<div className="tenants-container">
+			<h1 className="tenants-title">Tenant Management</h1>
+			<p className="text-small tenants-subtitle">
+				One place to manage all your tenants. Create or edit tenants and their login methods according to your
+				needs.
+			</p>
+			{/* {renderContent()} */}
+		</div>
 	);
 }
