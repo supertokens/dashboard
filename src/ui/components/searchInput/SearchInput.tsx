@@ -10,7 +10,7 @@ type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 	value: string;
 };
 
-export const SearchInput = (props: SearchInputProps) => {
+export const SearchInput = ({ onClear, ...rest }: SearchInputProps) => {
 	const [active, setActive] = useState<boolean>(false);
 
 	return (
@@ -21,23 +21,23 @@ export const SearchInput = (props: SearchInputProps) => {
 			/>
 			<input
 				type="text"
-				{...props}
+				{...rest}
 				onFocus={(e) => {
 					setActive(true);
 					// eslint-disable-next-line react/prop-types
-					props.onFocus?.(e);
+					rest?.onFocus?.(e);
 				}}
 				onBlur={(e) => {
 					setActive(false);
 					// eslint-disable-next-line react/prop-types
-					props.onBlur?.(e);
+					rest?.onBlur?.(e);
 				}}
 			/>
-			{(active || props.value) && (
+			{(active || rest?.value) && (
 				<button
 					aria-label="Clear Search"
 					onClick={() => {
-						props.onClear();
+						onClear();
 					}}>
 					<img
 						src={clearIcon}

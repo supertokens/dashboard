@@ -17,6 +17,7 @@ import Pagination from "../../pagination";
 import { RecipePill } from "../../recipePill/RecipePill";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
 import { PlaceholderTableRows } from "../../usersListTable/UsersListTable";
+import { NoTenants } from "../noTenants/NoTenants";
 import "./tenantsListTable.scss";
 
 type TenantsListTableProps = {
@@ -28,7 +29,7 @@ type TenantsListTableProps = {
 	setCurrentActivePage: (page: number) => void;
 };
 
-function TenantLoginMethods({ tenant }: { tenant: Tenant }) {
+const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
 	return (
 		<div className="tenant-login-methods">
 			{tenant.emailPassword.enabled && (
@@ -51,7 +52,7 @@ function TenantLoginMethods({ tenant }: { tenant: Tenant }) {
 			)}
 		</div>
 	);
-}
+};
 
 export const TenantsListTable = ({
 	tenants,
@@ -62,6 +63,10 @@ export const TenantsListTable = ({
 	setCurrentActivePage,
 }: TenantsListTableProps) => {
 	const paginatedTenants = tenants?.slice((currentActivePage - 1) * pageLimit, currentActivePage * pageLimit);
+
+	if (Array.isArray(paginatedTenants) && paginatedTenants.length === 0) {
+		return <NoTenants />;
+	}
 
 	return (
 		<Table

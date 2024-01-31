@@ -59,6 +59,7 @@ import "./assets/lock.svg";
 import "./assets/mail-opened.svg";
 import "./assets/mail.svg";
 import "./assets/no-results.svg";
+import "./assets/no-tenants.svg";
 import "./assets/no-users-graphic.svg";
 import "./assets/people-opened.svg";
 import "./assets/people-restricted.svg";
