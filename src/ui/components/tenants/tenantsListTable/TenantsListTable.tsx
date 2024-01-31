@@ -74,7 +74,7 @@ export const TenantsListTable = ({
 					limit={pageLimit}
 					currentActivePage={currentActivePage}
 					totalPages={totalPages}
-					offset={tenants?.length ?? 0}
+					offset={paginatedTenants?.length ?? 0}
 					totalItems={totalTenantsCount}
 				/>
 			}>

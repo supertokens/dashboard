@@ -5,15 +5,16 @@ import "./searchInput.scss";
 const searchIcon = getImageUrl("search.png");
 const clearIcon = getImageUrl("clear.svg");
 
-type SearchInputProps = React.HTMLAttributes<HTMLInputElement> & {
+type SearchInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 	onClear: () => void;
+	value: string;
 };
 
 export const SearchInput = (props: SearchInputProps) => {
 	const [active, setActive] = useState<boolean>(false);
 
 	return (
-		<div className={`search__input_wrapper ${active && "active"}`}>
+		<div className={`search__input_wrapper ${active ? "active" : ""}`}>
 			<img
 				src={searchIcon}
 				alt=""
@@ -32,14 +33,17 @@ export const SearchInput = (props: SearchInputProps) => {
 					props.onBlur?.(e);
 				}}
 			/>
-			{active && (
-				<img
-					src={clearIcon}
-					alt=""
+			{(active || props.value) && (
+				<button
+					aria-label="Clear Search"
 					onClick={() => {
 						props.onClear();
-					}}
-				/>
+					}}>
+					<img
+						src={clearIcon}
+						alt=""
+					/>
+				</button>
 			)}
 		</div>
 	);

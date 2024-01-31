@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useDeferredValue, useEffect, useState } from "react";
 import { useGetTenantsList, type Tenant } from "../../../api/tenants/list";
 import { getImageUrl } from "../../../utils";
 import { SearchInput } from "../../components/searchInput/SearchInput";
@@ -27,9 +27,13 @@ export default function TenantManagement() {
 	const { fetchTenants } = useGetTenantsList();
 	const { showToast } = useContext(PopupContentContext);
 	const [tenants, setTenants] = useState<Array<Tenant> | undefined>(undefined);
-
+	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [currentActivePage, setCurrentActivePage] = useState(1);
-	const totalTenantsCount = Array.isArray(tenants) ? tenants.length : 0;
+	const deferredSearchQuery = useDeferredValue(searchQuery);
+
+	const filteredTenants = tenants?.filter((tenant) => tenant.tenantId.includes(deferredSearchQuery));
+
+	const totalTenantsCount = Array.isArray(filteredTenants) ? filteredTenants.length : 0;
 	const totalPages = Math.ceil(totalTenantsCount / TENANTS_PAGINATION_LIMIT);
 
 	useEffect(() => {
@@ -63,13 +67,16 @@ export default function TenantManagement() {
 				<SearchInput
 					placeholder="Search"
 					onClear={() => {
-						// eslint-disable-next-line no-console
-						console.log("clear");
+						setSearchQuery("");
+					}}
+					value={searchQuery}
+					onChange={(e) => {
+						setSearchQuery(e.target.value);
 					}}
 				/>
 			</div>
 			<TenantsListTable
-				tenants={tenants}
+				tenants={filteredTenants}
 				currentActivePage={currentActivePage}
 				totalPages={totalPages}
 				totalTenantsCount={totalTenantsCount}
