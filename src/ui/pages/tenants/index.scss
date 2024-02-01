@@ -54,11 +54,16 @@
 	align-items: flex-start;
 	margin-bottom: 26px;
 
-	@media (max-width: 486px) {
-		flex-direction: column;
+	@media (max-width: 768px) {
 		gap: 16px;
 		#create-tenant {
-			margin-left: 0;
+			min-width: fit-content;
+		}
+	}
+
+	@media (max-width: 486px) {
+		flex-direction: column;
+		#create-tenant {
 			width: 100%;
 			justify-content: center;
 		}

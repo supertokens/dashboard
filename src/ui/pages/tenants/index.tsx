@@ -15,8 +15,11 @@
 
 import { useContext, useDeferredValue, useEffect, useState } from "react";
 import { useGetTenantsList, type Tenant } from "../../../api/tenants/list";
+import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { getImageUrl } from "../../../utils";
+import Button from "../../components/button";
 import { SearchInput } from "../../components/searchInput/SearchInput";
+import { CreateNewTenantDialog } from "../../components/tenants/creatNewTenant/CreateNewTenant";
 import { TenantsListTable } from "../../components/tenants/tenantsListTable/TenantsListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import "./index.scss";
@@ -28,6 +31,7 @@ export default function TenantManagement() {
 	const { showToast } = useContext(PopupContentContext);
 	const [tenants, setTenants] = useState<Array<Tenant> | undefined>(undefined);
 	const [searchQuery, setSearchQuery] = useState<string>("");
+	const [isCreateTenantDialogOpen, setIsCreateTenantDialogOpen] = useState(false);
 	const [currentActivePage, setCurrentActivePage] = useState(1);
 	const deferredSearchQuery = useDeferredValue(searchQuery);
 
@@ -74,6 +78,20 @@ export default function TenantManagement() {
 						setSearchQuery(e.target.value);
 					}}
 				/>
+				<Button
+					disabled={!Array.isArray(tenants)}
+					onClick={() => setIsCreateTenantDialogOpen(true)}
+					color="secondary"
+					id="create-tenant">
+					<PlusIcon />
+					Add Tenant
+				</Button>
+				{isCreateTenantDialogOpen && (
+					<CreateNewTenantDialog
+						onCloseDialog={() => setIsCreateTenantDialogOpen(false)}
+						currentTenantIds={tenants?.map((tenant) => tenant.tenantId) ?? []}
+					/>
+				)}
 			</div>
 			<TenantsListTable
 				tenants={filteredTenants}
