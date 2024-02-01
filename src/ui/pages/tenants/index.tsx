@@ -26,7 +26,7 @@ import "./index.scss";
 
 const TENANTS_PAGINATION_LIMIT = 10;
 
-export default function TenantManagement() {
+const TenantManagement = () => {
 	const { fetchTenants } = useGetTenantsList();
 	const { showToast } = useContext(PopupContentContext);
 	const [tenants, setTenants] = useState<Array<Tenant> | undefined>(undefined);
@@ -103,4 +103,6 @@ export default function TenantManagement() {
 			/>
 		</div>
 	);
-}
+};
+
+export default TenantManagement;
