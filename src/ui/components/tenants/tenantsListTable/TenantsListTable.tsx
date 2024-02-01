@@ -27,6 +27,7 @@ type TenantsListTableProps = {
 	totalTenantsCount: number;
 	pageLimit: number;
 	setCurrentActivePage: (page: number) => void;
+	selectTenant: (tenantId: string) => void;
 };
 
 const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
@@ -61,6 +62,7 @@ export const TenantsListTable = ({
 	totalTenantsCount,
 	pageLimit,
 	setCurrentActivePage,
+	selectTenant,
 }: TenantsListTableProps) => {
 	const paginatedTenants = tenants?.slice((currentActivePage - 1) * pageLimit, currentActivePage * pageLimit);
 
@@ -93,7 +95,20 @@ export const TenantsListTable = ({
 				{Array.isArray(paginatedTenants) ? (
 					paginatedTenants.map((tenant) => {
 						return (
-							<TableRow key={tenant.tenantId}>
+							<TableRow
+								role="button"
+								key={tenant.tenantId}
+								onClick={() => {
+									selectTenant(tenant.tenantId);
+								}}
+								// The following tabIndex and onKeyDown are required for accessibility
+								// to make the row clickable using keyboard
+								tabIndex={0}
+								onKeyDown={(event) => {
+									if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+										selectTenant(tenant.tenantId);
+									}
+								}}>
 								<TableCell>{tenant.tenantId}</TableCell>
 								<TableCell>
 									<TenantLoginMethods tenant={tenant} />

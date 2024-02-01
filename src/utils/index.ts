@@ -13,7 +13,8 @@
  * under the License.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { HTTPStatusCodes, StorageKeys } from "../constants";
 import { getAccessDeniedEvent } from "../events/accessDenied";
 import NetworkManager from "../services/network";
@@ -302,4 +303,10 @@ export const setSelectedTenantId = (tenantId: string) => {
 
 export const getSelectedTenantId = (): string | undefined => {
 	return localStorageHandler.getItem(StorageKeys.TENANT_ID);
+};
+
+export const useQuery = () => {
+	const { search } = useLocation();
+
+	return useMemo(() => new URLSearchParams(search), [search]);
 };
