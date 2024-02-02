@@ -15,8 +15,8 @@
 
 import { getApiUrl, useFetchData } from "../../utils";
 
-export const useTenantsService = () => {
-	const fetchData = useFetchData();
+export const useTenantCreateService = () => {
+	const fetchData = useFetchData(true);
 
 	const createOrUpdateTenant = async (
 		tenantId: string
@@ -27,6 +27,10 @@ export const useTenantsService = () => {
 		  }
 		| {
 				status: "MULTITENANCY_NOT_ENABLED_ERROR";
+		  }
+		| {
+				status: "INVALID_TENANT_ID_ERROR";
+				message: string;
 		  }
 		| undefined
 	> => {
@@ -45,10 +49,18 @@ export const useTenantsService = () => {
 			return body;
 		}
 
+		if (response.status === 500) {
+			const text = await response.text();
+			if (text.includes(`Cannot use '${tenantId}' as a tenantId`)) {
+				return {
+					status: "INVALID_TENANT_ID_ERROR",
+					message: `Cannot use '${tenantId}' as a Tenant Id.`,
+				};
+			}
+		}
+
 		return undefined;
 	};
 
-	return {
-		createOrUpdateTenant,
-	};
+	return createOrUpdateTenant;
 };

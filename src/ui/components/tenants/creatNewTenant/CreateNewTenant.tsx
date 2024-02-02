@@ -19,7 +19,7 @@ import Button from "../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../dialog";
 import InputField from "../../inputField/InputField";
 
-import { useTenantsService } from "../../../../api/tenants";
+import { useTenantCreateService } from "../../../../api/tenants";
 import "./createNewTenant.scss";
 
 export const CreateNewTenantDialog = ({
@@ -29,7 +29,7 @@ export const CreateNewTenantDialog = ({
 	onCloseDialog: () => void;
 	currentTenantIds: Array<string>;
 }) => {
-	const { createOrUpdateTenant } = useTenantsService();
+	const createOrUpdateTenant = useTenantCreateService();
 
 	const [tenantCreationError, setTenantCreationError] = useState<string | undefined>(undefined);
 	const [isCreatingTenant, setIsCreatingTenant] = useState(false);
@@ -46,6 +46,10 @@ export const CreateNewTenantDialog = ({
 			setTenantCreationError("Tenant Id can only contain letters, numbers and hyphens");
 			return;
 		}
+		if (tenantId.startsWith("appid-")) {
+			setTenantCreationError("Tenant Id cannot start with 'appid-'");
+			return;
+		}
 		if (currentTenantIds.includes(tenantId)) {
 			setTenantCreationError("Tenant Id already exists");
 			return;
@@ -60,6 +64,8 @@ export const CreateNewTenantDialog = ({
 				setTenantCreationError(
 					"Multitenancy is not enabled for your SuperTokens instance. Please add license key to enable it."
 				);
+			} else if (resp?.status === "INVALID_TENANT_ID_ERROR") {
+				setTenantCreationError(resp.message);
 			} else {
 				throw new Error("Failed to create tenant");
 			}
