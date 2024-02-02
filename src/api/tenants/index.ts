@@ -14,6 +14,7 @@
  */
 
 import { getApiUrl, useFetchData } from "../../utils";
+import { TenantInfo } from "./types";
 
 export const useTenantCreateService = () => {
 	const fetchData = useFetchData(true);
@@ -63,4 +64,37 @@ export const useTenantCreateService = () => {
 	};
 
 	return createOrUpdateTenant;
+};
+
+export const useTenantService = () => {
+	const fetchData = useFetchData();
+
+	const getTenantInfo = async (
+		tenantId: string
+	): Promise<
+		| {
+				status: "OK";
+				tenant: TenantInfo;
+		  }
+		| {
+				status: "UNKNOWN_TENANT_ERROR";
+		  }
+		| undefined
+	> => {
+		const response = await fetchData({
+			url: getApiUrl(`/api/tenant?tenantId=${tenantId}`),
+			method: "GET",
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
+	};
+
+	return {
+		getTenantInfo,
+	};
 };
