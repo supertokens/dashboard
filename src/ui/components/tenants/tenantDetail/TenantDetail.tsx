@@ -16,7 +16,10 @@ import { useEffect, useState } from "react";
 import { useTenantService } from "../../../../api/tenants";
 import { TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
+import { getImageUrl } from "../../../../utils";
 import { Loader } from "../../loader/Loader";
+import { TenantDetailContextProvider } from "./TenantDetailContext";
+import { TenantDetailHeader } from "./TenantDetailHeader";
 import "./tenantDetail.scss";
 
 export const TenantDetail = ({
@@ -60,5 +63,20 @@ export const TenantDetail = ({
 		);
 	}
 
-	return <div></div>;
+	return (
+		<TenantDetailContextProvider tenantInfo={tenant!}>
+			<div className="tenant-detail">
+				<button
+					className="button flat"
+					onClick={onBackButtonClicked}>
+					<img
+						src={getImageUrl("left-arrow-dark.svg")}
+						alt="Go back"
+					/>
+					<span>Back to all tenants</span>
+				</button>
+				<TenantDetailHeader />
+			</div>
+		</TenantDetailContextProvider>
+	);
 };

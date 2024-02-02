@@ -35,3 +35,45 @@
 		color: var(--color-link);
 	}
 }
+
+.tenant-detail {
+	padding: 72px 40px 48px;
+	max-width: 830px;
+	margin: auto;
+
+	&__header.panel {
+		margin-top: 40px;
+		display: flex;
+		padding: 24px;
+	}
+
+	&__header {
+		justify-content: space-between;
+
+		@media screen and (max-width: 480px) {
+			flex-direction: column;
+			gap: 16px;
+			button {
+				justify-content: center;
+			}
+		}
+
+		&__header_item {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+
+			&__title {
+				font-size: 18px;
+				font-weight: 500;
+				color: var(--color-secondary-text);
+			}
+
+			&__value {
+				font-size: 18px;
+				font-weight: 500;
+				color: var(--color-black);
+			}
+		}
+	}
+}
