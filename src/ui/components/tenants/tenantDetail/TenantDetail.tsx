@@ -18,6 +18,7 @@ import { TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { getImageUrl } from "../../../../utils";
 import { Loader } from "../../loader/Loader";
+import { CoreConfigSection } from "./CoreConfigSection";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
 import "./tenantDetail.scss";
@@ -75,7 +76,10 @@ export const TenantDetail = ({
 					/>
 					<span>Back to all tenants</span>
 				</button>
-				<TenantDetailHeader />
+				<div className="sections">
+					<TenantDetailHeader />
+					<CoreConfigSection />
+				</div>
 			</div>
 		</TenantDetailContextProvider>
 	);

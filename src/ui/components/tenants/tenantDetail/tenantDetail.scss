@@ -41,6 +41,12 @@
 	max-width: 830px;
 	margin: auto;
 
+	.sections {
+		display: flex;
+		gap: 32px;
+		flex-direction: column;
+	}
+
 	&__header.panel {
 		margin-top: 40px;
 		display: flex;
