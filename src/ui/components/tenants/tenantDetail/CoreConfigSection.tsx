@@ -13,6 +13,9 @@
  * under the License.
  */
 import { useState } from "react";
+import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
+import InputField from "../../inputField/InputField";
+import TooltipContainer from "../../tooltip/tooltip";
 import {
 	PanelHeader,
 	PanelHeaderAction,
@@ -22,17 +25,86 @@ import {
 
 export const CoreConfigSection = () => {
 	const [isEditing, setIsEditing] = useState(false);
+	const hasProperties = true;
 	return (
 		<PanelRoot>
 			<PanelHeader>
 				<PanelHeaderTitleWithTooltip tooltip="Customize the supertokens core settings that you want to use for your tenant.">
 					Core Config
 				</PanelHeaderTitleWithTooltip>
-				<PanelHeaderAction
-					setIsEditing={setIsEditing}
-					isEditing={isEditing}
-				/>
+				{hasProperties && (
+					<PanelHeaderAction
+						setIsEditing={setIsEditing}
+						isEditing={isEditing}
+					/>
+				)}
 			</PanelHeader>
+			{!hasProperties ? (
+				<div className="block-info block-medium text-small tenant-detail__no-config-info-block">
+					<div className="tenant-detail__no-config-info-block__no-property-pill">No Property Added</div>
+					<p>
+						There are no core config properties added by you for this tenant. You can click below to add new
+						property or{" "}
+						<a
+							target="_blank"
+							rel="noreferrer noopener"
+							href="https://github.com/supertokens/supertokens-core/blob/master/config.yaml">
+							click here
+						</a>{" "}
+						to see the list of all available core config property options.
+					</p>
+				</div>
+			) : (
+				<div className="tenant-detail__core-config-table">
+					<div className="tenant-detail__core-config-table__header">
+						<div className="tenant-detail__core-config-table__header__item">Property name</div>
+						<div className="tenant-detail__core-config-table__header__item">Value</div>
+					</div>
+					<div className="tenant-detail__core-config-table__body">
+						<CoreConfigTableRow
+							label="cookieDomain"
+							value="localhost"
+							type="string"
+							tooltip="The domain to set the cookie to. This is useful when you want to share the cookie across subdomains."
+						/>
+					</div>
+				</div>
+			)}
 		</PanelRoot>
+	);
+};
+
+type CoreConfigTableRow<T> = {
+	label: string;
+	value: T;
+	type: T extends string ? "string" : T extends number ? "number" : "boolean";
+	tooltip?: string;
+};
+
+type CoreConfigTableRowProps = CoreConfigTableRow<string> | CoreConfigTableRow<number> | CoreConfigTableRow<boolean>;
+
+const CoreConfigTableRow = ({ label, value, type, tooltip }: CoreConfigTableRowProps) => {
+	return (
+		<div className="tenant-detail__core-config-table__row">
+			<div className="tenant-detail__core-config-table__row__label">
+				{label}
+				{tooltip && (
+					<TooltipContainer tooltip={tooltip}>
+						<InfoIcon />
+					</TooltipContainer>
+				)}
+			</div>
+			<div className="tenant-detail__core-config-table__row__value">
+				{type === "string" && (
+					<InputField
+						type="text"
+						name={label}
+						handleChange={() => null}
+						disabled
+						value={value}
+					/>
+				)}
+			</div>
+		</div>
 	);
 };

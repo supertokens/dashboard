@@ -52,6 +52,7 @@ import "./assets/favicon.ico";
 import "./assets/form-field-error-icon.svg";
 import "./assets/hamburger-menu.svg";
 import "./assets/help-icon.png";
+import "./assets/info-icon.svg";
 import "./assets/left-arrow-dark.svg";
 import "./assets/loader.svg";
 import "./assets/lock-opened.svg";
