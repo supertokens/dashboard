@@ -74,5 +74,11 @@ input[type="checkbox"] {
 				}
 			}
 		}
+		&:disabled {
+			& + label {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+		}
 	}
 }

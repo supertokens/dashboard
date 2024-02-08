@@ -44,6 +44,7 @@ body {
 	--color-info-pill-bg: rgba(0, 98, 225);
 	--color-toggle-active-bg: rgb(29, 201, 160);
 	--color-toggle-inactive-bg: rgb(209, 209, 214);
+	--color-trash-button-hover-bg: rgba(237, 52, 78, 0.15);
 
 	/* Border Colors */
 	--color-border: rgb(229, 229, 229);
@@ -92,6 +93,8 @@ body {
 	--color-button-error-disabled: rgb(221, 221, 221);
 	--color-button-error-hover: rgb(222, 35, 61);
 	--color-button-error-shadow: rgba(237, 52, 78, 0.16);
+	--color-trash-button-hover: rgb(237, 52, 78);
+	--color-trash-button: rgb(141, 141, 141);
 
 	/* Z-index value for different of popup element */
 	--z-index-inline-popup: 1;

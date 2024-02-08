@@ -101,6 +101,7 @@
 			display: flex;
 			align-items: center;
 			padding: 10px 24px;
+			height: 40px;
 			border-radius: 6px;
 			background: var(--color-input-unfocused);
 			font-size: 14px;
@@ -117,6 +118,72 @@
 
 			&__value {
 				flex: 1;
+				padding-left: 18px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+
+				&__text {
+					max-width: 195px;
+					padding: 3px 8px;
+					background: var(--color-copy-box-bg);
+					color: var(--color-copy-box);
+					font-size: 13px;
+					font-family: "Menlo";
+					border-radius: 3px;
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+			}
+
+			&__delete-property {
+				padding: 6px;
+				border-radius: 3px;
+				border: 1px solid var(--color-border-command);
+				background: white;
+
+				& > svg > path {
+					fill: var(--color-trash-button) !important;
+				}
+
+				&:hover {
+					border: 1px solid var(--color-trash-button-hover);
+					background: var(--color-trash-button-hover-bg);
+
+					& > svg > path {
+						fill: var(--color-trash-button-hover) !important;
+					}
+				}
+			}
+		}
+	}
+
+	&__core-config-footer {
+		display: flex;
+		width: 100%;
+		justify-content: space-between;
+		margin-top: 16px;
+		align-items: center;
+
+		&__footer-link {
+			font-size: 14px;
+			font-weight: 500;
+			color: var(--color-link);
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+			gap: 6px;
+			border-bottom: 1px solid transparent !important;
+			text-decoration: none;
+
+			&:hover {
+				border-bottom: 1px solid var(--color-link) !important;
+				background-color: transparent;
+			}
+
+			& > svg > path {
+				fill: var(--color-link) !important;
 			}
 		}
 	}
