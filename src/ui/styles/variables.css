@@ -42,6 +42,8 @@ body {
 	--color-input-unfocused: rgb(250, 250, 250);
 	--color-badge-bg: rgba(255, 242, 202);
 	--color-info-pill-bg: rgba(0, 98, 225);
+	--color-toggle-active-bg: rgb(29, 201, 160);
+	--color-toggle-inactive-bg: rgb(209, 209, 214);
 
 	/* Border Colors */
 	--color-border: rgb(229, 229, 229);

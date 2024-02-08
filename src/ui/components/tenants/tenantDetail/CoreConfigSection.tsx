@@ -15,6 +15,7 @@
 import { useState } from "react";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import InputField from "../../inputField/InputField";
+import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
 import {
 	PanelHeader,
@@ -63,8 +64,8 @@ export const CoreConfigSection = () => {
 					<div className="tenant-detail__core-config-table__body">
 						<CoreConfigTableRow
 							label="cookieDomain"
-							value="localhost"
-							type="string"
+							value={true}
+							type="boolean"
 							tooltip="The domain to set the cookie to. This is useful when you want to share the cookie across subdomains."
 						/>
 					</div>
@@ -84,6 +85,7 @@ type CoreConfigTableRow<T> = {
 type CoreConfigTableRowProps = CoreConfigTableRow<string> | CoreConfigTableRow<number> | CoreConfigTableRow<boolean>;
 
 const CoreConfigTableRow = ({ label, value, type, tooltip }: CoreConfigTableRowProps) => {
+	const [isActive, setActive] = useState(false);
 	return (
 		<div className="tenant-detail__core-config-table__row">
 			<div className="tenant-detail__core-config-table__row__label">
@@ -102,6 +104,14 @@ const CoreConfigTableRow = ({ label, value, type, tooltip }: CoreConfigTableRowP
 						handleChange={() => null}
 						disabled
 						value={value}
+					/>
+				)}
+				{type === "boolean" && (
+					<Toggle
+						name={label}
+						id={label}
+						checked={isActive}
+						onChange={() => setActive(!isActive)}
 					/>
 				)}
 			</div>
