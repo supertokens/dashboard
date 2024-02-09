@@ -22,6 +22,7 @@ import InputField from "../../inputField/InputField";
 import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
 import { useTenantDetailContext } from "./TenantDetailContext";
+import { AddNewConfigPropertyDialog } from "./addNewConfigProperty/AddNewConfigProperty";
 import {
 	PanelHeader,
 	PanelHeaderAction,
@@ -31,6 +32,7 @@ import {
 
 export const CoreConfigSection = () => {
 	const [isEditing, setIsEditing] = useState(false);
+	const [isAddPropertyModalOpen, setIsAddPropertyModalOpen] = useState(false);
 	const { tenantInfo } = useTenantDetailContext();
 	const [currentConfig, setCurrentConfig] = useState(tenantInfo.coreConfig);
 	const hasProperties = true;
@@ -103,7 +105,9 @@ export const CoreConfigSection = () => {
 				</div>
 			)}
 			<div className="tenant-detail__core-config-footer">
-				<Button id="create-tenant">
+				<Button
+					id="create-tenant"
+					onClick={() => setIsAddPropertyModalOpen(true)}>
 					<PlusIcon />
 					Add Property
 				</Button>
@@ -118,6 +122,9 @@ export const CoreConfigSection = () => {
 					</a>
 				)}
 			</div>
+			{isAddPropertyModalOpen && (
+				<AddNewConfigPropertyDialog onCloseDialog={() => setIsAddPropertyModalOpen(false)} />
+			)}
 		</PanelRoot>
 	);
 };

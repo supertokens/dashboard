@@ -13,33 +13,43 @@
  * under the License.
  */
 
-import { InputHTMLAttributes } from "react";
-import "./toggle.scss";
+import "./nativeSelect.scss";
 
-type ToggleProps = InputHTMLAttributes<HTMLInputElement> & {
-	id: string;
-	checked: boolean;
+type NativeSelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
+	options: Array<string>;
 	label?: string;
+	isRequired?: boolean;
 };
 
-export const Toggle = (props: ToggleProps) => {
-	const { className, id, label, ...rest } = props;
+export const NativeSelect = ({ options, label, isRequired, ...rest }: NativeSelectProps) => {
 	return (
-		<div className="toggle-container">
+		<div className="select-container">
 			{label && (
 				<label
-					htmlFor={id}
-					className="text-small toggle-label">
+					htmlFor={rest.id}
+					className="text-small select-label">
 					{label}
+					{isRequired && <span className="text-error select-label-required">*</span>}
 				</label>
 			)}
-			<input
-				type="checkbox"
-				className={`toggle ${className}`}
-				id={id}
-				{...rest}
-			/>
-			<label htmlFor={id}></label>
+			<div className="select-wrapper">
+				<select
+					className="native-select"
+					{...rest}>
+					<option
+						value=""
+						disabled>
+						Select an option
+					</option>
+					{options.map((option, index) => (
+						<option
+							key={index}
+							value={option}>
+							{option}
+						</option>
+					))}
+				</select>
+			</div>
 		</div>
 	);
 };

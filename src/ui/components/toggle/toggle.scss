@@ -13,6 +13,17 @@
  * under the License.
  */
 
+.toggle-container {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.toggle-label {
+	color: var(--color-secondary-text);
+	font-weight: 500;
+}
+
 input[type="checkbox"] {
 	&.toggle {
 		opacity: 0;
