@@ -19,6 +19,7 @@ import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.s
 import { getImageUrl } from "../../../../utils";
 import { Loader } from "../../loader/Loader";
 import { CoreConfigSection } from "./CoreConfigSection";
+import { LoginMethodsSection, SecondaryFactors } from "./LoginMethodsSection";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
 import "./tenantDetail.scss";
@@ -78,6 +79,8 @@ export const TenantDetail = ({
 				</button>
 				<div className="sections">
 					<TenantDetailHeader />
+					<LoginMethodsSection />
+					<SecondaryFactors />
 					<CoreConfigSection />
 				</div>
 			</div>
