@@ -17,6 +17,7 @@ import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import { ReactComponent as PlusIcon } from "../../../../assets/plus.svg";
 import { ReactComponent as RightArrow } from "../../../../assets/right_arrow_icon.svg";
 import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
+import { CORE_CONFIG_PROPERTIES } from "../../../../constants";
 import Button from "../../button";
 import InputField from "../../inputField/InputField";
 import { Toggle } from "../../toggle/Toggle";
@@ -34,8 +35,8 @@ export const CoreConfigSection = () => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [isAddPropertyModalOpen, setIsAddPropertyModalOpen] = useState(false);
 	const { tenantInfo } = useTenantDetailContext();
-	const [currentConfig, setCurrentConfig] = useState(tenantInfo.coreConfig);
-	const hasProperties = true;
+	const [currentConfig, setCurrentConfig] = useState(tenantInfo?.coreConfig ?? {});
+	const hasProperties = Object.keys(tenantInfo?.coreConfig ?? {}).length > 0;
 
 	// Ensure that the state reflects the latest core config
 	useEffect(() => {
@@ -77,30 +78,25 @@ export const CoreConfigSection = () => {
 						<div className="tenant-detail__core-config-table__header__item">Value</div>
 					</div>
 					<div className="tenant-detail__core-config-table__body">
-						<CoreConfigTableRow
-							name="email_verification_token_lifetime"
-							value={3600}
-							type="number"
-							onChange={() => null}
-							isEditing={isEditing}
-							tooltip="The domain to set the cookie to. This is useful when you want to share the cookie across subdomains."
-						/>
-						<CoreConfigTableRow
-							name="email_verification_token_lifetime"
-							value={false}
-							type="boolean"
-							onChange={() => null}
-							isEditing={isEditing}
-							tooltip="The domain to set the cookie to. This is useful when you want to share the cookie across subdomains."
-						/>
-						<CoreConfigTableRow
-							name="email_verification_token_lifetime"
-							value={"sdklfj"}
-							type="string"
-							onChange={() => null}
-							isEditing={isEditing}
-							tooltip="The domain to set the cookie to. This is useful when you want to share the cookie across subdomains."
-						/>
+						{Object.entries(currentConfig).map(([name, value]) => {
+							const propertyObj = CORE_CONFIG_PROPERTIES.find((property) => property.name === name);
+							if (propertyObj === undefined) {
+								return null;
+							}
+							return (
+								<CoreConfigTableRow
+									key={name}
+									name={name}
+									value={value as string | number | boolean}
+									type={propertyObj.type as "string" | "number" | "boolean" | "enum"}
+									handleChange={(name: string, newValue: string | number | boolean) => {
+										setCurrentConfig((prev) => ({ ...prev, [name]: newValue }));
+									}}
+									isEditing={isEditing}
+									tooltip={propertyObj.description}
+								/>
+							);
+						})}
 					</div>
 				</div>
 			)}
@@ -132,16 +128,15 @@ export const CoreConfigSection = () => {
 type CoreConfigTableRow<T extends string | number | boolean> = {
 	name: string;
 	value: T;
-	type: "string" | "number" | "boolean" | "enum";
-	onChange: (name: string, newValue: T) => void;
+	type: "string" | "boolean" | "number" | "enum";
+	handleChange: (name: string, newValue: string | number | boolean) => void;
 	isEditing: boolean;
 	tooltip?: string;
 };
 
 type CoreConfigTableRowProps = CoreConfigTableRow<string> | CoreConfigTableRow<number> | CoreConfigTableRow<boolean>;
 
-const CoreConfigTableRow = ({ name, value, tooltip, type, isEditing }: CoreConfigTableRowProps) => {
-	const [isActive, setActive] = useState(false);
+const CoreConfigTableRow = ({ name, value, tooltip, type, isEditing, handleChange }: CoreConfigTableRowProps) => {
 	return (
 		<div className="tenant-detail__core-config-table__row">
 			<div className="tenant-detail__core-config-table__row__label">
@@ -158,19 +153,25 @@ const CoreConfigTableRow = ({ name, value, tooltip, type, isEditing }: CoreConfi
 						<InputField
 							type="text"
 							name={name}
-							handleChange={() => null}
+							handleChange={(e) => {
+								if (type === "number" && typeof value === "number") {
+									handleChange(name, e.target.valueAsNumber);
+								} else if (type === "string" && typeof value === "string") {
+									handleChange(name, e.target.value);
+								}
+							}}
 							value={`${value}`}
 						/>
 					) : (
 						<div className="tenant-detail__core-config-table__row__value__text">{value}</div>
 					))}
-				{typeof value === "boolean" && (
+				{typeof value === "boolean" && type === "boolean" && (
 					<Toggle
 						name={name}
 						id={name}
-						checked={isActive}
+						checked={value}
 						disabled={!isEditing}
-						onChange={() => setActive(!isActive)}
+						onChange={() => handleChange(name, !value)}
 					/>
 				)}
 

@@ -17,7 +17,7 @@ import { useTenantService } from "../../../../api/tenants";
 import { TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { getImageUrl } from "../../../../utils";
-import { Loader } from "../../loader/Loader";
+import { Loader, LoaderOverlay } from "../../loader/Loader";
 import { CoreConfigSection } from "./CoreConfigSection";
 import { LoginMethodsSection, SecondaryFactors } from "./LoginMethodsSection";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
@@ -34,22 +34,33 @@ export const TenantDetail = ({
 	const { getTenantInfo } = useTenantService();
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
 	const [isLoading, setIsLoading] = useState(false);
+	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
+
+	const getTenant = async () => {
+		const response = await getTenantInfo(tenantId);
+		if (response?.status === "OK") {
+			setTenant(response.tenant);
+		}
+	};
 
 	useEffect(() => {
-		const getTenant = async () => {
+		const fetchTenant = async () => {
 			try {
 				setIsLoading(true);
-				const response = await getTenantInfo(tenantId);
-				if (response?.status === "OK") {
-					setTenant(response.tenant);
-				}
+				await getTenant();
 			} catch (_) {
 			} finally {
 				setIsLoading(false);
 			}
 		};
-		void getTenant();
+		void fetchTenant();
 	}, [tenantId]);
+
+	const refetchTenant = async () => {
+		setShowLoadingOverlay(true);
+		await getTenant();
+		setShowLoadingOverlay(false);
+	};
 
 	if (isLoading) {
 		return <Loader />;
@@ -66,8 +77,11 @@ export const TenantDetail = ({
 	}
 
 	return (
-		<TenantDetailContextProvider tenantInfo={tenant!}>
+		<TenantDetailContextProvider
+			tenantInfo={tenant!}
+			refetchTenant={refetchTenant}>
 			<div className="tenant-detail">
+				{showLoadingOverlay && <LoaderOverlay />}
 				<button
 					className="button flat"
 					onClick={onBackButtonClicked}>

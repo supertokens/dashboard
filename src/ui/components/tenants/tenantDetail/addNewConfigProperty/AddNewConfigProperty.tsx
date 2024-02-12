@@ -13,65 +13,34 @@
  * under the License.
  */
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 
 import Button from "../../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import InputField from "../../../inputField/InputField";
-
+// TODO: Remove this
+import { useTenantService } from "../../../../../api/tenants";
+import { CORE_CONFIG_PROPERTIES } from "../../../../../constants";
+import { getImageUrl } from "../../../../../utils";
+import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import { NativeSelect } from "../../../nativeSelect/NativeSelect";
 import { Toggle } from "../../../toggle/Toggle";
+import { useTenantDetailContext } from "../TenantDetailContext";
 import "./addNewConfigProperty.scss";
 
-// TODO: This will be coming from the API
-const CORE_CONFIG_PROPERTIES = [
-	{
-		name: "supertokens_max_cdi_version",
-		description:
-			"This is used when the core needs to assume a specific CDI version when CDI version is not specified in the request. When set to null, the core will assume the latest version of the CDI. (Default: null)",
-		isDifferentAcrossTenants: false,
-		type: "string",
-	},
-	{
-		name: "disable_telemetry",
-		description:
-			"Learn more about Telemetry here: https://github.com/supertokens/supertokens-core/wiki/Telemetry. (Default: false)",
-		isDifferentAcrossTenants: false,
-		type: "boolean",
-	},
-	{
-		name: "email_verification_token_lifetime",
-		description:
-			"Time in milliseconds for how long an email verification token / link is valid for. [Default: 24 * 3600 * 1000 (1 day)]",
-		isDifferentAcrossTenants: true,
-		type: "number",
-	},
-	{
-		name: "firebase_password_hashing_signer_key",
-		description: "The signer key used for firebase scrypt password hashing. (Default: null)",
-		isDifferentAcrossTenants: false,
-		type: "string",
-	},
-	{
-		name: "passwordless_max_code_input_attempts",
-		description:
-			"The maximum number of code input attempts per login before the user needs to restart. (Default: 5)",
-		isDifferentAcrossTenants: true,
-		type: "number",
-	},
-];
-
-export const AddNewConfigPropertyDialog = ({
-	onCloseDialog,
-}: // alreadyAddedPropertyKeys,
-{
-	onCloseDialog: () => void;
-	// alreadyAddedPropertyKeys: Array<string>;
-}) => {
+export const AddNewConfigPropertyDialog = ({ onCloseDialog }: { onCloseDialog: () => void }) => {
 	const [error, setError] = useState<string | undefined>(undefined);
 	const [value, setValue] = useState<string | boolean | undefined>(undefined);
+	const [isAddingProperty, setIsAddingProperty] = useState(false);
 	const [propertyKey, setPropertyKey] = useState<string | undefined>(undefined);
+	const { tenantInfo, refetchTenant } = useTenantDetailContext();
+	const alreadyAddedPropertyKeys = Object.keys(tenantInfo.coreConfig);
+	const availableProperties = CORE_CONFIG_PROPERTIES.filter(
+		(property) => !alreadyAddedPropertyKeys.includes(property.name)
+	);
+	const { updateTenant } = useTenantService();
 	const property = CORE_CONFIG_PROPERTIES.find((property) => property.name === propertyKey);
+	const { showToast } = useContext(PopupContentContext);
 
 	const handlePropertyChange = (e: ChangeEvent<HTMLSelectElement>) => {
 		setPropertyKey(e.target.value);
@@ -84,18 +53,60 @@ export const AddNewConfigPropertyDialog = ({
 		}
 	};
 
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (property === undefined) {
+			return;
+		}
+		if (value === undefined) {
+			setError("Value is required");
+			return;
+		}
+		if (value === "") {
+			setError("Value cannot be empty");
+			return;
+		}
+		if (property.type === "number" && isNaN(Number(value))) {
+			setError("Value should be a number");
+			return;
+		}
+		try {
+			setIsAddingProperty(true);
+			const res = await updateTenant(tenantInfo.tenantId, {
+				coreConfig: {
+					...tenantInfo.coreConfig,
+					[property.name]: value,
+				},
+			});
+			if (res.status === "OK") {
+				onCloseDialog();
+				void refetchTenant();
+			} else {
+				throw new Error("Something went wrong!");
+			}
+		} catch (e) {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong!, Failed to fetch tenants login methods!</>,
+			});
+		} finally {
+			setIsAddingProperty(false);
+		}
+	};
+
 	return (
 		<Dialog
 			title="Add new Property"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent>
-				<form>
+				<form onSubmit={handleSubmit}>
 					<div className="add-new-config-property-dialog-container">
 						<NativeSelect
 							label="Property Name"
 							value={propertyKey ?? ""}
 							onChange={handlePropertyChange}
-							options={CORE_CONFIG_PROPERTIES.map((property) => property.name)}
+							options={availableProperties.map((property) => property.name)}
 						/>
 						{property && (
 							<>
@@ -141,7 +152,12 @@ export const AddNewConfigPropertyDialog = ({
 							type="button">
 							Go Back
 						</Button>
-						<Button type="submit">Done</Button>
+						<Button
+							type="submit"
+							isLoading={isAddingProperty}
+							disabled={isAddingProperty}>
+							Done
+						</Button>
 					</DialogFooter>
 				</form>
 			</DialogContent>

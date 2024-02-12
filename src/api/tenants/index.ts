@@ -94,7 +94,31 @@ export const useTenantService = () => {
 		return undefined;
 	};
 
+	const updateTenant = async (
+		tenantId: string,
+		tenantInfo: Partial<TenantInfo>
+	): Promise<{
+		status: "OK";
+	}> => {
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant"),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({ ...tenantInfo, tenantId }),
+			},
+		});
+
+		if (response.ok) {
+			return {
+				status: "OK",
+			};
+		}
+
+		throw new Error("Unknown error");
+	};
+
 	return {
 		getTenantInfo,
+		updateTenant,
 	};
 };

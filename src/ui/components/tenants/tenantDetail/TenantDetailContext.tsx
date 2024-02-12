@@ -18,6 +18,7 @@ import { TenantInfo } from "../../../../api/tenants/types";
 
 type TenantDetailContextType = {
 	tenantInfo: TenantInfo;
+	refetchTenant: () => Promise<void>;
 };
 
 const TenantDetailContext = createContext<TenantDetailContextType | undefined>(undefined);
@@ -25,11 +26,15 @@ const TenantDetailContext = createContext<TenantDetailContextType | undefined>(u
 export const TenantDetailContextProvider = ({
 	children,
 	tenantInfo,
+	refetchTenant,
 }: {
 	children: React.ReactNode;
 	tenantInfo: TenantInfo;
+	refetchTenant: () => Promise<void>;
 }) => {
-	return <TenantDetailContext.Provider value={{ tenantInfo }}>{children}</TenantDetailContext.Provider>;
+	return (
+		<TenantDetailContext.Provider value={{ tenantInfo, refetchTenant }}>{children}</TenantDetailContext.Provider>
+	);
 };
 
 export const useTenantDetailContext = () => {
