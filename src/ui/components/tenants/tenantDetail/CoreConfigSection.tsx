@@ -22,8 +22,9 @@ import Button from "../../button";
 import InputField from "../../inputField/InputField";
 import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
-import { useTenantDetailContext } from "./TenantDetailContext";
 import { AddNewConfigPropertyDialog } from "./addNewConfigProperty/AddNewConfigProperty";
+import { DeleteConfigPropertyDialog } from "./deleteConfigProperty/DeleteConfigProperty";
+import { useTenantDetailContext } from "./TenantDetailContext";
 import {
 	PanelHeader,
 	PanelHeaderAction,
@@ -89,7 +90,7 @@ export const CoreConfigSection = () => {
 									name={name}
 									value={value as string | number | boolean}
 									type={propertyObj.type as "string" | "number" | "boolean" | "enum"}
-									handleChange={(name: string, newValue: string | number | boolean) => {
+									handleChange={(name, newValue) => {
 										setCurrentConfig((prev) => ({ ...prev, [name]: newValue }));
 									}}
 									isEditing={isEditing}
@@ -129,7 +130,7 @@ type CoreConfigTableRow<T extends string | number | boolean> = {
 	name: string;
 	value: T;
 	type: "string" | "boolean" | "number" | "enum";
-	handleChange: (name: string, newValue: string | number | boolean) => void;
+	handleChange: <T>(name: string, newValue: T) => void;
 	isEditing: boolean;
 	tooltip?: string;
 };
@@ -137,6 +138,7 @@ type CoreConfigTableRow<T extends string | number | boolean> = {
 type CoreConfigTableRowProps = CoreConfigTableRow<string> | CoreConfigTableRow<number> | CoreConfigTableRow<boolean>;
 
 const CoreConfigTableRow = ({ name, value, tooltip, type, isEditing, handleChange }: CoreConfigTableRowProps) => {
+	const [isDeletePropertyDialogOpen, setIsDeletePropertyDialogOpen] = useState(false);
 	return (
 		<div className="tenant-detail__core-config-table__row">
 			<div className="tenant-detail__core-config-table__row__label">
@@ -177,13 +179,19 @@ const CoreConfigTableRow = ({ name, value, tooltip, type, isEditing, handleChang
 
 				{isEditing && (
 					<button
-						onClick={() => null}
+						onClick={() => setIsDeletePropertyDialogOpen(true)}
 						aria-label="Delete Property"
 						className="tenant-detail__core-config-table__row__delete-property">
 						<TrashIcon />
 					</button>
 				)}
 			</div>
+			{isDeletePropertyDialogOpen && (
+				<DeleteConfigPropertyDialog
+					onCloseDialog={() => setIsDeletePropertyDialogOpen(false)}
+					propertyName={name}
+				/>
+			)}
 		</div>
 	);
 };

@@ -15,11 +15,11 @@
 
 import { ChangeEvent, useContext, useState } from "react";
 
+import { useTenantService } from "../../../../../api/tenants";
 import Button from "../../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import InputField from "../../../inputField/InputField";
 // TODO: Remove this
-import { useTenantService } from "../../../../../api/tenants";
 import { CORE_CONFIG_PROPERTIES } from "../../../../../constants";
 import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
