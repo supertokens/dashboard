@@ -12,12 +12,15 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useTenantService } from "../../../../api/tenants";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import { ReactComponent as PlusIcon } from "../../../../assets/plus.svg";
 import { ReactComponent as RightArrow } from "../../../../assets/right_arrow_icon.svg";
 import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
 import { CORE_CONFIG_PROPERTIES } from "../../../../constants";
+import { getImageUrl } from "../../../../utils";
+import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import Button from "../../button";
 import InputField from "../../inputField/InputField";
 import { Toggle } from "../../toggle/Toggle";
@@ -35,14 +38,74 @@ import {
 export const CoreConfigSection = () => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [isAddPropertyModalOpen, setIsAddPropertyModalOpen] = useState(false);
-	const { tenantInfo } = useTenantDetailContext();
+	const [isSavingProperties, setIsSavingProperties] = useState(false);
+	const { tenantInfo, refetchTenant } = useTenantDetailContext();
+	const { updateTenant } = useTenantService();
+	const { showToast } = useContext(PopupContentContext);
 	const [currentConfig, setCurrentConfig] = useState(tenantInfo?.coreConfig ?? {});
+	const [configErrors, setConfigErrors] = useState<Record<string, string>>({});
 	const hasProperties = Object.keys(tenantInfo?.coreConfig ?? {}).length > 0;
 
 	// Ensure that the state reflects the latest core config
 	useEffect(() => {
 		setCurrentConfig(tenantInfo.coreConfig);
 	}, [tenantInfo.coreConfig]);
+
+	const handleEditOrSave = async () => {
+		if (!isEditing) {
+			setIsEditing(true);
+		} else {
+			const errors = Object.entries(currentConfig).reduce((acc: Record<string, string>, [key, value]) => {
+				const propertyObj = CORE_CONFIG_PROPERTIES.find((property) => property.name === key);
+
+				if (value === "" || value === undefined) {
+					acc[key] = "Value cannot be empty";
+					return acc;
+				}
+				if (propertyObj?.type === "number" && isNaN(Number(value))) {
+					acc[key] = "Value must be a number";
+					return acc;
+				}
+
+				return acc;
+			}, {});
+
+			setConfigErrors(errors);
+
+			if (Object.keys(errors).length > 0) {
+				return;
+			}
+
+			try {
+				const parsedConfig = Object.entries(currentConfig).reduce(
+					(acc: Record<string, unknown>, [key, value]) => {
+						const propertyObj = CORE_CONFIG_PROPERTIES.find((property) => property.name === key);
+						if (propertyObj?.type === "number") {
+							acc[key] = Number(value);
+						} else {
+							acc[key] = value;
+						}
+						return acc;
+					},
+					{}
+				);
+				setIsSavingProperties(true);
+				await updateTenant(tenantInfo.tenantId, {
+					coreConfig: parsedConfig,
+				});
+				setIsEditing(false);
+				await refetchTenant();
+			} catch (_) {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Something went wrong!, Failed to fetch tenants login methods!</>,
+				});
+			} finally {
+				setIsSavingProperties(false);
+			}
+		}
+	};
 
 	return (
 		<PanelRoot>
@@ -52,8 +115,9 @@ export const CoreConfigSection = () => {
 				</PanelHeaderTitleWithTooltip>
 				{hasProperties && (
 					<PanelHeaderAction
-						setIsEditing={setIsEditing}
+						setIsEditing={handleEditOrSave}
 						isEditing={isEditing}
+						isSaving={isSavingProperties}
 					/>
 				)}
 			</PanelHeader>
@@ -92,9 +156,13 @@ export const CoreConfigSection = () => {
 									type={propertyObj.type as "string" | "number" | "boolean" | "enum"}
 									handleChange={(name, newValue) => {
 										setCurrentConfig((prev) => ({ ...prev, [name]: newValue }));
+										// Reset the error for the field that is being modified
+										const { [name]: _, ...restErrors } = configErrors;
+										setConfigErrors(restErrors);
 									}}
 									isEditing={isEditing}
 									tooltip={propertyObj.description}
+									error={configErrors[name]}
 								/>
 							);
 						})}
@@ -126,18 +194,25 @@ export const CoreConfigSection = () => {
 	);
 };
 
-type CoreConfigTableRow<T extends string | number | boolean> = {
+type CoreConfigTableRowProps = {
 	name: string;
-	value: T;
+	value: string | number | boolean;
 	type: "string" | "boolean" | "number" | "enum";
-	handleChange: <T>(name: string, newValue: T) => void;
+	handleChange: (name: string, newValue: string | number | boolean) => void;
 	isEditing: boolean;
 	tooltip?: string;
+	error?: string;
 };
 
-type CoreConfigTableRowProps = CoreConfigTableRow<string> | CoreConfigTableRow<number> | CoreConfigTableRow<boolean>;
-
-const CoreConfigTableRow = ({ name, value, tooltip, type, isEditing, handleChange }: CoreConfigTableRowProps) => {
+const CoreConfigTableRow = ({
+	name,
+	value,
+	tooltip,
+	type,
+	isEditing,
+	handleChange,
+	error,
+}: CoreConfigTableRowProps) => {
 	const [isDeletePropertyDialogOpen, setIsDeletePropertyDialogOpen] = useState(false);
 	return (
 		<div className="tenant-detail__core-config-table__row">
@@ -154,12 +229,13 @@ const CoreConfigTableRow = ({ name, value, tooltip, type, isEditing, handleChang
 					(isEditing ? (
 						<InputField
 							type="text"
+							size="small"
+							errorPlacement="prefix-tooltip"
+							error={error}
 							name={name}
 							handleChange={(e) => {
-								if (type === "number" && typeof value === "number") {
-									handleChange(name, e.target.valueAsNumber);
-								} else if (type === "string" && typeof value === "string") {
-									handleChange(name, e.target.value);
+								if (e.type === "change") {
+									handleChange(name, e.currentTarget.value);
 								}
 							}}
 							value={`${value}`}

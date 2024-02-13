@@ -92,8 +92,10 @@ export const CreateNewTenantDialog = ({
 							value={tenantId}
 							hideColon
 							handleChange={(e) => {
-								setTenantCreationError(undefined);
-								setTenantId(e.currentTarget.value.trim());
+								if (e.type === "change") {
+									setTenantCreationError(undefined);
+									setTenantId(e.currentTarget.value.trim());
+								}
 							}}
 						/>
 					</div>

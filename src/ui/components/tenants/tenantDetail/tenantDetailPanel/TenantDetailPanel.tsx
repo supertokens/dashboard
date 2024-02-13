@@ -70,9 +70,11 @@ export const PanelHeaderTitleWithTooltip = ({
 export const PanelHeaderAction = ({
 	setIsEditing,
 	isEditing,
+	isSaving,
 }: {
 	setIsEditing: (isEditing: boolean) => void;
 	isEditing: boolean;
+	isSaving?: boolean;
 }) => {
 	return !isEditing ? (
 		<IconButton
@@ -88,6 +90,8 @@ export const PanelHeaderAction = ({
 		<Button
 			size="sm"
 			color="secondary"
+			isLoading={isSaving}
+			disabled={isSaving}
 			onClick={() => setIsEditing(false)}>
 			Save
 		</Button>

@@ -14,12 +14,14 @@
  */
 import React, { useCallback, useState } from "react";
 import { getImageUrl } from "../../../utils";
+import TooltipContainer from "../tooltip/tooltip";
 
 import "./InputField.css";
 
 export type InputFieldPropTypes = {
 	type: "text" | "email" | "password";
 	name: string;
+	size?: "small" | "medium";
 	label?: string;
 	value?: string | undefined;
 	placeholder?: string;
@@ -29,10 +31,13 @@ export type InputFieldPropTypes = {
 	forceShowError?: boolean;
 	disabled?: boolean;
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
+	/** @default "bottom" */
+	errorPlacement?: "bottom" | "prefix-tooltip";
 };
 
 const InputField: React.FC<InputFieldPropTypes> = (props) => {
 	const handleChange = props.handleChange;
+	const { errorPlacement = "bottom" } = props;
 	const [isFocused, setIsFocused] = useState<boolean>(false);
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [isTouched, setIsTouched] = useState(false);
@@ -71,7 +76,9 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					onFocus={() => setIsFocused(true)}
 					onBlur={() => setIsFocused(false)}
 					disabled={props.disabled}
-					className={`text-small text-black input-field ${showError ? "input-field-error-state" : ""}`}
+					className={`text-small text-black input-field ${showError ? "input-field-error-state" : ""} ${
+						props.size === "small" ? "input-field-small" : ""
+					}`}
 					placeholder={props.placeholder}
 				/>
 				<div className="input-field-suffix">
@@ -85,7 +92,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					)}
 				</div>
 			</div>
-			{showError && (
+			{showError && errorPlacement === "bottom" && (
 				<div className="input-field-error block-small block-error">
 					<img
 						className="input-field-error-icon"
@@ -93,6 +100,19 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 						alt="Error in field"
 					/>
 					<p className="input-field-error-text text-small text-error">{props.error}</p>
+				</div>
+			)}
+			{showError && errorPlacement === "prefix-tooltip" && (
+				<div className="input-error-prefix-tooltip">
+					<TooltipContainer
+						tooltip={props.error}
+						position="bottom">
+						<img
+							className="input-field-error-icon"
+							src={getImageUrl("form-field-error-icon.svg")}
+							alt="Error in field"
+						/>
+					</TooltipContainer>
 				</div>
 			)}
 		</div>

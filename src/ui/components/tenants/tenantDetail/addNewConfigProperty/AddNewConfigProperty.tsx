@@ -20,7 +20,7 @@ import Button from "../../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import InputField from "../../../inputField/InputField";
 // TODO: Remove this
-import { CORE_CONFIG_PROPERTIES } from "../../../../../constants";
+import { CORE_CONFIG_PROPERTIES, PUBLIC_TENANT_ID } from "../../../../../constants";
 import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import { NativeSelect } from "../../../nativeSelect/NativeSelect";
@@ -36,7 +36,9 @@ export const AddNewConfigPropertyDialog = ({ onCloseDialog }: { onCloseDialog: (
 	const { tenantInfo, refetchTenant } = useTenantDetailContext();
 	const alreadyAddedPropertyKeys = Object.keys(tenantInfo.coreConfig);
 	const availableProperties = CORE_CONFIG_PROPERTIES.filter(
-		(property) => !alreadyAddedPropertyKeys.includes(property.name)
+		(property) =>
+			!alreadyAddedPropertyKeys.includes(property.name) &&
+			(tenantInfo.tenantId === PUBLIC_TENANT_ID ? true : property.isDifferentAcrossTenants)
 	);
 	const { updateTenant } = useTenantService();
 	const property = CORE_CONFIG_PROPERTIES.find((property) => property.name === propertyKey);
@@ -75,7 +77,7 @@ export const AddNewConfigPropertyDialog = ({ onCloseDialog }: { onCloseDialog: (
 			const res = await updateTenant(tenantInfo.tenantId, {
 				coreConfig: {
 					...tenantInfo.coreConfig,
-					[property.name]: value,
+					[property.name]: property.type === "number" ? Number(value) : value,
 				},
 			});
 			if (res.status === "OK") {
@@ -120,8 +122,10 @@ export const AddNewConfigPropertyDialog = ({ onCloseDialog }: { onCloseDialog: (
 										value={`${value}`}
 										hideColon
 										handleChange={(e) => {
-											setError(undefined);
-											setValue(e.target.value);
+											if (e.type === "change") {
+												setError(undefined);
+												setValue(e.target.value);
+											}
 										}}
 									/>
 								)}

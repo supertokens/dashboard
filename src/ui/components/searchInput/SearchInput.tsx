@@ -38,7 +38,8 @@ export const SearchInput = ({ onClear, ...rest }: SearchInputProps) => {
 					aria-label="Clear Search"
 					onClick={() => {
 						onClear();
-					}}>
+					}}
+					className="search__input_wrapper__clear">
 					<img
 						src={clearIcon}
 						alt=""

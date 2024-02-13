@@ -16,13 +16,14 @@ import { useEffect, useState } from "react";
 import { useTenantService } from "../../../../api/tenants";
 import { TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
+import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
 import { Loader, LoaderOverlay } from "../../loader/Loader";
 import { CoreConfigSection } from "./CoreConfigSection";
 import { LoginMethodsSection, SecondaryFactors } from "./LoginMethodsSection";
+import "./tenantDetail.scss";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
-import "./tenantDetail.scss";
 
 export const TenantDetail = ({
 	onBackButtonClicked,
@@ -95,7 +96,7 @@ export const TenantDetail = ({
 					<TenantDetailHeader />
 					<LoginMethodsSection />
 					<SecondaryFactors />
-					<CoreConfigSection />
+					{tenant?.tenantId !== PUBLIC_TENANT_ID && <CoreConfigSection />}
 				</div>
 			</div>
 		</TenantDetailContextProvider>
