@@ -13,8 +13,9 @@
  * under the License.
  */
 
+import { CORE_CONFIG_PROPERTIES } from "../../constants";
 import { getApiUrl, useFetchData } from "../../utils";
-import { TenantInfo } from "./types";
+import { CoreConfigOptions, TenantInfo } from "./types";
 
 export const useTenantCreateService = () => {
 	const fetchData = useFetchData(true);
@@ -64,6 +65,37 @@ export const useTenantCreateService = () => {
 	};
 
 	return createOrUpdateTenant;
+};
+
+export const useCoreConfigService = () => {
+	const fetchData = useFetchData();
+
+	const getCoreConfigOptions = async (): Promise<{
+		status: "OK";
+		config: CoreConfigOptions;
+	}> => {
+		// TODO: Uncomment the following code after the API is implemented
+		// const response = await fetchData({
+		// 	url: getApiUrl("/multitenancy/core-config/list"),
+		// 	method: "GET",
+		// });
+
+		// if (response.ok) {
+		// 	const body = await response.json();
+		// 	return body;
+		// }
+
+		// throw new Error("Cannot fetch core config options");
+
+		return {
+			status: "OK",
+			config: CORE_CONFIG_PROPERTIES as CoreConfigOptions,
+		};
+	};
+
+	return {
+		getCoreConfigOptions,
+	};
 };
 
 export const useTenantService = () => {

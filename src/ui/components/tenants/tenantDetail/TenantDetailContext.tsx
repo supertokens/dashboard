@@ -14,10 +14,11 @@
  */
 
 import { createContext, useContext } from "react";
-import { TenantInfo } from "../../../../api/tenants/types";
+import { CoreConfigOptions, TenantInfo } from "../../../../api/tenants/types";
 
 type TenantDetailContextType = {
 	tenantInfo: TenantInfo;
+	coreConfigOptions: CoreConfigOptions;
 	refetchTenant: () => Promise<void>;
 };
 
@@ -26,14 +27,18 @@ const TenantDetailContext = createContext<TenantDetailContextType | undefined>(u
 export const TenantDetailContextProvider = ({
 	children,
 	tenantInfo,
+	coreConfigOptions,
 	refetchTenant,
 }: {
 	children: React.ReactNode;
 	tenantInfo: TenantInfo;
+	coreConfigOptions: CoreConfigOptions;
 	refetchTenant: () => Promise<void>;
 }) => {
 	return (
-		<TenantDetailContext.Provider value={{ tenantInfo, refetchTenant }}>{children}</TenantDetailContext.Provider>
+		<TenantDetailContext.Provider value={{ tenantInfo, refetchTenant, coreConfigOptions }}>
+			{children}
+		</TenantDetailContext.Provider>
 	);
 };
 

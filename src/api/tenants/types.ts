@@ -55,3 +55,19 @@ export type TenantInfo = {
 	coreConfig: Record<string, unknown>;
 	userCount: number;
 };
+
+export type CoreConfigOptions = Array<
+	| {
+			name: string;
+			description: string;
+			isDifferentAcrossTenants: boolean;
+			type: "string" | "number" | "boolean";
+	  }
+	| {
+			name: string;
+			description: string;
+			isDifferentAcrossTenants: false;
+			type: "enum";
+			options: string[];
+	  }
+>;

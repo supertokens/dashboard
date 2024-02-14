@@ -13,8 +13,8 @@
  * under the License.
  */
 import { useEffect, useState } from "react";
-import { useTenantService } from "../../../../api/tenants";
-import { TenantInfo } from "../../../../api/tenants/types";
+import { useCoreConfigService, useTenantService } from "../../../../api/tenants";
+import { CoreConfigOptions, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
@@ -33,7 +33,9 @@ export const TenantDetail = ({
 	tenantId: string;
 }) => {
 	const { getTenantInfo } = useTenantService();
+	const { getCoreConfigOptions } = useCoreConfigService();
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
+	const [configOptions, setConfigOptions] = useState<CoreConfigOptions>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
 
@@ -44,17 +46,25 @@ export const TenantDetail = ({
 		}
 	};
 
+	const getCoreConfig = async () => {
+		const response = await getCoreConfigOptions();
+		if (response?.status === "OK") {
+			setConfigOptions(response.config);
+		}
+	};
+
 	useEffect(() => {
-		const fetchTenant = async () => {
+		const fetchData = async () => {
 			try {
 				setIsLoading(true);
 				await getTenant();
+				await getCoreConfig();
 			} catch (_) {
 			} finally {
 				setIsLoading(false);
 			}
 		};
-		void fetchTenant();
+		void fetchData();
 	}, [tenantId]);
 
 	const refetchTenant = async () => {
@@ -80,6 +90,7 @@ export const TenantDetail = ({
 	return (
 		<TenantDetailContextProvider
 			tenantInfo={tenant!}
+			coreConfigOptions={configOptions}
 			refetchTenant={refetchTenant}>
 			<div className="tenant-detail">
 				{showLoadingOverlay && <LoaderOverlay />}

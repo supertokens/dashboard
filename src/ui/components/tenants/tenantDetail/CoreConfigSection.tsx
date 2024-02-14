@@ -18,7 +18,6 @@ import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import { ReactComponent as PlusIcon } from "../../../../assets/plus.svg";
 import { ReactComponent as RightArrow } from "../../../../assets/right_arrow_icon.svg";
 import { ReactComponent as TrashIcon } from "../../../../assets/trash.svg";
-import { CORE_CONFIG_PROPERTIES } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import Button from "../../button";
@@ -39,7 +38,7 @@ export const CoreConfigSection = () => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [isAddPropertyModalOpen, setIsAddPropertyModalOpen] = useState(false);
 	const [isSavingProperties, setIsSavingProperties] = useState(false);
-	const { tenantInfo, refetchTenant } = useTenantDetailContext();
+	const { tenantInfo, refetchTenant, coreConfigOptions } = useTenantDetailContext();
 	const { updateTenant } = useTenantService();
 	const { showToast } = useContext(PopupContentContext);
 	const [currentConfig, setCurrentConfig] = useState(tenantInfo?.coreConfig ?? {});
@@ -56,7 +55,7 @@ export const CoreConfigSection = () => {
 			setIsEditing(true);
 		} else {
 			const errors = Object.entries(currentConfig).reduce((acc: Record<string, string>, [key, value]) => {
-				const propertyObj = CORE_CONFIG_PROPERTIES.find((property) => property.name === key);
+				const propertyObj = coreConfigOptions.find((property) => property.name === key);
 
 				if (value === "" || value === undefined) {
 					acc[key] = "Value cannot be empty";
@@ -79,7 +78,7 @@ export const CoreConfigSection = () => {
 			try {
 				const parsedConfig = Object.entries(currentConfig).reduce(
 					(acc: Record<string, unknown>, [key, value]) => {
-						const propertyObj = CORE_CONFIG_PROPERTIES.find((property) => property.name === key);
+						const propertyObj = coreConfigOptions.find((property) => property.name === key);
 						if (propertyObj?.type === "number") {
 							acc[key] = Number(value);
 						} else {
@@ -144,7 +143,7 @@ export const CoreConfigSection = () => {
 					</div>
 					<div className="tenant-detail__core-config-table__body">
 						{Object.entries(currentConfig).map(([name, value]) => {
-							const propertyObj = CORE_CONFIG_PROPERTIES.find((property) => property.name === name);
+							const propertyObj = coreConfigOptions.find((property) => property.name === name);
 							if (propertyObj === undefined) {
 								return null;
 							}

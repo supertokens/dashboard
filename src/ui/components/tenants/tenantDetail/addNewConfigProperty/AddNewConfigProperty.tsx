@@ -16,13 +16,12 @@
 import { ChangeEvent, useContext, useState } from "react";
 
 import { useTenantService } from "../../../../../api/tenants";
+import { PUBLIC_TENANT_ID } from "../../../../../constants";
+import { getImageUrl } from "../../../../../utils";
+import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import InputField from "../../../inputField/InputField";
-// TODO: Remove this
-import { CORE_CONFIG_PROPERTIES, PUBLIC_TENANT_ID } from "../../../../../constants";
-import { getImageUrl } from "../../../../../utils";
-import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import { NativeSelect } from "../../../nativeSelect/NativeSelect";
 import { Toggle } from "../../../toggle/Toggle";
 import { useTenantDetailContext } from "../TenantDetailContext";
@@ -33,21 +32,21 @@ export const AddNewConfigPropertyDialog = ({ onCloseDialog }: { onCloseDialog: (
 	const [value, setValue] = useState<string | boolean | undefined>(undefined);
 	const [isAddingProperty, setIsAddingProperty] = useState(false);
 	const [propertyKey, setPropertyKey] = useState<string | undefined>(undefined);
-	const { tenantInfo, refetchTenant } = useTenantDetailContext();
+	const { tenantInfo, refetchTenant, coreConfigOptions } = useTenantDetailContext();
 	const alreadyAddedPropertyKeys = Object.keys(tenantInfo.coreConfig);
-	const availableProperties = CORE_CONFIG_PROPERTIES.filter(
+	const availableProperties = coreConfigOptions.filter(
 		(property) =>
 			!alreadyAddedPropertyKeys.includes(property.name) &&
 			(tenantInfo.tenantId === PUBLIC_TENANT_ID ? true : property.isDifferentAcrossTenants)
 	);
 	const { updateTenant } = useTenantService();
-	const property = CORE_CONFIG_PROPERTIES.find((property) => property.name === propertyKey);
+	const property = coreConfigOptions.find((property) => property.name === propertyKey);
 	const { showToast } = useContext(PopupContentContext);
 
 	const handlePropertyChange = (e: ChangeEvent<HTMLSelectElement>) => {
 		setPropertyKey(e.target.value);
 		setError(undefined);
-		const currentPropertyType = CORE_CONFIG_PROPERTIES.find((property) => property.name === e.target.value)?.type;
+		const currentPropertyType = coreConfigOptions.find((property) => property.name === e.target.value)?.type;
 		if (currentPropertyType === "boolean") {
 			setValue(false);
 		} else {
