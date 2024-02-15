@@ -20,7 +20,7 @@ import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
 import { Loader, LoaderOverlay } from "../../loader/Loader";
 import { CoreConfigSection } from "./CoreConfigSection";
-import { LoginMethodsSection, SecondaryFactors } from "./LoginMethodsSection";
+import { LoginMethodsSection } from "./LoginMethodsSection";
 import "./tenantDetail.scss";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
@@ -90,6 +90,7 @@ export const TenantDetail = ({
 	return (
 		<TenantDetailContextProvider
 			tenantInfo={tenant!}
+			setTenantInfo={setTenant}
 			coreConfigOptions={configOptions}
 			refetchTenant={refetchTenant}>
 			<div className="tenant-detail">
@@ -106,7 +107,6 @@ export const TenantDetail = ({
 				<div className="sections">
 					<TenantDetailHeader />
 					<LoginMethodsSection />
-					<SecondaryFactors />
 					{tenant?.tenantId !== PUBLIC_TENANT_ID && <CoreConfigSection />}
 				</div>
 			</div>

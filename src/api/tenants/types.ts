@@ -52,8 +52,19 @@ export type TenantInfo = {
 	passwordless: {
 		enabled: boolean;
 	};
+	firstFactors?: Array<string>;
+	requiredSecondaryFactors?: Array<string>;
 	coreConfig: Record<string, unknown>;
 	userCount: number;
+};
+
+export type UpdateTenant = {
+	emailPasswordEnabled?: boolean;
+	passwordlessEnabled?: boolean;
+	thirdPartyEnabled?: boolean;
+	firstFactors?: string[];
+	requiredSecondaryFactors?: string[];
+	coreConfig?: Record<string, unknown>;
 };
 
 export type CoreConfigOptions = Array<
@@ -66,7 +77,7 @@ export type CoreConfigOptions = Array<
 	| {
 			name: string;
 			description: string;
-			isDifferentAcrossTenants: false;
+			isDifferentAcrossTenants: boolean;
 			type: "enum";
 			options: string[];
 	  }

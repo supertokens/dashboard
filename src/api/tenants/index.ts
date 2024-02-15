@@ -15,7 +15,7 @@
 
 import { CORE_CONFIG_PROPERTIES } from "../../constants";
 import { getApiUrl, useFetchData } from "../../utils";
-import { CoreConfigOptions, TenantInfo } from "./types";
+import { CoreConfigOptions, TenantInfo, UpdateTenant } from "./types";
 
 export const useTenantCreateService = () => {
 	const fetchData = useFetchData(true);
@@ -128,7 +128,7 @@ export const useTenantService = () => {
 
 	const updateTenant = async (
 		tenantId: string,
-		tenantInfo: Partial<TenantInfo>
+		tenantInfo: UpdateTenant
 	): Promise<{
 		status: "OK";
 	}> => {

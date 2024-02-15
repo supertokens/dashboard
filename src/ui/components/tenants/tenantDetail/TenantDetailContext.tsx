@@ -13,13 +13,14 @@
  * under the License.
  */
 
-import { createContext, useContext } from "react";
+import { createContext, Dispatch, SetStateAction, useContext } from "react";
 import { CoreConfigOptions, TenantInfo } from "../../../../api/tenants/types";
 
 type TenantDetailContextType = {
 	tenantInfo: TenantInfo;
 	coreConfigOptions: CoreConfigOptions;
 	refetchTenant: () => Promise<void>;
+	setTenantInfo: Dispatch<SetStateAction<TenantInfo | undefined>>;
 };
 
 const TenantDetailContext = createContext<TenantDetailContextType | undefined>(undefined);
@@ -29,14 +30,16 @@ export const TenantDetailContextProvider = ({
 	tenantInfo,
 	coreConfigOptions,
 	refetchTenant,
+	setTenantInfo,
 }: {
 	children: React.ReactNode;
 	tenantInfo: TenantInfo;
 	coreConfigOptions: CoreConfigOptions;
 	refetchTenant: () => Promise<void>;
+	setTenantInfo: Dispatch<SetStateAction<TenantInfo | undefined>>;
 }) => {
 	return (
-		<TenantDetailContext.Provider value={{ tenantInfo, refetchTenant, coreConfigOptions }}>
+		<TenantDetailContext.Provider value={{ tenantInfo, refetchTenant, coreConfigOptions, setTenantInfo }}>
 			{children}
 		</TenantDetailContext.Provider>
 	);
