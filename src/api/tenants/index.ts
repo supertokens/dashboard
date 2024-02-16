@@ -149,8 +149,24 @@ export const useTenantService = () => {
 		throw new Error("Unknown error");
 	};
 
+	const deleteTenant = async (tenantId: string): Promise<{ status: "OK" }> => {
+		const response = await fetchData({
+			url: getApiUrl(`/api/tenant?tenantId=${tenantId}`),
+			method: "DELETE",
+		});
+
+		if (response.ok) {
+			return {
+				status: "OK",
+			};
+		}
+
+		throw new Error("Unknown error");
+	};
+
 	return {
 		getTenantInfo,
 		updateTenant,
+		deleteTenant,
 	};
 };

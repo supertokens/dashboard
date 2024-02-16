@@ -19,6 +19,7 @@ import Button from "../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../dialog";
 import InputField from "../../inputField/InputField";
 
+import { useNavigate } from "react-router-dom";
 import { useTenantCreateService } from "../../../../api/tenants";
 import "./createNewTenant.scss";
 
@@ -30,10 +31,9 @@ export const CreateNewTenantDialog = ({
 	currentTenantIds: Array<string>;
 }) => {
 	const createOrUpdateTenant = useTenantCreateService();
-
+	const navigate = useNavigate();
 	const [tenantCreationError, setTenantCreationError] = useState<string | undefined>(undefined);
 	const [isCreatingTenant, setIsCreatingTenant] = useState(false);
-
 	const [tenantId, setTenantId] = useState("");
 
 	const handleCreateTenant = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -58,7 +58,9 @@ export const CreateNewTenantDialog = ({
 			setIsCreatingTenant(true);
 			const resp = await createOrUpdateTenant(tenantId);
 			if (resp?.status === "OK") {
-				// TODO: Add redirect to tenant detail page afterwards
+				navigate(`?tenantId=${tenantId}`, {
+					replace: true,
+				});
 				onCloseDialog();
 			} else if (resp?.status === "MULTITENANCY_NOT_ENABLED_ERROR") {
 				setTenantCreationError(

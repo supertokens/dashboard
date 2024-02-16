@@ -18,8 +18,10 @@ import { CoreConfigOptions, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
+import Button from "../../button";
 import { Loader, LoaderOverlay } from "../../loader/Loader";
 import { CoreConfigSection } from "./CoreConfigSection";
+import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";
 import { LoginMethodsSection } from "./LoginMethodsSection";
 import "./tenantDetail.scss";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
@@ -37,6 +39,7 @@ export const TenantDetail = ({
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
 	const [configOptions, setConfigOptions] = useState<CoreConfigOptions>([]);
 	const [isLoading, setIsLoading] = useState(false);
+	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
 
 	const getTenant = async () => {
@@ -104,11 +107,27 @@ export const TenantDetail = ({
 					/>
 					<span>Back to all tenants</span>
 				</button>
-				<div className="sections">
+				<div className="tenant-detail__sections">
 					<TenantDetailHeader />
 					<LoginMethodsSection />
 					{tenant?.tenantId !== PUBLIC_TENANT_ID && <CoreConfigSection />}
 				</div>
+				{tenant?.tenantId !== PUBLIC_TENANT_ID && (
+					<div className="tenant-detail__delete-container">
+						<Button
+							color="danger"
+							onClick={() => setIsDeleteTenantDialogOpen(true)}>
+							Delete Tenant
+						</Button>
+					</div>
+				)}
+				{isDeleteTenantDialogOpen && (
+					<DeleteTenantDialog
+						onCloseDialog={() => setIsDeleteTenantDialogOpen(false)}
+						tenantId={tenant!.tenantId}
+						goBack={onBackButtonClicked}
+					/>
+				)}
 			</div>
 		</TenantDetailContextProvider>
 	);
