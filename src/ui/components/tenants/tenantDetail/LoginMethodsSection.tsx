@@ -179,7 +179,7 @@ export const LoginMethodsSection = () => {
 						});
 					});
 			},
-			200
+			400
 		),
 		[]
 	);

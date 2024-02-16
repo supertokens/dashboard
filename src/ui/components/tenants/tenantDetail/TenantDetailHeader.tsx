@@ -13,6 +13,7 @@
  * under the License.
  */
 
+import { getDashboardAppBasePath, setSelectedTenantId } from "../../../../utils";
 import Button from "../../button";
 import { useTenantDetailContext } from "./TenantDetailContext";
 
@@ -27,6 +28,12 @@ const HeaderItem = ({ title, value }: { title: string; value: string }) => {
 
 export const TenantDetailHeader = () => {
 	const { tenantInfo } = useTenantDetailContext();
+
+	const handleSeeUsers = () => {
+		setSelectedTenantId(tenantInfo.tenantId);
+		window.open(getDashboardAppBasePath(), "_blank");
+	};
+
 	return (
 		<div className="tenant-detail__header panel">
 			<HeaderItem
@@ -37,7 +44,7 @@ export const TenantDetailHeader = () => {
 				title="No. of Users"
 				value={tenantInfo.userCount?.toString()}
 			/>
-			<Button>See Users</Button>
+			<Button onClick={handleSeeUsers}>See Users</Button>
 		</div>
 	);
 };
