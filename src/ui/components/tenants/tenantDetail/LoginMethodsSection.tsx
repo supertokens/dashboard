@@ -98,6 +98,8 @@ export const LoginMethodsSection = () => {
 
 	const { showToast } = useContext(PopupContentContext);
 
+	const hasSelectedSecondaryFactors = selectedFactors.requiredSecondaryFactors.length > 0;
+
 	const debouncedUpdateTenant = useCallback(
 		debounce(
 			(
@@ -225,6 +227,14 @@ export const LoginMethodsSection = () => {
 						Secondary Factors
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
+				{hasSelectedSecondaryFactors && (
+					<div className="block-warn block-warn-medium text-small tenant-detail__secondary-factors-warn-block">
+						<p>
+							<b>Note</b>: MFA recipe needs to be added to the backend and frontend SDK to enable the
+							required secondary factors.
+						</p>
+					</div>
+				)}
 				<div className="tenant-detail__factors-container">
 					<div className="tenant-detail__factors-container__grid">
 						{SECONDARY_FACTOR_IDS.map((method) => (
