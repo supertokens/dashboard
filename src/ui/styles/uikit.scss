@@ -197,10 +197,23 @@
 	}
 }
 
+.block-warn-medium {
+	padding: 14px;
+	border-radius: 6px;
+	border-width: 1px;
+	border-style: solid;
+}
+
 .block-error {
 	background-color: var(--color-error-bg);
 	color: var(--color-error);
 	border-color: var(--color-border-error);
+}
+
+.block-warn {
+	background-color: var(--color-warn-bg);
+	color: var(--color-black);
+	border-color: var(--color-border-warn);
 }
 
 .block-info {

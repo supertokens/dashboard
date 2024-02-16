@@ -64,11 +64,19 @@
 			}
 		}
 
-		& button {
+		&__clear {
 			border: none;
 			background: none;
 			cursor: pointer;
 			outline: none;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 0px;
+
+			img {
+				margin-bottom: 0px;
+			}
 		}
 	}
 

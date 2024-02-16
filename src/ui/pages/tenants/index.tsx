@@ -14,19 +14,21 @@
  */
 
 import { useContext, useDeferredValue, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { useGetTenantsList, type Tenant } from "../../../api/tenants/list";
 import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
-import { getImageUrl } from "../../../utils";
+import { getImageUrl, useQuery } from "../../../utils";
 import Button from "../../components/button";
 import { SearchInput } from "../../components/searchInput/SearchInput";
 import { CreateNewTenantDialog } from "../../components/tenants/creatNewTenant/CreateNewTenant";
+import { TenantDetail } from "../../components/tenants/tenantDetail/TenantDetail";
 import { TenantsListTable } from "../../components/tenants/tenantsListTable/TenantsListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import "./index.scss";
 
 const TENANTS_PAGINATION_LIMIT = 10;
 
-const TenantManagement = () => {
+const TenantList = ({ selectTenant }: { selectTenant: (tenantId: string) => void }) => {
 	const { fetchTenants } = useGetTenantsList();
 	const { showToast } = useContext(PopupContentContext);
 	const [tenants, setTenants] = useState<Array<Tenant> | undefined>(undefined);
@@ -100,8 +102,37 @@ const TenantManagement = () => {
 				totalTenantsCount={totalTenantsCount}
 				setCurrentActivePage={setCurrentActivePage}
 				pageLimit={TENANTS_PAGINATION_LIMIT}
+				selectTenant={selectTenant}
 			/>
 		</div>
+	);
+};
+
+const TenantManagement = () => {
+	const query = useQuery();
+	const navigate = useNavigate();
+	const currentLocation = useLocation();
+	const selectedTenantId = query.get("tenantId");
+
+	const setSelectedTenantId = (tenantId: string) => {
+		navigate(`?tenantId=${tenantId}`, {
+			replace: true,
+		});
+	};
+
+	const onBackButtonClicked = () => {
+		navigate(currentLocation.pathname, {
+			replace: true,
+		});
+	};
+
+	return typeof selectedTenantId === "string" ? (
+		<TenantDetail
+			tenantId={selectedTenantId}
+			onBackButtonClicked={onBackButtonClicked}
+		/>
+	) : (
+		<TenantList selectTenant={setSelectedTenantId} />
 	);
 };
 

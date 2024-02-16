@@ -13,7 +13,9 @@
  * under the License.
  */
 
+import { CORE_CONFIG_PROPERTIES } from "../../constants";
 import { getApiUrl, useFetchData } from "../../utils";
+import { CoreConfigOptions, TenantInfo, UpdateTenant } from "./types";
 
 export const useTenantCreateService = () => {
 	const fetchData = useFetchData(true);
@@ -63,4 +65,108 @@ export const useTenantCreateService = () => {
 	};
 
 	return createOrUpdateTenant;
+};
+
+export const useCoreConfigService = () => {
+	const fetchData = useFetchData();
+
+	const getCoreConfigOptions = async (): Promise<{
+		status: "OK";
+		config: CoreConfigOptions;
+	}> => {
+		// TODO: Uncomment the following code after the API is implemented
+		// const response = await fetchData({
+		// 	url: getApiUrl("/multitenancy/core-config/list"),
+		// 	method: "GET",
+		// });
+
+		// if (response.ok) {
+		// 	const body = await response.json();
+		// 	return body;
+		// }
+
+		// throw new Error("Cannot fetch core config options");
+
+		return {
+			status: "OK",
+			config: CORE_CONFIG_PROPERTIES as CoreConfigOptions,
+		};
+	};
+
+	return {
+		getCoreConfigOptions,
+	};
+};
+
+export const useTenantService = () => {
+	const fetchData = useFetchData();
+
+	const getTenantInfo = async (
+		tenantId: string
+	): Promise<
+		| {
+				status: "OK";
+				tenant: TenantInfo;
+		  }
+		| {
+				status: "UNKNOWN_TENANT_ERROR";
+		  }
+		| undefined
+	> => {
+		const response = await fetchData({
+			url: getApiUrl(`/api/tenant?tenantId=${tenantId}`),
+			method: "GET",
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
+	};
+
+	const updateTenant = async (
+		tenantId: string,
+		tenantInfo: UpdateTenant
+	): Promise<{
+		status: "OK";
+	}> => {
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant"),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({ ...tenantInfo, tenantId }),
+			},
+		});
+
+		if (response.ok) {
+			return {
+				status: "OK",
+			};
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	const deleteTenant = async (tenantId: string): Promise<{ status: "OK" }> => {
+		const response = await fetchData({
+			url: getApiUrl(`/api/tenant?tenantId=${tenantId}`),
+			method: "DELETE",
+		});
+
+		if (response.ok) {
+			return {
+				status: "OK",
+			};
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	return {
+		getTenantInfo,
+		updateTenant,
+		deleteTenant,
+	};
 };

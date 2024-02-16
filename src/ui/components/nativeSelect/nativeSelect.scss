@@ -1,0 +1,59 @@
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.select-label {
+	color: var(--color-secondary-text);
+	font-weight: 500;
+	margin-bottom: 12px;
+}
+
+.select-label-required {
+	color: var(--color-error);
+	margin: 0px 4px;
+}
+
+.select-container {
+	display: flex;
+	flex-direction: column;
+
+	.select-wrapper {
+		width: 100%;
+		position: relative;
+		select {
+			width: 100%;
+			padding: 9px 13px;
+			border: 1px solid var(--color-border);
+			background-color: var(--color-input-unfocused);
+			border-radius: 6px;
+			font-size: 14px;
+			color: var(--color-black);
+			appearance: none; /* Remove default styles */
+			-webkit-appearance: none; /* For Safari */
+			-moz-appearance: none; /* For Firefox */
+		}
+
+		&::after {
+			content: "\2304"; /* Unicode character for the down arrow */
+			position: absolute;
+			top: 37%;
+			right: 10px;
+			font-size: 18px;
+			font-weight: 600;
+			transform: translateY(-50%);
+			pointer-events: none;
+			color: var(--color-black);
+		}
+	}
+}

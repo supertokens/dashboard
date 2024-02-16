@@ -1,0 +1,13 @@
+.confirm-text {
+	color: black;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 23px;
+	padding-top: 24px;
+
+	.tenant-id {
+		color: var(--color-button-error);
+		font-weight: 600;
+	}
+}
