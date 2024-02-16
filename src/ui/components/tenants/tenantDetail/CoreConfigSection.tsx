@@ -50,59 +50,52 @@ export const CoreConfigSection = () => {
 		setCurrentConfig(tenantInfo.coreConfig);
 	}, [tenantInfo.coreConfig]);
 
-	const handleEditOrSave = async () => {
-		if (!isEditing) {
-			setIsEditing(true);
-		} else {
-			const errors = Object.entries(currentConfig).reduce((acc: Record<string, string>, [key, value]) => {
+	const handleSave = async () => {
+		const errors = Object.entries(currentConfig).reduce((acc: Record<string, string>, [key, value]) => {
+			const propertyObj = coreConfigOptions.find((property) => property.name === key);
+
+			if (value === "" || value === undefined) {
+				acc[key] = "Value cannot be empty";
+				return acc;
+			}
+			if (propertyObj?.type === "number" && isNaN(Number(value))) {
+				acc[key] = "Value must be a number";
+				return acc;
+			}
+
+			return acc;
+		}, {});
+
+		setConfigErrors(errors);
+
+		if (Object.keys(errors).length > 0) {
+			return;
+		}
+
+		try {
+			const parsedConfig = Object.entries(currentConfig).reduce((acc: Record<string, unknown>, [key, value]) => {
 				const propertyObj = coreConfigOptions.find((property) => property.name === key);
-
-				if (value === "" || value === undefined) {
-					acc[key] = "Value cannot be empty";
-					return acc;
+				if (propertyObj?.type === "number") {
+					acc[key] = Number(value);
+				} else {
+					acc[key] = value;
 				}
-				if (propertyObj?.type === "number" && isNaN(Number(value))) {
-					acc[key] = "Value must be a number";
-					return acc;
-				}
-
 				return acc;
 			}, {});
-
-			setConfigErrors(errors);
-
-			if (Object.keys(errors).length > 0) {
-				return;
-			}
-
-			try {
-				const parsedConfig = Object.entries(currentConfig).reduce(
-					(acc: Record<string, unknown>, [key, value]) => {
-						const propertyObj = coreConfigOptions.find((property) => property.name === key);
-						if (propertyObj?.type === "number") {
-							acc[key] = Number(value);
-						} else {
-							acc[key] = value;
-						}
-						return acc;
-					},
-					{}
-				);
-				setIsSavingProperties(true);
-				await updateTenant(tenantInfo.tenantId, {
-					coreConfig: parsedConfig,
-				});
-				setIsEditing(false);
-				await refetchTenant();
-			} catch (_) {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>Something went wrong!, Failed to fetch tenants login methods!</>,
-				});
-			} finally {
-				setIsSavingProperties(false);
-			}
+			setIsSavingProperties(true);
+			await updateTenant(tenantInfo.tenantId, {
+				coreConfig: parsedConfig,
+			});
+			setIsEditing(false);
+			await refetchTenant();
+		} catch (_) {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong!, Failed to fetch tenants login methods!</>,
+			});
+		} finally {
+			setIsSavingProperties(false);
 		}
 	};
 
@@ -114,9 +107,10 @@ export const CoreConfigSection = () => {
 				</PanelHeaderTitleWithTooltip>
 				{hasProperties && (
 					<PanelHeaderAction
-						setIsEditing={handleEditOrSave}
+						setIsEditing={setIsEditing}
 						isEditing={isEditing}
 						isSaving={isSavingProperties}
+						handleSave={handleSave}
 					/>
 				)}
 			</PanelHeader>
