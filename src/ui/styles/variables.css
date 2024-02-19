@@ -47,6 +47,9 @@ body {
 	--color-toggle-inactive-bg: rgb(209, 209, 214);
 	--color-trash-button-hover-bg: rgba(237, 52, 78, 0.15);
 	--color-factor-bg: rgb(250, 250, 250);
+	--color-third-party-button-container-bg: rgb(250, 250, 250);
+	--color-third-party-button-container-bg-hover: rgb(255, 245, 235);
+	--color-third-party-button-bg: rgb(222, 228, 232);
 
 	/* Border Colors */
 	--color-border: rgb(229, 229, 229);
@@ -98,6 +101,7 @@ body {
 	--color-button-error-shadow: rgba(237, 52, 78, 0.16);
 	--color-trash-button-hover: rgb(237, 52, 78);
 	--color-trash-button: rgb(141, 141, 141);
+	--color-third-party-button: rgba(20, 52, 88, 1);
 
 	/* Z-index value for different of popup element */
 	--z-index-inline-popup: 1;

@@ -43,12 +43,6 @@ const FIRST_FACTOR_IDS = [
 		loginMethod: "passwordless",
 	},
 	{
-		label: "Third Party",
-		description: "Sign in/up using third party providers (Requires the ThirdParty recipe to be enabled)",
-		id: "thirdparty",
-		loginMethod: "thirdparty",
-	},
-	{
 		label: "Link - Email",
 		description: "Sign in/up using link sent to email (Requires the Passwordless recipe to be enabled)",
 		id: "link-email",
@@ -59,6 +53,12 @@ const FIRST_FACTOR_IDS = [
 		description: "Sign in/up using link sent to phone (Requires the Passwordless recipe to be enabled)",
 		id: "link-phone",
 		loginMethod: "passwordless",
+	},
+	{
+		label: "Third Party",
+		description: "Sign in/up using third party providers (Requires the ThirdParty recipe to be enabled)",
+		id: "thirdparty",
+		loginMethod: "thirdparty",
 	},
 ];
 

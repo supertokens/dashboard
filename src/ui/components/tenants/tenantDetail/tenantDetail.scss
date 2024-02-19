@@ -162,7 +162,7 @@
 					background: var(--color-copy-box-bg);
 					color: var(--color-copy-box);
 					font-size: 13px;
-					font-family: "Menlo";
+					font-family: Menlo, "Source Code Pro", Monaco, Consolas, "Courier New", monospace;
 					border-radius: 3px;
 					white-space: nowrap;
 					overflow: hidden;
@@ -308,5 +308,14 @@
 				}
 			}
 		}
+	}
+
+	&__third-party-divider {
+		display: block;
+		height: 1px;
+		background-color: var(--color-border);
+		margin-top: 24px;
+		margin-bottom: 16px;
+		border: none;
 	}
 }

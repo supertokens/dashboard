@@ -26,6 +26,7 @@ import { LoginMethodsSection } from "./LoginMethodsSection";
 import "./tenantDetail.scss";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
+import { ThirdPartySection } from "./ThirdPartySection";
 
 export const TenantDetail = ({
 	onBackButtonClicked,
@@ -41,6 +42,7 @@ export const TenantDetail = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
+	const tenantHasThirdPartyEnabled = tenant?.thirdParty.enabled;
 
 	const getTenant = async () => {
 		const response = await getTenantInfo(tenantId);
@@ -110,6 +112,7 @@ export const TenantDetail = ({
 				<div className="tenant-detail__sections">
 					<TenantDetailHeader />
 					<LoginMethodsSection />
+					{tenantHasThirdPartyEnabled && <ThirdPartySection />}
 					{tenant?.tenantId !== PUBLIC_TENANT_ID && <CoreConfigSection />}
 				</div>
 				{tenant?.tenantId !== PUBLIC_TENANT_ID && (
