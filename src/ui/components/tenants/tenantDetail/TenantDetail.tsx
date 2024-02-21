@@ -26,6 +26,7 @@ import { LoginMethodsSection } from "./LoginMethodsSection";
 import "./tenantDetail.scss";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
+import { ThirdPartyPage } from "./thirdPartyPage/ThirdPartyPage";
 import { ThirdPartySection } from "./ThirdPartySection";
 
 export const TenantDetail = ({
@@ -42,6 +43,22 @@ export const TenantDetail = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
+	const [viewObj, setViewObj] = useState<
+		| {
+				view: "tenant-detail";
+		  }
+		| {
+				view: "list-third-party-providers";
+		  }
+		| {
+				view: "add-or-edit-third-party-provider";
+				thirdPartyId?: string | undefined;
+				isAddingNewProvider: boolean;
+		  }
+	>({
+		view: "tenant-detail",
+	});
+
 	const tenantHasThirdPartyEnabled = tenant?.thirdParty.enabled;
 
 	const getTenant = async () => {
@@ -78,6 +95,61 @@ export const TenantDetail = ({
 		setShowLoadingOverlay(false);
 	};
 
+	const handleAddNewProvider = () => {
+		setViewObj({
+			view: "list-third-party-providers",
+		});
+	};
+
+	const handleBackToTenantDetail = () => {
+		setViewObj({
+			view: "tenant-detail",
+		});
+	};
+
+	const renderView = () => {
+		if (viewObj.view === "list-third-party-providers") {
+			return <ThirdPartyPage handleGoBack={handleBackToTenantDetail} />;
+		}
+
+		return (
+			<div className="tenant-detail">
+				{showLoadingOverlay && <LoaderOverlay />}
+				<button
+					className="button flat"
+					onClick={onBackButtonClicked}>
+					<img
+						src={getImageUrl("left-arrow-dark.svg")}
+						alt="Go back"
+					/>
+					<span>Back to all tenants</span>
+				</button>
+				<div className="tenant-detail__sections">
+					<TenantDetailHeader />
+					<LoginMethodsSection />
+					{tenantHasThirdPartyEnabled && <ThirdPartySection handleAddNewProvider={handleAddNewProvider} />}
+					{tenant?.tenantId !== PUBLIC_TENANT_ID && <CoreConfigSection />}
+				</div>
+				{tenant?.tenantId !== PUBLIC_TENANT_ID && (
+					<div className="tenant-detail__delete-container">
+						<Button
+							color="danger"
+							onClick={() => setIsDeleteTenantDialogOpen(true)}>
+							Delete Tenant
+						</Button>
+					</div>
+				)}
+				{isDeleteTenantDialogOpen && (
+					<DeleteTenantDialog
+						onCloseDialog={() => setIsDeleteTenantDialogOpen(false)}
+						tenantId={tenant!.tenantId}
+						goBack={onBackButtonClicked}
+					/>
+				)}
+			</div>
+		);
+	};
+
 	if (isLoading) {
 		return <Loader />;
 	}
@@ -98,40 +170,7 @@ export const TenantDetail = ({
 			setTenantInfo={setTenant}
 			coreConfigOptions={configOptions}
 			refetchTenant={refetchTenant}>
-			<div className="tenant-detail">
-				{showLoadingOverlay && <LoaderOverlay />}
-				<button
-					className="button flat"
-					onClick={onBackButtonClicked}>
-					<img
-						src={getImageUrl("left-arrow-dark.svg")}
-						alt="Go back"
-					/>
-					<span>Back to all tenants</span>
-				</button>
-				<div className="tenant-detail__sections">
-					<TenantDetailHeader />
-					<LoginMethodsSection />
-					{tenantHasThirdPartyEnabled && <ThirdPartySection />}
-					{tenant?.tenantId !== PUBLIC_TENANT_ID && <CoreConfigSection />}
-				</div>
-				{tenant?.tenantId !== PUBLIC_TENANT_ID && (
-					<div className="tenant-detail__delete-container">
-						<Button
-							color="danger"
-							onClick={() => setIsDeleteTenantDialogOpen(true)}>
-							Delete Tenant
-						</Button>
-					</div>
-				)}
-				{isDeleteTenantDialogOpen && (
-					<DeleteTenantDialog
-						onCloseDialog={() => setIsDeleteTenantDialogOpen(false)}
-						tenantId={tenant!.tenantId}
-						goBack={onBackButtonClicked}
-					/>
-				)}
-			</div>
+			{renderView()}
 		</TenantDetailContextProvider>
 	);
 };

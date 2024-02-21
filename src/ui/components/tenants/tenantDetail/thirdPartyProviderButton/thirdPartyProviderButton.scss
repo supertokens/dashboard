@@ -19,22 +19,25 @@
 	border-radius: 6px;
 	max-width: fit-content;
 	border: 1px solid transparent;
+	color: var(--color-third-party-button);
+	font-size: 14px;
+	font-family: inherit;
+
+	&--without-icon-padding {
+		padding: 17px 18px;
+	}
 
 	&:hover {
 		background-color: var(--color-third-party-button-container-bg-hover);
 		border: 1px solid var(--color-primary);
 	}
 
-	&__button {
+	&__logo-container {
 		background-color: var(--color-third-party-button-bg);
-		color: var(----color-third-party-button);
 		padding: 7px 8px;
 		border-radius: 4px;
-		font-size: 13px;
 		display: flex;
-		border: none;
 		align-items: center;
-		font-family: inherit;
 	}
 
 	&__divider {

@@ -30,6 +30,69 @@ export enum HTTPStatusCodes {
 
 export const PUBLIC_TENANT_ID = "public";
 
+export const IN_BUILT_THIRD_PARTY_PROVIDERS = [
+	{
+		id: "google",
+		label: "Google",
+		icon: "provider-google.svg",
+	},
+	{
+		id: "google-workspaces",
+		label: "Google Workspaces",
+		icon: "provider-google.svg",
+	},
+	{
+		id: "apple",
+		label: "Apple",
+		icon: "provider-apple.svg",
+	},
+	{
+		id: "discord",
+		label: "Discord",
+		icon: "provider-discord.svg",
+	},
+	{
+		id: "facebook",
+		label: "Facebook",
+		icon: "provider-facebook.svg",
+	},
+	{
+		id: "github",
+		label: "GitHub",
+		icon: "provider-github.svg",
+	},
+	{
+		id: "linkedin",
+		label: "LinkedIn",
+		icon: "provider-linkedin.svg",
+	},
+	{
+		id: "twitter",
+		label: "Twitter",
+		icon: "provider-twitter.svg",
+	},
+	{
+		id: "active-directory",
+		label: "Active Directory",
+		icon: "provider-active-directory.png",
+	},
+	{
+		id: "okta",
+		label: "Okta",
+		icon: "provider-okta.png",
+	},
+	{
+		id: "bitbucket",
+		label: "Bitbucket",
+		icon: "provider-bitbucket.png",
+	},
+	{
+		id: "gitlab",
+		label: "GitLab",
+		icon: "provider-gitlab.svg",
+	},
+];
+
 // TODO: This will be coming from the API
 export const CORE_CONFIG_PROPERTIES = [
 	{

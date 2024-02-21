@@ -18,7 +18,7 @@ import Button from "../../button";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "./thirdPartyProviderButton/ThirdPartyProviderButton";
 
-export const ThirdPartySection = () => {
+export const ThirdPartySection = ({ handleAddNewProvider }: { handleAddNewProvider: () => void }) => {
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -34,7 +34,7 @@ export const ThirdPartySection = () => {
 
 			<hr className="tenant-detail__third-party-divider" />
 
-			<Button>
+			<Button onClick={handleAddNewProvider}>
 				<PlusIcon />
 				Add new Provider
 			</Button>

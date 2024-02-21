@@ -26,7 +26,7 @@ const HeaderItem = ({ title, value }: { title: string; value: string }) => {
 	);
 };
 
-export const TenantDetailHeader = () => {
+export const TenantDetailHeader = ({ onlyShowTenantId = false }: { onlyShowTenantId?: boolean }) => {
 	const { tenantInfo } = useTenantDetailContext();
 
 	const handleSeeUsers = () => {
@@ -40,11 +40,15 @@ export const TenantDetailHeader = () => {
 				title="Tenant Id"
 				value={tenantInfo.tenantId}
 			/>
-			<HeaderItem
-				title="No. of Users"
-				value={tenantInfo.userCount?.toString()}
-			/>
-			<Button onClick={handleSeeUsers}>See Users</Button>
+			{!onlyShowTenantId && (
+				<>
+					<HeaderItem
+						title="No. of Users"
+						value={tenantInfo.userCount?.toString()}
+					/>
+					<Button onClick={handleSeeUsers}>See Users</Button>
+				</>
+			)}
 		</div>
 	);
 };

@@ -15,18 +15,43 @@
 import { getImageUrl } from "../../../../../utils";
 import "./thirdPartyProviderButton.scss";
 
-export const ThirdPartyProviderButton = ({ icon, title }: { icon: string; title: string }) => {
+type ThirdPartyProviderButtonPropsBase = {
+	title: string;
+	onClick?: () => void;
+};
+
+type ThirdPartyProviderButtonPropsWithIcon = ThirdPartyProviderButtonPropsBase & {
+	icon: string;
+	type?: "with-icon";
+};
+
+type ThirdPartyProviderButtonPropsWithoutIcon = ThirdPartyProviderButtonPropsBase & {
+	type: "without-icon";
+};
+
+export type ThirdPartyProviderButtonProps =
+	| ThirdPartyProviderButtonPropsWithIcon
+	| ThirdPartyProviderButtonPropsWithoutIcon;
+
+export const ThirdPartyProviderButton = (props: ThirdPartyProviderButtonProps) => {
 	return (
-		<div className="third-party-provider-cta">
-			<button className="third-party-provider-cta__button">
-				<img
-					src={getImageUrl(icon)}
-					alt={`${title} icon`}
-					className="third-party-provider-cta__icon"
-				/>
-				<span className="third-party-provider-cta__divider">|</span>
-				<span>{title}</span>
-			</button>
-		</div>
+		<button
+			className={`third-party-provider-cta ${
+				props.type === "without-icon" ? "third-party-provider-cta--without-icon-padding" : ""
+			}`}>
+			{props.type === "without-icon" ? (
+				<span>{props.title}</span>
+			) : (
+				<div className="third-party-provider-cta__logo-container">
+					<img
+						src={getImageUrl(props.icon)}
+						alt={`${props.title} icon`}
+						className="third-party-provider-cta__icon"
+					/>
+					<span className="third-party-provider-cta__divider">|</span>
+					<span>{props.title}</span>
+				</div>
+			)}
+		</button>
 	);
 };
