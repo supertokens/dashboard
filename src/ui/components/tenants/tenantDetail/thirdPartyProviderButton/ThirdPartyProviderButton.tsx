@@ -18,6 +18,7 @@ import "./thirdPartyProviderButton.scss";
 type ThirdPartyProviderButtonPropsBase = {
 	title: string;
 	onClick?: () => void;
+	disabled?: boolean;
 };
 
 type ThirdPartyProviderButtonPropsWithIcon = ThirdPartyProviderButtonPropsBase & {
@@ -38,7 +39,9 @@ export const ThirdPartyProviderButton = (props: ThirdPartyProviderButtonProps) =
 		<button
 			className={`third-party-provider-cta ${
 				props.type === "without-icon" ? "third-party-provider-cta--without-icon-padding" : ""
-			}`}>
+			}`}
+			onClick={props.onClick}
+			disabled={props.disabled}>
 			{props.type === "without-icon" ? (
 				<span>{props.title}</span>
 			) : (

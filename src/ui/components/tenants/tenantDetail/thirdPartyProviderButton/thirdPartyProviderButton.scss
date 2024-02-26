@@ -32,6 +32,12 @@
 		border: 1px solid var(--color-primary);
 	}
 
+	&:disabled {
+		background-color: var(--color-third-party-button-container-bg);
+		border: 1px solid transparent;
+		opacity: 1;
+	}
+
 	&__logo-container {
 		background-color: var(--color-third-party-button-bg);
 		padding: 7px 8px;

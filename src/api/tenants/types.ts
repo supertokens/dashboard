@@ -82,3 +82,16 @@ export type CoreConfigOptions = Array<
 			options: string[];
 	  }
 >;
+
+export type TenantDashboardView =
+	| {
+			view: "tenant-detail";
+	  }
+	| {
+			view: "list-third-party-providers";
+	  }
+	| {
+			view: "add-or-edit-third-party-provider";
+			thirdPartyId?: string | undefined;
+			isAddingNewProvider: boolean;
+	  };

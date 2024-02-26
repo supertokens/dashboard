@@ -67,6 +67,8 @@ body {
 	--color-link: rgb(0, 118, 255);
 	--color-command: rgb(214, 80, 120);
 	--color-badge: rgba(220, 141, 13);
+	--color-required: rgb(237, 52, 78);
+	--color-disabled: rgb(125, 125, 125);
 
 	/* Recipe Pill Colors */
 	--color-emailpassword-bg: rgb(221, 252, 247);

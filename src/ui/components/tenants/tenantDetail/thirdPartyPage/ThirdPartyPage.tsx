@@ -12,14 +12,25 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+import { Dispatch, SetStateAction } from "react";
+import { TenantDashboardView } from "../../../../../api/tenants/types";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "../../../../../constants";
 import { getImageUrl } from "../../../../../utils";
 import { TenantDetailHeader } from "../TenantDetailHeader";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
+import { BuiltInProviderInfo } from "../thirdPartyProviderConfig/BuiltInProviderInfo";
 import "./thirdPartyPage.scss";
 
-export const ThirdPartyPage = ({ handleGoBack }: { handleGoBack: () => void }) => {
+export const ThirdPartyPage = ({
+	handleGoBack,
+	viewObj,
+	setViewObj,
+}: {
+	handleGoBack: () => void;
+	viewObj: TenantDashboardView;
+	setViewObj: Dispatch<SetStateAction<TenantDashboardView>>;
+}) => {
 	return (
 		<div className="third-party-section">
 			<button
@@ -33,13 +44,17 @@ export const ThirdPartyPage = ({ handleGoBack }: { handleGoBack: () => void }) =
 			</button>
 			<div className="third-party-section__cards">
 				<TenantDetailHeader onlyShowTenantId />
-				<ThirdPartyProvidersList />
+				{viewObj.view === "list-third-party-providers" ? (
+					<ThirdPartyProvidersList setViewObj={setViewObj} />
+				) : (
+					<BuiltInProviderInfo />
+				)}
 			</div>
 		</div>
 	);
 };
 
-const ThirdPartyProvidersList = () => {
+const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -57,6 +72,14 @@ const ThirdPartyProvidersList = () => {
 								key={provider.id}
 								title={provider.label}
 								icon={provider.icon}
+								onClick={() => {
+									window.scrollTo(0, 0);
+									setViewObj({
+										view: "add-or-edit-third-party-provider",
+										thirdPartyId: provider.id,
+										isAddingNewProvider: true,
+									});
+								}}
 							/>
 						);
 					})}

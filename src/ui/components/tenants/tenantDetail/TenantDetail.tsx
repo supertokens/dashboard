@@ -14,7 +14,7 @@
  */
 import { useEffect, useState } from "react";
 import { useCoreConfigService, useTenantService } from "../../../../api/tenants";
-import { CoreConfigOptions, TenantInfo } from "../../../../api/tenants/types";
+import { CoreConfigOptions, TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
@@ -43,20 +43,10 @@ export const TenantDetail = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
-	const [viewObj, setViewObj] = useState<
-		| {
-				view: "tenant-detail";
-		  }
-		| {
-				view: "list-third-party-providers";
-		  }
-		| {
-				view: "add-or-edit-third-party-provider";
-				thirdPartyId?: string | undefined;
-				isAddingNewProvider: boolean;
-		  }
-	>({
-		view: "tenant-detail",
+	const [viewObj, setViewObj] = useState<TenantDashboardView>({
+		view: "add-or-edit-third-party-provider",
+		thirdPartyId: "google",
+		isAddingNewProvider: true,
 	});
 
 	const tenantHasThirdPartyEnabled = tenant?.thirdParty.enabled;
@@ -96,20 +86,28 @@ export const TenantDetail = ({
 	};
 
 	const handleAddNewProvider = () => {
+		window.scrollTo(0, 0);
 		setViewObj({
 			view: "list-third-party-providers",
 		});
 	};
 
 	const handleBackToTenantDetail = () => {
+		window.scrollTo(0, 0);
 		setViewObj({
 			view: "tenant-detail",
 		});
 	};
 
 	const renderView = () => {
-		if (viewObj.view === "list-third-party-providers") {
-			return <ThirdPartyPage handleGoBack={handleBackToTenantDetail} />;
+		if (viewObj.view === "list-third-party-providers" || viewObj.view === "add-or-edit-third-party-provider") {
+			return (
+				<ThirdPartyPage
+					handleGoBack={handleBackToTenantDetail}
+					viewObj={viewObj}
+					setViewObj={setViewObj}
+				/>
+			);
 		}
 
 		return (
