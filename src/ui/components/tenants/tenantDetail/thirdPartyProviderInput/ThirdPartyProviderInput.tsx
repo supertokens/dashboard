@@ -19,13 +19,18 @@ import "./thirdPartyProviderInput.scss";
 
 type ThirdPartyProviderInputProps = InputFieldPropTypes & {
 	tooltip?: string;
+	minLabelWidth?: number;
 };
 
 export const ThirdPartyProviderInput = (props: ThirdPartyProviderInputProps) => {
 	const { label, ...rest } = props;
 	return (
 		<div className="third-party-provider-input-container">
-			<div className="third-party-provider-input-container__label-container">
+			<div
+				className="third-party-provider-input-container__label-container"
+				style={{
+					minWidth: props.minLabelWidth ? `${props.minLabelWidth}px` : undefined,
+				}}>
 				{props.tooltip && (
 					<TooltipContainer
 						tooltip={props.tooltip}
@@ -33,12 +38,15 @@ export const ThirdPartyProviderInput = (props: ThirdPartyProviderInputProps) => 
 						<InfoIcon />
 					</TooltipContainer>
 				)}
-				<label
-					htmlFor={props.name}
-					className="third-party-provider-input-container__label">
-					{label}{" "}
-					{props.isRequired && <span className="third-party-provider-input-container__required">* </span>}:
-				</label>
+				{label && (
+					<label
+						htmlFor={props.name}
+						className="third-party-provider-input-container__label">
+						{label}{" "}
+						{props.isRequired && <span className="third-party-provider-input-container__required">* </span>}
+						:
+					</label>
+				)}
 			</div>
 			<InputField {...rest} />
 		</div>

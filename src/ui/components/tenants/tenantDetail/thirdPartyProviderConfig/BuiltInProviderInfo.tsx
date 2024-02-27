@@ -16,6 +16,7 @@
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
 import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
+import { ClientConfig } from "./ClientConfig";
 import "./thirdPartyProviderConfig.scss";
 
 export const BuiltInProviderInfo = () => {
@@ -42,6 +43,7 @@ export const BuiltInProviderInfo = () => {
 					disabled
 					handleChange={() => null}
 				/>
+				<ClientConfig />
 			</div>
 		</PanelRoot>
 	);

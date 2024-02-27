@@ -18,10 +18,137 @@
 	gap: 20px;
 	align-items: center;
 	margin-bottom: -7px;
+
+	button:disabled {
+		opacity: 1;
+	}
 }
 
 .fields-container {
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+}
+
+.client-config-container {
+	border-radius: 6px;
+	border: 1px solid var(--color-border-command);
+	width: 100%;
+
+	&__header {
+		height: 32px;
+		background-color: var(--color-client-config-header-bg);
+		border-top-left-radius: 6px;
+		border-top-right-radius: 6px;
+	}
+
+	&__fields-container {
+		padding: 10px 16px;
+	}
+
+	&__fields {
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+	}
+
+	&__divider {
+		display: block;
+		height: 1px;
+		background-color: var(--color-border);
+		margin: 12px 0px;
+		border: none;
+	}
+
+	&__advanced-settings-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+	}
+
+	&__advanced-settings-title {
+		font-family: inherit;
+		font-weight: 500;
+		font-size: 14px;
+		color: var(--color-secondary-text);
+	}
+
+	&__advanced-settings {
+		padding-top: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+	}
+
+	&__advanced-settings-toggle {
+		border-radius: 4px;
+		border: 1px solid var(--color-border-command);
+		width: 25px;
+		height: 25px;
+		background-color: transparent;
+
+		> svg {
+			transition: transform 0.3s;
+		}
+
+		&:hover {
+			border-color: var(--color-primary);
+			color: var(--color-primary);
+			> svg > path {
+				fill: var(--color-primary);
+			}
+		}
+
+		&--open {
+			> svg {
+				transform: rotate(180deg);
+			}
+		}
+	}
+}
+
+.scopes-container {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+
+	&__divider {
+		display: block;
+		height: 0px;
+		margin-bottom: 10px;
+		border: none;
+		border-top: 1px dashed var(--color-border-command);
+	}
+
+	&__input-container {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+	}
+
+	&__footer {
+		margin-left: 128px;
+	}
+
+	&__add-new {
+		background: transparent;
+		padding: 0;
+		border: none;
+		font-family: inherit;
+		font-weight: 500;
+		font-size: 14px;
+		color: var(--color-transparent-button);
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.delete-scope-button {
+	height: 22px;
+	width: 22px;
+	border: none;
+	background: transparent;
 }
