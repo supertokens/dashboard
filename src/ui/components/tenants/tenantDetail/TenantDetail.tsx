@@ -44,9 +44,7 @@ export const TenantDetail = ({
 	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
 	const [viewObj, setViewObj] = useState<TenantDashboardView>({
-		view: "add-or-edit-third-party-provider",
-		thirdPartyId: "google",
-		isAddingNewProvider: true,
+		view: "tenant-detail",
 	});
 
 	const tenantHasThirdPartyEnabled = tenant?.thirdParty.enabled;

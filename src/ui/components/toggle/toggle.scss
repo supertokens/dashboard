@@ -91,5 +91,10 @@ input[type="checkbox"] {
 				cursor: not-allowed;
 			}
 		}
+		&:focus-visible {
+			& + label {
+				box-shadow: 0 0 0 2px var(--color-primary);
+			}
+		}
 	}
 }
