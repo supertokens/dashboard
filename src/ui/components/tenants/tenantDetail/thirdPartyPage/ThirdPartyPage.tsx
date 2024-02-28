@@ -16,6 +16,7 @@ import { Dispatch, SetStateAction } from "react";
 import { TenantDashboardView } from "../../../../../api/tenants/types";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "../../../../../constants";
 import { getImageUrl } from "../../../../../utils";
+import { useTenantDetailContext } from "../TenantDetailContext";
 import { TenantDetailHeader } from "../TenantDetailHeader";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
@@ -31,6 +32,13 @@ export const ThirdPartyPage = ({
 	viewObj: TenantDashboardView;
 	setViewObj: Dispatch<SetStateAction<TenantDashboardView>>;
 }) => {
+	const handleProviderInfoBack = () => {
+		if (viewObj.view === "add-or-edit-third-party-provider" && viewObj.isAddingNewProvider) {
+			setViewObj({ view: "list-third-party-providers" });
+		} else {
+			setViewObj({ view: "tenant-detail" });
+		}
+	};
 	return (
 		<div className="third-party-section">
 			<button
@@ -44,14 +52,46 @@ export const ThirdPartyPage = ({
 			</button>
 			<div className="third-party-section__cards">
 				<TenantDetailHeader onlyShowTenantId />
-				{viewObj.view === "list-third-party-providers" ? (
-					<ThirdPartyProvidersList setViewObj={setViewObj} />
-				) : (
-					<BuiltInProviderInfo />
+				{viewObj.view === "list-third-party-providers" && <ThirdPartyProvidersList setViewObj={setViewObj} />}
+				{viewObj.view === "add-or-edit-third-party-provider" && (
+					<ProviderInfo
+						providerId={viewObj.thirdPartyId}
+						isAddingNewProvider={viewObj.isAddingNewProvider}
+						handleGoBack={handleProviderInfoBack}
+					/>
 				)}
 			</div>
 		</div>
 	);
+};
+
+const ProviderInfo = ({
+	providerId,
+	isAddingNewProvider,
+	handleGoBack,
+}: {
+	providerId: string;
+	isAddingNewProvider: boolean;
+	handleGoBack: () => void;
+}) => {
+	const { tenantInfo } = useTenantDetailContext();
+	const providerConfig = isAddingNewProvider
+		? undefined
+		: tenantInfo.thirdParty.providers.find((p) => p.thirdPartyId === providerId);
+	const isInBuiltProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.some(({ id }) => providerId.startsWith(id));
+
+	if (isInBuiltProvider) {
+		return (
+			<BuiltInProviderInfo
+				providerId={providerId}
+				providerConfig={providerConfig}
+				handleGoBack={handleGoBack}
+			/>
+		);
+	}
+
+	// Handle custom providers here
+	return null;
 };
 
 const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {

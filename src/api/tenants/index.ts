@@ -15,7 +15,7 @@
 
 import { CORE_CONFIG_PROPERTIES } from "../../constants";
 import { getApiUrl, useFetchData } from "../../utils";
-import { CoreConfigOptions, TenantInfo, UpdateTenant } from "./types";
+import { CoreConfigOptions, ProviderConfig, TenantInfo, UpdateTenant } from "./types";
 
 export const useTenantCreateService = () => {
 	const fetchData = useFetchData(true);
@@ -168,5 +168,49 @@ export const useTenantService = () => {
 		getTenantInfo,
 		updateTenant,
 		deleteTenant,
+	};
+};
+
+export const useThirdPartyService = () => {
+	const fetchData = useFetchData();
+
+	const createOrUpdateThirdPartyProvider = async (tenantId: string, providerConfig: ProviderConfig) => {
+		const response = await fetchData({
+			url: getApiUrl("/api/tenants/third-party"),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					tenantId,
+					providerConfig,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	const deleteThirdPartyProvider = async (tenantId: string, providerId: string) => {
+		const response = await fetchData({
+			url: getApiUrl(`/api/tenants/third-party?tenantId=${tenantId}&thirdPartyId=${providerId}`),
+			method: "DELETE",
+		});
+
+		if (response.ok) {
+			return {
+				status: "OK",
+			};
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	return {
+		createOrUpdateThirdPartyProvider,
+		deleteThirdPartyProvider,
 	};
 };

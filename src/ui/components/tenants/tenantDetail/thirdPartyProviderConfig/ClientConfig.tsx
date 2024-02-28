@@ -12,36 +12,110 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { ProviderClientConfig, ProviderCustomField } from "../../../../../api/tenants/types";
 import { ReactComponent as ChevronDown } from "../../../../../assets/chevron-down.svg";
 import { ReactComponent as CloseIconActive } from "../../../../../assets/close-active.svg";
 import { ReactComponent as CloseIconDefault } from "../../../../../assets/close-inactive.svg";
+import { ReactComponent as TrashIcon } from "../../../../../assets/trash.svg";
 import { CollapsibleContent, CollapsibleFixed, CollapsibleRoot } from "../../../collapsible/Collapsible";
+import { DeleteClientDialog } from "../deleteThirdPartyClient/DeleteThirdPartyClient";
 import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
 import "./thirdPartyProviderConfig.scss";
 
-export const ClientConfig = () => {
-	const [scopes, setScopes] = useState<string[]>([""]);
+const LABEL_MIN_WIDTH = 130;
+
+export const ClientConfig = ({
+	providerId,
+	client,
+	clientsCount,
+	setClient,
+	additionalConfigFields,
+	handleDeleteClient,
+}: {
+	providerId: string;
+	client: ProviderClientConfig;
+	clientsCount: number;
+	setClient: (client: ProviderClientConfig) => void;
+	additionalConfigFields?: Array<ProviderCustomField>;
+	handleDeleteClient: () => void;
+}) => {
+	const isAppleProvider = providerId.startsWith("apple");
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+	const handleClientFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (e.type === "change") {
+			setClient({ ...client, [e.target.name]: e.target.value });
+		}
+	};
+
+	const handleAdditionalConfigChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (e.type === "change") {
+			setClient({ ...client, additionalConfig: { ...client.additionalConfig, [e.target.name]: e.target.value } });
+		}
+	};
+
+	const handleScopesChange = (scopes: Array<string>) => {
+		setClient({ ...client, scope: scopes });
+	};
+
 	return (
 		<div className="client-config-container">
-			<div className="client-config-container__header"></div>
+			<div className="client-config-container__header">
+				{clientsCount > 1 && (
+					<button
+						onClick={() => setIsDeleteDialogOpen(true)}
+						aria-label="Delete Client"
+						className="client-config-container__delete-client">
+						<TrashIcon />
+					</button>
+				)}
+			</div>
 			<div className="client-config-container__fields-container">
 				<div className="client-config-container__fields">
 					<ThirdPartyProviderInput
 						label="Client Id"
 						isRequired
-						tooltip="The client ID of the third-party provider."
+						tooltip="The client ID of the provider."
 						type="text"
 						name="clientId"
-						handleChange={() => null}
+						minLabelWidth={LABEL_MIN_WIDTH}
+						handleChange={handleClientFieldChange}
 					/>
+					{/* In case of Apple the additionalConfig fields are displayed in
+                    the main section. */}
+					{isAppleProvider ? (
+						additionalConfigFields?.map((field) => (
+							<ThirdPartyProviderInput
+								key={field.id}
+								label={field.label}
+								tooltip={field.tooltip}
+								type={field.type}
+								name={field.id}
+								value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
+								isRequired={field.required}
+								minLabelWidth={LABEL_MIN_WIDTH}
+								handleChange={handleAdditionalConfigChange}
+							/>
+						))
+					) : (
+						<ThirdPartyProviderInput
+							label="Client Secret"
+							isRequired
+							tooltip="The client ID of the provider."
+							type="password"
+							name="clientSecret"
+							minLabelWidth={LABEL_MIN_WIDTH}
+							handleChange={handleClientFieldChange}
+						/>
+					)}
 					<ThirdPartyProviderInput
-						label="Client Secret"
-						isRequired
-						tooltip="The client ID of the third-party provider."
+						label="Client Type"
+						isRequired={clientsCount > 1}
+						tooltip="Client type is useful when you have multiple clients for the same provider, for different client types like web, mobile, etc."
 						type="text"
 						name="clientSecret"
-						handleChange={() => null}
+						minLabelWidth={LABEL_MIN_WIDTH}
+						handleChange={handleClientFieldChange}
 					/>
 				</div>
 				<hr className="client-config-container__divider" />
@@ -65,13 +139,34 @@ export const ClientConfig = () => {
 					<CollapsibleContent>
 						<div className="client-config-container__advanced-settings">
 							<Scopes
-								scopes={scopes}
-								setScopes={setScopes}
+								scopes={client.scope ?? []}
+								setScopes={handleScopesChange}
 							/>
+							{/* Additional config fields are displayed in the main section for Apple provider. */}
+							{additionalConfigFields?.map((field) => (
+								<ThirdPartyProviderInput
+									key={field.id}
+									label={field.label}
+									tooltip={field.tooltip}
+									type={field.type}
+									name={field.id}
+									value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
+									isRequired={field.required}
+									minLabelWidth={LABEL_MIN_WIDTH}
+									handleChange={handleAdditionalConfigChange}
+								/>
+							))}
 						</div>
 					</CollapsibleContent>
 				</CollapsibleRoot>
 			</div>
+			{isDeleteDialogOpen && (
+				<DeleteClientDialog
+					onCloseDialog={() => setIsDeleteDialogOpen(false)}
+					handleDeleteClient={handleDeleteClient}
+					clientType={client.clientType}
+				/>
+			)}
 		</div>
 	);
 };
@@ -93,9 +188,9 @@ const Scopes = ({ scopes, setScopes }: { scopes: string[]; setScopes: (scopes: s
 					}}
 					minLabelWidth={108}
 				/>
-				{scopes.length > 1 && (scopes[0] !== "" || scopes[0] !== undefined) && (
+				{scopes.length > 1 && (
 					<DeleteScopeButton
-						onClick={() => setScopes(scopes.slice(0, -1))}
+						onClick={() => setScopes(scopes.filter((_, i) => i !== 0))}
 						label="Delete Scope"
 					/>
 				)}

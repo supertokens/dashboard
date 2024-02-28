@@ -40,6 +40,10 @@
 		background-color: var(--color-client-config-header-bg);
 		border-top-left-radius: 6px;
 		border-top-right-radius: 6px;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		padding-right: 24px;
 	}
 
 	&__fields-container {
@@ -106,6 +110,30 @@
 			}
 		}
 	}
+
+	&__delete-client {
+		height: 25px;
+		width: 25px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-radius: 3px;
+		border: 1px solid var(--color-border-command);
+		background: white;
+
+		& > svg > path {
+			fill: var(--color-trash-button) !important;
+		}
+
+		&:hover {
+			border: 1px solid var(--color-trash-button-hover);
+			background: var(--color-trash-button-hover-bg);
+
+			& > svg > path {
+				fill: var(--color-trash-button-hover) !important;
+			}
+		}
+	}
 }
 
 .scopes-container {
@@ -151,4 +179,24 @@
 	width: 22px;
 	border: none;
 	background: transparent;
+}
+
+.built-in-provider-divider {
+	display: block;
+	height: 1px;
+	background-color: var(--color-border);
+	margin: 24px 0px 20px;
+	border: none;
+}
+
+.built-in-provider-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+
+	&__primary-ctas {
+		display: flex;
+		gap: 24px;
+	}
 }

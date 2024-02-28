@@ -92,6 +92,21 @@ export type TenantDashboardView =
 	  }
 	| {
 			view: "add-or-edit-third-party-provider";
-			thirdPartyId?: string | undefined;
+			thirdPartyId: string;
 			isAddingNewProvider: boolean;
 	  };
+
+export type ProviderCustomField = {
+	label: string;
+	id: string;
+	tooltip: string;
+	type: "text" | "password";
+	required: boolean;
+};
+
+export type BuiltInProvidersCustomFields = {
+	[key: string]: {
+		additionalConfigFields?: Array<ProviderCustomField>;
+		fields?: Array<ProviderCustomField>;
+	};
+};
