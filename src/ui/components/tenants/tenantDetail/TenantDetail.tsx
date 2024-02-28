@@ -90,6 +90,15 @@ export const TenantDetail = ({
 		});
 	};
 
+	const handleEditProvider = (providerId: string) => {
+		window.scrollTo(0, 0);
+		setViewObj({
+			view: "add-or-edit-third-party-provider",
+			thirdPartyId: providerId,
+			isAddingNewProvider: false,
+		});
+	};
+
 	const handleBackToTenantDetail = () => {
 		window.scrollTo(0, 0);
 		setViewObj({
@@ -123,7 +132,12 @@ export const TenantDetail = ({
 				<div className="tenant-detail__sections">
 					<TenantDetailHeader />
 					<LoginMethodsSection />
-					{tenantHasThirdPartyEnabled && <ThirdPartySection handleAddNewProvider={handleAddNewProvider} />}
+					{tenantHasThirdPartyEnabled && (
+						<ThirdPartySection
+							handleAddNewProvider={handleAddNewProvider}
+							handleEditProvider={handleEditProvider}
+						/>
+					)}
 					{tenant?.tenantId !== PUBLIC_TENANT_ID && <CoreConfigSection />}
 				</div>
 				{tenant?.tenantId !== PUBLIC_TENANT_ID && (

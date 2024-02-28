@@ -32,6 +32,8 @@ export const ClientConfig = ({
 	setClient,
 	additionalConfigFields,
 	handleDeleteClient,
+	clientIndex,
+	errors,
 }: {
 	providerId: string;
 	client: ProviderClientConfig;
@@ -39,6 +41,8 @@ export const ClientConfig = ({
 	setClient: (client: ProviderClientConfig) => void;
 	additionalConfigFields?: Array<ProviderCustomField>;
 	handleDeleteClient: () => void;
+	clientIndex: number;
+	errors: Record<string, string>;
 }) => {
 	const isAppleProvider = providerId.startsWith("apple");
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -78,7 +82,10 @@ export const ClientConfig = ({
 						tooltip="The client ID of the provider."
 						type="text"
 						name="clientId"
+						value={client.clientId}
 						minLabelWidth={LABEL_MIN_WIDTH}
+						error={errors[`clients.${clientIndex}.clientId`]}
+						forceShowError
 						handleChange={handleClientFieldChange}
 					/>
 					{/* In case of Apple the additionalConfig fields are displayed in
@@ -94,6 +101,8 @@ export const ClientConfig = ({
 								value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
 								isRequired={field.required}
 								minLabelWidth={LABEL_MIN_WIDTH}
+								error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
+								forceShowError
 								handleChange={handleAdditionalConfigChange}
 							/>
 						))
@@ -104,7 +113,10 @@ export const ClientConfig = ({
 							tooltip="The client ID of the provider."
 							type="password"
 							name="clientSecret"
+							value={client.clientSecret}
 							minLabelWidth={LABEL_MIN_WIDTH}
+							error={errors[`clients.${clientIndex}.clientSecret`]}
+							forceShowError
 							handleChange={handleClientFieldChange}
 						/>
 					)}
@@ -113,8 +125,11 @@ export const ClientConfig = ({
 						isRequired={clientsCount > 1}
 						tooltip="Client type is useful when you have multiple clients for the same provider, for different client types like web, mobile, etc."
 						type="text"
-						name="clientSecret"
+						name="clientType"
+						value={client.clientType}
 						minLabelWidth={LABEL_MIN_WIDTH}
+						error={errors[`clients.${clientIndex}.clientType`]}
+						forceShowError
 						handleChange={handleClientFieldChange}
 					/>
 				</div>
@@ -139,23 +154,26 @@ export const ClientConfig = ({
 					<CollapsibleContent>
 						<div className="client-config-container__advanced-settings">
 							<Scopes
-								scopes={client.scope ?? []}
+								scopes={client.scope ?? [""]}
 								setScopes={handleScopesChange}
 							/>
 							{/* Additional config fields are displayed in the main section for Apple provider. */}
-							{additionalConfigFields?.map((field) => (
-								<ThirdPartyProviderInput
-									key={field.id}
-									label={field.label}
-									tooltip={field.tooltip}
-									type={field.type}
-									name={field.id}
-									value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
-									isRequired={field.required}
-									minLabelWidth={LABEL_MIN_WIDTH}
-									handleChange={handleAdditionalConfigChange}
-								/>
-							))}
+							{!isAppleProvider &&
+								additionalConfigFields?.map((field) => (
+									<ThirdPartyProviderInput
+										key={field.id}
+										label={field.label}
+										tooltip={field.tooltip}
+										type={field.type}
+										name={field.id}
+										value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
+										isRequired={field.required}
+										minLabelWidth={LABEL_MIN_WIDTH}
+										error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
+										forceShowError
+										handleChange={handleAdditionalConfigChange}
+									/>
+								))}
 						</div>
 					</CollapsibleContent>
 				</CollapsibleRoot>

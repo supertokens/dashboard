@@ -92,7 +92,7 @@ export const CoreConfigSection = () => {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
 				toastType: "error",
-				children: <>Something went wrong!, Failed to fetch tenants login methods!</>,
+				children: <>Something went wrong!, Failed to save config</>,
 			});
 		} finally {
 			setIsSavingProperties(false);

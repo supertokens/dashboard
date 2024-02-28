@@ -14,13 +14,20 @@
  */
 
 .built-in-provider-config-header {
-	display: flex;
-	gap: 20px;
-	align-items: center;
 	margin-bottom: -7px;
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	align-items: center;
 
-	button:disabled {
-		opacity: 1;
+	&__title {
+		display: flex;
+		gap: 20px;
+		align-items: center;
+
+		button:disabled {
+			opacity: 1;
+		}
 	}
 }
 

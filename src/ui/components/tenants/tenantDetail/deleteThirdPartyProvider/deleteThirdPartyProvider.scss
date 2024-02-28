@@ -13,42 +13,16 @@
  * under the License.
  */
 
-.third-party-provider-input-container {
-	display: flex;
-	width: 100%;
-	gap: 20px;
+.confirm-text {
+	color: black;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 23px;
+	padding-top: 24px;
 
-	&__label {
-		font-family: inherit;
-		font-weight: 500;
-		font-size: 14px;
-		color: var(--color-secondary-text);
-		min-width: max-content;
-	}
-
-	&__required {
-		color: var(--color-required);
-	}
-
-	&__label-container {
-		display: flex;
-		gap: 6px;
-		margin-top: 10px;
-	}
-
-	.input-field-container {
-		width: 100%;
-		/** Remove the box from the error styles for input */
-		.block-small {
-			padding: 0px;
-		}
-
-		.block-error {
-			background-color: transparent;
-		}
-
-		.input-field-error {
-			margin-top: 4px;
-		}
+	.third-party-id {
+		color: var(--color-button-error);
+		font-weight: 600;
 	}
 }

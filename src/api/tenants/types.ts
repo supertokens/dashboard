@@ -108,5 +108,9 @@ export type BuiltInProvidersCustomFields = {
 	[key: string]: {
 		additionalConfigFields?: Array<ProviderCustomField>;
 		fields?: Array<ProviderCustomField>;
+		oneOfFieldsOrAdditionalConfigRequired?: {
+			field: string;
+			additionalConfig: string;
+		};
 	};
 };

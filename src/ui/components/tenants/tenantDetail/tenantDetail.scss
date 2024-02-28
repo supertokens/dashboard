@@ -318,4 +318,28 @@
 		margin-bottom: 16px;
 		border: none;
 	}
+
+	&__no-providers-added-container {
+		padding: 10px;
+		background-color: var(--color-third-party-button-container-bg);
+		border-radius: 6px;
+		max-width: fit-content;
+		color: var(--color-third-party-button);
+		font-size: 14px;
+		font-family: inherit;
+
+		&__text {
+			background-color: var(--color-third-party-button-bg);
+			padding: 7px 8px;
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+		}
+	}
+
+	&__existing-providers {
+		display: flex;
+		gap: 20px;
+		flex-wrap: wrap;
+	}
 }

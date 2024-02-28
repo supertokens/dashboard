@@ -12,10 +12,15 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { useThirdPartyService } from "../../../../../api/tenants";
 import { BuiltInProvidersCustomFields, ProviderClientConfig, ProviderConfig } from "../../../../../api/tenants/types";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "../../../../../constants";
+import { getImageUrl } from "../../../../../utils";
+import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
+import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/DeleteThirdPartyProvider";
+import { useTenantDetailContext } from "../TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
 import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
@@ -29,11 +34,17 @@ export const BuiltInProviderInfo = ({
 }: {
 	providerId: string;
 	providerConfig?: ProviderConfig;
-	handleGoBack: () => void;
+	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
 }) => {
 	const [providerConfigState, setProviderConfigState] = useState<ProviderConfig>(
 		providerConfig ?? getBuiltInInitialProviderInfo(providerId)
 	);
+	const [errorState, setErrorState] = useState<Record<string, string>>({});
+	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
+	const { tenantInfo, refetchTenant } = useTenantDetailContext();
+	const [isSaving, setIsSaving] = useState(false);
+	const { showToast } = useContext(PopupContentContext);
+	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
 	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId.startsWith(provider.id));
 	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
 		providerId.startsWith(id)
@@ -54,21 +65,135 @@ export const BuiltInProviderInfo = ({
 			...prev,
 			clients: [
 				...(prev?.clients ?? []),
-				{ clientId: "", clientSecret: "", scopes: [], additionalConfig: additionalConfigFields },
+				{ clientId: "", clientSecret: "", scope: [""], additionalConfig: additionalConfigFields },
 			],
 		}));
+	};
+
+	const handleSave = async () => {
+		const isAppleProvider = providerId.startsWith("apple");
+		let isValid = true;
+
+		setErrorState({});
+
+		const clientTypes = new Set<string>();
+		providerConfigState.clients?.forEach((client, index) => {
+			if (typeof client.clientId !== "string" || client.clientId.trim() === "") {
+				setErrorState((prev) => ({ ...prev, [`clients.${index}.clientId`]: "Client Id is required" }));
+				isValid = false;
+			}
+			if (!isAppleProvider) {
+				if (typeof client.clientSecret !== "string" || client.clientSecret.trim() === "") {
+					setErrorState((prev) => ({
+						...prev,
+						[`clients.${index}.clientSecret`]: "Client Secret is required",
+					}));
+					isValid = false;
+				}
+			}
+			if ((providerConfigState.clients?.length ?? 0) > 1) {
+				if (typeof client.clientType !== "string" || client.clientType.trim() === "") {
+					setErrorState((prev) => ({ ...prev, [`clients.${index}.clientType`]: "Client Type is required" }));
+					isValid = false;
+					return;
+				}
+				if (clientTypes.has(client.clientType)) {
+					setErrorState((prev) => ({
+						...prev,
+						[`clients.${index}.clientType`]: "Client Type should be unique",
+					}));
+					isValid = false;
+				}
+				clientTypes.add(client.clientType);
+			}
+		});
+
+		if (customFields?.fields) {
+			customFields.fields.forEach((field) => {
+				if (
+					field.required &&
+					(typeof providerConfigState[field.id as keyof ProviderConfig] !== "string" ||
+						providerConfigState[field.id as keyof ProviderConfig] === "")
+				) {
+					setErrorState((prev) => ({ ...prev, [field.id]: `${field.label} is required` }));
+					isValid = false;
+				}
+			});
+		}
+
+		if (customFields?.additionalConfigFields) {
+			providerConfigState.clients?.forEach((client, index) => {
+				customFields.additionalConfigFields?.forEach((field) => {
+					if (
+						field.required &&
+						(typeof client.additionalConfig?.[field.id] !== "string" ||
+							client.additionalConfig[field.id] === "")
+					) {
+						setErrorState((prev) => ({
+							...prev,
+							[`clients.${index}.additionalConfig.${field.id}`]: `${field.label} is required`,
+						}));
+						isValid = false;
+					}
+				});
+			});
+		}
+
+		if (customFields?.oneOfFieldsOrAdditionalConfigRequired) {
+			const { field, additionalConfig } = customFields.oneOfFieldsOrAdditionalConfigRequired;
+			if (
+				providerConfigState[field as keyof ProviderConfig] === "" &&
+				providerConfigState.clients?.some((client) => client.additionalConfig?.[additionalConfig] === "")
+			) {
+				setErrorState((prev) => ({ ...prev, [field]: `${field} or ${additionalConfig} is required` }));
+				isValid = false;
+			}
+		}
+
+		if (isValid) {
+			const normalizedProviderConfig = {
+				name: inBuiltProviderInfo?.label,
+				...providerConfigState,
+			};
+
+			normalizedProviderConfig.clients = normalizedProviderConfig.clients?.map((client) => {
+				const normalizedScopes = client.scope?.filter((scope) => scope && scope?.trim() !== "") ?? [];
+				return { ...client, scopes: normalizedScopes.length === 0 ? null : normalizedScopes };
+			});
+			try {
+				setIsSaving(true);
+				await createOrUpdateThirdPartyProvider(tenantInfo.tenantId, normalizedProviderConfig);
+				await refetchTenant();
+				handleGoBack(true);
+			} catch (e) {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Something went wrong!, Failed to save the provider!</>,
+				});
+			} finally {
+				setIsSaving(false);
+			}
+		}
 	};
 
 	return (
 		<PanelRoot>
 			<PanelHeader>
 				<div className="built-in-provider-config-header">
-					<PanelHeaderTitleWithTooltip>Built-In Provider Configuration</PanelHeaderTitleWithTooltip>
-					<ThirdPartyProviderButton
-						title={inBuiltProviderInfo?.label ?? ""}
-						icon={inBuiltProviderInfo?.icon ?? ""}
-						disabled
-					/>
+					<div className="built-in-provider-config-header__title">
+						<PanelHeaderTitleWithTooltip>Built-In Provider Configuration</PanelHeaderTitleWithTooltip>
+						<ThirdPartyProviderButton
+							title={inBuiltProviderInfo?.label ?? ""}
+							icon={inBuiltProviderInfo?.icon ?? ""}
+							disabled
+						/>
+					</div>
+					<Button
+						color="danger"
+						onClick={() => setIsDeleteProviderDialogOpen(true)}>
+						Delete
+					</Button>
 				</div>
 			</PanelHeader>
 			<div className="fields-container">
@@ -91,6 +216,8 @@ export const BuiltInProviderInfo = ({
 						name={field.id}
 						value={providerConfigState[field.id as keyof ProviderConfig] as string}
 						isRequired={field.required}
+						error={errorState[field.id]}
+						forceShowError
 						handleChange={(value) => {
 							setProviderConfigState((prev) => ({ ...prev, [field.id]: value }));
 						}}
@@ -102,6 +229,8 @@ export const BuiltInProviderInfo = ({
 						providerId={providerId}
 						clientsCount={providerConfigState.clients?.length ?? 0}
 						client={client}
+						clientIndex={index}
+						errors={errorState}
 						setClient={(client: ProviderClientConfig) => {
 							setProviderConfigState((prev) => ({
 								...prev,
@@ -128,20 +257,32 @@ export const BuiltInProviderInfo = ({
 				<div className="built-in-provider-footer__primary-ctas">
 					<Button
 						color="gray-outline"
-						onClick={handleGoBack}>
+						onClick={() => handleGoBack()}>
 						Go Back
 					</Button>
-					<Button onClick={() => null}>Save</Button>
+					<Button
+						onClick={handleSave}
+						isLoading={isSaving}
+						disabled={isSaving}>
+						Save
+					</Button>
 				</div>
 			</div>
+			{isDeleteProviderDialogOpen && (
+				<DeleteThirdPartyProviderDialog
+					onCloseDialog={() => setIsDeleteProviderDialogOpen(false)}
+					thirdPartyId={providerId}
+					goBack={() => handleGoBack(true)}
+				/>
+			)}
 		</PanelRoot>
 	);
 };
 
-const getBuiltInInitialProviderInfo = (providerId: string): ProviderConfig => {
+const getBuiltInInitialProviderInfo = (providerId: string) => {
 	let baseProviderConfig = {
 		thirdPartyId: providerId,
-		clients: [{ clientId: "", clientSecret: "", scopes: [], additionalConfig: {} }],
+		clients: [{ clientId: "", clientSecret: "", scope: [""], additionalConfig: {} }],
 	};
 
 	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
@@ -213,7 +354,7 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 				id: "hd",
 				tooltip: "The hosted domain for Google Workspaces.",
 				type: "text",
-				required: false,
+				required: true,
 			},
 		],
 	},
@@ -250,6 +391,10 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 				required: false,
 			},
 		],
+		oneOfFieldsOrAdditionalConfigRequired: {
+			field: "oidcDiscoveryEndpoint",
+			additionalConfig: "directoryId",
+		},
 	},
 	okta: {
 		fields: [
@@ -272,5 +417,9 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 				required: false,
 			},
 		],
+		oneOfFieldsOrAdditionalConfigRequired: {
+			field: "oidcDiscoveryEndpoint",
+			additionalConfig: "oktaDomain",
+		},
 	},
 };

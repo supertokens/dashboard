@@ -32,8 +32,12 @@ export const ThirdPartyPage = ({
 	viewObj: TenantDashboardView;
 	setViewObj: Dispatch<SetStateAction<TenantDashboardView>>;
 }) => {
-	const handleProviderInfoBack = () => {
-		if (viewObj.view === "add-or-edit-third-party-provider" && viewObj.isAddingNewProvider) {
+	const handleProviderInfoBack = (shouldGoBackToDetailPage = false) => {
+		if (
+			viewObj.view === "add-or-edit-third-party-provider" &&
+			viewObj.isAddingNewProvider &&
+			!shouldGoBackToDetailPage
+		) {
 			setViewObj({ view: "list-third-party-providers" });
 		} else {
 			setViewObj({ view: "tenant-detail" });
@@ -95,6 +99,7 @@ const ProviderInfo = ({
 };
 
 const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {
+	const { tenantInfo } = useTenantDetailContext();
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -107,11 +112,15 @@ const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetState
 				<h2 className="provider-list-container__header-with-divider">Built-In OAuth Providers</h2>
 				<div className="provider-list-container__providers-grid">
 					{IN_BUILT_THIRD_PARTY_PROVIDERS.map((provider) => {
+						const isAlreadyAdded = tenantInfo.thirdParty.providers.some((p) =>
+							p.thirdPartyId.startsWith(provider.id)
+						);
 						return (
 							<ThirdPartyProviderButton
 								key={provider.id}
 								title={provider.label}
 								icon={provider.icon}
+								disabled={isAlreadyAdded}
 								onClick={() => {
 									window.scrollTo(0, 0);
 									setViewObj({

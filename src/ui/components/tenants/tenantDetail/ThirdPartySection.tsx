@@ -14,11 +14,20 @@
  */
 
 import { ReactComponent as PlusIcon } from "../../../../assets/plus.svg";
+import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "../../../../constants";
 import Button from "../../button";
+import { useTenantDetailContext } from "./TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "./thirdPartyProviderButton/ThirdPartyProviderButton";
 
-export const ThirdPartySection = ({ handleAddNewProvider }: { handleAddNewProvider: () => void }) => {
+export const ThirdPartySection = ({
+	handleAddNewProvider,
+	handleEditProvider,
+}: {
+	handleAddNewProvider: () => void;
+	handleEditProvider: (providerId: string) => void;
+}) => {
+	const { tenantInfo } = useTenantDetailContext();
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -27,10 +36,38 @@ export const ThirdPartySection = ({ handleAddNewProvider }: { handleAddNewProvid
 				</PanelHeaderTitleWithTooltip>
 			</PanelHeader>
 
-			<ThirdPartyProviderButton
-				title="Google"
-				icon="provider-google.svg"
-			/>
+			{tenantInfo.thirdParty?.providers?.length > 0 ? (
+				<div className="tenant-detail__existing-providers">
+					{tenantInfo.thirdParty.providers.map((provider) => {
+						const builtInProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.find((p) =>
+							provider.thirdPartyId.startsWith(p.id)
+						);
+
+						if (builtInProvider) {
+							return (
+								<ThirdPartyProviderButton
+									key={provider.thirdPartyId}
+									title={builtInProvider.label}
+									icon={builtInProvider.icon}
+									onClick={() => handleEditProvider(provider.thirdPartyId)}
+								/>
+							);
+						}
+						return (
+							<ThirdPartyProviderButton
+								key={provider.thirdPartyId}
+								title={provider.name ?? provider.thirdPartyId}
+								type="without-icon"
+								onClick={() => handleEditProvider(provider.thirdPartyId)}
+							/>
+						);
+					})}
+				</div>
+			) : (
+				<div className="tenant-detail__no-providers-added-container">
+					<div className="tenant-detail__no-providers-added-container__text">No providers added</div>
+				</div>
+			)}
 
 			<hr className="tenant-detail__third-party-divider" />
 
