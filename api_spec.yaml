@@ -1727,35 +1727,6 @@ paths:
                                 type: string
                                 enum:
                                     - Unauthorised access
-    /dashboard/api/mfa/built-in-factors/list:
-        get:
-            tags:
-                - Multitenancy
-            summary: Gets the list of built-in factors that can be used for firstFactor and requiredSecondaryFactors.
-            parameters:
-                - name: authorization
-                  in: header
-                  required: true
-                  schema:
-                      type: string
-                      example: "Bearer API_KEY"
-            responses:
-                200:
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: string
-                401:
-                    description: Unauthorised access
-                    content:
-                        text/plain:
-                            schema:
-                                type: string
-                                enum:
-                                    - Unauthorised access
     /dashboard/api/tenants/login-methods:
         get:
             tags:
@@ -2487,22 +2458,12 @@ components:
                 name:
                     type: string
                     description: Name of the property
-                defaultValue:
-                    oneOf:
-                        - type: string
-                        - type: boolean
-                        - type: number
-                    nullable: true
-                    description: Default value of the property
                 description:
                     type: string
                     description: Description of the property
                 differentAcrossTenants:
                     type: boolean
                     description: True if the property can be set different values per tenant
-                isNullable:
-                    type: boolean
-                    description: True if the property is nullable
 
 servers:
     # Added by API Auto Mocking Plugin
