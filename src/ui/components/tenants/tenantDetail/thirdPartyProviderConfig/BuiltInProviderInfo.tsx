@@ -251,7 +251,7 @@ export const BuiltInProviderInfo = ({
 					/>
 				))}
 			</div>
-			<hr className="built-in-provider-divider" />
+			<hr className="provider-config-divider" />
 			<div className="built-in-provider-footer">
 				<Button
 					color="blue-outline"

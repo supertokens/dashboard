@@ -21,6 +21,7 @@ import { TenantDetailHeader } from "../TenantDetailHeader";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
 import { BuiltInProviderInfo } from "../thirdPartyProviderConfig/BuiltInProviderInfo";
+import { CustomProviderInfo } from "../thirdPartyProviderConfig/CustomProviderInfo";
 import "./thirdPartyPage.scss";
 
 export const ThirdPartyPage = ({
@@ -74,15 +75,16 @@ const ProviderInfo = ({
 	isAddingNewProvider,
 	handleGoBack,
 }: {
-	providerId: string;
+	providerId?: string;
 	isAddingNewProvider: boolean;
-	handleGoBack: () => void;
+	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
 }) => {
 	const { tenantInfo } = useTenantDetailContext();
 	const providerConfig = isAddingNewProvider
 		? undefined
 		: tenantInfo.thirdParty.providers.find((p) => p.thirdPartyId === providerId);
-	const isInBuiltProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.some(({ id }) => providerId.startsWith(id));
+	const isInBuiltProvider =
+		typeof providerId === "string" && IN_BUILT_THIRD_PARTY_PROVIDERS.some(({ id }) => providerId.startsWith(id));
 
 	if (isInBuiltProvider) {
 		return (
@@ -96,7 +98,14 @@ const ProviderInfo = ({
 	}
 
 	// Handle custom providers here
-	return null;
+	return (
+		<CustomProviderInfo
+			providerId={providerId}
+			providerConfig={providerConfig}
+			handleGoBack={handleGoBack}
+			isAddingNewProvider={isAddingNewProvider}
+		/>
+	);
 };
 
 const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {
@@ -141,6 +150,13 @@ const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetState
 					<ThirdPartyProviderButton
 						title="Add Custom Provider"
 						type="without-icon"
+						onClick={() => {
+							window.scrollTo(0, 0);
+							setViewObj({
+								view: "add-or-edit-third-party-provider",
+								isAddingNewProvider: true,
+							});
+						}}
 					/>
 				</div>
 				<h2 className="provider-list-container__header-with-divider provider-list-container__header-with-divider--margin-top-30">

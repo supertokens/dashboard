@@ -12,45 +12,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-
-.third-party-provider-input-container {
-	display: flex;
-	width: 100%;
-	gap: 20px;
-
-	&__label {
-		font-family: inherit;
-		font-weight: 500;
-		font-size: 14px;
-		color: var(--color-secondary-text);
-		min-width: max-content;
-	}
-
-	&__required {
-		color: var(--color-required);
-	}
-
-	&__label-container {
-		display: flex;
-		gap: 6px;
-		height: fit-content;
-		align-items: center;
-		margin-top: 10px;
-	}
-
-	.input-field-container {
-		width: 100%;
-		/** Remove the box from the error styles for input */
-		.block-small {
-			padding: 0px;
-		}
-
-		.block-error {
-			background-color: transparent;
-		}
-
-		.input-field-error {
-			margin-top: 4px;
-		}
-	}
+.delete-cross-button {
+	height: 22px;
+	width: 22px;
+	border: none;
+	background: transparent;
 }

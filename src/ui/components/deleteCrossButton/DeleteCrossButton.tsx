@@ -12,45 +12,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+import { useState } from "react";
+import { ReactComponent as CloseIconActive } from "../../../assets/close-active.svg";
+import { ReactComponent as CloseIconDefault } from "../../../assets/close-inactive.svg";
 
-.third-party-provider-input-container {
-	display: flex;
-	width: 100%;
-	gap: 20px;
+import "./deleteCrossButton.scss";
 
-	&__label {
-		font-family: inherit;
-		font-weight: 500;
-		font-size: 14px;
-		color: var(--color-secondary-text);
-		min-width: max-content;
-	}
-
-	&__required {
-		color: var(--color-required);
-	}
-
-	&__label-container {
-		display: flex;
-		gap: 6px;
-		height: fit-content;
-		align-items: center;
-		margin-top: 10px;
-	}
-
-	.input-field-container {
-		width: 100%;
-		/** Remove the box from the error styles for input */
-		.block-small {
-			padding: 0px;
-		}
-
-		.block-error {
-			background-color: transparent;
-		}
-
-		.input-field-error {
-			margin-top: 4px;
-		}
-	}
-}
+export const DeleteCrossButton = ({ onClick, label }: { onClick: () => void; label: string }) => {
+	const [isHovered, setIsHovered] = useState(false);
+	return (
+		<button
+			className="delete-cross-button"
+			onClick={onClick}
+			aria-label={label}
+			onMouseEnter={() => setIsHovered(true)}
+			onMouseLeave={() => setIsHovered(false)}>
+			{isHovered ? <CloseIconActive /> : <CloseIconDefault />}
+		</button>
+	);
+};

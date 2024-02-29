@@ -92,7 +92,7 @@ export type TenantDashboardView =
 	  }
 	| {
 			view: "add-or-edit-third-party-provider";
-			thirdPartyId: string;
+			thirdPartyId?: string;
 			isAddingNewProvider: boolean;
 	  };
 

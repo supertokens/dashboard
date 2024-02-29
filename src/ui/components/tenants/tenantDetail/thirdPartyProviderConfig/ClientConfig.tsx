@@ -15,10 +15,9 @@
 import { ChangeEvent, useState } from "react";
 import { ProviderClientConfig, ProviderCustomField } from "../../../../../api/tenants/types";
 import { ReactComponent as ChevronDown } from "../../../../../assets/chevron-down.svg";
-import { ReactComponent as CloseIconActive } from "../../../../../assets/close-active.svg";
-import { ReactComponent as CloseIconDefault } from "../../../../../assets/close-inactive.svg";
 import { ReactComponent as TrashIcon } from "../../../../../assets/trash.svg";
 import { CollapsibleContent, CollapsibleFixed, CollapsibleRoot } from "../../../collapsible/Collapsible";
+import { DeleteCrossButton } from "../../../deleteCrossButton/DeleteCrossButton";
 import { DeleteClientDialog } from "../deleteThirdPartyClient/DeleteThirdPartyClient";
 import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
 import "./thirdPartyProviderConfig.scss";
@@ -110,7 +109,7 @@ export const ClientConfig = ({
 						<ThirdPartyProviderInput
 							label="Client Secret"
 							isRequired
-							tooltip="The client ID of the provider."
+							tooltip="The client secret of the provider."
 							type="password"
 							name="clientSecret"
 							value={client.clientSecret}
@@ -207,7 +206,7 @@ const Scopes = ({ scopes, setScopes }: { scopes: string[]; setScopes: (scopes: s
 					minLabelWidth={108}
 				/>
 				{scopes.length > 1 && (
-					<DeleteScopeButton
+					<DeleteCrossButton
 						onClick={() => setScopes(scopes.filter((_, i) => i !== 0))}
 						label="Delete Scope"
 					/>
@@ -229,7 +228,7 @@ const Scopes = ({ scopes, setScopes }: { scopes: string[]; setScopes: (scopes: s
 						}}
 						minLabelWidth={108}
 					/>
-					<DeleteScopeButton
+					<DeleteCrossButton
 						onClick={() => setScopes(scopes.filter((_, i) => i !== index + 1))}
 						label="Delete Scope"
 					/>
@@ -244,19 +243,5 @@ const Scopes = ({ scopes, setScopes }: { scopes: string[]; setScopes: (scopes: s
 				</button>
 			</div>
 		</div>
-	);
-};
-
-const DeleteScopeButton = ({ onClick, label }: { onClick: () => void; label: string }) => {
-	const [isHovered, setIsHovered] = useState(false);
-	return (
-		<button
-			className="delete-scope-button"
-			onClick={onClick}
-			aria-label={label}
-			onMouseEnter={() => setIsHovered(true)}
-			onMouseLeave={() => setIsHovered(false)}>
-			{isHovered ? <CloseIconActive /> : <CloseIconDefault />}
-		</button>
 	);
 };

@@ -12,11 +12,10 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-
-.third-party-provider-input-container {
+.key-value-input-container {
 	display: flex;
-	width: 100%;
-	gap: 20px;
+	flex-direction: column;
+	gap: 10px;
 
 	&__label {
 		font-family: inherit;
@@ -33,24 +32,58 @@
 	&__label-container {
 		display: flex;
 		gap: 6px;
-		height: fit-content;
-		align-items: center;
 		margin-top: 10px;
+		align-items: center;
 	}
 
-	.input-field-container {
-		width: 100%;
-		/** Remove the box from the error styles for input */
-		.block-small {
-			padding: 0px;
-		}
+	&__fields-container {
+		border: 1px solid var(--color-border-command);
+		border-radius: 6px;
+		padding: 16px;
+	}
 
-		.block-error {
-			background-color: transparent;
-		}
+	&__fields-list {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
 
-		.input-field-error {
-			margin-top: 4px;
+	&__field {
+		display: flex;
+		gap: 16px;
+		padding: 3px 10px;
+		background-color: var(--color-client-config-header-bg);
+		border-radius: 4px;
+		align-items: center;
+
+		.third-party-provider-input-container {
+			gap: 10px;
+		}
+	}
+
+	&__divider {
+		display: block;
+		height: 0px;
+		margin-bottom: 10px;
+		border: none;
+		border-top: 1px dashed var(--color-border-command);
+	}
+
+	&__footer {
+		margin-top: 12px;
+	}
+
+	&__add-new {
+		background: transparent;
+		padding: 0;
+		border: none;
+		font-family: inherit;
+		font-weight: 500;
+		font-size: 14px;
+		color: var(--color-transparent-button);
+
+		&:hover {
+			text-decoration: underline;
 		}
 	}
 }
