@@ -90,6 +90,7 @@ const ProviderInfo = ({
 				providerId={providerId}
 				providerConfig={providerConfig}
 				handleGoBack={handleGoBack}
+				isAddingNewProvider={isAddingNewProvider}
 			/>
 		);
 	}

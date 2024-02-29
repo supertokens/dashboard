@@ -31,10 +31,12 @@ export const BuiltInProviderInfo = ({
 	providerId,
 	providerConfig,
 	handleGoBack,
+	isAddingNewProvider,
 }: {
 	providerId: string;
 	providerConfig?: ProviderConfig;
 	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
+	isAddingNewProvider: boolean;
 }) => {
 	const [providerConfigState, setProviderConfigState] = useState<ProviderConfig>(
 		providerConfig ?? getBuiltInInitialProviderInfo(providerId)
@@ -189,11 +191,13 @@ export const BuiltInProviderInfo = ({
 							disabled
 						/>
 					</div>
-					<Button
-						color="danger"
-						onClick={() => setIsDeleteProviderDialogOpen(true)}>
-						Delete
-					</Button>
+					{!isAddingNewProvider && (
+						<Button
+							color="danger"
+							onClick={() => setIsDeleteProviderDialogOpen(true)}>
+							Delete
+						</Button>
+					)}
 				</div>
 			</PanelHeader>
 			<div className="fields-container">

@@ -12,8 +12,6 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-
-import { CORE_CONFIG_PROPERTIES } from "../../constants";
 import { getApiUrl, useFetchData } from "../../utils";
 import { CoreConfigOptions, ProviderConfig, TenantInfo, UpdateTenant } from "./types";
 
@@ -74,23 +72,17 @@ export const useCoreConfigService = () => {
 		status: "OK";
 		config: CoreConfigOptions;
 	}> => {
-		// TODO: Uncomment the following code after the API is implemented
-		// const response = await fetchData({
-		// 	url: getApiUrl("/multitenancy/core-config/list"),
-		// 	method: "GET",
-		// });
+		const response = await fetchData({
+			url: getApiUrl("/api/multitenancy/core-config/list"),
+			method: "GET",
+		});
 
-		// if (response.ok) {
-		// 	const body = await response.json();
-		// 	return body;
-		// }
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
 
-		// throw new Error("Cannot fetch core config options");
-
-		return {
-			status: "OK",
-			config: CORE_CONFIG_PROPERTIES as CoreConfigOptions,
-		};
+		throw new Error("Cannot fetch core config options");
 	};
 
 	return {
