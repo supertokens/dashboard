@@ -85,6 +85,23 @@ const SECONDARY_FACTOR_IDS = [
 	},
 ];
 
+const getFirstFactorIds = (tenant: TenantInfo) => {
+	if (!tenant.firstFactors) {
+		const firstFactors = [];
+		if (tenant.emailPassword.enabled) {
+			firstFactors.push("emailpassword");
+		}
+		if (tenant.passwordless.enabled) {
+			firstFactors.push("otp-email", "otp-phone", "link-email", "link-phone");
+		}
+		if (tenant.thirdParty.enabled) {
+			firstFactors.push("thirdparty");
+		}
+		return firstFactors;
+	}
+	return tenant.firstFactors;
+};
+
 export const LoginMethodsSection = () => {
 	const { tenantInfo, setTenantInfo } = useTenantDetailContext();
 	const { updateTenant } = useTenantService();
@@ -92,7 +109,7 @@ export const LoginMethodsSection = () => {
 		firstFactors: Array<string>;
 		requiredSecondaryFactors: Array<string>;
 	}>({
-		firstFactors: tenantInfo.firstFactors ?? [],
+		firstFactors: getFirstFactorIds(tenantInfo),
 		requiredSecondaryFactors: tenantInfo.requiredSecondaryFactors ?? [],
 	});
 

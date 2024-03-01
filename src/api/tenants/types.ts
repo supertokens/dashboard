@@ -31,7 +31,7 @@ export type ProviderClientConfig = {
 	clientType?: string;
 	clientId: string;
 	clientSecret?: string;
-	scope?: string[];
+	scope?: string[] | null;
 	forcePKCE?: boolean;
 	additionalConfig?: { [key: string]: unknown };
 };

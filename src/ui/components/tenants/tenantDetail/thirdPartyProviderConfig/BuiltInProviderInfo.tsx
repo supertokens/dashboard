@@ -160,8 +160,9 @@ export const BuiltInProviderInfo = ({
 
 			normalizedProviderConfig.clients = normalizedProviderConfig.clients?.map((client) => {
 				const normalizedScopes = client.scope?.filter((scope) => scope && scope?.trim() !== "") ?? [];
-				return { ...client, scopes: normalizedScopes.length === 0 ? null : normalizedScopes };
+				return { ...client, scope: normalizedScopes.length === 0 ? null : normalizedScopes };
 			});
+
 			try {
 				setIsSaving(true);
 				await createOrUpdateThirdPartyProvider(tenantInfo.tenantId, normalizedProviderConfig);
