@@ -15,15 +15,16 @@
 import { ChangeEvent, useContext, useState } from "react";
 import { useThirdPartyService } from "../../../../../api/tenants";
 import { ProviderClientConfig, ProviderConfig } from "../../../../../api/tenants/types";
-import { ReactComponent as InfoIcon } from "../../../../../assets/info-icon.svg";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
-import TooltipContainer from "../../../tooltip/tooltip";
 import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/DeleteThirdPartyProvider";
 import { KeyValueInput } from "../keyValueInput/KeyValueInput";
 import { useTenantDetailContext } from "../TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
-import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
+import {
+	ThirdPartyProviderInput,
+	ThirdPartyProviderInputLabel,
+} from "../thirdPartyProviderInput/ThirdPartyProviderInput";
 import { ClientConfig } from "./ClientConfig";
 import "./thirdPartyProviderConfig.scss";
 
@@ -59,18 +60,22 @@ export const CustomProviderInfo = ({
 		}
 	};
 
-	const handleUserInfoFieldChange = (
-		infoType: "fromIdTokenPayload" | "fromUserInfoAPI",
-		name: string,
-		value: string
-	) => {
+	const handleUserInfoFieldChange = ({
+		name,
+		key,
+		value,
+	}: {
+		name: "fromIdTokenPayload" | "fromUserInfoAPI";
+		key: string;
+		value: string;
+	}) => {
 		setProviderConfigState((prev) => ({
 			...prev,
 			userInfoMap: {
 				...prev.userInfoMap,
-				[infoType]: {
-					...prev.userInfoMap[infoType],
-					[name]: value,
+				[name]: {
+					...prev.userInfoMap[name],
+					[key]: value,
 				},
 			},
 		}));
@@ -169,6 +174,7 @@ export const CustomProviderInfo = ({
 				/>
 				<KeyValueInput
 					label="Authorization Endpoint Query Params"
+					name="authorizationEndpointQueryParams"
 					tooltip="The query params to be sent to the authorization endpoint."
 					value={providerConfigState.authorizationEndpointQueryParams as Array<[string, string]>}
 					onChange={(value) => {
@@ -187,6 +193,7 @@ export const CustomProviderInfo = ({
 				/>
 				<KeyValueInput
 					label="Token Endpoint Body Params"
+					name="tokenEndpointBodyParams"
 					tooltip="The body params to be sent to the token endpoint."
 					value={providerConfigState.tokenEndpointBodyParams as Array<[string, string]>}
 					onChange={(value) => {
@@ -205,89 +212,21 @@ export const CustomProviderInfo = ({
 					handleChange={handleFieldChange}
 				/>
 
-				<div className="user-info-map">
-					<div className="user-info-map__label-container">
-						<TooltipContainer
-							tooltip="The mapping of the user info fields to the user info endpoint."
-							position="bottom">
-							<InfoIcon />
-						</TooltipContainer>
+				<UserInfoMap
+					label="User Info Map from UserInfo API"
+					tooltip="The mapping of the user info fields to the user info API."
+					name="fromUserInfoAPI"
+					value={providerConfigState.userInfoMap.fromUserInfoAPI}
+					handleChange={handleUserInfoFieldChange}
+				/>
 
-						<div className="user-info-map__label">User Info Map from Info API:</div>
-					</div>
-					<div className="user-info-map__fields-container">
-						<ThirdPartyProviderInput
-							label="userId"
-							type="text"
-							name="userId"
-							minLabelWidth={130}
-							value={providerConfigState.userInfoMap.fromUserInfoAPI.userId}
-							handleChange={(e) => handleUserInfoFieldChange("fromUserInfoAPI", "userId", e.target.value)}
-						/>
-						<ThirdPartyProviderInput
-							label="email"
-							type="text"
-							name="email"
-							minLabelWidth={130}
-							value={providerConfigState.userInfoMap.fromUserInfoAPI.email}
-							handleChange={(e) => handleUserInfoFieldChange("fromUserInfoAPI", "email", e.target.value)}
-						/>
-						<ThirdPartyProviderInput
-							label="emailVerified"
-							type="text"
-							name="emailVerified"
-							minLabelWidth={130}
-							value={providerConfigState.userInfoMap.fromUserInfoAPI.emailVerified}
-							handleChange={(e) =>
-								handleUserInfoFieldChange("fromUserInfoAPI", "emailVerified", e.target.value)
-							}
-						/>
-					</div>
-				</div>
-
-				<div className="user-info-map">
-					<div className="user-info-map__label-container">
-						<TooltipContainer
-							tooltip="The mapping of the user info fields to the ID token payload."
-							position="bottom">
-							<InfoIcon />
-						</TooltipContainer>
-
-						<div className="user-info-map__label">User Info Map from ID Token Payload:</div>
-					</div>
-					<div className="user-info-map__fields-container">
-						<ThirdPartyProviderInput
-							label="userId"
-							type="text"
-							name="userId"
-							minLabelWidth={130}
-							value={providerConfigState.userInfoMap.fromIdTokenPayload.userId}
-							handleChange={(e) =>
-								handleUserInfoFieldChange("fromIdTokenPayload", "userId", e.target.value)
-							}
-						/>
-						<ThirdPartyProviderInput
-							label="email"
-							type="text"
-							name="email"
-							minLabelWidth={130}
-							value={providerConfigState.userInfoMap.fromIdTokenPayload.email}
-							handleChange={(e) =>
-								handleUserInfoFieldChange("fromIdTokenPayload", "email", e.target.value)
-							}
-						/>
-						<ThirdPartyProviderInput
-							label="emailVerified"
-							type="text"
-							name="emailVerified"
-							minLabelWidth={130}
-							value={providerConfigState.userInfoMap.fromIdTokenPayload.emailVerified}
-							handleChange={(e) =>
-								handleUserInfoFieldChange("fromIdTokenPayload", "emailVerified", e.target.value)
-							}
-						/>
-					</div>
-				</div>
+				<UserInfoMap
+					label="User Info Map from Id Token Payload"
+					tooltip="The mapping of the user info fields to the id token payload."
+					name="fromIdTokenPayload"
+					value={providerConfigState.userInfoMap.fromIdTokenPayload}
+					handleChange={handleUserInfoFieldChange}
+				/>
 			</div>
 			<hr className="provider-config-divider" />
 			<div className="custom-provider-footer">
@@ -313,6 +252,85 @@ export const CustomProviderInfo = ({
 				/>
 			)}
 		</PanelRoot>
+	);
+};
+
+const UserInfoMap = ({
+	label,
+	tooltip,
+	name,
+	value,
+	handleChange,
+}: {
+	label: string;
+	tooltip: string;
+	name: "fromIdTokenPayload" | "fromUserInfoAPI";
+	value: {
+		userId: string;
+		email: string;
+		emailVerified: string;
+	};
+	handleChange: ({
+		name,
+		key,
+		value,
+	}: {
+		name: "fromIdTokenPayload" | "fromUserInfoAPI";
+		key: string;
+		value: string;
+	}) => void;
+}) => {
+	return (
+		<div className="user-info-map">
+			<ThirdPartyProviderInputLabel
+				label={label}
+				tooltip={tooltip}
+			/>
+			<div className="user-info-map__fields-container">
+				<ThirdPartyProviderInput
+					label="userId"
+					type="text"
+					name={`userId-${name}`}
+					minLabelWidth={130}
+					value={value.userId}
+					handleChange={(e) =>
+						handleChange({
+							name,
+							key: "userId",
+							value: e.target.value,
+						})
+					}
+				/>
+				<ThirdPartyProviderInput
+					label="email"
+					type="text"
+					name={`email-${name}`}
+					minLabelWidth={130}
+					value={value.email}
+					handleChange={(e) =>
+						handleChange({
+							name,
+							key: "email",
+							value: e.target.value,
+						})
+					}
+				/>
+				<ThirdPartyProviderInput
+					label="emailVerified"
+					type="text"
+					name="emailVerified"
+					minLabelWidth={130}
+					value={value.emailVerified}
+					handleChange={(e) =>
+						handleChange({
+							name,
+							key: "emailVerified",
+							value: e.target.value,
+						})
+					}
+				/>
+			</div>
+		</div>
 	);
 };
 

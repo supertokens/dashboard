@@ -26,29 +26,51 @@ export const ThirdPartyProviderInput = (props: ThirdPartyProviderInputProps) => 
 	const { label, ...rest } = props;
 	return (
 		<div className="third-party-provider-input-container">
-			<div
-				className="third-party-provider-input-container__label-container"
-				style={{
-					minWidth: props.minLabelWidth ? `${props.minLabelWidth}px` : undefined,
-				}}>
-				{props.tooltip && (
-					<TooltipContainer
-						tooltip={props.tooltip}
-						position="bottom">
-						<InfoIcon />
-					</TooltipContainer>
-				)}
-				{label && (
-					<label
-						htmlFor={props.name}
-						className="third-party-provider-input-container__label">
-						{label}{" "}
-						{props.isRequired && <span className="third-party-provider-input-container__required">* </span>}
-						:
-					</label>
-				)}
-			</div>
+			<ThirdPartyProviderInputLabel
+				htmlFor={rest.name}
+				label={label ?? ""}
+				tooltip={props.tooltip}
+				isRequired={props.isRequired}
+				minLabelWidth={props.minLabelWidth}
+			/>
 			<InputField {...rest} />
+		</div>
+	);
+};
+
+export const ThirdPartyProviderInputLabel = ({
+	htmlFor,
+	label,
+	tooltip,
+	isRequired,
+	minLabelWidth,
+}: {
+	htmlFor?: string;
+	label: string;
+	tooltip?: string;
+	isRequired?: boolean;
+	minLabelWidth?: number;
+}) => {
+	return (
+		<div
+			className="third-party-provider-input-container__label-container"
+			style={{
+				minWidth: minLabelWidth ? `${minLabelWidth}px` : undefined,
+			}}>
+			{tooltip && (
+				<TooltipContainer
+					tooltip={tooltip}
+					position="bottom">
+					<InfoIcon />
+				</TooltipContainer>
+			)}
+			{label && (
+				<label
+					htmlFor={htmlFor}
+					className="third-party-provider-input-container__label">
+					{label} {isRequired && <span className="third-party-provider-input-container__required">* </span>}:
+				</label>
+			)}
 		</div>
 	);
 };

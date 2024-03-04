@@ -13,7 +13,7 @@
  * under the License.
  */
 import { useEffect, useState } from "react";
-import { useCoreConfigService, useTenantService } from "../../../../api/tenants";
+import { useCoreConfigService, useTenantService, useThirdPartyService } from "../../../../api/tenants";
 import { CoreConfigOptions, TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
@@ -38,6 +38,7 @@ export const TenantDetail = ({
 }) => {
 	const { getTenantInfo } = useTenantService();
 	const { getCoreConfigOptions } = useCoreConfigService();
+	const { getThirdPartyProviders } = useThirdPartyService();
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
 	const [configOptions, setConfigOptions] = useState<CoreConfigOptions>([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -63,12 +64,31 @@ export const TenantDetail = ({
 		}
 	};
 
+	const getThirdPartyProvidersInfo = async () => {
+		const repsonse = await getThirdPartyProviders(tenantId);
+		if (repsonse?.status === "OK") {
+			setTenant((prev) => {
+				if (prev) {
+					return {
+						...prev,
+						thirdParty: {
+							...prev.thirdParty,
+							providers: repsonse.providers,
+						},
+					};
+				}
+				return prev;
+			});
+		}
+	};
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				setIsLoading(true);
 				await getTenant();
 				await getCoreConfig();
+				await getThirdPartyProvidersInfo();
 			} catch (_) {
 			} finally {
 				setIsLoading(false);
@@ -80,6 +100,7 @@ export const TenantDetail = ({
 	const refetchTenant = async () => {
 		setShowLoadingOverlay(true);
 		await getTenant();
+		await getThirdPartyProvidersInfo();
 		setShowLoadingOverlay(false);
 	};
 

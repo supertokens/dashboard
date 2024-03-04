@@ -17,25 +17,6 @@
 	flex-direction: column;
 	gap: 10px;
 
-	&__label {
-		font-family: inherit;
-		font-weight: 500;
-		font-size: 14px;
-		color: var(--color-secondary-text);
-		min-width: max-content;
-	}
-
-	&__required {
-		color: var(--color-required);
-	}
-
-	&__label-container {
-		display: flex;
-		gap: 6px;
-		margin-top: 10px;
-		align-items: center;
-	}
-
 	&__fields-container {
 		border: 1px solid var(--color-border-command);
 		border-radius: 6px;

@@ -45,15 +45,15 @@ export const ClientConfig = ({
 }) => {
 	const isAppleProvider = providerId.startsWith("apple");
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-	const handleClientFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleClientFieldChange = (name: string, e: ChangeEvent<HTMLInputElement>) => {
 		if (e.type === "change") {
-			setClient({ ...client, [e.target.name]: e.target.value });
+			setClient({ ...client, [name]: e.target.value });
 		}
 	};
 
-	const handleAdditionalConfigChange = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleAdditionalConfigChange = (name: string, e: ChangeEvent<HTMLInputElement>) => {
 		if (e.type === "change") {
-			setClient({ ...client, additionalConfig: { ...client.additionalConfig, [e.target.name]: e.target.value } });
+			setClient({ ...client, additionalConfig: { ...client.additionalConfig, [name]: e.target.value } });
 		}
 	};
 
@@ -80,12 +80,12 @@ export const ClientConfig = ({
 						isRequired
 						tooltip="The client ID of the provider."
 						type="text"
-						name="clientId"
+						name={`clientId-${clientIndex}`}
 						value={client.clientId}
 						minLabelWidth={LABEL_MIN_WIDTH}
 						error={errors[`clients.${clientIndex}.clientId`]}
 						forceShowError
-						handleChange={handleClientFieldChange}
+						handleChange={(e) => handleClientFieldChange("clientId", e)}
 					/>
 					{/* In case of Apple the additionalConfig fields are displayed in
                     the main section. */}
@@ -96,13 +96,13 @@ export const ClientConfig = ({
 								label={field.label}
 								tooltip={field.tooltip}
 								type={field.type}
-								name={field.id}
+								name={`${field.id}-${clientIndex}`}
 								value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
 								isRequired={field.required}
 								minLabelWidth={LABEL_MIN_WIDTH}
 								error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
 								forceShowError
-								handleChange={handleAdditionalConfigChange}
+								handleChange={(e) => handleAdditionalConfigChange(field.id, e)}
 							/>
 						))
 					) : (
@@ -111,12 +111,12 @@ export const ClientConfig = ({
 							isRequired
 							tooltip="The client secret of the provider."
 							type="password"
-							name="clientSecret"
+							name={`clientSecret-${clientIndex}`}
 							value={client.clientSecret}
 							minLabelWidth={LABEL_MIN_WIDTH}
 							error={errors[`clients.${clientIndex}.clientSecret`]}
 							forceShowError
-							handleChange={handleClientFieldChange}
+							handleChange={(e) => handleClientFieldChange("clientSecret", e)}
 						/>
 					)}
 					<ThirdPartyProviderInput
@@ -124,12 +124,12 @@ export const ClientConfig = ({
 						isRequired={clientsCount > 1}
 						tooltip="Client type is useful when you have multiple clients for the same provider, for different client types like web, mobile, etc."
 						type="text"
-						name="clientType"
+						name={`clientType-${clientIndex}`}
 						value={client.clientType}
 						minLabelWidth={LABEL_MIN_WIDTH}
 						error={errors[`clients.${clientIndex}.clientType`]}
 						forceShowError
-						handleChange={handleClientFieldChange}
+						handleChange={(e) => handleClientFieldChange("clientType", e)}
 					/>
 				</div>
 				<hr className="client-config-container__divider" />
@@ -164,13 +164,13 @@ export const ClientConfig = ({
 										label={field.label}
 										tooltip={field.tooltip}
 										type={field.type}
-										name={field.id}
+										name={`${field.id}-${clientIndex}`}
 										value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
 										isRequired={field.required}
 										minLabelWidth={LABEL_MIN_WIDTH}
 										error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
 										forceShowError
-										handleChange={handleAdditionalConfigChange}
+										handleChange={(e) => handleAdditionalConfigChange(field.id, e)}
 									/>
 								))}
 						</div>

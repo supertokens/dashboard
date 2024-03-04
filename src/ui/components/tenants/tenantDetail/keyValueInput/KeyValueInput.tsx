@@ -12,10 +12,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { ReactComponent as InfoIcon } from "../../../../../assets/info-icon.svg";
 import { DeleteCrossButton } from "../../../deleteCrossButton/DeleteCrossButton";
-import TooltipContainer from "../../../tooltip/tooltip";
-import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
+import {
+	ThirdPartyProviderInput,
+	ThirdPartyProviderInputLabel,
+} from "../thirdPartyProviderInput/ThirdPartyProviderInput";
 import "./keyValueInput.scss";
 
 type KeyValueInputProps = {
@@ -23,28 +24,19 @@ type KeyValueInputProps = {
 	tooltip?: string;
 	isRequired?: boolean;
 	value: Array<[string, string]>;
+	name: string;
 	onChange: (value: Array<[string, string]>) => void;
 };
 
 export const KeyValueInput = (props: KeyValueInputProps) => {
-	const { label, value, tooltip, isRequired } = props;
+	const { label, value, tooltip, isRequired, name } = props;
 	return (
 		<div className="key-value-input-container">
-			<div className="key-value-input-container__label-container">
-				{tooltip && (
-					<TooltipContainer
-						tooltip={tooltip}
-						position="bottom">
-						<InfoIcon />
-					</TooltipContainer>
-				)}
-				{label && (
-					<label className="key-value-input-container__label">
-						{label} {isRequired && <span className="key-value-input-container__required">* </span>}:
-					</label>
-				)}
-			</div>
-
+			<ThirdPartyProviderInputLabel
+				label={label}
+				tooltip={tooltip}
+				isRequired={isRequired}
+			/>
 			<div className="key-value-input-container__fields-container">
 				<div className="key-value-input-container__fields-list">
 					{value.map((pair, index) => {
@@ -63,7 +55,7 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 										props.onChange(newValue);
 									}}
 									label="Key"
-									name="key"
+									name={`key-${name}-${index}`}
 									type="text"
 								/>
 								<ThirdPartyProviderInput
@@ -77,7 +69,7 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 										props.onChange(newValue);
 									}}
 									label="Value"
-									name="value"
+									name={`value-${name}-${index}`}
 									type="text"
 								/>
 								{value.length > 1 && (
