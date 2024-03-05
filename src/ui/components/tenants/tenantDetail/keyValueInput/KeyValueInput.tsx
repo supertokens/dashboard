@@ -23,9 +23,9 @@ type KeyValueInputProps = {
 	label: string;
 	tooltip?: string;
 	isRequired?: boolean;
-	value: Array<[string, string]>;
+	value: Array<[string, string | null]>;
 	name: string;
-	onChange: (value: Array<[string, string]>) => void;
+	onChange: (value: Array<[string, string | null]>) => void;
 };
 
 export const KeyValueInput = (props: KeyValueInputProps) => {
@@ -47,7 +47,7 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 								<ThirdPartyProviderInput
 									value={pair[0]}
 									handleChange={(e) => {
-										const newValue: Array<[string, string]> = [
+										const newValue: Array<[string, string | null]> = [
 											...props.value.slice(0, index),
 											[e.target.value, props.value[index][1]],
 											...props.value.slice(index + 1),
@@ -59,9 +59,9 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 									type="text"
 								/>
 								<ThirdPartyProviderInput
-									value={pair[1]}
+									value={pair[1] ?? ""}
 									handleChange={(e) => {
-										const newValue: Array<[string, string]> = [
+										const newValue: Array<[string, string | null]> = [
 											...props.value.slice(0, index),
 											[props.value[index][0], e.target.value],
 											...props.value.slice(index + 1),

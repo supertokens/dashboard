@@ -14,7 +14,7 @@
  */
 import { useEffect, useState } from "react";
 import { useCoreConfigService, useTenantService, useThirdPartyService } from "../../../../api/tenants";
-import { CoreConfigOptions, TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
+import { CoreConfigOptions, ProviderConfig, TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
@@ -41,6 +41,7 @@ export const TenantDetail = ({
 	const { getThirdPartyProviders } = useThirdPartyService();
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
 	const [configOptions, setConfigOptions] = useState<CoreConfigOptions>([]);
+	const [resolvedProviders, setResolvedProviders] = useState<Array<ProviderConfig>>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
@@ -67,18 +68,7 @@ export const TenantDetail = ({
 	const getThirdPartyProvidersInfo = async () => {
 		const repsonse = await getThirdPartyProviders(tenantId);
 		if (repsonse?.status === "OK") {
-			setTenant((prev) => {
-				if (prev) {
-					return {
-						...prev,
-						thirdParty: {
-							...prev.thirdParty,
-							providers: repsonse.providers,
-						},
-					};
-				}
-				return prev;
-			});
+			setResolvedProviders(repsonse.providers);
 		}
 	};
 
@@ -195,12 +185,17 @@ export const TenantDetail = ({
 		);
 	}
 
+	if (!tenant) {
+		throw new Error("This should be unreachable");
+	}
+
 	return (
 		<TenantDetailContextProvider
-			tenantInfo={tenant!}
+			tenantInfo={tenant}
 			setTenantInfo={setTenant}
 			coreConfigOptions={configOptions}
-			refetchTenant={refetchTenant}>
+			refetchTenant={refetchTenant}
+			resolvedProviders={resolvedProviders}>
 			{renderView()}
 		</TenantDetailContextProvider>
 	);

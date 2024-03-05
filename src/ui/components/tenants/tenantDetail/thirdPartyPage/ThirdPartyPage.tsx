@@ -79,10 +79,10 @@ const ProviderInfo = ({
 	isAddingNewProvider: boolean;
 	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
 }) => {
-	const { tenantInfo } = useTenantDetailContext();
+	const { resolvedProviders } = useTenantDetailContext();
 	const providerConfig = isAddingNewProvider
 		? undefined
-		: tenantInfo.thirdParty.providers.find((p) => p.thirdPartyId === providerId);
+		: resolvedProviders.find((p) => p.thirdPartyId === providerId);
 	const isInBuiltProvider =
 		typeof providerId === "string" && IN_BUILT_THIRD_PARTY_PROVIDERS.some(({ id }) => providerId.startsWith(id));
 
@@ -109,7 +109,7 @@ const ProviderInfo = ({
 };
 
 const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {
-	const { tenantInfo } = useTenantDetailContext();
+	const { resolvedProviders } = useTenantDetailContext();
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -122,9 +122,7 @@ const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetState
 				<h2 className="provider-list-container__header-with-divider">Built-In OAuth Providers</h2>
 				<div className="provider-list-container__providers-grid">
 					{IN_BUILT_THIRD_PARTY_PROVIDERS.map((provider) => {
-						const isAlreadyAdded = tenantInfo.thirdParty.providers.some((p) =>
-							p.thirdPartyId.startsWith(provider.id)
-						);
+						const isAlreadyAdded = resolvedProviders.some((p) => p.thirdPartyId.startsWith(provider.id));
 						return (
 							<ThirdPartyProviderButton
 								key={provider.id}

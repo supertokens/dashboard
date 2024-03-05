@@ -35,6 +35,15 @@
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+
+	&__toggle-container {
+		display: flex;
+		align-items: center;
+		gap: 22px;
+		& > div:first-child {
+			margin-top: 0px;
+		}
+	}
 }
 
 .client-config-container {

@@ -14,11 +14,12 @@
  */
 
 import { createContext, Dispatch, SetStateAction, useContext } from "react";
-import { CoreConfigOptions, TenantInfo } from "../../../../api/tenants/types";
+import { CoreConfigOptions, ProviderConfig, TenantInfo } from "../../../../api/tenants/types";
 
 type TenantDetailContextType = {
 	tenantInfo: TenantInfo;
 	coreConfigOptions: CoreConfigOptions;
+	resolvedProviders: Array<ProviderConfig>;
 	refetchTenant: () => Promise<void>;
 	setTenantInfo: Dispatch<SetStateAction<TenantInfo | undefined>>;
 };
@@ -30,16 +31,19 @@ export const TenantDetailContextProvider = ({
 	tenantInfo,
 	coreConfigOptions,
 	refetchTenant,
+	resolvedProviders,
 	setTenantInfo,
 }: {
 	children: React.ReactNode;
 	tenantInfo: TenantInfo;
 	coreConfigOptions: CoreConfigOptions;
 	refetchTenant: () => Promise<void>;
+	resolvedProviders: Array<ProviderConfig>;
 	setTenantInfo: Dispatch<SetStateAction<TenantInfo | undefined>>;
 }) => {
 	return (
-		<TenantDetailContext.Provider value={{ tenantInfo, refetchTenant, coreConfigOptions, setTenantInfo }}>
+		<TenantDetailContext.Provider
+			value={{ tenantInfo, refetchTenant, coreConfigOptions, setTenantInfo, resolvedProviders }}>
 			{children}
 		</TenantDetailContext.Provider>
 	);

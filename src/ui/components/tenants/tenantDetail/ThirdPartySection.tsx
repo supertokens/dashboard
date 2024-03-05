@@ -27,7 +27,7 @@ export const ThirdPartySection = ({
 	handleAddNewProvider: () => void;
 	handleEditProvider: (providerId: string) => void;
 }) => {
-	const { tenantInfo } = useTenantDetailContext();
+	const { resolvedProviders } = useTenantDetailContext();
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -36,9 +36,9 @@ export const ThirdPartySection = ({
 				</PanelHeaderTitleWithTooltip>
 			</PanelHeader>
 
-			{tenantInfo.thirdParty?.providers?.length > 0 ? (
+			{resolvedProviders?.length > 0 ? (
 				<div className="tenant-detail__existing-providers">
-					{tenantInfo.thirdParty.providers.map((provider) => {
+					{resolvedProviders.map((provider) => {
 						const builtInProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.find((p) =>
 							provider.thirdPartyId.startsWith(p.id)
 						);

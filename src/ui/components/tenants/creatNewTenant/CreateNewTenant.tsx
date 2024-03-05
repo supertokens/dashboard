@@ -38,12 +38,12 @@ export const CreateNewTenantDialog = ({
 
 	const handleCreateTenant = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		if (tenantId.length < 1) {
+		if (tenantId.trim().length === 0) {
 			setTenantCreationError("Please enter a valid Tenant Id!");
 			return;
 		}
 		if (!tenantId.match(/^[a-z0-9-]+$/)) {
-			setTenantCreationError("Tenant Id can only contain letters, numbers and hyphens");
+			setTenantCreationError("Tenant Id can only lowercase alphabets, numbers and hyphens");
 			return;
 		}
 		if (tenantId.startsWith("appid-")) {
@@ -64,7 +64,7 @@ export const CreateNewTenantDialog = ({
 				onCloseDialog();
 			} else if (resp?.status === "MULTITENANCY_NOT_ENABLED_ERROR") {
 				setTenantCreationError(
-					"Multitenancy is not enabled for your SuperTokens instance. Please add license key to enable it."
+					"Multitenancy is not enabled for your SuperTokens instance. Please add a license key to enable it."
 				);
 			} else if (resp?.status === "INVALID_TENANT_ID_ERROR") {
 				setTenantCreationError(resp.message);
