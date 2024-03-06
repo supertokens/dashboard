@@ -259,6 +259,7 @@ export const LoginMethodsSection = () => {
 								id={`secondary-factor-${method.id}`}
 								key={`secondary-factor-${method.id}`}
 								label={method.label}
+								fixedGap
 								description={method.description}
 								checked={selectedFactors.requiredSecondaryFactors.includes(method.id)}
 								onChange={() => handleFactorChange("requiredSecondaryFactors", method.id)}
@@ -277,15 +278,20 @@ const LoginFactor = ({
 	description,
 	checked,
 	onChange,
+	fixedGap,
 }: {
 	id: string;
 	label: string;
 	description: string;
 	checked: boolean;
 	onChange: () => void;
+	fixedGap?: boolean;
 }) => {
 	return (
-		<div className="tenant-detail__factors-container__grid__factor">
+		<div
+			className={`tenant-detail__factors-container__grid__factor${
+				fixedGap ? " tenant-detail__factors-container__grid__factor--fixed-gap" : ""
+			}`}>
 			<div className="tenant-detail__factors-container__grid__factor__label-container">
 				<TooltipContainer
 					tooltipWidth={200}
@@ -293,7 +299,7 @@ const LoginFactor = ({
 					tooltip={description}>
 					<InfoIcon />
 				</TooltipContainer>
-				<div className="tenant-detail__factors-container__grid__factor__label-container__label">{label}</div>
+				<div className="tenant-detail__factors-container__grid__factor__label-container__label">{label}:</div>
 			</div>
 			<Toggle
 				checked={checked}

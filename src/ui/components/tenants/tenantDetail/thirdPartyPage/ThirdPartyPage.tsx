@@ -109,7 +109,6 @@ const ProviderInfo = ({
 };
 
 const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {
-	const { resolvedProviders } = useTenantDetailContext();
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -122,13 +121,11 @@ const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetState
 				<h2 className="provider-list-container__header-with-divider">Built-In OAuth Providers</h2>
 				<div className="provider-list-container__providers-grid">
 					{IN_BUILT_THIRD_PARTY_PROVIDERS.map((provider) => {
-						const isAlreadyAdded = resolvedProviders.some((p) => p.thirdPartyId.startsWith(provider.id));
 						return (
 							<ThirdPartyProviderButton
 								key={provider.id}
 								title={provider.label}
 								icon={provider.icon}
-								disabled={isAlreadyAdded}
 								onClick={() => {
 									window.scrollTo(0, 0);
 									setViewObj({

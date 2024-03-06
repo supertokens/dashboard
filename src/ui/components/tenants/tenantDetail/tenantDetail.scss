@@ -306,6 +306,11 @@
 						line-height: 23px;
 					}
 				}
+
+				&--fixed-gap {
+					gap: 16px;
+					justify-content: flex-start;
+				}
 			}
 		}
 	}

@@ -43,7 +43,7 @@ export const CreateNewTenantDialog = ({
 			return;
 		}
 		if (!tenantId.match(/^[a-z0-9-]+$/)) {
-			setTenantCreationError("Tenant Id can only lowercase alphabets, numbers and hyphens");
+			setTenantCreationError("Tenant Id can only contain lowercase alphabets, numbers and hyphens");
 			return;
 		}
 		if (tenantId.startsWith("appid-")) {

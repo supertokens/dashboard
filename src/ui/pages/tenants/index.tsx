@@ -37,7 +37,9 @@ const TenantList = ({ selectTenant }: { selectTenant: (tenantId: string) => void
 	const [currentActivePage, setCurrentActivePage] = useState(1);
 	const deferredSearchQuery = useDeferredValue(searchQuery);
 
-	const filteredTenants = tenants?.filter((tenant) => tenant.tenantId.includes(deferredSearchQuery));
+	const filteredTenants = tenants?.filter((tenant) =>
+		tenant.tenantId.includes(deferredSearchQuery.trim().toLowerCase())
+	);
 
 	const totalTenantsCount = Array.isArray(filteredTenants) ? filteredTenants.length : 0;
 	const totalPages = Math.ceil(totalTenantsCount / TENANTS_PAGINATION_LIMIT);

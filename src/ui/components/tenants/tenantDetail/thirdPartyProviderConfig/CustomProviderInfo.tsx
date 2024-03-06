@@ -97,7 +97,7 @@ export const CustomProviderInfo = ({
 		} else if (!providerConfigState.thirdPartyId.match(/^[a-z0-9-]+$/)) {
 			setErrorState((prev) => ({
 				...prev,
-				thirdPartyId: "Third Party Id can only lowercase alphabets, numbers and hyphens",
+				thirdPartyId: "Third Party Id can only contain lowercase alphabets, numbers and hyphens",
 			}));
 			isValid = false;
 		} else if (doesThirdPartyIdExist && isAddingNewProvider) {

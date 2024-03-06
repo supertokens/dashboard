@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useContext, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { useThirdPartyService } from "../../../../../api/tenants";
 import { BuiltInProvidersCustomFields, ProviderClientConfig, ProviderConfig } from "../../../../../api/tenants/types";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "../../../../../constants";
@@ -43,7 +43,7 @@ export const BuiltInProviderInfo = ({
 	);
 	const [errorState, setErrorState] = useState<Record<string, string>>({});
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
-	const { tenantInfo, refetchTenant } = useTenantDetailContext();
+	const { tenantInfo, refetchTenant, resolvedProviders } = useTenantDetailContext();
 	const [isSaving, setIsSaving] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
 	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
@@ -72,11 +72,47 @@ export const BuiltInProviderInfo = ({
 		}));
 	};
 
+	const handleThirdPartyIdSuffixChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (e.type !== "change") {
+			return;
+		}
+
+		if (e.target.value.trim() === "") {
+			setProviderConfigState((prev) => ({ ...prev, thirdPartyId: inBuiltProviderInfo?.id ?? "" }));
+		} else {
+			setProviderConfigState((prev) => ({
+				...prev,
+				thirdPartyId: `${inBuiltProviderInfo?.id}-${e.target.value.trim()}`,
+			}));
+		}
+	};
+
 	const handleSave = async () => {
 		const isAppleProvider = providerId.startsWith("apple");
 		let isValid = true;
 
+		const doesThirdPartyIdExist = resolvedProviders.some(
+			(provider) => provider.thirdPartyId === providerConfigState.thirdPartyId
+		);
+
 		setErrorState({});
+
+		if (!providerConfigState.thirdPartyId.match(/^[a-z0-9-]+$/)) {
+			setErrorState((prev) => ({
+				...prev,
+				thirdPartyId: "Third Party Id can only contain lowercase alphabets, numbers and hyphens",
+			}));
+			isValid = false;
+		} else if (doesThirdPartyIdExist && isAddingNewProvider) {
+			setErrorState((prev) => ({
+				...prev,
+				thirdPartyId:
+					inBuiltProviderInfo?.id === providerConfigState.thirdPartyId
+						? `You need to add a suffix for this provider since you have already added a ${inBuiltProviderInfo.label} provider`
+						: "Third Party Id already exists",
+			}));
+			isValid = false;
+		}
 
 		const clientTypes = new Set<string>();
 		providerConfigState.clients?.forEach((client, index) => {
@@ -202,16 +238,30 @@ export const BuiltInProviderInfo = ({
 				</div>
 			</PanelHeader>
 			<div className="fields-container">
-				<ThirdPartyProviderInput
-					label="Third Party Id"
-					tooltip="The Id of the provider."
-					type="text"
-					name="thirdPartyId"
-					value={providerId}
-					isRequired
-					disabled
-					handleChange={() => null}
-				/>
+				{isAddingNewProvider ? (
+					<ThirdPartyProviderInput
+						label="Third Party Id"
+						tooltip="The Id of the provider."
+						prefix={`${inBuiltProviderInfo?.id}-`}
+						type="text"
+						name="thirdPartyId"
+						value={providerConfigState.thirdPartyId.slice((inBuiltProviderInfo?.id.length ?? 0) + 1)}
+						forceShowError
+						error={errorState.thirdPartyId}
+						handleChange={handleThirdPartyIdSuffixChange}
+					/>
+				) : (
+					<ThirdPartyProviderInput
+						label="Third Party Id"
+						tooltip="The Id of the provider."
+						type="text"
+						name="thirdPartyId"
+						value={providerId}
+						disabled
+						handleChange={() => null}
+					/>
+				)}
+
 				{customFields?.fields?.map((field) => (
 					<ThirdPartyProviderInput
 						key={field.id}

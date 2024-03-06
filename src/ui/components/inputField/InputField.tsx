@@ -30,6 +30,7 @@ export type InputFieldPropTypes = {
 	hideColon?: boolean;
 	forceShowError?: boolean;
 	disabled?: boolean;
+	prefix?: string;
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 	/** @default "bottom" */
 	errorPlacement?: "bottom" | "prefix-tooltip";
@@ -66,7 +67,15 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 			<div
 				className={`input-field-inset ${isFocused ? "input-field-inset-focused" : ""} ${
 					showError ? "input-field-inset-error-state" : ""
-				}`}>
+				} ${props.prefix ? "input-field-inset-with-prefix" : ""}`}>
+				{props.prefix && (
+					<div
+						className={`input-field-prefix ${isFocused ? "input-field-prefix-focused" : ""} ${
+							showError ? "input-field-prefix-error" : ""
+						}`}>
+						{props.prefix}
+					</div>
+				)}
 				<input
 					type={props.type === "password" && showPassword ? "text" : props.type}
 					name={props.name}
