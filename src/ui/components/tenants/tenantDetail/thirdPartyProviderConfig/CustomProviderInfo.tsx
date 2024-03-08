@@ -236,7 +236,13 @@ export const CustomProviderInfo = ({
 
 		const normalizedProviderConfigClients = providerConfigState.clients?.map((client) => {
 			const normalizedScopes = client.scope?.filter((scope) => scope && scope?.trim() !== "") ?? [];
-			return { ...client, scope: normalizedScopes.length === 0 ? null : normalizedScopes };
+			return {
+				...client,
+				clientId: client.clientId.trim(),
+				clientType: client.clientType?.trim(),
+				clientSecret: client.clientSecret?.trim(),
+				scope: normalizedScopes,
+			};
 		});
 
 		const normalizedAuthorizationEndpointQueryParams = Object.fromEntries(

@@ -87,25 +87,23 @@ export const ClientConfig = ({
 						forceShowError
 						handleChange={(e) => handleClientFieldChange("clientId", e)}
 					/>
-					{/* In case of Apple the additionalConfig fields are displayed in
-                    the main section. */}
-					{isAppleProvider ? (
-						additionalConfigFields?.map((field) => (
-							<ThirdPartyProviderInput
-								key={field.id}
-								label={field.label}
-								tooltip={field.tooltip}
-								type={field.type}
-								name={`${field.id}-${clientIndex}`}
-								value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
-								isRequired={field.required}
-								minLabelWidth={LABEL_MIN_WIDTH}
-								error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
-								forceShowError
-								handleChange={(e) => handleAdditionalConfigChange(field.id, e)}
-							/>
-						))
-					) : (
+					{additionalConfigFields?.map((field) => (
+						<ThirdPartyProviderInput
+							key={field.id}
+							label={field.label}
+							tooltip={field.tooltip}
+							type={field.type}
+							name={`${field.id}-${clientIndex}`}
+							value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
+							isRequired={field.required}
+							minLabelWidth={LABEL_MIN_WIDTH}
+							error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
+							forceShowError
+							handleChange={(e) => handleAdditionalConfigChange(field.id, e)}
+						/>
+					))}
+					{/* In case of Apple we don't ask for client secret */}
+					{!isAppleProvider && (
 						<ThirdPartyProviderInput
 							label="Client Secret"
 							isRequired
@@ -156,23 +154,6 @@ export const ClientConfig = ({
 								scopes={client.scope ?? [""]}
 								setScopes={handleScopesChange}
 							/>
-							{/* Additional config fields are displayed in the main section for Apple provider. */}
-							{!isAppleProvider &&
-								additionalConfigFields?.map((field) => (
-									<ThirdPartyProviderInput
-										key={field.id}
-										label={field.label}
-										tooltip={field.tooltip}
-										type={field.type}
-										name={`${field.id}-${clientIndex}`}
-										value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
-										isRequired={field.required}
-										minLabelWidth={LABEL_MIN_WIDTH}
-										error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
-										forceShowError
-										handleChange={(e) => handleAdditionalConfigChange(field.id, e)}
-									/>
-								))}
 						</div>
 					</CollapsibleContent>
 				</CollapsibleRoot>
@@ -205,9 +186,15 @@ const Scopes = ({ scopes, setScopes }: { scopes: string[]; setScopes: (scopes: s
 					}}
 					minLabelWidth={108}
 				/>
-				{scopes.length > 1 && (
+				{(scopes.length > 1 || scopes[0]?.length > 0) && (
 					<DeleteCrossButton
-						onClick={() => setScopes(scopes.filter((_, i) => i !== 0))}
+						onClick={() => {
+							if (scopes.length > 1) {
+								setScopes(scopes.filter((_, i) => i !== 0));
+							} else {
+								setScopes([""]);
+							}
+						}}
 						label="Delete Scope"
 					/>
 				)}

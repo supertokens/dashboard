@@ -39,7 +39,7 @@ export const BuiltInProviderInfo = ({
 	isAddingNewProvider: boolean;
 }) => {
 	const [providerConfigState, setProviderConfigState] = useState<ProviderConfig>(
-		providerConfig ?? getBuiltInInitialProviderInfo(providerId)
+		getBuiltInProviderInfo(providerId, providerConfig)
 	);
 	const [errorState, setErrorState] = useState<Record<string, string>>({});
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
@@ -146,26 +146,13 @@ export const BuiltInProviderInfo = ({
 			}
 		});
 
-		if (customFields?.fields) {
-			customFields.fields.forEach((field) => {
-				if (
-					field.required &&
-					(typeof providerConfigState[field.id as keyof ProviderConfig] !== "string" ||
-						providerConfigState[field.id as keyof ProviderConfig] === "")
-				) {
-					setErrorState((prev) => ({ ...prev, [field.id]: `${field.label} is required` }));
-					isValid = false;
-				}
-			});
-		}
-
 		if (customFields?.additionalConfigFields) {
 			providerConfigState.clients?.forEach((client, index) => {
 				customFields.additionalConfigFields?.forEach((field) => {
 					if (
 						field.required &&
 						(typeof client.additionalConfig?.[field.id] !== "string" ||
-							client.additionalConfig[field.id] === "")
+							(client.additionalConfig[field.id] as string).trim() === "")
 					) {
 						setErrorState((prev) => ({
 							...prev,
@@ -177,17 +164,6 @@ export const BuiltInProviderInfo = ({
 			});
 		}
 
-		if (customFields?.oneOfFieldsOrAdditionalConfigRequired) {
-			const { field, additionalConfig } = customFields.oneOfFieldsOrAdditionalConfigRequired;
-			if (
-				providerConfigState[field as keyof ProviderConfig] === "" &&
-				providerConfigState.clients?.some((client) => client.additionalConfig?.[additionalConfig] === "")
-			) {
-				setErrorState((prev) => ({ ...prev, [field]: `${field} or ${additionalConfig} is required` }));
-				isValid = false;
-			}
-		}
-
 		if (isValid) {
 			const normalizedProviderConfig = {
 				name: inBuiltProviderInfo?.label,
@@ -196,7 +172,25 @@ export const BuiltInProviderInfo = ({
 
 			normalizedProviderConfig.clients = normalizedProviderConfig.clients?.map((client) => {
 				const normalizedScopes = client.scope?.filter((scope) => scope && scope?.trim() !== "") ?? [];
-				return { ...client, scope: normalizedScopes.length === 0 ? null : normalizedScopes };
+				return {
+					...client,
+					clientId: client.clientId.trim(),
+					clientType: client.clientType?.trim(),
+					clientSecret: client.clientSecret?.trim(),
+					scope: normalizedScopes,
+					additionalConfig:
+						client.additionalConfig && Object.keys(client.additionalConfig).length > 0
+							? Object.keys(client.additionalConfig).reduce((acc, key) => {
+									if (
+										typeof client.additionalConfig?.[key] === "string" &&
+										(client.additionalConfig[key] as string)?.trim() !== ""
+									) {
+										acc[key] = (client.additionalConfig[key] as string).trim();
+									}
+									return acc;
+							  }, {} as Record<string, unknown>)
+							: undefined,
+				};
 			});
 
 			try {
@@ -262,22 +256,6 @@ export const BuiltInProviderInfo = ({
 					/>
 				)}
 
-				{customFields?.fields?.map((field) => (
-					<ThirdPartyProviderInput
-						key={field.id}
-						label={field.label}
-						tooltip={field.tooltip}
-						type={field.type}
-						name={field.id}
-						value={providerConfigState[field.id as keyof ProviderConfig] as string}
-						isRequired={field.required}
-						error={errorState[field.id]}
-						forceShowError
-						handleChange={(value) => {
-							setProviderConfigState((prev) => ({ ...prev, [field.id]: value }));
-						}}
-					/>
-				))}
 				{providerConfigState.clients?.map((client, index) => (
 					<ClientConfig
 						key={index}
@@ -334,23 +312,32 @@ export const BuiltInProviderInfo = ({
 	);
 };
 
-const getBuiltInInitialProviderInfo = (providerId: string) => {
-	let baseProviderConfig = {
-		thirdPartyId: providerId,
-		clients: [{ clientId: "", clientSecret: "", scope: [""], additionalConfig: {} }],
-	};
-
+const getBuiltInProviderInfo = (providerId: string, providerConfig?: ProviderConfig) => {
 	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
 		providerId.startsWith(id)
 	);
 	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : undefined;
+
+	if (providerConfig) {
+		return {
+			...providerConfig,
+			clients: providerConfig.clients?.map((client) => ({
+				...client,
+				scope: client.scope ?? customFields?.defaultScopes,
+			})),
+		};
+	}
+
+	const baseProviderConfig = {
+		thirdPartyId: providerId,
+		clients: [{ clientId: "", clientSecret: "", scope: [""], additionalConfig: {} }],
+	};
 
 	if (customFields === undefined) {
 		return baseProviderConfig;
 	}
 
 	const additionalConfigFields = customFields.additionalConfigFields ?? [];
-	const fields = customFields.fields ?? [];
 
 	if (additionalConfigFields.length > 0) {
 		const additionalConfig = additionalConfigFields.reduce((acc, field) => {
@@ -361,16 +348,8 @@ const getBuiltInInitialProviderInfo = (providerId: string) => {
 		baseProviderConfig.clients[0].additionalConfig = additionalConfig;
 	}
 
-	if (fields.length > 0) {
-		const fieldsConfig = fields.reduce((acc, field) => {
-			acc[field.id] = "";
-			return acc;
-		}, {} as Record<string, string>);
-
-		baseProviderConfig = {
-			...baseProviderConfig,
-			...fieldsConfig,
-		};
+	if (customFields.defaultScopes) {
+		baseProviderConfig.clients[0].scope = customFields.defaultScopes;
 	}
 
 	return baseProviderConfig;
@@ -401,6 +380,7 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 				required: true,
 			},
 		],
+		defaultScopes: ["openid", "email"],
 	},
 	"google-workspaces": {
 		additionalConfigFields: [
@@ -414,28 +394,20 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 		],
 	},
 	gitlab: {
-		fields: [
+		additionalConfigFields: [
 			{
-				label: "OIDC Discovery Endpoint",
-				id: "oidcDiscoveryEndpoint",
-				tooltip: "The OIDC discovery endpoint for Gitlab, if you are using a self-hosted Gitlab instance.",
+				label: "Gitlab Base URL",
+				id: "gitlabBaseUrl",
+				tooltip:
+					"The base URL for Gitlab, The OIDC discovery endpoint for Gitlab, if you are using a self-hosted Gitlab instance.",
 				type: "text",
 				required: false,
 			},
 		],
+		defaultScopes: ["openid", "email"],
 	},
 
 	"active-directory": {
-		fields: [
-			{
-				label: "OIDC Discovery Endpoint",
-				id: "oidcDiscoveryEndpoint",
-				tooltip:
-					"The OIDC discovery endpoint for your Active Directory account, that will be used to fetch the OIDC endpoints.",
-				type: "text",
-				required: false,
-			},
-		],
 		additionalConfigFields: [
 			{
 				label: "Directory Id",
@@ -446,22 +418,27 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 				required: false,
 			},
 		],
-		oneOfFieldsOrAdditionalConfigRequired: {
-			field: "oidcDiscoveryEndpoint",
-			additionalConfig: "directoryId",
-		},
+		defaultScopes: ["openid", "email"],
+	},
+	bitbucket: {
+		defaultScopes: ["account", "email"],
+	},
+	discord: {
+		defaultScopes: ["identify", "email"],
+	},
+	facebook: {
+		defaultScopes: ["email"],
+	},
+	github: {
+		defaultScopes: ["read:user", "user:email"],
+	},
+	google: {
+		defaultScopes: ["openid", "email"],
+	},
+	linkedin: {
+		defaultScopes: ["openid", "profile", "email"],
 	},
 	okta: {
-		fields: [
-			{
-				label: "OIDC Discovery Endpoint",
-				id: "oidcDiscoveryEndpoint",
-				tooltip:
-					"The OIDC discovery	 endpoint for your Okta account, that will be used to fetch the OIDC endpoints.",
-				type: "text",
-				required: false,
-			},
-		],
 		additionalConfigFields: [
 			{
 				label: "Okta Domain",
@@ -472,9 +449,9 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 				required: false,
 			},
 		],
-		oneOfFieldsOrAdditionalConfigRequired: {
-			field: "oidcDiscoveryEndpoint",
-			additionalConfig: "oktaDomain",
-		},
+		defaultScopes: ["openid", "email"],
+	},
+	twitter: {
+		defaultScopes: ["users.read", "tweet.read"],
 	},
 };
