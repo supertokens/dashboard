@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.10.4] - 2024-03-08
 
 -   Improves UX when deleting a user from the dashboard.
+-   Fixes Deleting linked accounts on user details page.
 
 ## [0.10.3] - 2024-01-26
 
