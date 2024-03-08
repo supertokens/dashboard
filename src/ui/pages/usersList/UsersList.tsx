@@ -394,6 +394,10 @@ export const UserListPage = () => {
 			const deleteSucceed = await deleteUser(userId, true);
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			if (didSucceed) {
+				if (reloadListRef.current) {
+					// refetches the users list after deleting a user.
+					void reloadListRef.current();
+				}
 				backToList();
 			}
 			showToast(getDeleteUserToast(didSucceed));
@@ -469,6 +473,11 @@ export const UserListPage = () => {
 			}>
 			{isSelectedUserNotEmpty && (
 				<UserDetail
+					refetchUsersList={() => {
+						if (reloadListRef.current) {
+							void reloadListRef.current();
+						}
+					}}
 					user={selectedUser}
 					onBackButtonClicked={backToList}
 					onDeleteCallback={({ id }) => onUserDelete(id)}

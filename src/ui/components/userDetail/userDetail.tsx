@@ -46,6 +46,7 @@ export type UserDetailProps = {
 		tenantId: string | undefined
 	) => Promise<boolean>;
 	onChangePasswordCallback: (userId: string, newPassword: string) => Promise<void>;
+	refetchUsersList: () => void;
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
@@ -255,7 +256,10 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 				<UserRolesList />
 
-				<LoginMethods refetchAllData={refetchAllData} />
+				<LoginMethods
+					refetchAllData={refetchAllData}
+					refetchUsersList={props.refetchUsersList}
+				/>
 
 				<UserMetaDataSection />
 
