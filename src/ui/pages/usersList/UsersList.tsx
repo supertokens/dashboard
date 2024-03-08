@@ -480,7 +480,7 @@ export const UserListPage = () => {
 					}}
 					user={selectedUser}
 					onBackButtonClicked={backToList}
-					onDeleteCallback={({ id }) => onUserDelete(id)}
+					onDeleteCallback={(userId) => onUserDelete(userId)}
 					onSendEmailVerificationCallback={({ id, tenantIds }) => {
 						return sendUserEmailVerification(id, tenantIds.length > 0 ? tenantIds[0] : undefined);
 					}}
@@ -500,7 +500,7 @@ export const UserListPage = () => {
 				css={isSelectedUserNotEmpty ? { display: "none" } : undefined}
 				reloadRef={reloadListRef}
 				onChangePasswordCallback={changePassword}
-				onDeleteCallback={({ id }) => onUserDelete(id)}
+				onDeleteCallback={(userId) => onUserDelete(userId)}
 			/>
 		</AppEnvContextProvider>
 	);

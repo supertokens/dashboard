@@ -414,7 +414,7 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData, refet
 				getUserDeleteConfirmationProps({
 					loginMethod: loginMethod,
 					user: userDetail.details,
-					onDeleteCallback: (user) => onDeleteCallback(user.id),
+					onDeleteCallback: (userId) => onDeleteCallback(userId),
 					all: false,
 				})
 			),

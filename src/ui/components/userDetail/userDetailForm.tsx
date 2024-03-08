@@ -27,7 +27,6 @@ import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import InputField from "../inputField/InputField";
 import { LayoutModalProps } from "../layout/layoutModal";
 import { ToastNotificationProps } from "../toast/toastNotification";
-import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import "./userDetailForm.scss";
 
 type PasswordChangeCallback = (password?: string) => Promise<void>;
@@ -61,7 +60,7 @@ type UserDeleteConfirmationProps = UserProps & {
 type UserUnlinkConfirmationProps = { onConfirmed: (isConfirmed: boolean) => void; loginMethod: LoginMethod };
 
 type UserDeleteConfirmationTriggerProps = UserProps & {
-	onDeleteCallback: OnSelectUserFunction;
+	onDeleteCallback: (userId: string) => void;
 	loginMethod?: LoginMethod;
 	all: boolean;
 };
@@ -549,7 +548,11 @@ export const getUserDeleteConfirmationProps = (props: UserDeleteConfirmationTrig
 
 	const onConfirmedDelete = (isConfirmed: boolean) => {
 		if (isConfirmed) {
-			onDeleteCallback(user);
+			if (loginMethod) {
+				onDeleteCallback(loginMethod.recipeUserId);
+			} else {
+				onDeleteCallback(user.id);
+			}
 		}
 		closeConfirmDeleteRef.current?.();
 	};
