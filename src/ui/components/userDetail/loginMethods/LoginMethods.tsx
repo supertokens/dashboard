@@ -383,9 +383,9 @@ const Methods: React.FC<MethodProps> = ({
 	);
 };
 
-type LoginMethodProps = { refetchAllData: () => Promise<void> };
+type LoginMethodProps = { refetchAllData: () => Promise<void>; refetchUsersList: () => void };
 
-export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => {
+export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData, refetchUsersList }) => {
 	const { userDetail, setUserDetails } = useUserDetailContext();
 	const { updateUserInformation } = useUserService();
 	const methods = userDetail.details.loginMethods;
@@ -401,6 +401,10 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 			const didSucceed = deleteSucceed !== undefined && deleteSucceed.status === "OK";
 			showToast(getDeleteUserToast(didSucceed));
 			await refetchAllData();
+			window.scrollTo({
+				top: 0,
+			});
+			refetchUsersList();
 		},
 		[showToast]
 	);
@@ -410,7 +414,7 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData }) => 
 				getUserDeleteConfirmationProps({
 					loginMethod: loginMethod,
 					user: userDetail.details,
-					onDeleteCallback: (user) => onDeleteCallback(user.id),
+					onDeleteCallback: (userId) => onDeleteCallback(userId),
 					all: false,
 				})
 			),

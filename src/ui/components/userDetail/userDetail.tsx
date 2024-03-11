@@ -23,7 +23,6 @@ import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
-import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import { UserDetailContextProvider } from "./context/UserDetailContext";
 import { LoginMethods } from "./loginMethods/LoginMethods";
 import "./tenantList/UserTenantsList.scss";
@@ -38,7 +37,7 @@ import UserRolesList from "./userRoles/UserRolesList";
 export type UserDetailProps = {
 	user: string;
 	onBackButtonClicked: () => void;
-	onDeleteCallback: OnSelectUserFunction;
+	onDeleteCallback: (userId: string) => void;
 	onSendEmailVerificationCallback: (user: User) => Promise<boolean>;
 	onUpdateEmailVerificationStatusCallback: (
 		userId: string,
@@ -46,6 +45,7 @@ export type UserDetailProps = {
 		tenantId: string | undefined
 	) => Promise<boolean>;
 	onChangePasswordCallback: (userId: string, newPassword: string) => Promise<void>;
+	refetchUsersList: () => void;
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
@@ -255,7 +255,10 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 				<UserRolesList />
 
-				<LoginMethods refetchAllData={refetchAllData} />
+				<LoginMethods
+					refetchAllData={refetchAllData}
+					refetchUsersList={props.refetchUsersList}
+				/>
 
 				<UserMetaDataSection />
 
