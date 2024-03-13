@@ -1302,6 +1302,18 @@ paths:
                                                       type: object
                                                   userCount:
                                                       type: number
+                                                  validFirstFactors:
+                                                      type: array
+                                                      items:
+                                                          type: string
+                                                      example:
+                                                          - "emailpassword"
+                                                          - "thirdparty"
+                                                      description: The first factors that the tenant can use based on the recipes initialized and login methods enabled
+                                                  mergedProvidersFromCoreAndStatic:
+                                                      type: array
+                                                      items:
+                                                          $ref: "#/components/schemas/thirdPartyProvider"
                                     - type: object
                                       properties:
                                           status:
@@ -2458,12 +2470,24 @@ components:
                 name:
                     type: string
                     description: Name of the property
+                value:
+                    oneOf:
+                        - type: string
+                        - type: boolean
+                        - type: number
+                    description: Value of the property
                 description:
                     type: string
                     description: Description of the property
-                isDifferentAcrossTenants:
+                isConfigYamlOnly:
                     type: boolean
                     description: True if the property can be set different values per tenant
+                isNotConflictingInApp:
+                    type: boolean
+                    description: True if the property can be set different values per app
+                isSaasProtected:
+                    type: boolean
+                    description: True if the property protected and cannot be set because the user is using SuperTokens SaaS
 
 servers:
     # Added by API Auto Mocking Plugin
