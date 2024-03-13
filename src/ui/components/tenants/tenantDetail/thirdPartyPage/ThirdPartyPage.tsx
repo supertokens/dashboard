@@ -13,6 +13,7 @@
  * under the License.
  */
 import { Dispatch, SetStateAction } from "react";
+import { useThirdPartyService } from "../../../../../api/tenants";
 import { TenantDashboardView } from "../../../../../api/tenants/types";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "../../../../../constants";
 import { getImageUrl } from "../../../../../utils";
@@ -79,12 +80,32 @@ const ProviderInfo = ({
 	isAddingNewProvider: boolean;
 	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
 }) => {
-	const { resolvedProviders } = useTenantDetailContext();
+	const { resolvedProviders, tenantInfo, refetchTenant } = useTenantDetailContext();
+	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
 	const providerConfig = isAddingNewProvider
 		? undefined
 		: resolvedProviders.find((p) => p.thirdPartyId === providerId);
 	const isInBuiltProvider =
 		typeof providerId === "string" && IN_BUILT_THIRD_PARTY_PROVIDERS.some(({ id }) => providerId.startsWith(id));
+
+	const handlePostSaveProviders = async (action: "add-or-update" | "delete", providerId: string) => {
+		let promises: Array<Promise<unknown>> = [];
+		if (resolvedProviders.length > 0 && tenantInfo.thirdParty.providers.length === 0) {
+			if (action === "add-or-update" && isAddingNewProvider) {
+				promises = resolvedProviders.map((provider) => {
+					return createOrUpdateThirdPartyProvider(tenantInfo.tenantId, provider);
+				});
+			} else {
+				promises = resolvedProviders
+					.filter((provider) => provider.thirdPartyId !== providerId)
+					.map((provider) => {
+						return createOrUpdateThirdPartyProvider(tenantInfo.tenantId, provider);
+					});
+			}
+		}
+		await Promise.all(promises);
+		await refetchTenant();
+	};
 
 	if (isInBuiltProvider) {
 		return (
@@ -93,6 +114,7 @@ const ProviderInfo = ({
 				providerConfig={providerConfig}
 				handleGoBack={handleGoBack}
 				isAddingNewProvider={isAddingNewProvider}
+				handlePostSaveProviders={handlePostSaveProviders}
 			/>
 		);
 	}
@@ -104,6 +126,7 @@ const ProviderInfo = ({
 			providerConfig={providerConfig}
 			handleGoBack={handleGoBack}
 			isAddingNewProvider={isAddingNewProvider}
+			handlePostSaveProviders={handlePostSaveProviders}
 		/>
 	);
 };

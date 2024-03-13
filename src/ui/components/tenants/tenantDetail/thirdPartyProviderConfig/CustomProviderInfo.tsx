@@ -23,6 +23,7 @@ import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/Dele
 import { KeyValueInput } from "../keyValueInput/KeyValueInput";
 import { useTenantDetailContext } from "../TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
+import { ProviderInfoProps } from "../thirdPartyPage/types";
 import {
 	ThirdPartyProviderInput,
 	ThirdPartyProviderInputLabel,
@@ -35,16 +36,12 @@ export const CustomProviderInfo = ({
 	providerConfig,
 	handleGoBack,
 	isAddingNewProvider,
-}: {
-	providerId?: string;
-	providerConfig?: ProviderConfig;
-	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
-	isAddingNewProvider: boolean;
-}) => {
+	handlePostSaveProviders,
+}: ProviderInfoProps) => {
 	const [providerConfigState, setProviderConfigState] = useState(getInitialProviderInfo(providerConfig));
 	const [errorState, setErrorState] = useState<Record<string, string>>({});
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
-	const { resolvedProviders, refetchTenant, tenantInfo } = useTenantDetailContext();
+	const { resolvedProviders, tenantInfo } = useTenantDetailContext();
 	const [isSaving, setIsSaving] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
 	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
@@ -300,7 +297,7 @@ export const CustomProviderInfo = ({
 		try {
 			setIsSaving(true);
 			await createOrUpdateThirdPartyProvider(tenantInfo.tenantId, normalizedProviderConfig as ProviderConfig);
-			await refetchTenant();
+			await handlePostSaveProviders("add-or-update", normalizedProviderConfig.thirdPartyId);
 			handleGoBack(true);
 		} catch (e) {
 			showToast({
@@ -540,6 +537,7 @@ export const CustomProviderInfo = ({
 					onCloseDialog={() => setIsDeleteProviderDialogOpen(false)}
 					thirdPartyId={providerId ?? ""}
 					goBack={() => handleGoBack(true)}
+					handlePostSaveProviders={handlePostSaveProviders}
 				/>
 			)}
 		</PanelRoot>
