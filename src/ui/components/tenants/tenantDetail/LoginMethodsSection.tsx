@@ -16,74 +16,13 @@ import { useCallback, useContext, useState } from "react";
 import { useTenantService } from "../../../../api/tenants";
 import { TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
+import { FIRST_FACTOR_IDS, SECONDARY_FACTOR_IDS } from "../../../../constants";
 import { debounce, getImageUrl } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
 import { useTenantDetailContext } from "./TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
-
-const FIRST_FACTOR_IDS = [
-	{
-		label: "Email Password",
-		description: "Sign in/up using email and password (Requires the EmailPassword recipe to be enabled)",
-		id: "emailpassword",
-		loginMethod: "emailpassword",
-	},
-	{
-		label: "OTP - Email",
-		description: "Sign in/up using OTP sent to email (Requires the Passwordless recipe to be enabled)",
-		id: "otp-email",
-		loginMethod: "passwordless",
-	},
-	{
-		label: "OTP - Phone",
-		description: "Sign in/up using OTP sent to phone (Requires the Passwordless recipe to be enabled)",
-		id: "otp-phone",
-		loginMethod: "passwordless",
-	},
-	{
-		label: "Link - Email",
-		description: "Sign in/up using link sent to email (Requires the Passwordless recipe to be enabled)",
-		id: "link-email",
-		loginMethod: "passwordless",
-	},
-	{
-		label: "Link - Phone",
-		description: "Sign in/up using link sent to phone (Requires the Passwordless recipe to be enabled)",
-		id: "link-phone",
-		loginMethod: "passwordless",
-	},
-	{
-		label: "Third Party",
-		description: "Sign in/up using third party providers (Requires the ThirdParty recipe to be enabled)",
-		id: "thirdparty",
-		loginMethod: "thirdparty",
-	},
-];
-
-const SECONDARY_FACTOR_IDS = [
-	{
-		label: "TOTP",
-		description:
-			"Require TOTP as a secondary factor for successful authentication (Requires the TOTP recipe to be enabled)",
-		id: "totp",
-	},
-	{
-		label: "OTP - Email",
-		description:
-			"Require OTP sent to email as a secondary factor for successful authentication (Requires the Passwordless recipe to be enabled)",
-		id: "otp-email",
-		loginMethod: "passwordless",
-	},
-	{
-		label: "OTP - Phone",
-		description:
-			"Require OTP sent to phone as a secondary factor for successful authentication (Requires the Passwordless recipe to be enabled)",
-		id: "otp-phone",
-		loginMethod: "passwordless",
-	},
-];
 
 const getFirstFactorIds = (tenant: TenantInfo) => {
 	if (!tenant.firstFactors) {

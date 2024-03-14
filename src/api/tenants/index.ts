@@ -166,25 +166,6 @@ export const useTenantService = () => {
 export const useThirdPartyService = () => {
 	const fetchData = useFetchData();
 
-	const getThirdPartyProviders = async (
-		tenantId: string
-	): Promise<{
-		status: "OK";
-		providers: ProviderConfig[];
-	}> => {
-		const response = await fetchData({
-			url: getApiUrl(`/api/tenants/third-party/providers?tenantId=${tenantId}`),
-			method: "GET",
-		});
-
-		if (response.ok) {
-			const body = await response.json();
-			return body;
-		}
-
-		throw new Error("Unknown error");
-	};
-
 	const createOrUpdateThirdPartyProvider = async (tenantId: string, providerConfig: ProviderConfig) => {
 		const response = await fetchData({
 			url: getApiUrl("/api/tenants/third-party"),
@@ -223,6 +204,5 @@ export const useThirdPartyService = () => {
 	return {
 		createOrUpdateThirdPartyProvider,
 		deleteThirdPartyProvider,
-		getThirdPartyProviders,
 	};
 };

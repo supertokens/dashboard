@@ -26,6 +26,8 @@ export type Tenant = {
 	thirdParty: {
 		enabled: boolean;
 	};
+	firstFactors?: Array<string>;
+	requiredSecondaryFactors?: Array<string>;
 };
 
 type TenantsListResponse = {

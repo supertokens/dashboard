@@ -47,7 +47,7 @@ export type TenantInfo = {
 	};
 	thirdParty: {
 		enabled: boolean;
-		providers: ProviderConfig[];
+		providers: Array<ProviderConfig>;
 	};
 	passwordless: {
 		enabled: boolean;
@@ -56,6 +56,8 @@ export type TenantInfo = {
 	requiredSecondaryFactors?: Array<string>;
 	coreConfig: Record<string, unknown>;
 	userCount: number;
+	validFirstFactors: Array<string>;
+	mergedProvidersFromCoreAndStatic: Array<ProviderConfig>;
 };
 
 export type UpdateTenant = {

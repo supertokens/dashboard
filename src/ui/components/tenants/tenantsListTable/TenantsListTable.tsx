@@ -13,6 +13,8 @@
  * under the License.
  */
 import { Tenant } from "../../../../api/tenants/list";
+import { FIRST_FACTOR_IDS } from "../../../../constants";
+import { getImageUrl, getInitializedRecipes } from "../../../../utils";
 import Pagination from "../../pagination";
 import { RecipePill } from "../../recipePill/RecipePill";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
@@ -31,21 +33,68 @@ type TenantsListTableProps = {
 };
 
 const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
+	const getEnabledLoginMethods = () => {
+		const tenantLoginMethods = {
+			emailPassword: tenant.emailPassword.enabled,
+			passwordless: tenant.passwordless.enabled,
+			thirdParty: tenant.thirdParty.enabled,
+		};
+		if (Array.isArray(tenant.firstFactors) && tenant.firstFactors.length > 0) {
+			const allFactors = Array.from(
+				new Set([...tenant.firstFactors, ...(tenant.requiredSecondaryFactors ?? [])])
+			);
+			tenantLoginMethods.emailPassword = allFactors.some((factor) =>
+				FIRST_FACTOR_IDS.some((f) => f.loginMethod === "emailpassword" && f.id === factor)
+			);
+			tenantLoginMethods.passwordless = allFactors.some((factor) =>
+				FIRST_FACTOR_IDS.some((f) => f.loginMethod === "otp-email" && f.id === factor)
+			);
+			tenantLoginMethods.thirdParty = allFactors.some((factor) =>
+				FIRST_FACTOR_IDS.some((f) => f.loginMethod === "thirdparty" && f.id === factor)
+			);
+		}
+		const initalizedRecipes = getInitializedRecipes();
+		return {
+			emailPassword: tenantLoginMethods.emailPassword && initalizedRecipes.emailPassword,
+			passwordless: tenantLoginMethods.passwordless && initalizedRecipes.passwordless.enabled,
+			thirdParty: tenantLoginMethods.thirdParty && initalizedRecipes.thirdParty,
+		};
+	};
+
+	const loginMethods = getEnabledLoginMethods();
+
+	const hasNoLoginMethods = Object.values(loginMethods).every((value) => value === false);
+
+	if (hasNoLoginMethods) {
+		return (
+			<div className="block-small block-error tenant-no-login-methods-error">
+				<img
+					className="input-field-error-icon"
+					src={getImageUrl("form-field-error-icon.svg")}
+					alt="Error in field"
+				/>
+				<p className="input-field-error-text text-small text-error">
+					No login methods enabled for this tenant.
+				</p>
+			</div>
+		);
+	}
+
 	return (
 		<div className="tenant-login-methods">
-			{tenant.emailPassword.enabled && (
+			{loginMethods.emailPassword && (
 				<RecipePill
 					recipeId="emailpassword"
 					label="Email Password"
 				/>
 			)}
-			{tenant.passwordless.enabled && (
+			{loginMethods.passwordless && (
 				<RecipePill
 					recipeId="passwordless"
 					label="Passwordless"
 				/>
 			)}
-			{tenant.thirdParty.enabled && (
+			{loginMethods.thirdParty && (
 				<RecipePill
 					recipeId="thirdparty"
 					label="Third Party"

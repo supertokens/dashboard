@@ -31,19 +31,23 @@ export const TenantDetailContextProvider = ({
 	tenantInfo,
 	coreConfigOptions,
 	refetchTenant,
-	resolvedProviders,
 	setTenantInfo,
 }: {
 	children: React.ReactNode;
 	tenantInfo: TenantInfo;
 	coreConfigOptions: CoreConfigOptions;
 	refetchTenant: () => Promise<void>;
-	resolvedProviders: Array<ProviderConfig>;
 	setTenantInfo: Dispatch<SetStateAction<TenantInfo | undefined>>;
 }) => {
 	return (
 		<TenantDetailContext.Provider
-			value={{ tenantInfo, refetchTenant, coreConfigOptions, setTenantInfo, resolvedProviders }}>
+			value={{
+				tenantInfo,
+				refetchTenant,
+				coreConfigOptions,
+				setTenantInfo,
+				resolvedProviders: tenantInfo.mergedProvidersFromCoreAndStatic,
+			}}>
 			{children}
 		</TenantDetailContext.Provider>
 	);

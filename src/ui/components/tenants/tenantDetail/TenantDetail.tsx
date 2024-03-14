@@ -13,8 +13,8 @@
  * under the License.
  */
 import { useEffect, useState } from "react";
-import { useCoreConfigService, useTenantService, useThirdPartyService } from "../../../../api/tenants";
-import { CoreConfigOptions, ProviderConfig, TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
+import { useCoreConfigService, useTenantService } from "../../../../api/tenants";
+import { CoreConfigOptions, TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
@@ -38,10 +38,8 @@ export const TenantDetail = ({
 }) => {
 	const { getTenantInfo } = useTenantService();
 	const { getCoreConfigOptions } = useCoreConfigService();
-	const { getThirdPartyProviders } = useThirdPartyService();
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
 	const [configOptions, setConfigOptions] = useState<CoreConfigOptions>([]);
-	const [resolvedProviders, setResolvedProviders] = useState<Array<ProviderConfig>>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
@@ -65,20 +63,12 @@ export const TenantDetail = ({
 		}
 	};
 
-	const getThirdPartyProvidersInfo = async () => {
-		const repsonse = await getThirdPartyProviders(tenantId);
-		if (repsonse?.status === "OK") {
-			setResolvedProviders(repsonse.providers);
-		}
-	};
-
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				setIsLoading(true);
 				await getTenant();
 				await getCoreConfig();
-				await getThirdPartyProvidersInfo();
 			} catch (_) {
 			} finally {
 				setIsLoading(false);
@@ -90,7 +80,6 @@ export const TenantDetail = ({
 	const refetchTenant = async () => {
 		setShowLoadingOverlay(true);
 		await getTenant();
-		await getThirdPartyProvidersInfo();
 		setShowLoadingOverlay(false);
 	};
 
@@ -118,6 +107,10 @@ export const TenantDetail = ({
 	};
 
 	const renderView = () => {
+		if (!tenant) {
+			throw new Error("This should be unreachable");
+		}
+
 		if (viewObj.view === "list-third-party-providers" || viewObj.view === "add-or-edit-third-party-provider") {
 			return (
 				<ThirdPartyPage
@@ -163,7 +156,7 @@ export const TenantDetail = ({
 				{isDeleteTenantDialogOpen && (
 					<DeleteTenantDialog
 						onCloseDialog={() => setIsDeleteTenantDialogOpen(false)}
-						tenantId={tenant!.tenantId}
+						tenantId={tenant.tenantId}
 						goBack={onBackButtonClicked}
 					/>
 				)}
@@ -194,8 +187,7 @@ export const TenantDetail = ({
 			tenantInfo={tenant}
 			setTenantInfo={setTenant}
 			coreConfigOptions={configOptions}
-			refetchTenant={refetchTenant}
-			resolvedProviders={resolvedProviders}>
+			refetchTenant={refetchTenant}>
 			{renderView()}
 		</TenantDetailContextProvider>
 	);

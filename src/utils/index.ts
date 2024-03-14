@@ -41,6 +41,21 @@ export function isSearchEnabled(): boolean {
 	return false;
 }
 
+type InitializedRecipes = {
+	emailPassword: boolean;
+	passwordless: {
+		enabled: boolean;
+		contactMethod: string;
+		flowType: string;
+	};
+	thirdParty: boolean;
+	mfa: boolean;
+};
+
+export function getInitializedRecipes(): InitializedRecipes {
+	return (window as any).initializedRecipes;
+}
+
 export function getImageUrl(imageName: string): string {
 	return getStaticBasePath() + "/media/" + imageName;
 }
