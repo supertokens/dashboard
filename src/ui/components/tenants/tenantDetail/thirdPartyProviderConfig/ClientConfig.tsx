@@ -87,21 +87,6 @@ export const ClientConfig = ({
 						forceShowError
 						handleChange={(e) => handleClientFieldChange("clientId", e)}
 					/>
-					{additionalConfigFields?.map((field) => (
-						<ThirdPartyProviderInput
-							key={field.id}
-							label={field.label}
-							tooltip={field.tooltip}
-							type={field.type}
-							name={`${field.id}-${clientIndex}`}
-							value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
-							isRequired={field.required}
-							minLabelWidth={LABEL_MIN_WIDTH}
-							error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
-							forceShowError
-							handleChange={(e) => handleAdditionalConfigChange(field.id, e)}
-						/>
-					))}
 					{/* In case of Apple we don't ask for client secret */}
 					{!isAppleProvider && (
 						<ThirdPartyProviderInput
@@ -117,6 +102,21 @@ export const ClientConfig = ({
 							handleChange={(e) => handleClientFieldChange("clientSecret", e)}
 						/>
 					)}
+					{additionalConfigFields?.map((field) => (
+						<ThirdPartyProviderInput
+							key={field.id}
+							label={field.label}
+							tooltip={field.tooltip}
+							type={field.type}
+							name={`${field.id}-${clientIndex}`}
+							value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
+							isRequired={field.required}
+							minLabelWidth={LABEL_MIN_WIDTH}
+							error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
+							forceShowError
+							handleChange={(e) => handleAdditionalConfigChange(field.id, e)}
+						/>
+					))}
 					<ThirdPartyProviderInput
 						label="Client Type"
 						isRequired={clientsCount > 1}

@@ -20,6 +20,7 @@ import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
 import Button from "../../button";
 import { Loader, LoaderOverlay } from "../../loader/Loader";
+import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialog";
 import { CoreConfigSection } from "./CoreConfigSection";
 import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";
 import { LoginMethodsSection } from "./LoginMethodsSection";
@@ -40,6 +41,7 @@ export const TenantDetail = ({
 	const { getTenantInfo } = useTenantService();
 	const { getCoreConfigOptions } = useCoreConfigService();
 	const [isNoLoginMethodsDialogVisible, setIsNoLoginMethodsDialogVisible] = useState(false);
+	const [isNoProviderAddedDialogVisible, setIsNoProviderAddedDialogVisible] = useState(false);
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
 	const [configOptions, setConfigOptions] = useState<CoreConfigOptions>([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -86,7 +88,15 @@ export const TenantDetail = ({
 		) {
 			setIsNoLoginMethodsDialogVisible(true);
 		}
-	}, [tenant?.validFirstFactors]);
+
+		if (
+			typeof tenant?.tenantId === "string" &&
+			tenant?.thirdParty.enabled &&
+			tenant?.mergedProvidersFromCoreAndStatic.length === 0
+		) {
+			setIsNoProviderAddedDialogVisible(true);
+		}
+	}, [tenant]);
 
 	const refetchTenant = async () => {
 		setShowLoadingOverlay(true);
@@ -96,6 +106,7 @@ export const TenantDetail = ({
 
 	const handleAddNewProvider = () => {
 		window.scrollTo(0, 0);
+		setIsNoProviderAddedDialogVisible(false);
 		setViewObj({
 			view: "list-third-party-providers",
 		});
@@ -110,13 +121,6 @@ export const TenantDetail = ({
 		});
 	};
 
-	const handleBackToTenantDetail = () => {
-		window.scrollTo(0, 0);
-		setViewObj({
-			view: "tenant-detail",
-		});
-	};
-
 	const renderView = () => {
 		if (!tenant) {
 			throw new Error("This should be unreachable");
@@ -125,7 +129,6 @@ export const TenantDetail = ({
 		if (viewObj.view === "list-third-party-providers" || viewObj.view === "add-or-edit-third-party-provider") {
 			return (
 				<ThirdPartyPage
-					handleGoBack={handleBackToTenantDetail}
 					viewObj={viewObj}
 					setViewObj={setViewObj}
 				/>
@@ -202,6 +205,12 @@ export const TenantDetail = ({
 			{renderView()}
 			{isNoLoginMethodsDialogVisible && (
 				<NoLoginMethodsAddedDialog onCloseDialog={() => setIsNoLoginMethodsDialogVisible(false)} />
+			)}
+			{isNoProviderAddedDialogVisible && (
+				<AddNewProviderDialog
+					onCloseDialog={() => setIsNoProviderAddedDialogVisible(false)}
+					handleContinue={handleAddNewProvider}
+				/>
 			)}
 		</TenantDetailContextProvider>
 	);

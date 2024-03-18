@@ -40,6 +40,7 @@ export const LoginMethodsSection = () => {
 	const { showToast } = useContext(PopupContentContext);
 
 	const hasSelectedSecondaryFactors = selectedFactors.requiredSecondaryFactors.length > 0;
+	const recipesInit = getInitializedRecipes();
 
 	const debouncedUpdateTenant = useCallback(
 		debounce(
@@ -170,6 +171,7 @@ export const LoginMethodsSection = () => {
 								label={method.label}
 								factorId={method.id}
 								description={method.description}
+								recipeNotInitError={method.recipeNotInitError}
 								checked={selectedFactors.firstFactors.includes(method.id)}
 								onChange={() => handleFactorChange("firstFactors", method.id)}
 							/>
@@ -184,13 +186,10 @@ export const LoginMethodsSection = () => {
 						Secondary Factors
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
-				{hasSelectedSecondaryFactors && (
-					<div className="block-warn block-warn-medium text-small tenant-detail__secondary-factors-warn-block">
-						<p>
-							<b>Note</b>: MFA recipe needs to be added to the backend and frontend SDK to enable the
-							required secondary factors.
-						</p>
-					</div>
+				{hasSelectedSecondaryFactors && !recipesInit.mfa && (
+					<ErrorBlock className="tenant-detail__factors-error-block">
+						MFA recipe needs to be initialized in the backend and frontend SDK to use secondary factors.
+					</ErrorBlock>
 				)}
 				<div className="tenant-detail__factors-container">
 					<div className="tenant-detail__factors-container__grid">
@@ -202,6 +201,7 @@ export const LoginMethodsSection = () => {
 								factorId={method.id}
 								fixedGap
 								description={method.description}
+								recipeNotInitError={method.recipeNotInitError}
 								checked={selectedFactors.requiredSecondaryFactors.includes(method.id)}
 								onChange={() => handleFactorChange("requiredSecondaryFactors", method.id)}
 							/>
@@ -217,6 +217,7 @@ const LoginFactor = ({
 	id,
 	label,
 	description,
+	recipeNotInitError,
 	checked,
 	onChange,
 	fixedGap,
@@ -225,6 +226,7 @@ const LoginFactor = ({
 	id: string;
 	label: string;
 	description: string;
+	recipeNotInitError: string;
 	checked: boolean;
 	onChange: () => void;
 	fixedGap?: boolean;
@@ -238,11 +240,11 @@ const LoginFactor = ({
 			}`}>
 			<div className="tenant-detail__factors-container__grid__factor__label-container">
 				<TooltipContainer
-					tooltipWidth={200}
+					tooltipWidth={hasError ? 350 : 200}
 					position="bottom"
-					tooltip={description}
+					tooltip={hasError ? recipeNotInitError : description}
 					error={hasError}>
-					{hasError ? <ErrorIcon style={{ transform: "translateY(-1px)" }} /> : <InfoIcon />}
+					{hasError ? <ErrorIcon style={{ transform: "translateY(-1px)", width: "14px" }} /> : <InfoIcon />}
 				</TooltipContainer>
 				<div className="tenant-detail__factors-container__grid__factor__label-container__label">{label}:</div>
 			</div>

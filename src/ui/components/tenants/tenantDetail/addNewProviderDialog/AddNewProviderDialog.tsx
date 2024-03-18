@@ -15,15 +15,24 @@
 import Button from "../../../button";
 import { Dialog, DialogConfirmText, DialogContent, DialogFooter } from "../../../dialog";
 
-export const NoLoginMethodsAddedDialog = ({ onCloseDialog }: { onCloseDialog: () => void }) => {
+export const AddNewProviderDialog = ({
+	onCloseDialog,
+	handleContinue,
+}: {
+	onCloseDialog: () => void;
+	handleContinue: () => void;
+}) => {
 	return (
 		<Dialog
-			title="No login method enabled!"
-			isError
+			title="Add a Provider"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent>
 				<DialogConfirmText>
-					At least one login method needs to be enabled for the user to log in to the tenant.
+					At least one Social / Enterprise login provider is required to enable the third party provider login
+					method to work.
+					<br />
+					<br />
+					Click “continue” to add a new provider in next step.
 				</DialogConfirmText>
 				<DialogFooter>
 					<Button
@@ -31,7 +40,7 @@ export const NoLoginMethodsAddedDialog = ({ onCloseDialog }: { onCloseDialog: ()
 						color="gray-outline">
 						Cancel
 					</Button>
-					<Button onClick={onCloseDialog}>Continue</Button>
+					<Button onClick={handleContinue}>Continue</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

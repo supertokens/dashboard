@@ -26,11 +26,9 @@ import { CustomProviderInfo } from "../thirdPartyProviderConfig/CustomProviderIn
 import "./thirdPartyPage.scss";
 
 export const ThirdPartyPage = ({
-	handleGoBack,
 	viewObj,
 	setViewObj,
 }: {
-	handleGoBack: () => void;
 	viewObj: TenantDashboardView;
 	setViewObj: Dispatch<SetStateAction<TenantDashboardView>>;
 }) => {
@@ -49,12 +47,16 @@ export const ThirdPartyPage = ({
 		<div className="third-party-section">
 			<button
 				className="button flat"
-				onClick={handleGoBack}>
+				onClick={() => handleProviderInfoBack()}>
 				<img
 					src={getImageUrl("left-arrow-dark.svg")}
 					alt="Go back"
 				/>
-				<span>Back to tenant info</span>
+				<span>
+					{viewObj.view === "add-or-edit-third-party-provider" && viewObj.isAddingNewProvider
+						? "Back to add new providers"
+						: "Back to tenant info"}
+				</span>
 			</button>
 			<div className="third-party-section__cards">
 				<TenantDetailHeader onlyShowTenantId />
@@ -132,6 +134,15 @@ const ProviderInfo = ({
 };
 
 const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {
+	const handleAddNewInBuiltProvider = (providerId: string) => {
+		window.scrollTo(0, 0);
+		setViewObj({
+			view: "add-or-edit-third-party-provider",
+			thirdPartyId: providerId,
+			isAddingNewProvider: true,
+		});
+	};
+
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -141,22 +152,30 @@ const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetState
 				Select the Provider that you want to add for you tenant from the list below
 			</div>
 			<div className="provider-list-container">
-				<h2 className="provider-list-container__header-with-divider">Built-In OAuth Providers</h2>
+				<h2 className="provider-list-container__header-with-divider">Enterprise Providers</h2>
 				<div className="provider-list-container__providers-grid">
-					{IN_BUILT_THIRD_PARTY_PROVIDERS.map((provider) => {
+					{IN_BUILT_THIRD_PARTY_PROVIDERS.filter((provider) => provider.isEnterprise).map((provider) => {
 						return (
 							<ThirdPartyProviderButton
 								key={provider.id}
 								title={provider.label}
 								icon={provider.icon}
-								onClick={() => {
-									window.scrollTo(0, 0);
-									setViewObj({
-										view: "add-or-edit-third-party-provider",
-										thirdPartyId: provider.id,
-										isAddingNewProvider: true,
-									});
-								}}
+								onClick={() => handleAddNewInBuiltProvider(provider.id)}
+							/>
+						);
+					})}
+				</div>
+				<h2 className="provider-list-container__header-with-divider provider-list-container__header-with-divider--margin-top-30">
+					Social Providers
+				</h2>
+				<div className="provider-list-container__providers-grid">
+					{IN_BUILT_THIRD_PARTY_PROVIDERS.filter((provider) => !provider.isEnterprise).map((provider) => {
+						return (
+							<ThirdPartyProviderButton
+								key={provider.id}
+								title={provider.label}
+								icon={provider.icon}
+								onClick={() => handleAddNewInBuiltProvider(provider.id)}
 							/>
 						);
 					})}
