@@ -52,8 +52,8 @@ export type TenantInfo = {
 	passwordless: {
 		enabled: boolean;
 	};
-	firstFactors?: Array<string>;
-	requiredSecondaryFactors?: Array<string>;
+	firstFactors?: Array<string> | null;
+	requiredSecondaryFactors?: Array<string> | null;
 	coreConfig: Record<string, unknown>;
 	userCount: number;
 	validFirstFactors: Array<string>;
@@ -64,8 +64,8 @@ export type UpdateTenant = {
 	emailPasswordEnabled?: boolean;
 	passwordlessEnabled?: boolean;
 	thirdPartyEnabled?: boolean;
-	firstFactors?: string[];
-	requiredSecondaryFactors?: string[];
+	firstFactors?: Array<string> | null;
+	requiredSecondaryFactors?: Array<string> | null;
 	coreConfig?: Record<string, unknown>;
 };
 

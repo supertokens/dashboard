@@ -50,6 +50,7 @@ type InitializedRecipes = {
 	};
 	thirdParty: boolean;
 	mfa: boolean;
+	totp: boolean;
 };
 
 export function getInitializedRecipes(): InitializedRecipes {

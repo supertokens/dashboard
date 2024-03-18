@@ -417,7 +417,7 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 				tooltip:
 					"The id of the Microsoft Entra tenant, this is required if OIDC discovery endpoint is not provided.",
 				type: "text",
-				required: false,
+				required: true,
 			},
 		],
 		defaultScopes: ["openid", "email"],
@@ -448,7 +448,7 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 				tooltip:
 					"The domain of your Okta account, this is required if OIDC discovery endpoint is not provided.",
 				type: "text",
-				required: false,
+				required: true,
 			},
 		],
 		defaultScopes: ["openid", "email"],

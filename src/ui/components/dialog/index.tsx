@@ -15,6 +15,8 @@
 
 import React from "react";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
+import { ReactComponent as ErrorIcon } from "../../../assets/form-field-error-icon.svg";
+
 import "./dialog.scss";
 
 type DialogCommonProps = {
@@ -25,6 +27,7 @@ type DialogCommonProps = {
 type DialogProps = DialogCommonProps & {
 	title: string;
 	closeOnOverlayClick?: boolean;
+	isError?: boolean;
 	onCloseDialog: () => void;
 };
 
@@ -43,7 +46,11 @@ function Dialog(props: DialogProps) {
 			/>
 			<div className={`dialog-container ${className}`}>
 				<div className="dialog-header">
-					{title} <CloseIcon onClick={onCloseDialog} />
+					<div className="dialog-title">
+						{props.isError && <ErrorIcon />}
+						{title}
+					</div>
+					<CloseIcon onClick={onCloseDialog} />
 				</div>
 				{children}
 			</div>
@@ -55,6 +62,12 @@ function DialogContent(props: DialogCommonProps) {
 	const { children, className = "" } = props;
 
 	return <div className={`dialog-content ${className}`}>{children}</div>;
+}
+
+function DialogConfirmText(props: DialogCommonProps) {
+	const { children, className = "" } = props;
+
+	return <p className={`dialog-confirm-text ${className}`}>{children}</p>;
 }
 
 type DialogFooterProps = DialogCommonProps & {
@@ -75,4 +88,4 @@ function DialogFooter(props: DialogFooterProps) {
 	return <div className={`dialog-footer ${flexDirection} ${justifyContent} ${border} ${className}`}>{children}</div>;
 }
 
-export { Dialog, DialogContent, DialogFooter };
+export { Dialog, DialogContent, DialogFooter, DialogConfirmText };

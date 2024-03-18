@@ -23,6 +23,7 @@ import { Loader, LoaderOverlay } from "../../loader/Loader";
 import { CoreConfigSection } from "./CoreConfigSection";
 import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";
 import { LoginMethodsSection } from "./LoginMethodsSection";
+import { NoLoginMethodsAddedDialog } from "./noLoginMethodsAddedDialog/NoLoginMethodsAddedDialog";
 import "./tenantDetail.scss";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
@@ -38,6 +39,7 @@ export const TenantDetail = ({
 }) => {
 	const { getTenantInfo } = useTenantService();
 	const { getCoreConfigOptions } = useCoreConfigService();
+	const [isNoLoginMethodsDialogVisible, setIsNoLoginMethodsDialogVisible] = useState(false);
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
 	const [configOptions, setConfigOptions] = useState<CoreConfigOptions>([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -76,6 +78,15 @@ export const TenantDetail = ({
 		};
 		void fetchData();
 	}, [tenantId]);
+
+	useEffect(() => {
+		if (
+			typeof tenant?.tenantId === "string" &&
+			(!Array.isArray(tenant?.validFirstFactors) || tenant?.validFirstFactors.length === 0)
+		) {
+			setIsNoLoginMethodsDialogVisible(true);
+		}
+	}, [tenant?.validFirstFactors]);
 
 	const refetchTenant = async () => {
 		setShowLoadingOverlay(true);
@@ -189,6 +200,9 @@ export const TenantDetail = ({
 			coreConfigOptions={configOptions}
 			refetchTenant={refetchTenant}>
 			{renderView()}
+			{isNoLoginMethodsDialogVisible && (
+				<NoLoginMethodsAddedDialog onCloseDialog={() => setIsNoLoginMethodsDialogVisible(false)} />
+			)}
 		</TenantDetailContextProvider>
 	);
 };

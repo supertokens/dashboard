@@ -71,6 +71,17 @@
 	}
 }
 
+.dialog-title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+
+	& > svg {
+		height: 21px;
+		width: 23px;
+	}
+}
+
 .dialog-footer {
 	display: flex;
 	gap: 24px;
@@ -115,6 +126,15 @@
 	&.space-evenly {
 		justify-content: space-evenly;
 	}
+}
+
+.dialog-confirm-text {
+	color: black;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 23px;
+	padding-top: 24px;
 }
 
 @media (max-width: 485px) {

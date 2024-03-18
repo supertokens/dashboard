@@ -15,31 +15,16 @@
 import { useCallback, useContext, useState } from "react";
 import { useTenantService } from "../../../../api/tenants";
 import { TenantInfo } from "../../../../api/tenants/types";
+import { ReactComponent as ErrorIcon } from "../../../../assets/form-field-error-icon.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import { FIRST_FACTOR_IDS, SECONDARY_FACTOR_IDS } from "../../../../constants";
-import { debounce, getImageUrl } from "../../../../utils";
+import { debounce, getImageUrl, getInitializedRecipes } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
+import { ErrorBlock } from "../../errorBlock/ErrorBlock";
 import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
 import { useTenantDetailContext } from "./TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
-
-const getFirstFactorIds = (tenant: TenantInfo) => {
-	if (!tenant.firstFactors) {
-		const firstFactors = [];
-		if (tenant.emailPassword.enabled) {
-			firstFactors.push("emailpassword");
-		}
-		if (tenant.passwordless.enabled) {
-			firstFactors.push("otp-email", "otp-phone", "link-email", "link-phone");
-		}
-		if (tenant.thirdParty.enabled) {
-			firstFactors.push("thirdparty");
-		}
-		return firstFactors;
-	}
-	return tenant.firstFactors;
-};
 
 export const LoginMethodsSection = () => {
 	const { tenantInfo, setTenantInfo } = useTenantDetailContext();
@@ -48,7 +33,7 @@ export const LoginMethodsSection = () => {
 		firstFactors: Array<string>;
 		requiredSecondaryFactors: Array<string>;
 	}>({
-		firstFactors: getFirstFactorIds(tenantInfo),
+		firstFactors: tenantInfo.validFirstFactors ?? [],
 		requiredSecondaryFactors: tenantInfo.requiredSecondaryFactors ?? [],
 	});
 
@@ -100,7 +85,14 @@ export const LoginMethodsSection = () => {
 				};
 
 				updateTenant(tenantId, {
-					...factors,
+					firstFactors:
+						Array.isArray(factors.firstFactors) && factors.firstFactors.length > 0
+							? factors.firstFactors
+							: null,
+					requiredSecondaryFactors:
+						Array.isArray(factors.requiredSecondaryFactors) && factors.requiredSecondaryFactors.length > 0
+							? factors.requiredSecondaryFactors
+							: null,
 					...enabledLoginMethods,
 				})
 					.then((res) => {
@@ -110,6 +102,7 @@ export const LoginMethodsSection = () => {
 						setTenantInfo({
 							...currentTenantInfo,
 							firstFactors: factors.firstFactors,
+							validFirstFactors: factors.firstFactors,
 							requiredSecondaryFactors: factors.requiredSecondaryFactors,
 							emailPassword: {
 								enabled: enabledLoginMethods.emailPasswordEnabled,
@@ -126,7 +119,7 @@ export const LoginMethodsSection = () => {
 					.catch((_) => {
 						// Revert the state back to the original state in case of error
 						setSelectedFactors({
-							firstFactors: currentTenantInfo.firstFactors ?? [],
+							firstFactors: currentTenantInfo.validFirstFactors ?? [],
 							requiredSecondaryFactors: currentTenantInfo.requiredSecondaryFactors ?? [],
 						});
 
@@ -161,6 +154,13 @@ export const LoginMethodsSection = () => {
 						Enabled Login Methods
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
+
+				{selectedFactors.firstFactors.length === 0 && (
+					<ErrorBlock className="tenant-detail__factors-error-block">
+						At least one login method needs to be enabled for the user to log in to the tenant.
+					</ErrorBlock>
+				)}
+
 				<div className="tenant-detail__factors-container">
 					<div className="tenant-detail__factors-container__grid">
 						{FIRST_FACTOR_IDS.map((method) => (
@@ -168,6 +168,7 @@ export const LoginMethodsSection = () => {
 								id={`first-factor-${method.id}`}
 								key={`first-factor-${method.id}`}
 								label={method.label}
+								factorId={method.id}
 								description={method.description}
 								checked={selectedFactors.firstFactors.includes(method.id)}
 								onChange={() => handleFactorChange("firstFactors", method.id)}
@@ -198,6 +199,7 @@ export const LoginMethodsSection = () => {
 								id={`secondary-factor-${method.id}`}
 								key={`secondary-factor-${method.id}`}
 								label={method.label}
+								factorId={method.id}
 								fixedGap
 								description={method.description}
 								checked={selectedFactors.requiredSecondaryFactors.includes(method.id)}
@@ -218,6 +220,7 @@ const LoginFactor = ({
 	checked,
 	onChange,
 	fixedGap,
+	factorId,
 }: {
 	id: string;
 	label: string;
@@ -225,7 +228,9 @@ const LoginFactor = ({
 	checked: boolean;
 	onChange: () => void;
 	fixedGap?: boolean;
+	factorId: string;
 }) => {
+	const hasError = checked && !doesFactorHasRecipeInitialized(factorId);
 	return (
 		<div
 			className={`tenant-detail__factors-container__grid__factor${
@@ -235,8 +240,9 @@ const LoginFactor = ({
 				<TooltipContainer
 					tooltipWidth={200}
 					position="bottom"
-					tooltip={description}>
-					<InfoIcon />
+					tooltip={description}
+					error={hasError}>
+					{hasError ? <ErrorIcon style={{ transform: "translateY(-1px)" }} /> : <InfoIcon />}
 				</TooltipContainer>
 				<div className="tenant-detail__factors-container__grid__factor__label-container__label">{label}:</div>
 			</div>
@@ -247,4 +253,63 @@ const LoginFactor = ({
 			/>
 		</div>
 	);
+};
+
+const doesFactorHasRecipeInitialized = (factorId: string) => {
+	const initializedRecipes = getInitializedRecipes();
+
+	if (factorId === "emailpassword") {
+		return initializedRecipes.emailPassword;
+	}
+
+	if (factorId === "thirdparty") {
+		return initializedRecipes.thirdParty;
+	}
+
+	if (["otp-email", "otp-phone", "link-email", "link-phone"].includes(factorId)) {
+		if (!initializedRecipes.passwordless) {
+			return false;
+		}
+		if (factorId === "otp-email") {
+			return (
+				(initializedRecipes.passwordless.contactMethod === "EMAIL" ||
+					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
+				(initializedRecipes.passwordless.flowType === "USER_INPUT_CODE" ||
+					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
+			);
+		}
+
+		if (factorId === "otp-phone") {
+			return (
+				(initializedRecipes.passwordless.contactMethod === "PHONE" ||
+					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
+				(initializedRecipes.passwordless.flowType === "USER_INPUT_CODE" ||
+					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
+			);
+		}
+
+		if (factorId === "link-email") {
+			return (
+				(initializedRecipes.passwordless.contactMethod === "EMAIL" ||
+					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
+				(initializedRecipes.passwordless.flowType === "MAGIC_LINK" ||
+					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
+			);
+		}
+
+		if (factorId === "link-phone") {
+			return (
+				(initializedRecipes.passwordless.contactMethod === "PHONE" ||
+					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
+				(initializedRecipes.passwordless.flowType === "MAGIC_LINK" ||
+					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
+			);
+		}
+	}
+
+	if (factorId === "totp") {
+		return initializedRecipes.totp;
+	}
+
+	return false;
 };
