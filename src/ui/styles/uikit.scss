@@ -275,7 +275,6 @@ button.button-error-outline {
 	margin: 0px;
 	color: var(--color-button-error);
 	@include gap-horizontal(8px);
-	font-size: inherit;
 	box-shadow: none;
 	transition: background-color 0.3s;
 

@@ -239,7 +239,7 @@ const PhoneNumberTextField: FC<PhoneNumberTextFieldProps> = forwardRef(
 PhoneNumberTextField.displayName = "PhoneNumberTextField";
 
 export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberInputProps) => {
-	const { onChange, value, error, forceShowError } = props;
+	const { onChange, value, error, forceShowError, disabled } = props;
 	const [isTouched, setIsTouched] = useState(false);
 
 	// call the `onChange` and set form as touched
@@ -252,13 +252,17 @@ export const PhoneNumberInput: FC<PhoneNumberInputProps> = (props: PhoneNumberIn
 	);
 
 	return (
-		<div>
+		<div
+			style={{
+				pointerEvents: disabled ? "none" : "all",
+			}}>
 			<label htmlFor={props.name}>{props.label}</label>
 			<PhoneInputWithCountrySelect
 				className={`phone-input ${error !== undefined ? "phone-input-error" : ""}`}
 				value={value}
 				onChange={handleChange}
 				international={true}
+				focusInputOnCountrySelection={false}
 				addInternationalOption={false}
 				withCountryCallingCode={false}
 				countryCallingCodeEditable={true}
