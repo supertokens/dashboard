@@ -706,6 +706,6 @@ const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined): Pro
 			},
 		},
 		requireEmail: true,
-		clients: [{ clientId: "", clientSecret: "", scope: [""] }],
+		clients: [{ clientId: "", clientSecret: "", clientType: "", scope: [""] }],
 	};
 };

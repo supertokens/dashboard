@@ -105,6 +105,8 @@ export const IN_BUILT_THIRD_PARTY_PROVIDERS = [
 	},
 ];
 
+export const SAML_PROVIDER_ID = "boxy-saml";
+
 export const FIRST_FACTOR_IDS = [
 	{
 		label: "Email Password",

@@ -15,7 +15,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { useThirdPartyService } from "../../../../../api/tenants";
 import { TenantDashboardView } from "../../../../../api/tenants/types";
-import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "../../../../../constants";
+import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "../../../../../constants";
 import { getImageUrl } from "../../../../../utils";
 import { useTenantDetailContext } from "../TenantDetailContext";
 import { TenantDetailHeader } from "../TenantDetailHeader";
@@ -89,6 +89,7 @@ const ProviderInfo = ({
 		: resolvedProviders.find((p) => p.thirdPartyId === providerId);
 	const isInBuiltProvider =
 		typeof providerId === "string" && IN_BUILT_THIRD_PARTY_PROVIDERS.some(({ id }) => providerId.startsWith(id));
+	const isSAMLProvider = typeof providerId === "string" && providerId.startsWith(SAML_PROVIDER_ID);
 
 	const handlePostSaveProviders = async (action: "add-or-update" | "delete", providerId: string) => {
 		let promises: Array<Promise<unknown>> = [];
@@ -109,7 +110,7 @@ const ProviderInfo = ({
 		await refetchTenant();
 	};
 
-	if (isInBuiltProvider) {
+	if (isInBuiltProvider || isSAMLProvider) {
 		return (
 			<BuiltInProviderInfo
 				providerId={providerId}
@@ -203,6 +204,7 @@ const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetState
 					<ThirdPartyProviderButton
 						title="Add SAML Provider"
 						type="without-icon"
+						onClick={() => handleAddNewInBuiltProvider(SAML_PROVIDER_ID)}
 					/>
 				</div>
 			</div>

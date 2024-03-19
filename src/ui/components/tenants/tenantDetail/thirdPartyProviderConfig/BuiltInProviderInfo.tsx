@@ -15,8 +15,8 @@
 import { ChangeEvent, useContext, useState } from "react";
 import { useThirdPartyService } from "../../../../../api/tenants";
 import { BuiltInProvidersCustomFields, ProviderClientConfig, ProviderConfig } from "../../../../../api/tenants/types";
-import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "../../../../../constants";
-import { getImageUrl } from "../../../../../utils";
+import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "../../../../../constants";
+import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/DeleteThirdPartyProvider";
@@ -46,9 +46,12 @@ export const BuiltInProviderInfo = ({
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
 	const { tenantInfo, resolvedProviders } = useTenantDetailContext();
 	const [isSaving, setIsSaving] = useState(false);
+	const [hasAddedBoxyURLForNewSAMLProvider, setHasAddedBoxyURLForNewSAMLProvider] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
 	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
 	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId.startsWith(provider.id));
+	const isSAMLProvider = providerId.startsWith(SAML_PROVIDER_ID);
+	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
 	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
 		providerId.startsWith(id)
 	);
@@ -79,13 +82,27 @@ export const BuiltInProviderInfo = ({
 		}
 
 		if (e.target.value.trim() === "") {
-			setProviderConfigState((prev) => ({ ...prev, thirdPartyId: inBuiltProviderInfo?.id ?? "" }));
+			setProviderConfigState((prev) => ({ ...prev, thirdPartyId: baseProviderId }));
 		} else {
 			setProviderConfigState((prev) => ({
 				...prev,
-				thirdPartyId: `${inBuiltProviderInfo?.id}-${e.target.value.trim()}`,
+				thirdPartyId: `${baseProviderId}-${e.target.value.trim()}`,
 			}));
 		}
+	};
+
+	const handleSAMLIntroContinue = () => {
+		const boxyURL = providerConfigState.clients?.[0].additionalConfig?.boxyURL as string;
+		if (!isValidHttpUrl(boxyURL)) {
+			setErrorState((prev) => ({
+				...prev,
+				"clients.0.additionalConfig.boxyURL": "Please enter a valid URL",
+			}));
+			return;
+		}
+		window.scrollTo(0, 0);
+		setHasAddedBoxyURLForNewSAMLProvider(true);
+		setErrorState({});
 	};
 
 	const handleSave = async () => {
@@ -108,8 +125,10 @@ export const BuiltInProviderInfo = ({
 			setErrorState((prev) => ({
 				...prev,
 				thirdPartyId:
-					inBuiltProviderInfo?.id === providerConfigState.thirdPartyId
-						? `You need to add a suffix for this provider since you have already added a ${inBuiltProviderInfo.label} provider`
+					baseProviderId === providerConfigState.thirdPartyId
+						? `You need to add a suffix for this provider since you have already added a ${
+								isSAMLProvider ? "SAML" : inBuiltProviderInfo?.label
+						  } provider`
 						: "Third Party Id already exists",
 			}));
 			isValid = false;
@@ -167,7 +186,7 @@ export const BuiltInProviderInfo = ({
 
 		if (isValid) {
 			const normalizedProviderConfig = {
-				name: inBuiltProviderInfo?.label,
+				name: isSAMLProvider ? "SAML" : inBuiltProviderInfo?.label,
 				...providerConfigState,
 			};
 
@@ -176,8 +195,8 @@ export const BuiltInProviderInfo = ({
 				return {
 					...client,
 					clientId: client.clientId.trim(),
-					clientType: client.clientType?.trim(),
-					clientSecret: client.clientSecret?.trim(),
+					clientType: client.clientType?.trim() || undefined,
+					clientSecret: client.clientSecret?.trim() || undefined,
 					scope: normalizedScopes,
 					additionalConfig:
 						client.additionalConfig && Object.keys(client.additionalConfig).length > 0
@@ -211,106 +230,213 @@ export const BuiltInProviderInfo = ({
 		}
 	};
 
-	return (
-		<PanelRoot>
-			<PanelHeader>
-				<div className="built-in-provider-config-header">
-					<div className="built-in-provider-config-header__title">
-						<PanelHeaderTitleWithTooltip>Built-In Provider Configuration</PanelHeaderTitleWithTooltip>
+	const panelHeader = (
+		<PanelHeader>
+			<div className="built-in-provider-config-header">
+				<div className="built-in-provider-config-header__title">
+					<PanelHeaderTitleWithTooltip>
+						{isSAMLProvider ? "SAML" : "Built-In Provider"} Configuration
+					</PanelHeaderTitleWithTooltip>
+					{!isSAMLProvider && (
 						<ThirdPartyProviderButton
 							title={inBuiltProviderInfo?.label ?? ""}
 							icon={inBuiltProviderInfo?.icon ?? ""}
 							disabled
 						/>
-					</div>
-					{!isAddingNewProvider && (
-						<Button
-							color="danger"
-							onClick={() => setIsDeleteProviderDialogOpen(true)}>
-							Delete
-						</Button>
 					)}
 				</div>
-			</PanelHeader>
-			<div className="fields-container">
-				{isAddingNewProvider ? (
-					<ThirdPartyProviderInput
-						label="Third Party Id"
-						tooltip="The Id of the provider."
-						prefix={`${inBuiltProviderInfo?.id}-`}
-						type="text"
-						name="thirdPartyId"
-						value={providerConfigState.thirdPartyId.slice((inBuiltProviderInfo?.id.length ?? 0) + 1)}
-						forceShowError
-						error={errorState.thirdPartyId}
-						handleChange={handleThirdPartyIdSuffixChange}
-					/>
-				) : (
-					<ThirdPartyProviderInput
-						label="Third Party Id"
-						tooltip="The Id of the provider."
-						type="text"
-						name="thirdPartyId"
-						value={providerId}
-						disabled
-						handleChange={() => null}
+				{!isAddingNewProvider && (
+					<Button
+						color="danger"
+						onClick={() => setIsDeleteProviderDialogOpen(true)}>
+						Delete
+					</Button>
+				)}
+			</div>
+		</PanelHeader>
+	);
+
+	if (isSAMLProvider && isAddingNewProvider && !hasAddedBoxyURLForNewSAMLProvider) {
+		return (
+			<PanelRoot>
+				{panelHeader}
+				<div className="saml-intro-container">
+					<p className="saml-intro-container__header">
+						You will need to setup <b>BoxyHQ</b> to add the SAML client.
+					</p>
+
+					<SAMLInfoBox title="Managed Service">
+						<a href="mailto:team@supertokens.com">Email us</a> to receive your Boxy URL and continue setup
+						of your SAML client.
+					</SAMLInfoBox>
+
+					<SAMLInfoBox title="Self Hosted">
+						Follow the steps in the{" "}
+						<a
+							href="https://boxyhq.com/docs/jackson/deploy"
+							rel="noreferrer noopener"
+							target="_blank">
+							BoxyHQ docs
+						</a>{" "}
+						to get your Boxy URL and continue setup of your SAML client.
+					</SAMLInfoBox>
+
+					<p className="saml-intro-container__boxy-url-header">Add the Boxy URL below</p>
+
+					<div className="saml-intro-container__boxy-url-field-container">
+						<ThirdPartyProviderInput
+							label="Boxy URL"
+							type="text"
+							name="boxyURL"
+							value={providerConfigState.clients?.[0].additionalConfig?.boxyURL as string}
+							forceShowError
+							error={errorState["clients.0.additionalConfig.boxyURL"]}
+							handleChange={(e) => {
+								setProviderConfigState((prev) => ({
+									...prev,
+									clients: Array.isArray(prev.clients)
+										? [
+												{
+													...prev.clients[0],
+													additionalConfig: {
+														...prev.clients?.[0].additionalConfig,
+														boxyURL: e.target.value,
+													},
+												},
+										  ]
+										: [],
+								}));
+							}}
+						/>
+					</div>
+
+					<hr className="provider-config-divider" />
+					<div className="built-in-provider-footer">
+						<div />
+						<div className="built-in-provider-footer__primary-ctas">
+							<Button
+								color="gray-outline"
+								onClick={() => handleGoBack()}>
+								Go Back
+							</Button>
+							<Button onClick={handleSAMLIntroContinue}>Continue</Button>
+						</div>
+					</div>
+				</div>
+			</PanelRoot>
+		);
+	}
+
+	return (
+		<>
+			{isSAMLProvider && (
+				<div className="block-info block-medium text-small tenant-detail__no-config-info-block">
+					<div className="tenant-detail__no-config-info-block__no-property-pill">Info</div>
+					<p>
+						Follow the steps in the{" "}
+						<a
+							href="https://supertokens.com/docs/thirdpartyemailpassword/common-customizations/saml/with-boxyhq/integration-steps"
+							target="_blank"
+							rel="noreferrer noopened">
+							documentation
+						</a>{" "}
+						to get the Client Id and Secret for your SAML provider.
+					</p>
+				</div>
+			)}
+			<PanelRoot>
+				{panelHeader}
+				<div className="fields-container">
+					{isAddingNewProvider ? (
+						<ThirdPartyProviderInput
+							label="Third Party Id"
+							tooltip="The Id of the provider."
+							prefix={`${baseProviderId}-`}
+							type="text"
+							name="thirdPartyId"
+							value={providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)}
+							forceShowError
+							error={errorState.thirdPartyId}
+							handleChange={handleThirdPartyIdSuffixChange}
+						/>
+					) : (
+						<ThirdPartyProviderInput
+							label="Third Party Id"
+							tooltip="The Id of the provider."
+							type="text"
+							name="thirdPartyId"
+							value={providerId}
+							disabled
+							handleChange={() => null}
+						/>
+					)}
+
+					{providerConfigState.clients?.map((client, index) => (
+						<ClientConfig
+							key={index}
+							providerId={providerId}
+							clientsCount={providerConfigState.clients?.length ?? 0}
+							client={client}
+							clientIndex={index}
+							errors={errorState}
+							setClient={(client: ProviderClientConfig) => {
+								setProviderConfigState((prev) => ({
+									...prev,
+									clients: prev.clients?.map((c, i) => (i === index ? client : c)),
+								}));
+							}}
+							additionalConfigFields={customFields?.additionalConfigFields}
+							handleDeleteClient={() => {
+								setProviderConfigState((prev) => ({
+									...prev,
+									clients: prev.clients?.filter((_, i) => i !== index),
+								}));
+							}}
+						/>
+					))}
+				</div>
+				<hr className="provider-config-divider" />
+				<div className="built-in-provider-footer">
+					<Button
+						color="blue-outline"
+						onClick={handleAddNewClient}>
+						+ Add New Client
+					</Button>
+					<div className="built-in-provider-footer__primary-ctas">
+						<Button
+							color="gray-outline"
+							onClick={() => handleGoBack()}>
+							Go Back
+						</Button>
+						<Button
+							onClick={handleSave}
+							isLoading={isSaving}
+							disabled={isSaving}>
+							Save
+						</Button>
+					</div>
+				</div>
+				{isDeleteProviderDialogOpen && (
+					<DeleteThirdPartyProviderDialog
+						onCloseDialog={() => setIsDeleteProviderDialogOpen(false)}
+						thirdPartyId={providerId}
+						goBack={() => handleGoBack(true)}
+						handlePostSaveProviders={handlePostSaveProviders}
 					/>
 				)}
+			</PanelRoot>
+		</>
+	);
+};
 
-				{providerConfigState.clients?.map((client, index) => (
-					<ClientConfig
-						key={index}
-						providerId={providerId}
-						clientsCount={providerConfigState.clients?.length ?? 0}
-						client={client}
-						clientIndex={index}
-						errors={errorState}
-						setClient={(client: ProviderClientConfig) => {
-							setProviderConfigState((prev) => ({
-								...prev,
-								clients: prev.clients?.map((c, i) => (i === index ? client : c)),
-							}));
-						}}
-						additionalConfigFields={customFields?.additionalConfigFields}
-						handleDeleteClient={() => {
-							setProviderConfigState((prev) => ({
-								...prev,
-								clients: prev.clients?.filter((_, i) => i !== index),
-							}));
-						}}
-					/>
-				))}
+const SAMLInfoBox = ({ title, children }: { title: string; children: React.ReactNode }) => {
+	return (
+		<div className="saml-info-box-container">
+			<div className="saml-info-box-container__title-container">
+				<h2 className="saml-info-box-container__title">{title}</h2>
 			</div>
-			<hr className="provider-config-divider" />
-			<div className="built-in-provider-footer">
-				<Button
-					color="blue-outline"
-					onClick={handleAddNewClient}>
-					+ Add New Client
-				</Button>
-				<div className="built-in-provider-footer__primary-ctas">
-					<Button
-						color="gray-outline"
-						onClick={() => handleGoBack()}>
-						Go Back
-					</Button>
-					<Button
-						onClick={handleSave}
-						isLoading={isSaving}
-						disabled={isSaving}>
-						Save
-					</Button>
-				</div>
-			</div>
-			{isDeleteProviderDialogOpen && (
-				<DeleteThirdPartyProviderDialog
-					onCloseDialog={() => setIsDeleteProviderDialogOpen(false)}
-					thirdPartyId={providerId}
-					goBack={() => handleGoBack(true)}
-					handlePostSaveProviders={handlePostSaveProviders}
-				/>
-			)}
-		</PanelRoot>
+			<div className="saml-info-box-container__content">{children}</div>
+		</div>
 	);
 };
 
@@ -332,7 +458,7 @@ const getBuiltInProviderInfo = (providerId: string, providerConfig?: ProviderCon
 
 	const baseProviderConfig = {
 		thirdPartyId: providerId,
-		clients: [{ clientId: "", clientSecret: "", scope: [""], additionalConfig: {} }],
+		clients: [{ clientId: "", clientSecret: "", clientType: "", scope: [""], additionalConfig: {} }],
 	};
 
 	if (customFields === undefined) {
@@ -455,5 +581,16 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 	},
 	twitter: {
 		defaultScopes: ["users.read", "tweet.read"],
+	},
+	"boxy-saml": {
+		additionalConfigFields: [
+			{
+				label: "Boxy URL",
+				id: "boxyURL",
+				tooltip: "The URL of the Boxy instance.",
+				type: "text",
+				required: true,
+			},
+		],
 	},
 };
