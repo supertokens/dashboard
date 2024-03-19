@@ -1425,15 +1425,23 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: object
-                                properties:
-                                    status:
-                                        type: string
-                                        default: "OK"
-                                    createdNew:
-                                        type: boolean
-                                required:
-                                    - status
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNew:
+                                              type: boolean
+                                      required:
+                                          - status
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "MULTITENANCY_NOT_ENABLED_IN_CORE"
+                                      required:
+                                          - status
 
                 401:
                     description: Unauthorised access
@@ -1685,12 +1693,6 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
-                                                thirdPartyEmailPassword:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-                                                    nullable: true
                                                 passwordless:
                                                     type: object
                                                     properties:
@@ -1700,16 +1702,6 @@ paths:
                                                             type: string
                                                             enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
                                                             nullable: true
-                                                thirdPartPasswordless:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-                                                        contactMethod:
-                                                            type: string
-                                                            enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
-                                                            nullable: true
-                                                    nullable: true
                                                 thirdParty:
                                                     type: object
                                                     properties:
