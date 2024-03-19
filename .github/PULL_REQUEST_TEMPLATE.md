@@ -120,6 +120,12 @@
         -   [ ] Test default email and phoneNumber validations to ensure they are working properly.
         -   [ ] Test user-defined custom email and phoneNumber validators to ensure they are working properly.
     -   [ ] Test AccountLinking by creating an `emailpassword` and `passwordless` user with the same email and make sure that the accounts are linked.
+-   [ ] User details
+    -   [ ] Can edit email of non third party login method if there is only 1 login method for the user
+    -   [ ] Can edit email of non third party login method if there are >= 2 login methods for the user
+    -   [ ] Deleting a non primary login method for a user only deletes that login method, and not the whole user
+    -   [ ] Deleting a primary login method for a user deletes only that primary login method and not the user
+    -   [ ] Deleting a user deletes all the login methods for that user as well
 
 ## Documentation changes
 
