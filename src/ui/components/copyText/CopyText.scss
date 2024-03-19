@@ -23,6 +23,10 @@
 		max-width: 180px;
 		flex: 1;
 		padding-right: 4px;
+
+		@media (max-width: 600px) {
+			max-width: 80px;
+		}
 	}
 	.copy-text-action {
 		cursor: pointer;
