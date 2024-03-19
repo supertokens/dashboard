@@ -1233,14 +1233,14 @@ paths:
                                         type: array
                                         items:
                                             type: string
-    /dashboard/api/tenant:
+    /<tenantId>/dashboard/api/tenant:
         get:
             tags:
                 - Multitenancy
             summary: Get tenant info from the core
             parameters:
                 - name: tenantId
-                  in: query
+                  in: path
                   required: true
                   schema:
                       type: string
@@ -1341,7 +1341,7 @@ paths:
             summary: Delete the tenant
             parameters:
                 - name: tenantId
-                  in: query
+                  in: path
                   required: true
                   schema:
                       type: string
@@ -1376,6 +1376,7 @@ paths:
                                 type: string
                                 enum:
                                     - Unauthorised access
+    /dashboard/api/tenant:
         put:
             tags:
                 - Multitenancy
@@ -1489,7 +1490,7 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
-    /dashboard/api/tenants/third-party:
+    <tenantId>/dashboard/api/tenants/third-party:
         put:
             tags:
                 - Multitenancy
@@ -1501,14 +1502,18 @@ paths:
                   schema:
                       type: string
                       example: "Bearer API_KEY"
+                - name: tenantId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      example: "tenant1"
             requestBody:
                 content:
                     application/json:
                         schema:
                             type: object
                             properties:
-                                tenantId:
-                                    type: string
                                 providerConfig:
                                     $ref: "#/components/schemas/thirdPartyProvider"
             responses:
@@ -1541,7 +1546,7 @@ paths:
             summary: Delete thirdParty config for a tenant
             parameters:
                 - name: tenantId
-                  in: query
+                  in: path
                   required: true
                   schema:
                       type: string
