@@ -15,7 +15,7 @@
 	"editor.trimAutoWhitespace": true,
 	"editor.formatOnSave": true,
 	"editor.codeActionsOnSave": {
-		"source.organizeImports": "explicit"
+		"source.organizeImports": "true"
 	},
 	"files.exclude": {
 		"**/.DS_Store": true,
