@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.10.5] - 2024-03-19
+
+-   Fixes UI bugs on search and Login methods section in userDetails page.
+
 ## [0.10.4] - 2024-03-08
 
 -   Improves UX when deleting a user from the dashboard.
