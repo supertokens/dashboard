@@ -23,6 +23,8 @@ tags:
       description: APIs related to multitenancy
     - name: "User Roles and Permissions"
       description: APIs related to user roles and permisssions
+    - name: Miscellaneous
+      description: Miscellaneous APIs
 
 paths:
     /dashboard/api/signin:
@@ -1285,6 +1287,10 @@ paths:
                                                               type: array
                                                               items:
                                                                   $ref: "#/components/schemas/thirdPartyProvider"
+                                                          mergedProvidersFromCoreAndStatic:
+                                                              type: array
+                                                              items:
+                                                                  $ref: "#/components/schemas/thirdPartyProvider"
                                                   firstFactors:
                                                       type: array
                                                       items:
@@ -1310,15 +1316,17 @@ paths:
                                                           - "emailpassword"
                                                           - "thirdparty"
                                                       description: The first factors that the tenant can use based on the recipes initialized and login methods enabled
-                                                  mergedProvidersFromCoreAndStatic:
-                                                      type: array
-                                                      items:
-                                                          $ref: "#/components/schemas/thirdPartyProvider"
+                                      required:
+                                          - status
+                                          - tenant
+
                                     - type: object
                                       properties:
                                           status:
                                               type: string
                                               default: "UNKNOWN_TENANT_ERROR"
+                                      required:
+                                          - status
                 401:
                     description: Unauthorised access
                     content:
@@ -1358,6 +1366,8 @@ paths:
                                     didExist:
                                         type: boolean
                                         default: true
+                                required:
+                                    - status
                 401:
                     description: Unauthorised access
                     content:
@@ -1421,6 +1431,8 @@ paths:
                                         default: "OK"
                                     createdNew:
                                         type: boolean
+                                required:
+                                    - status
 
                 401:
                     description: Unauthorised access
@@ -1477,125 +1489,6 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
-    /dashboard/api/tenants/user/associate:
-        put:
-            tags:
-                - Multitenancy
-            summary: Associate a user to a tenant
-            parameters:
-                - name: authorization
-                  in: header
-                  required: true
-                  schema:
-                      type: string
-                      example: "Bearer API_KEY"
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                tenantId:
-                                    type: string
-                                userId:
-                                    type: string
-            responses:
-                200:
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                oneOf:
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "OK"
-                                          wasAlreadyAssociated:
-                                              type: boolean
-                                              default: false
-
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "UNKNOWN_USER_ID_ERROR"
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "EMAIL_ALREADY_EXISTS_ERROR"
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "PHONE_NUMBER_ALREADY_EXISTS_ERROR"
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "THIRD_PARTY_USER_ALREADY_EXISTS_ERROR"
-                                    - type: object
-                                      properties:
-                                          status:
-                                              type: string
-                                              default: "ASSOCIATION_NOT_ALLOWED_ERROR"
-                                          reason:
-                                              type: string
-
-                401:
-                    description: Unauthorised access
-                    content:
-                        text/plain:
-                            schema:
-                                type: string
-                                enum:
-                                    - Unauthorised access
-    /dashboard/api/tenants/user/disassociate:
-        put:
-            tags:
-                - Multitenancy
-            summary: Disassociate a user from a tenant
-            parameters:
-                - name: authorization
-                  in: header
-                  required: true
-                  schema:
-                      type: string
-                      example: "Bearer API_KEY"
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                tenantId:
-                                    type: string
-                                userId:
-                                    type: string
-            responses:
-                200:
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    status:
-                                        type: string
-                                        default: "OK"
-                                    wasAssociated:
-                                        type: boolean
-                                        default: true
-
-                401:
-                    description: Unauthorised access
-                    content:
-                        text/plain:
-                            schema:
-                                type: string
-                                enum:
-                                    - Unauthorised access
     /dashboard/api/tenants/third-party:
         put:
             tags:
@@ -1632,6 +1525,8 @@ paths:
                                     createdNew:
                                         type: boolean
                                         default: true
+                                required:
+                                    - status
                 401:
                     description: Unauthorised access
                     content:
@@ -1677,6 +1572,8 @@ paths:
                                     didConfigExist:
                                         type: boolean
                                         default: true
+                                required:
+                                    - status
                 401:
                     description: Unauthorised access
                     content:
@@ -1685,10 +1582,10 @@ paths:
                                 type: string
                                 enum:
                                     - Unauthorised access
-    /dashboard/api/multitenancy/core-config/list:
+    /dashboard/api/core/config/list:
         get:
             tags:
-                - Multitenancy
+                - Miscellaneous
             summary: Gets all the possible core config options.
             parameters:
                 - name: authorization
@@ -1703,34 +1600,43 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: array
-                                items:
-                                    oneOf:
-                                        - allOf:
-                                              - $ref: "#/components/schemas/coreConfigType"
-                                              - type: object
-                                                properties:
-                                                    type:
-                                                        type: string
-                                                        enum:
-                                                            - string
-                                                            - boolean
-                                                            - number
-                                                        description: Data type of the property
-                                        - allOf:
-                                              - $ref: "#/components/schemas/coreConfigType"
-                                              - type: object
-                                                properties:
-                                                    type:
-                                                        type: string
-                                                        enum:
-                                                            - enum
-                                                        description: Data type of the property
-                                                    options:
-                                                        type: array
-                                                        items:
-                                                            type: string
-                                                        description: List of possible values for the property in case it is of enum type
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    config:
+                                        type: array
+                                        items:
+                                            oneOf:
+                                                - allOf:
+                                                      - $ref: "#/components/schemas/coreConfigType"
+                                                      - type: object
+                                                        properties:
+                                                            type:
+                                                                type: string
+                                                                enum:
+                                                                    - string
+                                                                    - boolean
+                                                                    - number
+                                                                description: Data type of the property
+                                                - allOf:
+                                                      - $ref: "#/components/schemas/coreConfigType"
+                                                      - type: object
+                                                        properties:
+                                                            type:
+                                                                type: string
+                                                                enum:
+                                                                    - enum
+                                                                description: Data type of the property
+                                                            options:
+                                                                type: array
+                                                                items:
+                                                                    type: string
+                                                                description: List of possible values for the property in case it is of enum type
+                                required:
+                                    - status
+                                    - config
                 401:
                     description: Unauthorised access
                     content:
