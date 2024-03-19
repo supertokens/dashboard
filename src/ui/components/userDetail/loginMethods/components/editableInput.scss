@@ -2,6 +2,10 @@
 	display: flex;
 	justify-content: flex-start;
 	align-items: baseline;
+
+	@media (max-width: 340px) {
+		flex-direction: column;
+	}
 }
 
 .input-field-container {

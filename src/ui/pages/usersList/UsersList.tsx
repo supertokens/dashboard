@@ -287,24 +287,35 @@ export const UsersList: React.FC<UserListProps> = ({
 
 			{tenantsListFromStore !== undefined && tenantsListFromStore.length > 1 && (
 				<div className="tenant-id-container">
-					<span className="tenant-id-title">Tenant ID:</span>
-					<select
-						className="tenant-list-dropdown"
-						defaultValue={selectedTenant}
-						onChange={(event) => {
-							setSelectedTenant(event.target.value);
-							void loadCount();
-						}}>
-						{tenantsListFromStore.map((tenant) => {
-							return (
-								<option
-									key={tenant.tenantId}
-									value={tenant.tenantId}>
-									{tenant.tenantId}
-								</option>
-							);
-						})}
-					</select>
+					<div>
+						<span className="tenant-id-title">Tenant ID:</span>
+						<select
+							className="tenant-list-dropdown"
+							defaultValue={selectedTenant}
+							onChange={(event) => {
+								setSelectedTenant(event.target.value);
+								void loadCount();
+							}}>
+							{tenantsListFromStore.map((tenant) => {
+								return (
+									<option
+										key={tenant.tenantId}
+										value={tenant.tenantId}>
+										{tenant.tenantId}
+									</option>
+								);
+							})}
+						</select>
+					</div>
+					<Button
+						disabled={selectedTenant === undefined || tenantsLoginMethods === undefined}
+						id="add-user"
+						className="ml-auto"
+						color="secondary"
+						onClick={() => setShowCreateUserDialog(true)}>
+						<PlusIcon />
+						Add User
+					</Button>
 				</div>
 			)}
 
@@ -315,15 +326,7 @@ export const UsersList: React.FC<UserListProps> = ({
 						loading={loading}
 					/>
 				)}
-				<Button
-					disabled={selectedTenant === undefined || tenantsLoginMethods === undefined}
-					id="add-user"
-					className="ml-auto"
-					color="secondary"
-					onClick={() => setShowCreateUserDialog(true)}>
-					<PlusIcon />
-					Add User
-				</Button>
+
 				{showCreateUserDialog && selectedTenant !== undefined && tenantsLoginMethods !== undefined ? (
 					<CreateUserDialog
 						defaultSelectedTenantId={selectedTenant}

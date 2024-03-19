@@ -152,11 +152,6 @@ const Methods: React.FC<MethodProps> = ({
 	const [emailError, setEmailError] = useState("");
 	const { getUserEmailVerificationStatus } = useVerifyUserEmail();
 
-	const trim = (val: string) => {
-		const len = val.length;
-		return val.substring(0, Math.floor(len / 7)) + "..." + val.substring(6 * Math.floor(len / 7), len);
-	};
-
 	const sendUserEmailVerification = useCallback(
 		async (userId: string, tenantId: string | undefined) => {
 			const res = await getUserEmailVerificationStatus(userId);
@@ -245,11 +240,8 @@ const Methods: React.FC<MethodProps> = ({
 					<UserRecipePill {...loginMethod} />
 					<span className="user-id-span">
 						User ID:
-						<span className="copy-text-wrapper resp">
-							<CopyText copyVal={loginMethod.recipeUserId}>{trim(loginMethod.recipeUserId)}</CopyText>
-						</span>
 						<span className="copy-text-wrapper">
-							<CopyText>{loginMethod.recipeUserId}</CopyText>
+							<CopyText copyVal={loginMethod.recipeUserId}>{loginMethod.recipeUserId}</CopyText>
 						</span>
 					</span>
 				</div>
@@ -285,7 +277,7 @@ const Methods: React.FC<MethodProps> = ({
 				<div>
 					<EditableInput
 						label={"Email ID"}
-						val={loginMethod.email ?? ""}
+						val={send.email ?? ""}
 						edit={loginMethod.recipeId === "thirdparty" ? false : isEditing}
 						type={"email"}
 						error={emailError}
@@ -340,7 +332,7 @@ const Methods: React.FC<MethodProps> = ({
 						<div>
 							<EditableInput
 								label={"Phone Number"}
-								val={loginMethod.phoneNumber ?? ""}
+								val={send.phone ?? ""}
 								edit={isEditing}
 								type={"phone"}
 								onChange={(val) => setSend({ ...send, phone: val })}
