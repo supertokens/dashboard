@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.11.0] - 2024-03-20
+
+-   Removes the tenants list API and uses the login methods API to get tenants and its login methods
+
 ## [0.10.5] - 2024-03-19
 
 -   Fixes UI bugs on search and Login methods section in userDetails page.
