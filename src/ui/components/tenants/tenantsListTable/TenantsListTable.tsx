@@ -12,7 +12,8 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { Tenant } from "../../../../api/tenants/list";
+import { Tenant } from "../../../../api/tenants/login-methods";
+import { getImageUrl } from "../../../../utils";
 import Pagination from "../../pagination";
 import { RecipePill } from "../../recipePill/RecipePill";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
@@ -31,21 +32,51 @@ type TenantsListTableProps = {
 };
 
 const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
+	const getEnabledLoginMethods = () => {
+		return {
+			emailPassword: tenant.emailPassword.enabled || tenant.thirdPartyEmailPasssword.enabled,
+			passwordless: tenant.passwordless.enabled || tenant.thirdPartyPasswordless.enabled,
+			thirdParty:
+				tenant.thirdParty.enabled ||
+				tenant.thirdPartyEmailPasssword.enabled ||
+				tenant.thirdPartyPasswordless.enabled,
+		};
+	};
+
+	const loginMethods = getEnabledLoginMethods();
+
+	const hasNoLoginMethods = Object.values(loginMethods).every((value) => value === false);
+
+	if (hasNoLoginMethods) {
+		return (
+			<div className="block-small block-error tenant-no-login-methods-error">
+				<img
+					className="input-field-error-icon"
+					src={getImageUrl("form-field-error-icon.svg")}
+					alt="Error in field"
+				/>
+				<p className="input-field-error-text text-small text-error">
+					No login methods enabled for this tenant.
+				</p>
+			</div>
+		);
+	}
+
 	return (
 		<div className="tenant-login-methods">
-			{tenant.emailPassword.enabled && (
+			{loginMethods.emailPassword && (
 				<RecipePill
 					recipeId="emailpassword"
 					label="Email Password"
 				/>
 			)}
-			{tenant.passwordless.enabled && (
+			{loginMethods.passwordless && (
 				<RecipePill
 					recipeId="passwordless"
 					label="Passwordless"
 				/>
 			)}
-			{tenant.thirdParty.enabled && (
+			{loginMethods.thirdParty && (
 				<RecipePill
 					recipeId="thirdparty"
 					label="Third Party"

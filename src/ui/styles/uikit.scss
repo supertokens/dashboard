@@ -454,6 +454,7 @@ button.link,
 			border: $arrow-width solid transparent;
 			position: absolute;
 		}
+
 		p:not(:last-child) {
 			margin-bottom: 6px;
 		}
@@ -489,6 +490,26 @@ button.link,
 			top: 0;
 			left: 50%;
 			transform: translateY(-100%) translateX(-50%);
+		}
+
+		&--error {
+			background-color: var(--color-black);
+			color: var(--color-button-error);
+			box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.16);
+			border: 1px solid var(--color-border-command);
+
+			&.popup_left::before {
+				border-left-color: var(--color-black);
+			}
+			&.popup_right::before {
+				border-right-color: var(--color-black);
+			}
+			&.popup_top::before {
+				border-top-color: var(--color-black);
+			}
+			&.popup_bottom::before {
+				border-bottom-color: var(--color-black);
+			}
 		}
 	}
 }

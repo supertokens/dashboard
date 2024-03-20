@@ -162,7 +162,7 @@
 					background: var(--color-copy-box-bg);
 					color: var(--color-copy-box);
 					font-size: 13px;
-					font-family: "Menlo";
+					font-family: Menlo, "Source Code Pro", Monaco, Consolas, "Courier New", monospace;
 					border-radius: 3px;
 					white-space: nowrap;
 					overflow: hidden;
@@ -306,7 +306,49 @@
 						line-height: 23px;
 					}
 				}
+
+				&--fixed-gap {
+					gap: 16px;
+					justify-content: flex-start;
+				}
 			}
 		}
+	}
+
+	&__third-party-divider {
+		display: block;
+		height: 1px;
+		background-color: var(--color-border);
+		margin-top: 24px;
+		margin-bottom: 16px;
+		border: none;
+	}
+
+	&__no-providers-added-container {
+		padding: 10px;
+		background-color: var(--color-third-party-button-container-bg);
+		border-radius: 6px;
+		max-width: fit-content;
+		color: var(--color-third-party-button);
+		font-size: 14px;
+		font-family: inherit;
+
+		&__text {
+			background-color: var(--color-third-party-button-bg);
+			padding: 7px 8px;
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+		}
+	}
+
+	&__existing-providers {
+		display: flex;
+		gap: 20px;
+		flex-wrap: wrap;
+	}
+
+	&__factors-error-block {
+		margin-bottom: 10px;
 	}
 }

@@ -28,7 +28,7 @@ import ThirdParty from "supertokens-node/recipe/thirdparty";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
 import UserRoles from "supertokens-node/recipe/userroles";
 
-const websiteDomain = "http://localhost:3000";
+const websiteDomain = "http://localhost:5173";
 
 let app = express();
 app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[content-length]"));

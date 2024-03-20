@@ -30,167 +30,159 @@ export enum HTTPStatusCodes {
 
 export const PUBLIC_TENANT_ID = "public";
 
-// TODO: This will be coming from the API
-export const CORE_CONFIG_PROPERTIES = [
+export const IN_BUILT_THIRD_PARTY_PROVIDERS = [
 	{
-		name: "supertokens_max_cdi_version",
+		id: "google",
+		label: "Google",
+		icon: "provider-google.svg",
+		isEnterprise: false,
+	},
+	{
+		id: "google-workspaces",
+		label: "Google Workspaces",
+		icon: "provider-google.svg",
+		isEnterprise: true,
+	},
+	{
+		id: "apple",
+		label: "Apple",
+		icon: "provider-apple.svg",
+		isEnterprise: false,
+	},
+	{
+		id: "discord",
+		label: "Discord",
+		icon: "provider-discord.svg",
+		isEnterprise: false,
+	},
+	{
+		id: "facebook",
+		label: "Facebook",
+		icon: "provider-facebook.svg",
+		isEnterprise: false,
+	},
+	{
+		id: "github",
+		label: "GitHub",
+		icon: "provider-github.svg",
+		isEnterprise: false,
+	},
+	{
+		id: "linkedin",
+		label: "LinkedIn",
+		icon: "provider-linkedin.svg",
+		isEnterprise: false,
+	},
+	{
+		id: "twitter",
+		label: "Twitter",
+		icon: "provider-twitter.svg",
+		isEnterprise: false,
+	},
+	{
+		id: "active-directory",
+		label: "Active Directory",
+		icon: "provider-active-directory.png",
+		isEnterprise: true,
+	},
+	{
+		id: "okta",
+		label: "Okta",
+		icon: "provider-okta.png",
+		isEnterprise: true,
+	},
+	{
+		id: "bitbucket",
+		label: "Bitbucket",
+		icon: "provider-bitbucket.png",
+		isEnterprise: false,
+	},
+	{
+		id: "gitlab",
+		label: "GitLab",
+		icon: "provider-gitlab.svg",
+		isEnterprise: false,
+	},
+];
+
+export const SAML_PROVIDER_ID = "boxy-saml";
+
+export const FIRST_FACTOR_IDS = [
+	{
+		label: "Email Password",
+		description: "Sign in/up using email and password (Requires the EmailPassword recipe to be initialized)",
+		id: "emailpassword",
+		loginMethod: "emailpassword",
+		recipeNotInitError:
+			"EmailPassword recipe is not initialized, in your backend SDK. Please initialize the recipe to be able to use this login method.",
+	},
+	{
+		label: "OTP - Email",
+		description: "Sign in/up using OTP sent to email (Requires the Passwordless recipe to be initialized)",
+		id: "otp-email",
+		loginMethod: "passwordless",
+		recipeNotInitError:
+			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as EMAIL and flow type as USER_INPUT_CODE to use this login method.",
+	},
+	{
+		label: "OTP - Phone",
+		description: "Sign in/up using OTP sent to phone (Requires the Passwordless recipe to be initialized)",
+		id: "otp-phone",
+		loginMethod: "passwordless",
+		recipeNotInitError:
+			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as PHONE and flow type as USER_INPUT_CODE to use this login method.",
+	},
+	{
+		label: "Link - Email",
+		description: "Sign in/up using link sent to email (Requires the Passwordless recipe to be initialized)",
+		id: "link-email",
+		loginMethod: "passwordless",
+		recipeNotInitError:
+			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as EMAIL and flow type as MAGIC_LINK to use this login method.",
+	},
+	{
+		label: "Link - Phone",
+		description: "Sign in/up using link sent to phone (Requires the Passwordless recipe to be initialized)",
+		id: "link-phone",
+		loginMethod: "passwordless",
+		recipeNotInitError:
+			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as PHONE and flow type as MAGIC_LINK to use this login method.",
+	},
+	{
+		label: "Third Party",
+		description: "Sign in/up using third party providers (Requires the ThirdParty recipe to be initialized)",
+		id: "thirdparty",
+		loginMethod: "thirdparty",
+		recipeNotInitError:
+			"ThirdParty recipe is not initialized, in your backend SDK. Please initialize the recipe to be able to use this login method.",
+	},
+];
+
+export const SECONDARY_FACTOR_IDS = [
+	{
+		label: "TOTP",
 		description:
-			"This is used when the core needs to assume a specific CDI version when CDI version is not specified in the request. When set to null, the core will assume the latest version of the CDI. (Default: null)",
-		isDifferentAcrossTenants: false,
-		type: "string",
+			"Require TOTP as a secondary factor for successful authentication (Requires the TOTP recipe to be initialized)",
+		id: "totp",
+		recipeNotInitError:
+			"TOTP recipe is not initialized, in your backend SDK. Please initialize the recipe to be able to use this secondary factor.",
 	},
 	{
-		name: "disable_telemetry",
+		label: "OTP - Email",
 		description:
-			"Learn more about Telemetry here: https://github.com/supertokens/supertokens-core/wiki/Telemetry. (Default: false)",
-		isDifferentAcrossTenants: false,
-		type: "boolean",
+			"Require OTP sent to email as a secondary factor for successful authentication (Requires the Passwordless recipe to be initialized)",
+		id: "otp-email",
+		loginMethod: "passwordless",
+		recipeNotInitError:
+			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as EMAIL and flow type as USER_INPUT_CODE to use this secondary factor.",
 	},
 	{
-		name: "email_verification_token_lifetime",
+		label: "OTP - Phone",
 		description:
-			"Time in milliseconds for how long an email verification token / link is valid for. [Default: 24 * 3600 * 1000 (1 day)]",
-		isDifferentAcrossTenants: true,
-		type: "number",
-	},
-	{
-		name: "passwordless_code_lifetime",
-		description: "Time in milliseconds for how long a passwordless code is valid for. [Default: 900000 (15 mins)]",
-		isDifferentAcrossTenants: true,
-		type: "number",
-	},
-	{
-		name: "firebase_password_hashing_signer_key",
-		description: "The signer key used for firebase scrypt password hashing. (Default: null)",
-		isDifferentAcrossTenants: false,
-		type: "string",
-	},
-	{
-		name: "passwordless_max_code_input_attempts",
-		description:
-			"The maximum number of code input attempts per login before the user needs to restart. (Default: 5)",
-		isDifferentAcrossTenants: true,
-		type: "number",
-	},
-	{
-		name: "totp_max_attempts",
-		description: "The maximum number of invalid TOTP attempts that will trigger rate limiting. (Default: 5)",
-		isDifferentAcrossTenants: true,
-		type: "number",
-	},
-	{
-		name: "refresh_token_validity",
-		description: "Time in mins for how long a refresh token is valid for. [Default: 60 * 2400 (100 days)]",
-		isDifferentAcrossTenants: false,
-		type: "number",
-	},
-	{
-		name: "access_token_dynamic_signing_key_update_interval",
-		description: "Time in hours for how frequently the dynamic signing key will change. [Default: 168 (1 week)]",
-		isDifferentAcrossTenants: false,
-		type: "number",
-	},
-	{
-		name: "access_token_signing_key_dynamic",
-		description:
-			"Deprecated, please see changelog.\n If this is set to true, the access tokens created using CDI<=2.18 will be signed using a static signing key. (Default: true)",
-		isDifferentAcrossTenants: false,
-		type: "boolean",
-	},
-	{
-		name: "access_token_blacklisting",
-		description:
-			"Deprecated, please see changelog. Only used in CDI<=2.18\n If true, allows for immediate revocation of any access token. Keep in mind that setting this to true will result in a db query for each API call that requires authentication. (Default: false)",
-		isDifferentAcrossTenants: false,
-		type: "boolean",
-	},
-	{
-		name: "api_keys",
-		description:
-			"The API keys to query an instance using this config file. The format is \"key1,key2,key3\". Keys can only contain '=', '-' and alpha-numeric (including capital) chars. Each key must have a minimum length of 20 chars. (Default: null)",
-		isDifferentAcrossTenants: false,
-		type: "string",
-	},
-	{
-		name: "password_reset_token_lifetime",
-		description:
-			"Time in milliseconds for how long a password reset token / link is valid for. [Default: 3600000 (1 hour)]",
-		isDifferentAcrossTenants: true,
-		type: "number",
-	},
-	{
-		name: "totp_rate_limit_cooldown_sec",
-		description:
-			"The time in seconds for which the user will be rate limited once totp_max_attempts is crossed. [Default: 900 (15 mins)]",
-		isDifferentAcrossTenants: true,
-		type: "number",
-	},
-	{
-		name: "access_token_validity",
-		description: "Time in seconds for how long an access token is valid for. [Default: 3600 (1 hour)]",
-		isDifferentAcrossTenants: false,
-		type: "number",
-	},
-	{
-		name: "password_hashing_alg",
-		// eslint-disable-next-line @typescript-eslint/quotes
-		description: 'The password hashing algorithm to use. Values are "ARGON2" | "BCRYPT". (Default: BCRYPT)',
-		isDifferentAcrossTenants: false,
-		options: ["ARGON2", "BCRYPT"],
-		type: "enum",
-	},
-	{
-		name: "postgresql_thirdparty_users_table_name",
-		description: "The name of the thirdparty users table.",
-		isDifferentAcrossTenants: true,
-		type: "string",
-	},
-	{
-		name: "postgresql_key_value_table_name",
-		description: "The name of the key value table.",
-		isDifferentAcrossTenants: true,
-		type: "string",
-	},
-	{
-		name: "postgresql_session_info_table_name",
-		description: "The name of the session info table.",
-		isDifferentAcrossTenants: true,
-		type: "string",
-	},
-	{
-		name: "postgresql_emailverification_verified_emails_table_name",
-		description: "The name of the emailverification verified emails table.",
-		isDifferentAcrossTenants: true,
-		type: "string",
-	},
-	{
-		name: "postgresql_table_names_prefix",
-		description: "The prefix to be added to all table names.",
-		isDifferentAcrossTenants: true,
-		type: "string",
-	},
-	{
-		name: "postgresql_config_version",
-		description: "The version of the config.",
-		isDifferentAcrossTenants: true,
-		type: "number",
-	},
-	{
-		name: "postgresql_emailpassword_users_table_name",
-		description: "The name of the emailpassword users table.",
-		isDifferentAcrossTenants: true,
-		type: "string",
-	},
-	{
-		name: "postgresql_emailverification_tokens_table_name",
-		description: "The name of the emailverification tokens table.",
-		isDifferentAcrossTenants: true,
-		type: "string",
-	},
-	{
-		name: "postgresql_emailpassword_pswd_reset_tokens_table_name",
-		description: "The name of the emailpassword password reset tokens table.",
-		isDifferentAcrossTenants: true,
-		type: "string",
+			"Require OTP sent to phone as a secondary factor for successful authentication (Requires the Passwordless recipe to be initialized)",
+		id: "otp-phone",
+		loginMethod: "passwordless",
+		recipeNotInitError:
+			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as PHONE and flow type as USER_INPUT_CODE to use this secondary factor.",
 	},
 ];

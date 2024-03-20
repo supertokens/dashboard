@@ -1,0 +1,36 @@
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.error-block {
+	border: 1px solid var(--color-border-error-block);
+	background-color: var(--color-error-block-bg);
+	border-radius: 6px;
+	padding: 14px 18px;
+	display: flex;
+	gap: 10px;
+
+	& > svg {
+		width: 19px;
+		height: 17px;
+		transform: translateY(1px);
+	}
+
+	&__error-message {
+		font-family: inherit;
+		font-size: 14px;
+		line-height: 23px;
+		color: var(--color-black);
+	}
+}

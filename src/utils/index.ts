@@ -41,6 +41,22 @@ export function isSearchEnabled(): boolean {
 	return false;
 }
 
+type InitializedRecipes = {
+	emailPassword: boolean;
+	passwordless: {
+		enabled: boolean;
+		contactMethod: string;
+		flowType: string;
+	};
+	thirdParty: boolean;
+	mfa: boolean;
+	totp: boolean;
+};
+
+export function getInitializedRecipes(): InitializedRecipes {
+	return (window as any).initializedRecipes;
+}
+
 export function getImageUrl(imageName: string): string {
 	return getStaticBasePath() + "/media/" + imageName;
 }
@@ -322,4 +338,17 @@ export const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: nu
 
 			timeout = setTimeout(() => resolve(func(...args)), waitFor);
 		});
+};
+
+export const isValidHttpUrl = (urlToBeValidated?: string) => {
+	let url;
+
+	try {
+		url = new URL(urlToBeValidated ?? "");
+	} catch (_) {
+		return false;
+	}
+
+	// To ensure that the URL is an HTTP URL
+	return url.protocol === "http:" || url.protocol === "https:";
 };

@@ -1,13 +1,15 @@
 import { FC, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { isMobile } from "../../../utils";
 import Toast, { ToastProps } from "../toast/toast";
-import { PopUpPositionProperties, PopUpPositionType, getPopupPosition } from "./tooltip-util";
+import { getPopupPosition, PopUpPositionProperties, PopUpPositionType } from "./tooltip-util";
 
 const DEFAULT_TOOLTIP_WIDTH = 380;
 
 type TooltipBaseProps = Pick<ToastProps, "children" | "duration" | "onDisappear"> & {
 	/** tooltip width in pixel, will get `DEFAULT_TOOLTIP_WIDTH` by default */
 	tooltipWidth?: number;
+	/** Render the error tooltip if true */
+	error?: boolean;
 };
 
 type TooltipPopupProps = TooltipBaseProps & { properties?: PopUpPositionProperties };
@@ -26,7 +28,14 @@ type TooltipProps = TooltipBaseProps & {
 };
 
 /** The element that will pop out when the `TooltipContainer` is receiving  `TooltipTrigger`*/
-export const TooltipPopup: FC<TooltipPopupProps> = ({ duration, children, onDisappear, properties, tooltipWidth }) => {
+export const TooltipPopup: FC<TooltipPopupProps> = ({
+	duration,
+	children,
+	onDisappear,
+	properties,
+	tooltipWidth,
+	error,
+}) => {
 	// if positioned left/right, then use the `tooltipWidth` value because the there is enough space
 	const width =
 		properties?.positionType === "left" || properties?.positionType === "right" ? `${tooltipWidth}px` : "auto";
@@ -36,7 +45,9 @@ export const TooltipPopup: FC<TooltipPopupProps> = ({ duration, children, onDisa
 			duration={duration}
 			onDisappear={onDisappear}>
 			<div
-				className={`tooltip-container__popup popup_${properties?.positionType}`}
+				className={`tooltip-container__popup popup_${properties?.positionType} ${
+					error ? "tooltip-container__popup--error" : ""
+				} `}
 				data-theme="dark"
 				style={{ maxWidth: `${tooltipWidth}px`, width, ...properties?.css }}>
 				{children}

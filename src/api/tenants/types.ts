@@ -31,7 +31,7 @@ export type ProviderClientConfig = {
 	clientType?: string;
 	clientId: string;
 	clientSecret?: string;
-	scope?: string[];
+	scope?: string[] | null;
 	forcePKCE?: boolean;
 	additionalConfig?: { [key: string]: unknown };
 };
@@ -47,23 +47,25 @@ export type TenantInfo = {
 	};
 	thirdParty: {
 		enabled: boolean;
-		providers: ProviderConfig[];
+		providers: Array<ProviderConfig>;
+		mergedProvidersFromCoreAndStatic: Array<ProviderConfig>;
 	};
 	passwordless: {
 		enabled: boolean;
 	};
-	firstFactors?: Array<string>;
-	requiredSecondaryFactors?: Array<string>;
+	firstFactors?: Array<string> | null;
+	requiredSecondaryFactors?: Array<string> | null;
 	coreConfig: Record<string, unknown>;
 	userCount: number;
+	validFirstFactors: Array<string>;
 };
 
 export type UpdateTenant = {
 	emailPasswordEnabled?: boolean;
 	passwordlessEnabled?: boolean;
 	thirdPartyEnabled?: boolean;
-	firstFactors?: string[];
-	requiredSecondaryFactors?: string[];
+	firstFactors?: Array<string> | null;
+	requiredSecondaryFactors?: Array<string> | null;
 	coreConfig?: Record<string, unknown>;
 };
 
@@ -82,3 +84,31 @@ export type CoreConfigOptions = Array<
 			options: string[];
 	  }
 >;
+
+export type TenantDashboardView =
+	| {
+			view: "tenant-detail";
+	  }
+	| {
+			view: "list-third-party-providers";
+	  }
+	| {
+			view: "add-or-edit-third-party-provider";
+			thirdPartyId?: string;
+			isAddingNewProvider: boolean;
+	  };
+
+export type ProviderCustomField = {
+	label: string;
+	id: string;
+	tooltip: string;
+	type: "text" | "password";
+	required: boolean;
+};
+
+export type BuiltInProvidersCustomFields = {
+	[key: string]: {
+		additionalConfigFields?: Array<ProviderCustomField>;
+		defaultScopes?: Array<string>;
+	};
+};

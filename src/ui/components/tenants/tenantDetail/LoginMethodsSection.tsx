@@ -15,75 +15,16 @@
 import { useCallback, useContext, useState } from "react";
 import { useTenantService } from "../../../../api/tenants";
 import { TenantInfo } from "../../../../api/tenants/types";
+import { ReactComponent as ErrorIcon } from "../../../../assets/form-field-error-icon.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
-import { debounce, getImageUrl } from "../../../../utils";
+import { FIRST_FACTOR_IDS, SECONDARY_FACTOR_IDS } from "../../../../constants";
+import { debounce, getImageUrl, getInitializedRecipes } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
+import { ErrorBlock } from "../../errorBlock/ErrorBlock";
 import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
 import { useTenantDetailContext } from "./TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
-
-const FIRST_FACTOR_IDS = [
-	{
-		label: "Email Password",
-		description: "Sign in/up using email and password (Requires the EmailPassword recipe to be enabled)",
-		id: "emailpassword",
-		loginMethod: "emailpassword",
-	},
-	{
-		label: "OTP - Email",
-		description: "Sign in/up using OTP sent to email (Requires the Passwordless recipe to be enabled)",
-		id: "otp-email",
-		loginMethod: "passwordless",
-	},
-	{
-		label: "OTP - Phone",
-		description: "Sign in/up using OTP sent to phone (Requires the Passwordless recipe to be enabled)",
-		id: "otp-phone",
-		loginMethod: "passwordless",
-	},
-	{
-		label: "Third Party",
-		description: "Sign in/up using third party providers (Requires the ThirdParty recipe to be enabled)",
-		id: "thirdparty",
-		loginMethod: "thirdparty",
-	},
-	{
-		label: "Link - Email",
-		description: "Sign in/up using link sent to email (Requires the Passwordless recipe to be enabled)",
-		id: "link-email",
-		loginMethod: "passwordless",
-	},
-	{
-		label: "Link - Phone",
-		description: "Sign in/up using link sent to phone (Requires the Passwordless recipe to be enabled)",
-		id: "link-phone",
-		loginMethod: "passwordless",
-	},
-];
-
-const SECONDARY_FACTOR_IDS = [
-	{
-		label: "TOTP",
-		description:
-			"Require TOTP as a secondary factor for successful authentication (Requires the TOTP recipe to be enabled)",
-		id: "totp",
-	},
-	{
-		label: "OTP - Email",
-		description:
-			"Require OTP sent to email as a secondary factor for successful authentication (Requires the Passwordless recipe to be enabled)",
-		id: "otp-email",
-		loginMethod: "passwordless",
-	},
-	{
-		label: "OTP - Phone",
-		description:
-			"Require OTP sent to phone as a secondary factor for successful authentication (Requires the Passwordless recipe to be enabled)",
-		id: "otp-phone",
-		loginMethod: "passwordless",
-	},
-];
 
 export const LoginMethodsSection = () => {
 	const { tenantInfo, setTenantInfo } = useTenantDetailContext();
@@ -92,13 +33,14 @@ export const LoginMethodsSection = () => {
 		firstFactors: Array<string>;
 		requiredSecondaryFactors: Array<string>;
 	}>({
-		firstFactors: tenantInfo.firstFactors ?? [],
+		firstFactors: tenantInfo.validFirstFactors ?? [],
 		requiredSecondaryFactors: tenantInfo.requiredSecondaryFactors ?? [],
 	});
 
 	const { showToast } = useContext(PopupContentContext);
 
 	const hasSelectedSecondaryFactors = selectedFactors.requiredSecondaryFactors.length > 0;
+	const recipesInit = getInitializedRecipes();
 
 	const debouncedUpdateTenant = useCallback(
 		debounce(
@@ -144,7 +86,14 @@ export const LoginMethodsSection = () => {
 				};
 
 				updateTenant(tenantId, {
-					...factors,
+					firstFactors:
+						Array.isArray(factors.firstFactors) && factors.firstFactors.length > 0
+							? factors.firstFactors
+							: null,
+					requiredSecondaryFactors:
+						Array.isArray(factors.requiredSecondaryFactors) && factors.requiredSecondaryFactors.length > 0
+							? factors.requiredSecondaryFactors
+							: null,
 					...enabledLoginMethods,
 				})
 					.then((res) => {
@@ -154,6 +103,7 @@ export const LoginMethodsSection = () => {
 						setTenantInfo({
 							...currentTenantInfo,
 							firstFactors: factors.firstFactors,
+							validFirstFactors: factors.firstFactors,
 							requiredSecondaryFactors: factors.requiredSecondaryFactors,
 							emailPassword: {
 								enabled: enabledLoginMethods.emailPasswordEnabled,
@@ -170,7 +120,7 @@ export const LoginMethodsSection = () => {
 					.catch((_) => {
 						// Revert the state back to the original state in case of error
 						setSelectedFactors({
-							firstFactors: currentTenantInfo.firstFactors ?? [],
+							firstFactors: currentTenantInfo.validFirstFactors ?? [],
 							requiredSecondaryFactors: currentTenantInfo.requiredSecondaryFactors ?? [],
 						});
 
@@ -205,6 +155,13 @@ export const LoginMethodsSection = () => {
 						Enabled Login Methods
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
+
+				{selectedFactors.firstFactors.length === 0 && (
+					<ErrorBlock className="tenant-detail__factors-error-block">
+						At least one login method needs to be enabled for the user to log in to the tenant.
+					</ErrorBlock>
+				)}
+
 				<div className="tenant-detail__factors-container">
 					<div className="tenant-detail__factors-container__grid">
 						{FIRST_FACTOR_IDS.map((method) => (
@@ -212,7 +169,9 @@ export const LoginMethodsSection = () => {
 								id={`first-factor-${method.id}`}
 								key={`first-factor-${method.id}`}
 								label={method.label}
+								factorId={method.id}
 								description={method.description}
+								recipeNotInitError={method.recipeNotInitError}
 								checked={selectedFactors.firstFactors.includes(method.id)}
 								onChange={() => handleFactorChange("firstFactors", method.id)}
 							/>
@@ -227,13 +186,10 @@ export const LoginMethodsSection = () => {
 						Secondary Factors
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
-				{hasSelectedSecondaryFactors && (
-					<div className="block-warn block-warn-medium text-small tenant-detail__secondary-factors-warn-block">
-						<p>
-							<b>Note</b>: MFA recipe needs to be added to the backend and frontend SDK to enable the
-							required secondary factors.
-						</p>
-					</div>
+				{hasSelectedSecondaryFactors && !recipesInit.mfa && (
+					<ErrorBlock className="tenant-detail__factors-error-block">
+						MFA recipe needs to be initialized in the backend and frontend SDK to use secondary factors.
+					</ErrorBlock>
 				)}
 				<div className="tenant-detail__factors-container">
 					<div className="tenant-detail__factors-container__grid">
@@ -242,7 +198,10 @@ export const LoginMethodsSection = () => {
 								id={`secondary-factor-${method.id}`}
 								key={`secondary-factor-${method.id}`}
 								label={method.label}
+								factorId={method.id}
+								fixedGap
 								description={method.description}
+								recipeNotInitError={method.recipeNotInitError}
 								checked={selectedFactors.requiredSecondaryFactors.includes(method.id)}
 								onChange={() => handleFactorChange("requiredSecondaryFactors", method.id)}
 							/>
@@ -258,25 +217,36 @@ const LoginFactor = ({
 	id,
 	label,
 	description,
+	recipeNotInitError,
 	checked,
 	onChange,
+	fixedGap,
+	factorId,
 }: {
 	id: string;
 	label: string;
 	description: string;
+	recipeNotInitError: string;
 	checked: boolean;
 	onChange: () => void;
+	fixedGap?: boolean;
+	factorId: string;
 }) => {
+	const hasError = checked && !doesFactorHasRecipeInitialized(factorId);
 	return (
-		<div className="tenant-detail__factors-container__grid__factor">
+		<div
+			className={`tenant-detail__factors-container__grid__factor${
+				fixedGap ? " tenant-detail__factors-container__grid__factor--fixed-gap" : ""
+			}`}>
 			<div className="tenant-detail__factors-container__grid__factor__label-container">
 				<TooltipContainer
-					tooltipWidth={200}
+					tooltipWidth={hasError ? 350 : 200}
 					position="bottom"
-					tooltip={description}>
-					<InfoIcon />
+					tooltip={hasError ? recipeNotInitError : description}
+					error={hasError}>
+					{hasError ? <ErrorIcon style={{ transform: "translateY(-1px)", width: "14px" }} /> : <InfoIcon />}
 				</TooltipContainer>
-				<div className="tenant-detail__factors-container__grid__factor__label-container__label">{label}</div>
+				<div className="tenant-detail__factors-container__grid__factor__label-container__label">{label}:</div>
 			</div>
 			<Toggle
 				checked={checked}
@@ -285,4 +255,63 @@ const LoginFactor = ({
 			/>
 		</div>
 	);
+};
+
+const doesFactorHasRecipeInitialized = (factorId: string) => {
+	const initializedRecipes = getInitializedRecipes();
+
+	if (factorId === "emailpassword") {
+		return initializedRecipes.emailPassword;
+	}
+
+	if (factorId === "thirdparty") {
+		return initializedRecipes.thirdParty;
+	}
+
+	if (["otp-email", "otp-phone", "link-email", "link-phone"].includes(factorId)) {
+		if (!initializedRecipes.passwordless) {
+			return false;
+		}
+		if (factorId === "otp-email") {
+			return (
+				(initializedRecipes.passwordless.contactMethod === "EMAIL" ||
+					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
+				(initializedRecipes.passwordless.flowType === "USER_INPUT_CODE" ||
+					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
+			);
+		}
+
+		if (factorId === "otp-phone") {
+			return (
+				(initializedRecipes.passwordless.contactMethod === "PHONE" ||
+					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
+				(initializedRecipes.passwordless.flowType === "USER_INPUT_CODE" ||
+					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
+			);
+		}
+
+		if (factorId === "link-email") {
+			return (
+				(initializedRecipes.passwordless.contactMethod === "EMAIL" ||
+					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
+				(initializedRecipes.passwordless.flowType === "MAGIC_LINK" ||
+					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
+			);
+		}
+
+		if (factorId === "link-phone") {
+			return (
+				(initializedRecipes.passwordless.contactMethod === "PHONE" ||
+					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
+				(initializedRecipes.passwordless.flowType === "MAGIC_LINK" ||
+					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
+			);
+		}
+	}
+
+	if (factorId === "totp") {
+		return initializedRecipes.totp;
+	}
+
+	return false;
 };
