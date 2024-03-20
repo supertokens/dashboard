@@ -46,7 +46,7 @@ export const TenantDetailContextProvider = ({
 				refetchTenant,
 				coreConfigOptions,
 				setTenantInfo,
-				resolvedProviders: tenantInfo.mergedProvidersFromCoreAndStatic,
+				resolvedProviders: tenantInfo.thirdParty.mergedProvidersFromCoreAndStatic,
 			}}>
 			{children}
 		</TenantDetailContext.Provider>

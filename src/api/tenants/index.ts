@@ -73,7 +73,7 @@ export const useCoreConfigService = () => {
 		config: CoreConfigOptions;
 	}> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/multitenancy/core-config/list"),
+			url: getApiUrl("/api/core/config/list"),
 			method: "GET",
 		});
 

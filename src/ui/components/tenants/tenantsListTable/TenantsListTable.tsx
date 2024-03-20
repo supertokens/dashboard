@@ -12,9 +12,8 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { Tenant } from "../../../../api/tenants/list";
-import { FIRST_FACTOR_IDS } from "../../../../constants";
-import { getImageUrl, getInitializedRecipes } from "../../../../utils";
+import { Tenant } from "../../../../api/tenants/login-methods";
+import { getImageUrl } from "../../../../utils";
 import Pagination from "../../pagination";
 import { RecipePill } from "../../recipePill/RecipePill";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
@@ -34,30 +33,13 @@ type TenantsListTableProps = {
 
 const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
 	const getEnabledLoginMethods = () => {
-		const tenantLoginMethods = {
-			emailPassword: tenant.emailPassword.enabled,
-			passwordless: tenant.passwordless.enabled,
-			thirdParty: tenant.thirdParty.enabled,
-		};
-		if (Array.isArray(tenant.firstFactors) && tenant.firstFactors.length > 0) {
-			const allFactors = Array.from(
-				new Set([...tenant.firstFactors, ...(tenant.requiredSecondaryFactors ?? [])])
-			);
-			tenantLoginMethods.emailPassword = allFactors.some((factor) =>
-				FIRST_FACTOR_IDS.some((f) => f.loginMethod === "emailpassword" && f.id === factor)
-			);
-			tenantLoginMethods.passwordless = allFactors.some((factor) =>
-				FIRST_FACTOR_IDS.some((f) => f.loginMethod === "otp-email" && f.id === factor)
-			);
-			tenantLoginMethods.thirdParty = allFactors.some((factor) =>
-				FIRST_FACTOR_IDS.some((f) => f.loginMethod === "thirdparty" && f.id === factor)
-			);
-		}
-		const initalizedRecipes = getInitializedRecipes();
 		return {
-			emailPassword: tenantLoginMethods.emailPassword && initalizedRecipes.emailPassword,
-			passwordless: tenantLoginMethods.passwordless && initalizedRecipes.passwordless.enabled,
-			thirdParty: tenantLoginMethods.thirdParty && initalizedRecipes.thirdParty,
+			emailPassword: tenant.emailPassword.enabled || tenant.thirdPartyEmailPasssword.enabled,
+			passwordless: tenant.passwordless.enabled || tenant.thirdPartyPasswordless.enabled,
+			thirdParty:
+				tenant.thirdParty.enabled ||
+				tenant.thirdPartyEmailPasssword.enabled ||
+				tenant.thirdPartyPasswordless.enabled,
 		};
 	};
 

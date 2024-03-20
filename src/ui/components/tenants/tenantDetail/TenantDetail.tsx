@@ -92,7 +92,7 @@ export const TenantDetail = ({
 		if (
 			typeof tenant?.tenantId === "string" &&
 			tenant?.thirdParty.enabled &&
-			tenant?.mergedProvidersFromCoreAndStatic.length === 0
+			tenant?.thirdParty.mergedProvidersFromCoreAndStatic.length === 0
 		) {
 			setIsNoProviderAddedDialogVisible(true);
 		}

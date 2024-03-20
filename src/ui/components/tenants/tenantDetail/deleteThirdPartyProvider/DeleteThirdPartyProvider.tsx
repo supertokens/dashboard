@@ -35,8 +35,9 @@ export const DeleteThirdPartyProviderDialog = ({
 }) => {
 	const [isDeletingProvider, setIsDeletingProvider] = useState(false);
 	const { deleteThirdPartyProvider } = useThirdPartyService();
-	const { tenantInfo } = useTenantDetailContext();
+	const { tenantInfo, resolvedProviders } = useTenantDetailContext();
 	const { showToast } = useContext(PopupContentContext);
+	const isLastProvider = resolvedProviders.length === 1;
 
 	const handleDeleteProperty = async () => {
 		try {
@@ -62,11 +63,21 @@ export const DeleteThirdPartyProviderDialog = ({
 
 	return (
 		<Dialog
-			title="Delete Provider?"
+			title={isLastProvider ? "Provider cannot be deleted" : "Delete Provider?"}
 			onCloseDialog={onCloseDialog}>
 			<DialogContent>
 				<p className="confirm-text">
-					Are you sure you want to delete the provider: <span className="third-party-id">{thirdPartyId}</span>
+					{isLastProvider ? (
+						<>
+							This is your only added provider, and it cannot be deleted because at least one provider is
+							required when third party login method is enabled.
+						</>
+					) : (
+						<>
+							Are you sure you want to delete the provider:{" "}
+							<span className="third-party-id">{thirdPartyId}</span>
+						</>
+					)}
 				</p>
 				<DialogFooter border="border-none">
 					<Button
@@ -74,13 +85,15 @@ export const DeleteThirdPartyProviderDialog = ({
 						color="gray-outline">
 						Cancel
 					</Button>
-					<Button
-						color="danger"
-						isLoading={isDeletingProvider}
-						disabled={isDeletingProvider}
-						onClick={handleDeleteProperty}>
-						Yes, Delete
-					</Button>
+					{!isLastProvider && (
+						<Button
+							color="danger"
+							isLoading={isDeletingProvider}
+							disabled={isDeletingProvider}
+							onClick={handleDeleteProperty}>
+							Yes, Delete
+						</Button>
+					)}
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
