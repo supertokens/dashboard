@@ -23,6 +23,8 @@ tags:
       description: APIs related to multitenancy
     - name: "User Roles and Permissions"
       description: APIs related to user roles and permisssions
+    - name: Miscellaneous
+      description: Miscellaneous APIs
 
 paths:
     /dashboard/api/signin:
@@ -1231,11 +1233,236 @@ paths:
                                         type: array
                                         items:
                                             type: string
+    /{tenantId}/dashboard/api/tenant:
+        get:
+            tags:
+                - Multitenancy
+            summary: Get tenant info from the core
+            parameters:
+                - name: tenantId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      example: "tenant1"
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          tenant:
+                                              type: object
+                                              properties:
+                                                  tenantId:
+                                                      type: string
+                                                  emailPassword:
+                                                      type: object
+                                                      properties:
+                                                          enabled:
+                                                              type: boolean
+                                                  passwordless:
+                                                      type: object
+                                                      properties:
+                                                          enabled:
+                                                              type: boolean
+                                                  thirdParty:
+                                                      type: object
+                                                      properties:
+                                                          enabled:
+                                                              type: boolean
+                                                          providers:
+                                                              type: array
+                                                              items:
+                                                                  $ref: "#/components/schemas/thirdPartyProvider"
+                                                          mergedProvidersFromCoreAndStatic:
+                                                              type: array
+                                                              items:
+                                                                  $ref: "#/components/schemas/thirdPartyProvider"
+                                                  firstFactors:
+                                                      type: array
+                                                      items:
+                                                          type: string
+                                                      example:
+                                                          - "emailpassword"
+                                                          - "thirdparty"
+                                                  requiredSecondaryFactors:
+                                                      type: array
+                                                      items:
+                                                          type: string
+                                                      example:
+                                                          - "otp-email"
+                                                  coreConfig:
+                                                      type: object
+                                                  userCount:
+                                                      type: number
+                                                  validFirstFactors:
+                                                      type: array
+                                                      items:
+                                                          type: string
+                                                      example:
+                                                          - "emailpassword"
+                                                          - "thirdparty"
+                                                      description: The first factors that the tenant can use based on the recipes initialized and login methods enabled
+                                      required:
+                                          - status
+                                          - tenant
+
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "UNKNOWN_TENANT_ERROR"
+                                      required:
+                                          - status
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+        delete:
+            tags:
+                - Multitenancy
+            summary: Delete the tenant
+            parameters:
+                - name: tenantId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      example: "tenant1"
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    didExist:
+                                        type: boolean
+                                        default: true
+                                required:
+                                    - status
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+    /dashboard/api/tenant:
+        put:
+            tags:
+                - Multitenancy
+            summary: Create or update a tenant
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                tenantId:
+                                    type: string
+                                emailPasswordEnabled:
+                                    type: boolean
+                                passwordlessEnabled:
+                                    type: boolean
+                                thirdPartyEnabled:
+                                    type: boolean
+                                coreConfig:
+                                    type: object
+                                firstFactors:
+                                    type: array
+                                    items:
+                                        type: string
+                                    example:
+                                        - "emailpassword"
+                                        - "thirdparty"
+                                requiredSecondaryFactors:
+                                    type: array
+                                    items:
+                                        type: string
+                                    example:
+                                        - "otp-email"
+                            required:
+                                - tenantId
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "OK"
+                                          createdNew:
+                                              type: boolean
+                                      required:
+                                          - status
+                                    - type: object
+                                      properties:
+                                          status:
+                                              type: string
+                                              default: "MULTITENANCY_NOT_ENABLED_IN_CORE"
+                                      required:
+                                          - status
+
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
     /dashboard/api/tenants/list:
         get:
             tags:
                 - Multitenancy
             summary: Get all tenants created in the core
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
             responses:
                 200:
                     description: Success
@@ -1266,17 +1493,183 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
-
                                                 thirdParty:
                                                     type: object
                                                     properties:
                                                         enabled:
                                                             type: boolean
+    /{tenantId}/dashboard/api/tenants/third-party:
+        put:
+            tags:
+                - Multitenancy
+            summary: Create or update third party config for a tenant
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+                - name: tenantId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      example: "tenant1"
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                providerConfig:
+                                    $ref: "#/components/schemas/thirdPartyProvider"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    createdNew:
+                                        type: boolean
+                                        default: true
+                                required:
+                                    - status
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+        delete:
+            tags:
+                - Multitenancy
+            summary: Delete thirdParty config for a tenant
+            parameters:
+                - name: tenantId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      example: "tenant1"
+                - name: thirdPartyId
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      example: "google"
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    didConfigExist:
+                                        type: boolean
+                                        default: true
+                                required:
+                                    - status
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
+    /dashboard/api/core/config/list:
+        get:
+            tags:
+                - Miscellaneous
+            summary: Gets all the possible core config options.
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
+            responses:
+                200:
+                    description: Success
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        default: "OK"
+                                    config:
+                                        type: array
+                                        items:
+                                            oneOf:
+                                                - allOf:
+                                                      - $ref: "#/components/schemas/coreConfigType"
+                                                      - type: object
+                                                        properties:
+                                                            type:
+                                                                type: string
+                                                                enum:
+                                                                    - string
+                                                                    - boolean
+                                                                    - number
+                                                                description: Data type of the property
+                                                - allOf:
+                                                      - $ref: "#/components/schemas/coreConfigType"
+                                                      - type: object
+                                                        properties:
+                                                            type:
+                                                                type: string
+                                                                enum:
+                                                                    - enum
+                                                                description: Data type of the property
+                                                            options:
+                                                                type: array
+                                                                items:
+                                                                    type: string
+                                                                description: List of possible values for the property in case it is of enum type
+                                required:
+                                    - status
+                                    - config
+                401:
+                    description: Unauthorised access
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                enum:
+                                    - Unauthorised access
     /dashboard/api/tenants/login-methods:
         get:
             tags:
                 - Multitenancy
             summary: Get all tenants and available login methods.
+            parameters:
+                - name: authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                      example: "Bearer API_KEY"
             responses:
                 200:
                     description: Success
@@ -1300,12 +1693,6 @@ paths:
                                                     properties:
                                                         enabled:
                                                             type: boolean
-                                                thirdPartyEmailPassword:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-                                                    nullable: true
                                                 passwordless:
                                                     type: object
                                                     properties:
@@ -1315,16 +1702,6 @@ paths:
                                                             type: string
                                                             enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
                                                             nullable: true
-                                                thirdPartPasswordless:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-                                                        contactMethod:
-                                                            type: string
-                                                            enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
-                                                            nullable: true
-                                                    nullable: true
                                                 thirdParty:
                                                     type: object
                                                     properties:
@@ -1938,6 +2315,85 @@ components:
         tenantId:
             type: string
             example: "customer1"
+        thirdPartyProvider:
+            type: object
+            properties:
+                name:
+                    type: string
+                thirdPartyId:
+                    type: string
+                authorisationEndpoint:
+                    type: string
+                authorizationEndpointQueryParams:
+                    type: object
+                tokenEndpoint:
+                    type: string
+                tokenEndpointBodyParams:
+                    type: object
+                userInfoEndpoint:
+                    type: string
+                userInfoEndpointQueryParams:
+                    type: object
+                userInfoEndpointHeaders:
+                    type: object
+                jwksURI:
+                    type: string
+                oidcDiscoveryEndpoint:
+                    type: string
+                userInfoMap:
+                    type: object
+                requireEmail:
+                    type: boolean
+                clients:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            clientType:
+                                type: string
+                            clientId:
+                                type: string
+                            clientSecret:
+                                type: string
+                            scope:
+                                type: array
+                                items:
+                                    type: string
+                            forcePKCE:
+                                type: boolean
+                            additionalConfig:
+                                type: object
+                        required:
+                            - clientId
+            required:
+                - thirdPartyId
+        coreConfigType:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Name of the property
+                value:
+                    oneOf:
+                        - type: string
+                        - type: boolean
+                        - type: number
+                    description: Value of the property
+                description:
+                    type: string
+                    description: Description of the property
+                isConfigYamlOnly:
+                    type: boolean
+                    description: True if the property can only be set in the config.yaml file
+                isNotConflictingInApp:
+                    type: boolean
+                    description: True if the property can be set different values per app
+                isDifferentAcrossTenants:
+                    type: boolean
+                    description: True if the property can be set different values per tenant
+                isSaasProtected:
+                    type: boolean
+                    description: True if the property protected and cannot be set because the user is using SuperTokens SaaS
 
 servers:
     # Added by API Auto Mocking Plugin
