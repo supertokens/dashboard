@@ -2384,10 +2384,13 @@ components:
                     description: Description of the property
                 isConfigYamlOnly:
                     type: boolean
-                    description: True if the property can be set different values per tenant
+                    description: True if the property can only be set in the config.yaml file
                 isNotConflictingInApp:
                     type: boolean
                     description: True if the property can be set different values per app
+                isDifferentAcrossTenants:
+                    type: boolean
+                    description: True if the property can be set different values per tenant
                 isSaasProtected:
                     type: boolean
                     description: True if the property protected and cannot be set because the user is using SuperTokens SaaS
