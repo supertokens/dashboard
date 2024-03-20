@@ -17,7 +17,8 @@ import { FC, useContext, useState } from "react";
 import { Tenant } from "../../../api/tenants/list";
 import { useUserService } from "../../../api/user";
 import usePasswordResetService from "../../../api/user/password/reset";
-import { getImageUrl } from "../../../utils";
+import { FactorIds } from "../../../constants";
+import { doesTenantHasPasswordlessEnabled, getImageUrl } from "../../../utils";
 import { ForbiddenError } from "../../../utils/customErrors";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
@@ -163,11 +164,11 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 		let matchingTenants: Tenant[] = [];
 
 		if (recipeId === "emailpassword") {
-			matchingTenants = tenants.filter((tenant) => tenant.emailPassword.enabled === true);
+			matchingTenants = tenants.filter((tenant) => tenant.firstFactors.includes(FactorIds.EMAILPASSWORD));
 		}
 
 		if (recipeId === "passwordless") {
-			matchingTenants = tenants.filter((tenant) => tenant.passwordless.enabled === true);
+			matchingTenants = tenants.filter((tenant) => doesTenantHasPasswordlessEnabled(tenant.firstFactors));
 		}
 
 		if (matchingTenants.length > 0) {
@@ -273,7 +274,7 @@ export const UserDetailChangePasswordForm: FC<UserDetailChangePasswordFormProps>
 		}
 
 		const tenants = getTenantsObjectsForIds(tenantsListFromStore ?? [], props.tenantIds);
-		const matchingTenantIds = tenants.filter((_tenant) => _tenant.emailPassword.enabled === true);
+		const matchingTenantIds = tenants.filter((_tenant) => _tenant.firstFactors.includes(FactorIds.EMAILPASSWORD));
 
 		if (matchingTenantIds.length === 0) {
 			await onCancel();

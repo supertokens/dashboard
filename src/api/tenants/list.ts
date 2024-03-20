@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -15,42 +15,31 @@
 
 import { getApiUrl, useFetchData } from "../../utils";
 
+export type PasswordlessContactMethod = "PHONE" | "EMAIL" | "EMAIL_OR_PHONE";
+
 export type Tenant = {
 	tenantId: string;
-	emailPassword: {
-		enabled: boolean;
-	};
-	passwordless: {
-		enabled: boolean;
-	};
-	thirdParty: {
-		enabled: boolean;
-	};
+	firstFactors: string[];
 };
 
-type TenantsListResponse = {
+type TenantsLoginMethodsResponse = {
 	status: "OK";
 	tenants: Tenant[];
 };
 
 type TenantsListService = {
-	fetchTenants: () => Promise<TenantsListResponse>;
+	fetchTenants: () => Promise<TenantsLoginMethodsResponse | undefined>;
 };
 
-export const useGetTenantsList = (): TenantsListService => {
+export const useGetTenants = (): TenantsListService => {
 	const fetchData = useFetchData();
-	const fetchTenants = async (): Promise<TenantsListResponse> => {
+	const fetchTenants = async (): Promise<TenantsLoginMethodsResponse> => {
 		const response = await fetchData({
 			method: "GET",
-			url: getApiUrl("/api/tenants/list"),
+			url: getApiUrl("/api/tenants/login-methods"),
 		});
 
-		return response.ok
-			? await response.json()
-			: {
-					status: "OK",
-					tenants: [],
-			  };
+		return response.ok ? await response.json() : undefined;
 	};
 
 	return {

@@ -16,7 +16,9 @@
 import "./createUserDialog.scss";
 
 import { useState } from "react";
-import { Tenant } from "../../../api/tenants/login-methods";
+import { PasswordlessContactMethod, Tenant } from "../../../api/tenants/list";
+import { FactorIds } from "../../../constants";
+import { doesTenantHasPasswordlessEnabled } from "../../../utils";
 import Alert from "../alert";
 import Button from "../button";
 import { Dialog, DialogContent, DialogFooter } from "../dialog";
@@ -34,11 +36,11 @@ export type CreateUserDialogStepType =
 export default function CreateUserDialog({
 	onCloseDialog,
 	defaultSelectedTenantId,
-	tenantsLoginMethods,
+	tenants,
 	loadCount,
 }: {
 	onCloseDialog: () => void;
-	tenantsLoginMethods: Tenant[];
+	tenants: Tenant[];
 	defaultSelectedTenantId: string;
 	loadCount: () => void;
 }) {
@@ -46,24 +48,18 @@ export default function CreateUserDialog({
 	const [selectedTenantId, setSelectedTenantId] = useState(defaultSelectedTenantId);
 	const [selectedAuthMethod, setSelectedAuthMethod] = useState<AuthMethod | undefined>(undefined);
 
-	const selectedTenantObject = tenantsLoginMethods.find((tenant) => tenant.tenantId === selectedTenantId)!;
+	const selectedTenantObject = tenants.find((tenant) => tenant.tenantId === selectedTenantId)!;
 
 	const selectableAuthMethods: { name: string; value: string }[] = [];
 
-	if (
-		selectedTenantObject.emailPassword.enabled === true ||
-		selectedTenantObject.thirdPartyEmailPasssword.enabled === true
-	) {
+	if (selectedTenantObject.firstFactors.includes(FactorIds.EMAILPASSWORD)) {
 		selectableAuthMethods.push({
 			name: "emailpassword",
 			value: "emailpassword",
 		});
 	}
 
-	if (
-		selectedTenantObject.passwordless.enabled === true ||
-		selectedTenantObject.thirdPartyPasswordless.enabled === true
-	) {
+	if (doesTenantHasPasswordlessEnabled(selectedTenantObject.firstFactors)) {
 		selectableAuthMethods.push({
 			name: "passwordless",
 			value: "passwordless",
@@ -85,71 +81,50 @@ export default function CreateUserDialog({
 		}
 
 		if (selectedAuthMethod === "emailpassword") {
-			if (selectedTenantObject.thirdPartyEmailPasssword.enabled === true) {
-				return (
-					<Alert
-						padding="sm"
-						title="Warning"
-						type="primary">
-						<ul>
-							<li>
-								Custom API overrides for the <code>emailPasswordSignUpPOST</code> API won’t be run as
-								the API to create a user via the dashboard is different. However, custom functions
-								override for <code>emailPasswordSignUp</code> will run.
-							</li>{" "}
-							<li>
-								If you have custom form fields in your sign up form, those will not be included when
-								adding a user via the dashboard. If you want to include any custom form fields in the
-								request, please call the{" "}
-								<a
-									href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/ThirdPartyEmailPassword%20Recipe/thirdPartyEmailPasswordsignUp"
-									target="_blank"
-									rel="noreferrer">
-									sign up API manually
-								</a>{" "}
-								instead.
-							</li>
-						</ul>
-					</Alert>
-				);
-			} else {
-				return (
-					<Alert
-						padding="sm"
-						title="Warning"
-						type="primary">
-						<ul>
-							<li>
-								Custom API overrides for the <code>signUpPOST</code> API won’t be run as the API to
-								create a user via the dashboard is different. However, custom functions override for{" "}
-								<code>signUp</code> will run.
-							</li>{" "}
-							<li>
-								If you have custom form fields in your sign up form, those will not be included when
-								adding a user via the dashboard. If you want to include any custom form fields in the
-								request, please call the{" "}
-								<a
-									href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/EmailPassword%20Recipe/signUp"
-									target="_blank"
-									rel="noreferrer">
-									sign up API manually.
-								</a>{" "}
-								instead.
-							</li>
-						</ul>
-					</Alert>
-				);
-			}
+			return (
+				<Alert
+					padding="sm"
+					title="Warning"
+					type="primary">
+					<ul>
+						<li>
+							Custom API overrides for the sign up post API won’t be run as the API to create a user via
+							the dashboard is different. However, custom functions override for sign up will run.
+						</li>{" "}
+						<li>
+							If you have custom form fields in your sign up form, those will not be included when adding
+							a user via the dashboard. If you want to include any custom form fields in the request,
+							please call the{" "}
+							<a
+								href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/ThirdPartyEmailPassword%20Recipe/thirdPartyEmailPasswordsignUp"
+								target="_blank"
+								rel="noreferrer">
+								sign up API manually
+							</a>{" "}
+							instead.
+						</li>
+					</ul>
+				</Alert>
+			);
 		}
 
 		return null;
 	}
 
 	if (currentStep === "create-passwordless-user") {
-		const contactMethod =
-			selectedTenantObject.passwordless.contactMethod !== undefined
-				? selectedTenantObject.passwordless.contactMethod
-				: selectedTenantObject.thirdPartyPasswordless.contactMethod;
+		const pwlessEmailEnabled =
+			selectedTenantObject.firstFactors.includes(FactorIds.OTP_EMAIL) ||
+			selectedTenantObject.firstFactors.includes(FactorIds.LINK_EMAIL);
+		const pwlessPhoneEnabled =
+			selectedTenantObject.firstFactors.includes(FactorIds.OTP_PHONE) ||
+			selectedTenantObject.firstFactors.includes(FactorIds.LINK_PHONE);
+		let contactMethod: PasswordlessContactMethod | undefined = undefined;
+
+		if (pwlessEmailEnabled) {
+			contactMethod = pwlessPhoneEnabled ? "EMAIL_OR_PHONE" : "EMAIL";
+		} else if (pwlessPhoneEnabled) {
+			contactMethod = "PHONE";
+		}
 
 		return (
 			<CreatePasswordlessUser
@@ -184,17 +159,17 @@ export default function CreateUserDialog({
 					<div className="select-container mb-12">
 						<p className="text-label">
 							Selected Tenant:{" "}
-							{tenantsLoginMethods.length === 1 ? (
+							{tenants.length === 1 ? (
 								<span className="text-black ">{defaultSelectedTenantId}</span>
 							) : null}
 						</p>{" "}
-						{tenantsLoginMethods.length > 1 ? (
+						{tenants.length > 1 ? (
 							<Select
 								onOptionSelect={(value) => {
 									setSelectedTenantId(value);
 									setSelectedAuthMethod(undefined);
 								}}
-								options={tenantsLoginMethods.map((tenant) => {
+								options={tenants.map((tenant) => {
 									return {
 										name: tenant.tenantId,
 										value: tenant.tenantId,
