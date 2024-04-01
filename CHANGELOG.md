@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.10.6] - 2024-04-01
+
+-   Backport for fixing a regression bug in user management dashboard that causes the add user button to not be visible when there is only one tenant.
+
 ## [0.10.5] - 2024-03-19
 
 -   Fixes UI bugs on search and Login methods section in userDetails page.

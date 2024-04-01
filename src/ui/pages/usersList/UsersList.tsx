@@ -47,8 +47,8 @@ import UsersListTable, {
 } from "../../components/usersListTable/UsersListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useTenantsListContext } from "../../contexts/TenantsListContext";
-import "./UsersList.scss";
 import { EmailVerificationStatus, User } from "./types";
+import "./UsersList.scss";
 
 type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 
@@ -307,15 +307,6 @@ export const UsersList: React.FC<UserListProps> = ({
 							})}
 						</select>
 					</div>
-					<Button
-						disabled={selectedTenant === undefined || tenantsLoginMethods === undefined}
-						id="add-user"
-						className="ml-auto"
-						color="secondary"
-						onClick={() => setShowCreateUserDialog(true)}>
-						<PlusIcon />
-						Add User
-					</Button>
 				</div>
 			)}
 
@@ -326,6 +317,16 @@ export const UsersList: React.FC<UserListProps> = ({
 						loading={loading}
 					/>
 				)}
+
+				<Button
+					disabled={selectedTenant === undefined || tenantsLoginMethods === undefined}
+					id="add-user"
+					className="ml-auto"
+					color="secondary"
+					onClick={() => setShowCreateUserDialog(true)}>
+					<PlusIcon />
+					Add User
+				</Button>
 
 				{showCreateUserDialog && selectedTenant !== undefined && tenantsLoginMethods !== undefined ? (
 					<CreateUserDialog
