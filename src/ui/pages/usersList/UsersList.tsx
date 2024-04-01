@@ -287,15 +287,6 @@ export const UsersList: React.FC<UserListProps> = ({
 							})}
 						</select>
 					</div>
-					<Button
-						disabled={selectedTenant === undefined || tenantsListFromStore === undefined}
-						id="add-user"
-						className="ml-auto"
-						color="secondary"
-						onClick={() => setShowCreateUserDialog(true)}>
-						<PlusIcon />
-						Add User
-					</Button>
 				</div>
 			)}
 
@@ -306,6 +297,16 @@ export const UsersList: React.FC<UserListProps> = ({
 						loading={loading}
 					/>
 				)}
+
+				<Button
+					disabled={selectedTenant === undefined || tenantsListFromStore === undefined}
+					id="add-user"
+					className="ml-auto"
+					color="secondary"
+					onClick={() => setShowCreateUserDialog(true)}>
+					<PlusIcon />
+					Add User
+				</Button>
 
 				{showCreateUserDialog && selectedTenant !== undefined && tenantsListFromStore !== undefined ? (
 					<CreateUserDialog
