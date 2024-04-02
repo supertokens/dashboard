@@ -15,7 +15,7 @@
 
 import { useContext, useDeferredValue, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useGetTenantsLoginMethods, type Tenant } from "../../../api/tenants/login-methods";
+import { useGetTenants, type Tenant } from "../../../api/tenants/list";
 import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { getImageUrl, useQuery } from "../../../utils";
 import Button from "../../components/button";
@@ -29,7 +29,7 @@ import "./index.scss";
 const TENANTS_PAGINATION_LIMIT = 10;
 
 const TenantList = ({ selectTenant }: { selectTenant: (tenantId: string) => void }) => {
-	const { fetchTenantsLoginMethods } = useGetTenantsLoginMethods();
+	const { fetchTenants } = useGetTenants();
 	const { showToast } = useContext(PopupContentContext);
 	const [tenants, setTenants] = useState<Array<Tenant> | undefined>(undefined);
 	const [searchQuery, setSearchQuery] = useState<string>("");
@@ -47,7 +47,7 @@ const TenantList = ({ selectTenant }: { selectTenant: (tenantId: string) => void
 	useEffect(() => {
 		const getTenants = async () => {
 			try {
-				const response = await fetchTenantsLoginMethods();
+				const response = await fetchTenants();
 				if (response?.status === "OK") {
 					setTenants(response.tenants);
 				} else {

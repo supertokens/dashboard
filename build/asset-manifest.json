@@ -29,6 +29,8 @@
     "static/media/plus.svg": "/static/media/plus.svg",
     "static/media/green-check.svg": "/static/media/green-check.svg",
     "static/media/tenant-management.svg": "/static/media/tenant-management.svg",
+    "static/media/close-inactive.svg": "/static/media/close-inactive.svg",
+    "static/media/close-active.svg": "/static/media/close-active.svg",
     "static/media/clear.svg": "/static/media/clear.svg",
     "static/media/provider-apple.svg": "/static/media/provider-apple.svg",
     "static/media/provider-discord.svg": "/static/media/provider-discord.svg",

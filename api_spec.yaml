@@ -1231,47 +1231,6 @@ paths:
                                         type: array
                                         items:
                                             type: string
-    /dashboard/api/tenants/list:
-        get:
-            tags:
-                - Multitenancy
-            summary: Get all tenants created in the core
-            responses:
-                200:
-                    description: Success
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    status:
-                                        type: string
-                                        default: "OK"
-                                    coreConfig:
-                                        type: object
-                                    tenants:
-                                        type: array
-                                        items:
-                                            type: object
-                                            properties:
-                                                tenantId:
-                                                    type: string
-                                                emailPassword:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-                                                passwordless:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-
-                                                thirdParty:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
     /dashboard/api/tenants/login-methods:
         get:
             tags:
@@ -1295,41 +1254,10 @@ paths:
                                             properties:
                                                 tenantId:
                                                     type: string
-                                                emailPassword:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-                                                thirdPartyEmailPassword:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-                                                    nullable: true
-                                                passwordless:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-                                                        contactMethod:
-                                                            type: string
-                                                            enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
-                                                            nullable: true
-                                                thirdPartPasswordless:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
-                                                        contactMethod:
-                                                            type: string
-                                                            enum: [PHONE, EMAIL, EMAIL_OR_PHONE]
-                                                            nullable: true
-                                                    nullable: true
-                                                thirdParty:
-                                                    type: object
-                                                    properties:
-                                                        enabled:
-                                                            type: boolean
+                                                firstFactors:
+                                                    type: array
+                                                    items:
+                                                        type: string
 
     /dashboard/api/userroles/roles:
         get:

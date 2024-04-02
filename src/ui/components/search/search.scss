@@ -2,17 +2,21 @@
 	& > div {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 0px 8px;
+		flex-wrap: wrap;
+
+		@media (max-width: 480px) {
+			& {
+				gap: 8px 8px;
+			}
+			& > button {
+				width: 100%;
+			}
+		}
 	}
 	#search-btn {
 		background: transparent;
 		justify-content: center;
-		@media screen and (max-width: 768px) {
-			& {
-				width: 30%;
-				margin-left: 0;
-			}
-		}
 	}
 
 	&__input_wrapper {
@@ -25,12 +29,6 @@
 		background: #ffffff;
 		border: 1px solid #e5e5e5;
 		border-radius: 6px;
-
-		@media screen and (max-width: 768px) {
-			& {
-				width: 100%;
-			}
-		}
 
 		& img {
 			height: 14px;
@@ -71,6 +69,12 @@
 
 				color: rgba(34, 34, 34, 0.7);
 				padding-bottom: 0;
+			}
+		}
+
+		@media (max-width: 480px) {
+			& {
+				width: 100%;
 			}
 		}
 	}

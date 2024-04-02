@@ -15,7 +15,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { HTTPStatusCodes, StorageKeys } from "../constants";
+import { FactorIds, HTTPStatusCodes, StorageKeys } from "../constants";
 import { getAccessDeniedEvent } from "../events/accessDenied";
 import NetworkManager from "../services/network";
 import { localStorageHandler } from "../services/storage";
@@ -351,4 +351,12 @@ export const isValidHttpUrl = (urlToBeValidated?: string) => {
 
 	// To ensure that the URL is an HTTP URL
 	return url.protocol === "http:" || url.protocol === "https:";
+};
+export const doesTenantHasPasswordlessEnabled = (tenantFirstFactors: string[]): boolean => {
+	return (
+		tenantFirstFactors.includes(FactorIds.OTP_EMAIL) ||
+		tenantFirstFactors.includes(FactorIds.OTP_PHONE) ||
+		tenantFirstFactors.includes(FactorIds.LINK_EMAIL) ||
+		tenantFirstFactors.includes(FactorIds.LINK_PHONE)
+	);
 };

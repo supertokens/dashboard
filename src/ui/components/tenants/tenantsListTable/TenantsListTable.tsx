@@ -12,8 +12,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { Tenant } from "../../../../api/tenants/login-methods";
-import { getImageUrl } from "../../../../utils";
+import { Tenant } from "../../../../api/tenants/list";
+import { FactorIds } from "../../../../constants";
+import { doesTenantHasPasswordlessEnabled, getImageUrl } from "../../../../utils";
 import Pagination from "../../pagination";
 import { RecipePill } from "../../recipePill/RecipePill";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
@@ -34,12 +35,9 @@ type TenantsListTableProps = {
 const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
 	const getEnabledLoginMethods = () => {
 		return {
-			emailPassword: tenant.emailPassword.enabled || tenant.thirdPartyEmailPasssword.enabled,
-			passwordless: tenant.passwordless.enabled || tenant.thirdPartyPasswordless.enabled,
-			thirdParty:
-				tenant.thirdParty.enabled ||
-				tenant.thirdPartyEmailPasssword.enabled ||
-				tenant.thirdPartyPasswordless.enabled,
+			emailPassword: tenant.firstFactors.includes(FactorIds.EMAILPASSWORD),
+			passwordless: doesTenantHasPasswordlessEnabled(tenant.firstFactors),
+			thirdParty: tenant.firstFactors.includes(FactorIds.THIRDPARTY),
 		};
 	};
 

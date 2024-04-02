@@ -18,13 +18,13 @@ import { Tenant } from "../../../api/tenants/list";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
-import { getImageUrl, getRecipeNameFromid } from "../../../utils";
+import { FactorIds } from "../../../constants";
+import { doesTenantHasPasswordlessEnabled, getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
 import { Loader, LoaderOverlay } from "../loader/Loader";
-import { OnSelectUserFunction } from "../usersListTable/UsersListTable";
 import { UserDetailContextProvider } from "./context/UserDetailContext";
 import { LoginMethods } from "./loginMethods/LoginMethods";
 import "./tenantList/UserTenantsList.scss";
@@ -39,7 +39,7 @@ import UserRolesList from "./userRoles/UserRolesList";
 export type UserDetailProps = {
 	user: string;
 	onBackButtonClicked: () => void;
-	onDeleteCallback: OnSelectUserFunction;
+	onDeleteCallback: (userId: string) => void;
 	onSendEmailVerificationCallback: (user: User) => Promise<boolean>;
 	onUpdateEmailVerificationStatusCallback: (
 		userId: string,
@@ -47,6 +47,7 @@ export type UserDetailProps = {
 		tenantId: string | undefined
 	) => Promise<boolean>;
 	onChangePasswordCallback: (userId: string, newPassword: string) => Promise<void>;
+	refetchUsersList: () => void;
 };
 
 export const UserDetail: React.FC<UserDetailProps> = (props) => {
@@ -85,15 +86,15 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 			const PrimaryLoginMethod = data.loginMethods.filter((el) => el.recipeUserId === data.id)[0];
 
 			if (PrimaryLoginMethod.recipeId === "emailpassword") {
-				matchingTenants = tenants.filter((tenant) => tenant.emailPassword.enabled);
+				matchingTenants = tenants.filter((tenant) => tenant.firstFactors.includes(FactorIds.EMAILPASSWORD));
 			}
 
 			if (PrimaryLoginMethod.recipeId === "passwordless") {
-				matchingTenants = tenants.filter((tenant) => tenant.passwordless.enabled);
+				matchingTenants = tenants.filter((tenant) => doesTenantHasPasswordlessEnabled(tenant.firstFactors));
 			}
 
 			if (PrimaryLoginMethod.recipeId === "thirdparty") {
-				matchingTenants = tenants.filter((tenant) => tenant.thirdParty.enabled);
+				matchingTenants = tenants.filter((tenant) => tenant.firstFactors.includes(FactorIds.THIRDPARTY));
 			}
 
 			if (matchingTenants.length > 0) {
@@ -246,7 +247,10 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 
 				<UserRolesList />
 
-				<LoginMethods refetchAllData={refetchAllData} />
+				<LoginMethods
+					refetchAllData={refetchAllData}
+					refetchUsersList={props.refetchUsersList}
+				/>
 
 				<UserMetaDataSection />
 

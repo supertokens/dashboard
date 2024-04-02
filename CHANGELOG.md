@@ -7,7 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
--   Add initial tenants listing page
+-   Add Multitenancy Dashboard
+
+## [0.11.1] - 2024-04-01
+
+-   Fixes a regression bug in user management dashboard that causes the add user button to not be visible when there is only one tenant.
+
+## [0.11.0] - 2024-03-20
+
+-   Removes the tenants list API and uses the login methods API to get tenants and its login methods
+
+## [0.10.5] - 2024-03-19
+
+-   Fixes UI bugs on search and Login methods section in userDetails page.
+
+## [0.10.4] - 2024-03-08
+
+-   Improves UX when deleting a user from the dashboard.
+-   Fixes Deleting linked accounts on user details page.
+
+## [0.10.3] - 2024-01-26
+
+-   Fixes scroll issues on diffrent browsers.
 
 ## [0.10.2] - 2024-01-26
 

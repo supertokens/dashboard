@@ -186,3 +186,12 @@ export const SECONDARY_FACTOR_IDS = [
 			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as PHONE and flow type as USER_INPUT_CODE to use this secondary factor.",
 	},
 ];
+export const FactorIds = {
+	EMAILPASSWORD: "emailpassword",
+	OTP_EMAIL: "otp-email",
+	OTP_PHONE: "otp-phone",
+	LINK_EMAIL: "link-email",
+	LINK_PHONE: "link-phone",
+	THIRDPARTY: "thirdparty",
+	TOTP: "totp",
+};
