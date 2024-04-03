@@ -60,7 +60,8 @@ export const DeleteTenantDialog = ({
 			onCloseDialog={onCloseDialog}>
 			<DialogContent>
 				<p className="confirm-text">
-					Are you sure you want to delete the tenant: <span className="tenant-id">{tenantId}</span>
+					Are you sure you want to delete the tenant: <span className="tenant-id">{tenantId}</span>? All the
+					users associated with the tenant will be moved to the public tenant
 				</p>
 				<DialogFooter border="border-none">
 					<Button

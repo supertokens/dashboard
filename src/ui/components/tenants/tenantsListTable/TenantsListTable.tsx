@@ -33,15 +33,11 @@ type TenantsListTableProps = {
 };
 
 const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
-	const getEnabledLoginMethods = () => {
-		return {
-			emailPassword: tenant.firstFactors.includes(FactorIds.EMAILPASSWORD),
-			passwordless: doesTenantHasPasswordlessEnabled(tenant.firstFactors),
-			thirdParty: tenant.firstFactors.includes(FactorIds.THIRDPARTY),
-		};
+	const loginMethods = {
+		emailPassword: tenant.firstFactors.includes(FactorIds.EMAILPASSWORD),
+		passwordless: doesTenantHasPasswordlessEnabled(tenant.firstFactors),
+		thirdParty: tenant.firstFactors.includes(FactorIds.THIRDPARTY),
 	};
-
-	const loginMethods = getEnabledLoginMethods();
 
 	const hasNoLoginMethods = Object.values(loginMethods).every((value) => value === false);
 

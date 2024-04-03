@@ -18,7 +18,7 @@ import { TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as ErrorIcon } from "../../../../assets/form-field-error-icon.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import { FIRST_FACTOR_IDS, SECONDARY_FACTOR_IDS } from "../../../../constants";
-import { debounce, getImageUrl, getInitializedRecipes } from "../../../../utils";
+import { debounce, getImageUrl } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import { ErrorBlock } from "../../errorBlock/ErrorBlock";
 import { Toggle } from "../../toggle/Toggle";
@@ -40,7 +40,6 @@ export const LoginMethodsSection = () => {
 	const { showToast } = useContext(PopupContentContext);
 
 	const hasSelectedSecondaryFactors = selectedFactors.requiredSecondaryFactors.length > 0;
-	const recipesInit = getInitializedRecipes();
 
 	const debouncedUpdateTenant = useCallback(
 		debounce(
@@ -186,11 +185,12 @@ export const LoginMethodsSection = () => {
 						Secondary Factors
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
-				{hasSelectedSecondaryFactors && !recipesInit.mfa && (
+				{/* TODO: This would be shown based on API response */}
+				{/* {hasSelectedSecondaryFactors && !recipesInit.mfa && (
 					<ErrorBlock className="tenant-detail__factors-error-block">
 						MFA recipe needs to be initialized in the backend and frontend SDK to use secondary factors.
 					</ErrorBlock>
-				)}
+				)} */}
 				<div className="tenant-detail__factors-container">
 					<div className="tenant-detail__factors-container__grid">
 						{SECONDARY_FACTOR_IDS.map((method) => (
@@ -258,60 +258,6 @@ const LoginFactor = ({
 };
 
 const doesFactorHasRecipeInitialized = (factorId: string) => {
-	const initializedRecipes = getInitializedRecipes();
-
-	if (factorId === "emailpassword") {
-		return initializedRecipes.emailPassword;
-	}
-
-	if (factorId === "thirdparty") {
-		return initializedRecipes.thirdParty;
-	}
-
-	if (["otp-email", "otp-phone", "link-email", "link-phone"].includes(factorId)) {
-		if (!initializedRecipes.passwordless) {
-			return false;
-		}
-		if (factorId === "otp-email") {
-			return (
-				(initializedRecipes.passwordless.contactMethod === "EMAIL" ||
-					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
-				(initializedRecipes.passwordless.flowType === "USER_INPUT_CODE" ||
-					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
-			);
-		}
-
-		if (factorId === "otp-phone") {
-			return (
-				(initializedRecipes.passwordless.contactMethod === "PHONE" ||
-					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
-				(initializedRecipes.passwordless.flowType === "USER_INPUT_CODE" ||
-					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
-			);
-		}
-
-		if (factorId === "link-email") {
-			return (
-				(initializedRecipes.passwordless.contactMethod === "EMAIL" ||
-					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
-				(initializedRecipes.passwordless.flowType === "MAGIC_LINK" ||
-					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
-			);
-		}
-
-		if (factorId === "link-phone") {
-			return (
-				(initializedRecipes.passwordless.contactMethod === "PHONE" ||
-					initializedRecipes.passwordless.contactMethod === "EMAIL_OR_PHONE") &&
-				(initializedRecipes.passwordless.flowType === "MAGIC_LINK" ||
-					initializedRecipes.passwordless.flowType === "USER_INPUT_CODE_AND_MAGIC_LINK")
-			);
-		}
-	}
-
-	if (factorId === "totp") {
-		return initializedRecipes.totp;
-	}
-
-	return false;
+	// TODO: This method would be removed
+	return true;
 };
