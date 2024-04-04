@@ -101,8 +101,10 @@ app.use(
 	})
 );
 
+// @ts-ignore
 app.use(middleware());
 
+// @ts-ignore
 app.use(errorHandler());
 
 app.get("/status", (req, res) => {

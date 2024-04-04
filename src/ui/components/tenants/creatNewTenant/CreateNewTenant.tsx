@@ -23,13 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { useTenantCreateService } from "../../../../api/tenants";
 import "./createNewTenant.scss";
 
-export const CreateNewTenantDialog = ({
-	onCloseDialog,
-	currentTenantIds,
-}: {
-	onCloseDialog: () => void;
-	currentTenantIds: Array<string>;
-}) => {
+export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => void }) => {
 	const createOrUpdateTenant = useTenantCreateService();
 	const navigate = useNavigate();
 	const [tenantCreationError, setTenantCreationError] = useState<string | undefined>(undefined);
@@ -42,31 +36,23 @@ export const CreateNewTenantDialog = ({
 			setTenantCreationError("Please enter a valid Tenant Id!");
 			return;
 		}
-		if (!tenantId.match(/^[a-z0-9-]+$/)) {
-			setTenantCreationError("Tenant Id can only contain lowercase alphabets, numbers and hyphens");
-			return;
-		}
-		if (tenantId.startsWith("appid-")) {
-			setTenantCreationError("Tenant Id cannot start with 'appid-'");
-			return;
-		}
-		if (currentTenantIds.includes(tenantId)) {
-			setTenantCreationError("Tenant Id already exists");
-			return;
-		}
 		try {
 			setIsCreatingTenant(true);
 			const resp = await createOrUpdateTenant(tenantId);
 			if (resp?.status === "OK") {
-				navigate(`?tenantId=${tenantId}`, {
-					replace: true,
-				});
-				onCloseDialog();
-			} else if (resp?.status === "MULTITENANCY_NOT_ENABLED_ERROR") {
+				if (resp.createdNew) {
+					navigate(`?tenantId=${tenantId.toLowerCase()}`, {
+						replace: true,
+					});
+					onCloseDialog();
+				} else {
+					setTenantCreationError("Tenant already exists");
+				}
+			} else if (resp?.status === "MULTITENANCY_NOT_ENABLED_IN_CORE") {
 				setTenantCreationError(
 					"Multitenancy is not enabled for your SuperTokens instance. Please add a license key to enable it."
 				);
-			} else if (resp?.status === "INVALID_TENANT_ID_ERROR") {
+			} else if (resp?.status === "INVALID_TENANT_ID") {
 				setTenantCreationError(resp.message);
 			} else {
 				throw new Error("Failed to create tenant");

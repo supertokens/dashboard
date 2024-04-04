@@ -26,10 +26,10 @@ export const useTenantCreateService = () => {
 				createdNew: boolean;
 		  }
 		| {
-				status: "MULTITENANCY_NOT_ENABLED_ERROR";
+				status: "MULTITENANCY_NOT_ENABLED_IN_CORE";
 		  }
 		| {
-				status: "INVALID_TENANT_ID_ERROR";
+				status: "INVALID_TENANT_ID";
 				message: string;
 		  }
 		| undefined
@@ -49,16 +49,6 @@ export const useTenantCreateService = () => {
 			return body;
 		}
 
-		if (response.status === 500) {
-			const text = await response.text();
-			if (text.includes(`Cannot use '${tenantId}' as a tenantId`)) {
-				return {
-					status: "INVALID_TENANT_ID_ERROR",
-					message: `Cannot use '${tenantId}' as a Tenant Id.`,
-				};
-			}
-		}
-
 		return undefined;
 	};
 
@@ -72,17 +62,22 @@ export const useCoreConfigService = () => {
 		status: "OK";
 		config: CoreConfigOptions;
 	}> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/core/config/list"),
-			method: "GET",
-		});
+		// const response = await fetchData({
+		// 	url: getApiUrl("/api/core/config/list"),
+		// 	method: "GET",
+		// });
 
-		if (response.ok) {
-			const body = await response.json();
-			return body;
-		}
+		// if (response.ok) {
+		// 	const body = await response.json();
+		// 	return body;
+		// }
 
-		throw new Error("Cannot fetch core config options");
+		// throw new Error("Cannot fetch core config options");
+
+		return {
+			status: "OK",
+			config: [],
+		};
 	};
 
 	return {

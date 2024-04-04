@@ -91,10 +91,7 @@ const TenantList = ({ selectTenant }: { selectTenant: (tenantId: string) => void
 					Add Tenant
 				</Button>
 				{isCreateTenantDialogOpen && (
-					<CreateNewTenantDialog
-						onCloseDialog={() => setIsCreateTenantDialogOpen(false)}
-						currentTenantIds={tenants?.map((tenant) => tenant.tenantId) ?? []}
-					/>
+					<CreateNewTenantDialog onCloseDialog={() => setIsCreateTenantDialogOpen(false)} />
 				)}
 			</div>
 			<TenantsListTable

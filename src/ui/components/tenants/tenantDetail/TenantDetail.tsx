@@ -24,7 +24,6 @@ import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialo
 import { CoreConfigSection } from "./CoreConfigSection";
 import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";
 import { LoginMethodsSection } from "./LoginMethodsSection";
-import { NoLoginMethodsAddedDialog } from "./noLoginMethodsAddedDialog/NoLoginMethodsAddedDialog";
 import "./tenantDetail.scss";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
@@ -203,9 +202,6 @@ export const TenantDetail = ({
 			coreConfigOptions={configOptions}
 			refetchTenant={refetchTenant}>
 			{renderView()}
-			{isNoLoginMethodsDialogVisible && (
-				<NoLoginMethodsAddedDialog onCloseDialog={() => setIsNoLoginMethodsDialogVisible(false)} />
-			)}
 			{isNoProviderAddedDialogVisible && (
 				<AddNewProviderDialog
 					onCloseDialog={() => setIsNoProviderAddedDialogVisible(false)}
