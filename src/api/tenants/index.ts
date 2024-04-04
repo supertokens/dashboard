@@ -101,7 +101,7 @@ export const useTenantService = () => {
 		| undefined
 	> => {
 		const response = await fetchData({
-			url: getApiUrl(`/api/tenant?tenantId=${tenantId}`),
+			url: getApiUrl("/api/tenant", tenantId),
 			method: "GET",
 		});
 
@@ -138,7 +138,7 @@ export const useTenantService = () => {
 
 	const deleteTenant = async (tenantId: string): Promise<{ status: "OK" }> => {
 		const response = await fetchData({
-			url: getApiUrl(`/api/tenant?tenantId=${tenantId}`),
+			url: getApiUrl("/api/tenant", tenantId),
 			method: "DELETE",
 		});
 
@@ -163,11 +163,10 @@ export const useThirdPartyService = () => {
 
 	const createOrUpdateThirdPartyProvider = async (tenantId: string, providerConfig: ProviderConfig) => {
 		const response = await fetchData({
-			url: getApiUrl("/api/tenants/third-party"),
+			url: getApiUrl("/api/tenants/third-party", tenantId),
 			method: "PUT",
 			config: {
 				body: JSON.stringify({
-					tenantId,
 					providerConfig,
 				}),
 			},
@@ -183,7 +182,7 @@ export const useThirdPartyService = () => {
 
 	const deleteThirdPartyProvider = async (tenantId: string, providerId: string) => {
 		const response = await fetchData({
-			url: getApiUrl(`/api/tenants/third-party?tenantId=${tenantId}&thirdPartyId=${providerId}`),
+			url: getApiUrl(`/api/tenants/third-party?thirdPartyId=${providerId}`, tenantId),
 			method: "DELETE",
 		});
 

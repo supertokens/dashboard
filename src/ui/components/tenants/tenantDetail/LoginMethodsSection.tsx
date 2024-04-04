@@ -33,7 +33,7 @@ export const LoginMethodsSection = () => {
 		firstFactors: Array<string>;
 		requiredSecondaryFactors: Array<string>;
 	}>({
-		firstFactors: tenantInfo.validFirstFactors ?? [],
+		firstFactors: tenantInfo.firstFactors ?? [],
 		requiredSecondaryFactors: tenantInfo.requiredSecondaryFactors ?? [],
 	});
 
