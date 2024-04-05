@@ -41,9 +41,7 @@ export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => 
 			const resp = await createOrUpdateTenant(tenantId);
 			if (resp?.status === "OK") {
 				if (resp.createdNew) {
-					navigate(`?tenantId=${tenantId.toLowerCase()}`, {
-						replace: true,
-					});
+					navigate(`?tenantId=${tenantId.toLowerCase()}`);
 					onCloseDialog();
 				} else {
 					setTenantCreationError("Tenant already exists");

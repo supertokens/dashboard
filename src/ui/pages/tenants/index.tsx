@@ -114,15 +114,11 @@ const TenantManagement = () => {
 	const selectedTenantId = query.get("tenantId");
 
 	const setSelectedTenantId = (tenantId: string) => {
-		navigate(`?tenantId=${tenantId}`, {
-			replace: true,
-		});
+		navigate(`?tenantId=${tenantId}`);
 	};
 
 	const onBackButtonClicked = () => {
-		navigate(currentLocation.pathname, {
-			replace: true,
-		});
+		navigate(currentLocation.pathname);
 	};
 
 	return typeof selectedTenantId === "string" ? (

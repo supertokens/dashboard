@@ -161,6 +161,13 @@ export const LoginMethodsSection = () => {
 					</ErrorBlock>
 				)}
 
+				{false && (
+					<div className="block-warn block-warn-medium text-small tenant-detail__factors-error-block">
+						<b>Note:</b> Pre-built might not work as expected because we don’t have a combination recipe for
+						EmailPassword and Passwordless yet.
+					</div>
+				)}
+
 				<div className="tenant-detail__factors-container">
 					<div className="tenant-detail__factors-container__grid">
 						{FIRST_FACTOR_IDS.map((method) => (
@@ -185,12 +192,25 @@ export const LoginMethodsSection = () => {
 						Secondary Factors
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
-				{/* TODO: This would be shown based on API response */}
-				{/* {hasSelectedSecondaryFactors && !recipesInit.mfa && (
+				{false && (
 					<ErrorBlock className="tenant-detail__factors-error-block">
-						MFA recipe needs to be initialized in the backend and frontend SDK to use secondary factors.
+						You need to initialize the MFA recipe to use secondary factors.{" "}
+						<a
+							href="https://supertokens.com/docs/mfa/backend-setup"
+							target="_blank"
+							rel="noreferrer noopener">
+							Click here
+						</a>{" "}
+						to see MFA docs for more info.
 					</ErrorBlock>
-				)} */}
+				)}
+				{false && (
+					<ErrorBlock className="tenant-detail__factors-error-block">
+						Setting secondary factors might not take effect as <b>getMFARequirementsForAuth</b> has been
+						overridden in the SDK. To be able to modify the secondary factors from the UI you would need to
+						remove the custom function that you have added.
+					</ErrorBlock>
+				)}
 				<div className="tenant-detail__factors-container">
 					<div className="tenant-detail__factors-container__grid">
 						{SECONDARY_FACTOR_IDS.map((method) => (
