@@ -28,11 +28,18 @@ import "./index.scss";
 
 const TENANTS_PAGINATION_LIMIT = 10;
 
-const TenantList = ({ selectTenant }: { selectTenant: (tenantId: string) => void }) => {
+const TenantList = ({
+	selectTenant,
+	searchQuery,
+	setSearchQuery,
+}: {
+	selectTenant: (tenantId: string) => void;
+	searchQuery: string;
+	setSearchQuery: (searchQuery: string) => void;
+}) => {
 	const { fetchTenants } = useGetTenants();
 	const { showToast } = useContext(PopupContentContext);
 	const [tenants, setTenants] = useState<Array<Tenant> | undefined>(undefined);
-	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [isCreateTenantDialogOpen, setIsCreateTenantDialogOpen] = useState(false);
 	const [currentActivePage, setCurrentActivePage] = useState(1);
 	const deferredSearchQuery = useDeferredValue(searchQuery);
@@ -112,6 +119,7 @@ const TenantManagement = () => {
 	const navigate = useNavigate();
 	const currentLocation = useLocation();
 	const selectedTenantId = query.get("tenantId");
+	const [searchQuery, setSearchQuery] = useState("");
 
 	const setSelectedTenantId = (tenantId: string) => {
 		navigate(`?tenantId=${tenantId}`);
@@ -127,7 +135,11 @@ const TenantManagement = () => {
 			onBackButtonClicked={onBackButtonClicked}
 		/>
 	) : (
-		<TenantList selectTenant={setSelectedTenantId} />
+		<TenantList
+			selectTenant={setSelectedTenantId}
+			searchQuery={searchQuery}
+			setSearchQuery={setSearchQuery}
+		/>
 	);
 };
 
