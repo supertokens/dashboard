@@ -27,7 +27,8 @@ export const ThirdPartySection = ({
 	handleAddNewProvider: () => void;
 	handleEditProvider: (providerId: string) => void;
 }) => {
-	const { resolvedProviders } = useTenantDetailContext();
+	const { tenantInfo } = useTenantDetailContext();
+	const providers = tenantInfo.thirdParty.providers;
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -36,36 +37,32 @@ export const ThirdPartySection = ({
 				</PanelHeaderTitleWithTooltip>
 			</PanelHeader>
 
-			{resolvedProviders?.length > 0 ? (
+			{providers?.length > 0 ? (
 				<div className="tenant-detail__existing-providers">
-					{resolvedProviders.map((provider) => {
-						const builtInProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.find((p) =>
-							provider.thirdPartyId.startsWith(p.id)
-						);
+					{providers.map((providerId) => {
+						const builtInProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.find((p) => providerId.startsWith(p.id));
 
 						if (builtInProvider) {
-							const hasDefaultId = IN_BUILT_THIRD_PARTY_PROVIDERS.some(
-								(p) => p.id === provider.thirdPartyId
-							);
+							const hasDefaultId = IN_BUILT_THIRD_PARTY_PROVIDERS.some((p) => p.id === providerId);
 							return (
 								<ThirdPartyProviderButton
-									key={provider.thirdPartyId}
+									key={providerId}
 									title={
 										hasDefaultId
 											? builtInProvider.label
-											: `${builtInProvider.label} (${provider.thirdPartyId})`
+											: `${builtInProvider.label} (${providerId})`
 									}
 									icon={builtInProvider.icon}
-									onClick={() => handleEditProvider(provider.thirdPartyId)}
+									onClick={() => handleEditProvider(providerId)}
 								/>
 							);
 						}
 						return (
 							<ThirdPartyProviderButton
-								key={provider.thirdPartyId}
-								title={provider.name ?? provider.thirdPartyId}
+								key={providerId}
+								title={providerId}
 								type="without-icon"
-								onClick={() => handleEditProvider(provider.thirdPartyId)}
+								onClick={() => handleEditProvider(providerId)}
 							/>
 						);
 					})}

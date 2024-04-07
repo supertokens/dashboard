@@ -21,8 +21,6 @@ import { useTenantDetailContext } from "../TenantDetailContext";
 import { TenantDetailHeader } from "../TenantDetailHeader";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
-import { BuiltInProviderInfo } from "../thirdPartyProviderConfig/BuiltInProviderInfo";
-import { CustomProviderInfo } from "../thirdPartyProviderConfig/CustomProviderInfo";
 import "./thirdPartyPage.scss";
 
 export const ThirdPartyPage = ({
@@ -82,56 +80,43 @@ const ProviderInfo = ({
 	isAddingNewProvider: boolean;
 	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
 }) => {
-	const { resolvedProviders, tenantInfo, refetchTenant } = useTenantDetailContext();
+	const { tenantInfo, refetchTenant } = useTenantDetailContext();
 	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
 	const providerConfig = isAddingNewProvider
 		? undefined
-		: resolvedProviders.find((p) => p.thirdPartyId === providerId);
+		: tenantInfo.thirdParty.providers.find((pid) => pid === providerId);
 	const isInBuiltProvider =
 		typeof providerId === "string" && IN_BUILT_THIRD_PARTY_PROVIDERS.some(({ id }) => providerId.startsWith(id));
 	const isSAMLProvider = typeof providerId === "string" && providerId.startsWith(SAML_PROVIDER_ID);
 
 	const handlePostSaveProviders = async (action: "add-or-update" | "delete", providerId: string) => {
-		let promises: Array<Promise<unknown>> = [];
-		if (resolvedProviders.length > 0 && tenantInfo.thirdParty.providers.length === 0) {
-			if (action === "add-or-update" && isAddingNewProvider) {
-				promises = resolvedProviders.map((provider) => {
-					return createOrUpdateThirdPartyProvider(tenantInfo.tenantId, provider);
-				});
-			} else {
-				promises = resolvedProviders
-					.filter((provider) => provider.thirdPartyId !== providerId)
-					.map((provider) => {
-						return createOrUpdateThirdPartyProvider(tenantInfo.tenantId, provider);
-					});
-			}
-		}
-		await Promise.all(promises);
 		await refetchTenant();
 	};
 
-	if (isInBuiltProvider || isSAMLProvider) {
-		return (
-			<BuiltInProviderInfo
-				providerId={providerId}
-				providerConfig={providerConfig}
-				handleGoBack={handleGoBack}
-				isAddingNewProvider={isAddingNewProvider}
-				handlePostSaveProviders={handlePostSaveProviders}
-			/>
-		);
-	}
+	return null;
+
+	// if (isInBuiltProvider || isSAMLProvider) {
+	// 	return (
+	// 		<BuiltInProviderInfo
+	// 			providerId={providerId}
+	// 			providerConfig={providerConfig}
+	// 			handleGoBack={handleGoBack}
+	// 			isAddingNewProvider={isAddingNewProvider}
+	// 			handlePostSaveProviders={handlePostSaveProviders}
+	// 		/>
+	// 	);
+	// }
 
 	// Handle custom providers here
-	return (
-		<CustomProviderInfo
-			providerId={providerId}
-			providerConfig={providerConfig}
-			handleGoBack={handleGoBack}
-			isAddingNewProvider={isAddingNewProvider}
-			handlePostSaveProviders={handlePostSaveProviders}
-		/>
-	);
+	// return (
+	// 	<CustomProviderInfo
+	// 		providerId={providerId}
+	// 		providerConfig={providerConfig}
+	// 		handleGoBack={handleGoBack}
+	// 		isAddingNewProvider={isAddingNewProvider}
+	// 		handlePostSaveProviders={handlePostSaveProviders}
+	// 	/>
+	// );
 };
 
 const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {

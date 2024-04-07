@@ -13,7 +13,7 @@
  * under the License.
  */
 import { getApiUrl, useFetchData } from "../../utils";
-import { CoreConfigOptions, ProviderConfig, TenantInfo, UpdateTenant } from "./types";
+import { ProviderConfig, TenantInfo } from "./types";
 
 export const useTenantCreateService = () => {
 	const fetchData = useFetchData(true);
@@ -55,37 +55,7 @@ export const useTenantCreateService = () => {
 	return createOrUpdateTenant;
 };
 
-export const useCoreConfigService = () => {
-	const fetchData = useFetchData();
-
-	const getCoreConfigOptions = async (): Promise<{
-		status: "OK";
-		config: CoreConfigOptions;
-	}> => {
-		// const response = await fetchData({
-		// 	url: getApiUrl("/api/core/config/list"),
-		// 	method: "GET",
-		// });
-
-		// if (response.ok) {
-		// 	const body = await response.json();
-		// 	return body;
-		// }
-
-		// throw new Error("Cannot fetch core config options");
-
-		return {
-			status: "OK",
-			config: [],
-		};
-	};
-
-	return {
-		getCoreConfigOptions,
-	};
-};
-
-export const useTenantService = () => {
+export const useTenantGetService = () => {
 	const fetchData = useFetchData();
 
 	const getTenantInfo = async (
@@ -110,31 +80,14 @@ export const useTenantService = () => {
 			return body;
 		}
 
-		return undefined;
-	};
-
-	const updateTenant = async (
-		tenantId: string,
-		tenantInfo: UpdateTenant
-	): Promise<{
-		status: "OK";
-	}> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant"),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({ ...tenantInfo, tenantId }),
-			},
-		});
-
-		if (response.ok) {
-			return {
-				status: "OK",
-			};
-		}
-
 		throw new Error("Unknown error");
 	};
+
+	return getTenantInfo;
+};
+
+export const useTenantDeleteService = () => {
+	const fetchData = useFetchData();
 
 	const deleteTenant = async (tenantId: string): Promise<{ status: "OK" }> => {
 		const response = await fetchData({
@@ -151,11 +104,79 @@ export const useTenantService = () => {
 		throw new Error("Unknown error");
 	};
 
-	return {
-		getTenantInfo,
-		updateTenant,
-		deleteTenant,
+	return deleteTenant;
+};
+
+export const useUpdateFirstFactorsService = () => {
+	const fetchData = useFetchData();
+
+	const updateFirstFactors = async (
+		tenantId: string,
+		factorId: string,
+		enable: boolean
+	): Promise<
+		| { status: "OK" }
+		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK"; message: string }
+		| { status: "UNKNOWN_TENANT_ERROR" }
+	> => {
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant/first-factor", tenantId),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					factorId,
+					enable,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			return {
+				status: "OK",
+			};
+		}
+
+		throw new Error("Unknown error");
 	};
+
+	return updateFirstFactors;
+};
+
+export const useUpdateSecondaryFactorsService = () => {
+	const fetchData = useFetchData();
+
+	const updateSecondaryFactors = async (
+		tenantId: string,
+		factorId: string,
+		enable: boolean
+	): Promise<
+		| { status: "OK" }
+		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK"; message: string }
+		| { status: "MFA_NOT_INITIALIZED" }
+		| { status: "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" }
+		| { status: "UNKNOWN_TENANT_ERROR" }
+	> => {
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant/secondary-factor", tenantId),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					factorId,
+					enable,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			return {
+				status: "OK",
+			};
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	return updateSecondaryFactors;
 };
 
 export const useThirdPartyService = () => {

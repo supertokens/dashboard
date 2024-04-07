@@ -13,7 +13,7 @@
  * under the License.
  */
 import { useContext, useState } from "react";
-import { useTenantService } from "../../../../../api/tenants";
+import { useTenantDeleteService } from "../../../../../api/tenants";
 import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
@@ -30,7 +30,7 @@ export const DeleteTenantDialog = ({
 	tenantId: string;
 }) => {
 	const [isDeletingTenant, setIsDeletingTenant] = useState(false);
-	const { deleteTenant } = useTenantService();
+	const deleteTenant = useTenantDeleteService();
 	const { showToast } = useContext(PopupContentContext);
 
 	const handleDeleteProperty = async () => {

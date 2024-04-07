@@ -12,13 +12,12 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useCallback, useContext, useState } from "react";
-import { useTenantService } from "../../../../api/tenants";
-import { TenantInfo } from "../../../../api/tenants/types";
+import { useContext, useState } from "react";
+import { useUpdateFirstFactorsService, useUpdateSecondaryFactorsService } from "../../../../api/tenants";
 import { ReactComponent as ErrorIcon } from "../../../../assets/form-field-error-icon.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
-import { FIRST_FACTOR_IDS, SECONDARY_FACTOR_IDS } from "../../../../constants";
-import { debounce, getImageUrl } from "../../../../utils";
+import { FactorIds, FIRST_FACTOR_IDS, SECONDARY_FACTOR_IDS } from "../../../../constants";
+import { doesTenantHasPasswordlessEnabled, getImageUrl } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import { ErrorBlock } from "../../errorBlock/ErrorBlock";
 import { Toggle } from "../../toggle/Toggle";
@@ -28,122 +27,119 @@ import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDet
 
 export const LoginMethodsSection = () => {
 	const { tenantInfo, setTenantInfo } = useTenantDetailContext();
-	const { updateTenant } = useTenantService();
-	const [selectedFactors, setSelectedFactors] = useState<{
-		firstFactors: Array<string>;
-		requiredSecondaryFactors: Array<string>;
+	const updateFirstFactors = useUpdateFirstFactorsService();
+	const updateSecondaryFactors = useUpdateSecondaryFactorsService();
+
+	const [isFirstFactorsLoading, setIsFirstFactorsLoading] = useState(false);
+	const [isSecondaryFactorsLoading, setIsSecondaryFactorsLoading] = useState(false);
+	const [secondaryFactorsError, setSecondaryFactorsError] = useState<
+		null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN"
+	>(null);
+	const [factorErrors, setFactorErrors] = useState<{
+		firstFactors: Record<string, string>;
+		requiredSecondaryFactors: Record<string, string>;
 	}>({
-		firstFactors: tenantInfo.firstFactors ?? [],
-		requiredSecondaryFactors: tenantInfo.requiredSecondaryFactors ?? [],
+		firstFactors: {},
+		requiredSecondaryFactors: {},
 	});
 
 	const { showToast } = useContext(PopupContentContext);
 
-	const hasSelectedSecondaryFactors = selectedFactors.requiredSecondaryFactors.length > 0;
+	const doesTenantHasEmailPasswordAndPasswordlessEnabled =
+		tenantInfo.firstFactors?.includes(FactorIds.EMAILPASSWORD) &&
+		doesTenantHasPasswordlessEnabled(tenantInfo.firstFactors) &&
+		!tenantInfo.firstFactors?.includes(FactorIds.THIRDPARTY);
 
-	const debouncedUpdateTenant = useCallback(
-		debounce(
-			(
-				tenantId: string,
-				factors: {
-					firstFactors: Array<string>;
-					requiredSecondaryFactors: Array<string>;
-				},
-				currentTenantInfo: TenantInfo,
-				setTenantInfo: (tenantInfo: TenantInfo) => void
-			) => {
-				const enabledLoginMethods = {
-					emailPasswordEnabled:
-						FIRST_FACTOR_IDS.some(
-							(factor) =>
-								factor.loginMethod === "emailpassword" && factors.firstFactors.includes(factor.id)
-						) ||
-						SECONDARY_FACTOR_IDS.some(
-							(factor) =>
-								factor.loginMethod === "emailpassword" &&
-								factors.requiredSecondaryFactors.includes(factor.id)
-						),
-					passwordlessEnabled:
-						FIRST_FACTOR_IDS.some(
-							(factor) =>
-								factor.loginMethod === "passwordless" && factors.firstFactors.includes(factor.id)
-						) ||
-						SECONDARY_FACTOR_IDS.some(
-							(factor) =>
-								factor.loginMethod === "passwordless" &&
-								factors.requiredSecondaryFactors.includes(factor.id)
-						),
-					thirdPartyEnabled:
-						FIRST_FACTOR_IDS.some(
-							(factor) => factor.loginMethod === "thirdparty" && factors.firstFactors.includes(factor.id)
-						) ||
-						SECONDARY_FACTOR_IDS.some(
-							(factor) =>
-								factor.loginMethod === "thirdparty" &&
-								factors.requiredSecondaryFactors.includes(factor.id)
-						),
-				};
-
-				updateTenant(tenantId, {
-					firstFactors:
-						Array.isArray(factors.firstFactors) && factors.firstFactors.length > 0
-							? factors.firstFactors
-							: null,
-					requiredSecondaryFactors:
-						Array.isArray(factors.requiredSecondaryFactors) && factors.requiredSecondaryFactors.length > 0
-							? factors.requiredSecondaryFactors
-							: null,
-					...enabledLoginMethods,
-				})
-					.then((res) => {
-						if (res.status !== "OK") {
-							throw new Error("Failed to update tenant");
-						}
-						setTenantInfo({
-							...currentTenantInfo,
-							firstFactors: factors.firstFactors,
-							validFirstFactors: factors.firstFactors,
-							requiredSecondaryFactors: factors.requiredSecondaryFactors,
-							emailPassword: {
-								enabled: enabledLoginMethods.emailPasswordEnabled,
-							},
-							passwordless: {
-								enabled: enabledLoginMethods.passwordlessEnabled,
-							},
-							thirdParty: {
-								...currentTenantInfo.thirdParty,
-								enabled: enabledLoginMethods.thirdPartyEnabled,
-							},
-						});
-					})
-					.catch((_) => {
-						// Revert the state back to the original state in case of error
-						setSelectedFactors({
-							firstFactors: currentTenantInfo.validFirstFactors ?? [],
-							requiredSecondaryFactors: currentTenantInfo.requiredSecondaryFactors ?? [],
-						});
-
-						showToast({
-							iconImage: getImageUrl("form-field-error-icon.svg"),
-							toastType: "error",
-							children: <>Something went wrong Please try again!</>,
-						});
-					});
-			},
-			400
-		),
-		[]
-	);
-
-	const handleFactorChange = (factorKey: "firstFactors" | "requiredSecondaryFactors", id: string) => {
-		const newFactors = { ...selectedFactors };
-		if (newFactors[factorKey].includes(id)) {
-			newFactors[factorKey] = newFactors[factorKey].filter((factor) => factor !== id);
+	const handleFactorChange = async (factorKey: "firstFactors" | "requiredSecondaryFactors", id: string) => {
+		const prevFactors = tenantInfo[factorKey] ?? [];
+		let newFactors = [...prevFactors];
+		const doesFactorExist = prevFactors.includes(id);
+		if (doesFactorExist) {
+			newFactors = newFactors.filter((factor) => factor !== id);
 		} else {
-			newFactors[factorKey] = [...newFactors[factorKey], id];
+			newFactors = [...newFactors, id];
 		}
-		setSelectedFactors(newFactors);
-		void debouncedUpdateTenant(tenantInfo.tenantId, newFactors, tenantInfo, setTenantInfo);
+		// Optimistically update the state for better UX
+		setTenantInfo((prev) =>
+			prev
+				? {
+						...prev,
+						[factorKey]: newFactors,
+				  }
+				: undefined
+		);
+		try {
+			if (factorKey === "firstFactors") {
+				setIsFirstFactorsLoading(true);
+				const res = await updateFirstFactors(tenantInfo.tenantId, id, !doesFactorExist);
+				if (res.status !== "OK") {
+					// We revert the state in case of a non-OK response
+					setTenantInfo((prev) =>
+						prev
+							? {
+									...prev,
+									firstFactors: prevFactors,
+							  }
+							: undefined
+					);
+
+					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK") {
+						setFactorErrors((prev) => ({
+							...prev,
+							firstFactors: { ...prev.firstFactors, [id]: res.message },
+						}));
+					} else {
+						throw new Error(res.status);
+					}
+				}
+			} else {
+				setIsSecondaryFactorsLoading(true);
+				const res = await updateSecondaryFactors(tenantInfo.tenantId, id, !doesFactorExist);
+				if (res.status !== "OK") {
+					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK") {
+						setFactorErrors((prev) => ({
+							...prev,
+							requiredSecondaryFactors: { ...prev.requiredSecondaryFactors, [id]: res.message },
+						}));
+					} else if (
+						res.status === "MFA_NOT_INITIALIZED" ||
+						res.status === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN"
+					) {
+						setSecondaryFactorsError(res.status);
+					} else {
+						throw new Error(res.status);
+					}
+
+					// We allow users to update secondary factors even if
+					// getMFARequirementsForAuth is overridden
+					if (res.status !== "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") {
+						// We revert the state in case of a non-OK response
+						setTenantInfo((prev) =>
+							prev
+								? {
+										...prev,
+										requiredSecondaryFactors: prevFactors,
+								  }
+								: undefined
+						);
+					}
+				}
+			}
+		} catch (error) {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children:
+					(error as Error).message === "UNKNOWN_TENANT_ERROR" ? (
+						<>Tenant does not exist</>
+					) : (
+						<>Something went wrong!</>
+					),
+			});
+		} finally {
+			setIsFirstFactorsLoading(false);
+			setIsSecondaryFactorsLoading(false);
+		}
 	};
 
 	return (
@@ -155,13 +151,13 @@ export const LoginMethodsSection = () => {
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
 
-				{selectedFactors.firstFactors.length === 0 && (
+				{tenantInfo.firstFactors.length === 0 && (
 					<ErrorBlock className="tenant-detail__factors-error-block">
 						At least one login method needs to be enabled for the user to log in to the tenant.
 					</ErrorBlock>
 				)}
 
-				{false && (
+				{doesTenantHasEmailPasswordAndPasswordlessEnabled && (
 					<div className="block-warn block-warn-medium text-small tenant-detail__factors-error-block">
 						<b>Note:</b> Pre-built might not work as expected because we don’t have a combination recipe for
 						EmailPassword and Passwordless yet.
@@ -175,10 +171,10 @@ export const LoginMethodsSection = () => {
 								id={`first-factor-${method.id}`}
 								key={`first-factor-${method.id}`}
 								label={method.label}
-								factorId={method.id}
+								disabled={isFirstFactorsLoading}
 								description={method.description}
-								recipeNotInitError={method.recipeNotInitError}
-								checked={selectedFactors.firstFactors.includes(method.id)}
+								error={factorErrors.firstFactors[method.id]}
+								checked={tenantInfo.firstFactors.includes(method.id)}
 								onChange={() => handleFactorChange("firstFactors", method.id)}
 							/>
 						))}
@@ -192,7 +188,7 @@ export const LoginMethodsSection = () => {
 						Secondary Factors
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
-				{false && (
+				{secondaryFactorsError === "MFA_NOT_INITIALIZED" && (
 					<ErrorBlock className="tenant-detail__factors-error-block">
 						You need to initialize the MFA recipe to use secondary factors.{" "}
 						<a
@@ -204,7 +200,7 @@ export const LoginMethodsSection = () => {
 						to see MFA docs for more info.
 					</ErrorBlock>
 				)}
-				{false && (
+				{secondaryFactorsError === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" && (
 					<ErrorBlock className="tenant-detail__factors-error-block">
 						Setting secondary factors might not take effect as <b>getMFARequirementsForAuth</b> has been
 						overridden in the SDK. To be able to modify the secondary factors from the UI you would need to
@@ -218,11 +214,11 @@ export const LoginMethodsSection = () => {
 								id={`secondary-factor-${method.id}`}
 								key={`secondary-factor-${method.id}`}
 								label={method.label}
-								factorId={method.id}
+								disabled={isSecondaryFactorsLoading}
 								fixedGap
 								description={method.description}
-								recipeNotInitError={method.recipeNotInitError}
-								checked={selectedFactors.requiredSecondaryFactors.includes(method.id)}
+								error={factorErrors.requiredSecondaryFactors[method.id]}
+								checked={tenantInfo.requiredSecondaryFactors?.includes(method.id) ?? false}
 								onChange={() => handleFactorChange("requiredSecondaryFactors", method.id)}
 							/>
 						))}
@@ -237,22 +233,22 @@ const LoginFactor = ({
 	id,
 	label,
 	description,
-	recipeNotInitError,
+	error,
 	checked,
 	onChange,
 	fixedGap,
-	factorId,
+	disabled,
 }: {
 	id: string;
 	label: string;
 	description: string;
-	recipeNotInitError: string;
+	error?: string;
 	checked: boolean;
 	onChange: () => void;
 	fixedGap?: boolean;
-	factorId: string;
+	disabled?: boolean;
 }) => {
-	const hasError = checked && !doesFactorHasRecipeInitialized(factorId);
+	const hasError = typeof error === "string";
 	return (
 		<div
 			className={`tenant-detail__factors-container__grid__factor${
@@ -262,7 +258,7 @@ const LoginFactor = ({
 				<TooltipContainer
 					tooltipWidth={hasError ? 350 : 200}
 					position="bottom"
-					tooltip={hasError ? recipeNotInitError : description}
+					tooltip={hasError ? error : description}
 					error={hasError}>
 					{hasError ? <ErrorIcon style={{ transform: "translateY(-1px)", width: "14px" }} /> : <InfoIcon />}
 				</TooltipContainer>
@@ -272,12 +268,8 @@ const LoginFactor = ({
 				checked={checked}
 				onChange={onChange}
 				id={id}
+				disabled={disabled}
 			/>
 		</div>
 	);
-};
-
-const doesFactorHasRecipeInitialized = (factorId: string) => {
-	// TODO: This method would be removed
-	return true;
 };

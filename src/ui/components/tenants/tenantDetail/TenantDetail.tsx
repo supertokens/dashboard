@@ -13,10 +13,10 @@
  * under the License.
  */
 import { useEffect, useState } from "react";
-import { useCoreConfigService, useTenantService } from "../../../../api/tenants";
-import { CoreConfigOptions, TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
+import { useTenantGetService } from "../../../../api/tenants";
+import { TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
-import { PUBLIC_TENANT_ID } from "../../../../constants";
+import { FactorIds, PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
 import Button from "../../button";
 import { Loader, LoaderOverlay } from "../../loader/Loader";
@@ -37,12 +37,9 @@ export const TenantDetail = ({
 	onBackButtonClicked: () => void;
 	tenantId: string;
 }) => {
-	const { getTenantInfo } = useTenantService();
-	const { getCoreConfigOptions } = useCoreConfigService();
-	const [isNoLoginMethodsDialogVisible, setIsNoLoginMethodsDialogVisible] = useState(false);
+	const getTenantInfo = useTenantGetService();
 	const [isNoProviderAddedDialogVisible, setIsNoProviderAddedDialogVisible] = useState(false);
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
-	const [configOptions, setConfigOptions] = useState<CoreConfigOptions>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
@@ -50,7 +47,7 @@ export const TenantDetail = ({
 		view: "tenant-detail",
 	});
 
-	const tenantHasThirdPartyEnabled = tenant?.thirdParty.enabled;
+	const tenantHasThirdPartyEnabled = tenant?.firstFactors?.includes(FactorIds.THIRDPARTY);
 
 	const getTenant = async () => {
 		const response = await getTenantInfo(tenantId);
@@ -59,19 +56,11 @@ export const TenantDetail = ({
 		}
 	};
 
-	const getCoreConfig = async () => {
-		const response = await getCoreConfigOptions();
-		if (response?.status === "OK") {
-			setConfigOptions(response.config);
-		}
-	};
-
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				setIsLoading(true);
 				await getTenant();
-				await getCoreConfig();
 			} catch (_) {
 			} finally {
 				setIsLoading(false);
@@ -83,19 +72,12 @@ export const TenantDetail = ({
 	useEffect(() => {
 		if (
 			typeof tenant?.tenantId === "string" &&
-			(!Array.isArray(tenant?.validFirstFactors) || tenant?.validFirstFactors.length === 0)
-		) {
-			setIsNoLoginMethodsDialogVisible(true);
-		}
-
-		if (
-			typeof tenant?.tenantId === "string" &&
-			tenant?.thirdParty.enabled &&
-			tenant?.thirdParty.mergedProvidersFromCoreAndStatic.length === 0
+			tenantHasThirdPartyEnabled &&
+			tenant?.thirdParty.providers.length === 0
 		) {
 			setIsNoProviderAddedDialogVisible(true);
 		}
-	}, [tenant]);
+	}, [tenant, tenantHasThirdPartyEnabled]);
 
 	const refetchTenant = async () => {
 		setShowLoadingOverlay(true);
@@ -199,7 +181,6 @@ export const TenantDetail = ({
 		<TenantDetailContextProvider
 			tenantInfo={tenant}
 			setTenantInfo={setTenant}
-			coreConfigOptions={configOptions}
 			refetchTenant={refetchTenant}>
 			{renderView()}
 			{isNoProviderAddedDialogVisible && (

@@ -113,48 +113,36 @@ export const FIRST_FACTOR_IDS = [
 		description: "Sign in/up using email and password (Requires the EmailPassword recipe to be initialized)",
 		id: "emailpassword",
 		loginMethod: "emailpassword",
-		recipeNotInitError:
-			"EmailPassword recipe is not initialized, in your backend SDK. Please initialize the recipe to be able to use this login method.",
 	},
 	{
 		label: "OTP - Email",
 		description: "Sign in/up using OTP sent to email (Requires the Passwordless recipe to be initialized)",
 		id: "otp-email",
 		loginMethod: "passwordless",
-		recipeNotInitError:
-			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as EMAIL and flow type as USER_INPUT_CODE to use this login method.",
 	},
 	{
 		label: "OTP - Phone",
 		description: "Sign in/up using OTP sent to phone (Requires the Passwordless recipe to be initialized)",
 		id: "otp-phone",
 		loginMethod: "passwordless",
-		recipeNotInitError:
-			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as PHONE and flow type as USER_INPUT_CODE to use this login method.",
 	},
 	{
 		label: "Link - Email",
 		description: "Sign in/up using link sent to email (Requires the Passwordless recipe to be initialized)",
 		id: "link-email",
 		loginMethod: "passwordless",
-		recipeNotInitError:
-			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as EMAIL and flow type as MAGIC_LINK to use this login method.",
 	},
 	{
 		label: "Link - Phone",
 		description: "Sign in/up using link sent to phone (Requires the Passwordless recipe to be initialized)",
 		id: "link-phone",
 		loginMethod: "passwordless",
-		recipeNotInitError:
-			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as PHONE and flow type as MAGIC_LINK to use this login method.",
 	},
 	{
 		label: "Third Party",
 		description: "Sign in/up using third party providers (Requires the ThirdParty recipe to be initialized)",
 		id: "thirdparty",
 		loginMethod: "thirdparty",
-		recipeNotInitError:
-			"ThirdParty recipe is not initialized, in your backend SDK. Please initialize the recipe to be able to use this login method.",
 	},
 ];
 
@@ -164,8 +152,6 @@ export const SECONDARY_FACTOR_IDS = [
 		description:
 			"Require TOTP as a secondary factor for successful authentication (Requires the TOTP recipe to be initialized)",
 		id: "totp",
-		recipeNotInitError:
-			"TOTP recipe is not initialized, in your backend SDK. Please initialize the recipe to be able to use this secondary factor.",
 	},
 	{
 		label: "OTP - Email",
@@ -173,8 +159,6 @@ export const SECONDARY_FACTOR_IDS = [
 			"Require OTP sent to email as a secondary factor for successful authentication (Requires the Passwordless recipe to be initialized)",
 		id: "otp-email",
 		loginMethod: "passwordless",
-		recipeNotInitError:
-			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as EMAIL and flow type as USER_INPUT_CODE to use this secondary factor.",
 	},
 	{
 		label: "OTP - Phone",
@@ -182,8 +166,6 @@ export const SECONDARY_FACTOR_IDS = [
 			"Require OTP sent to phone as a secondary factor for successful authentication (Requires the Passwordless recipe to be initialized)",
 		id: "otp-phone",
 		loginMethod: "passwordless",
-		recipeNotInitError:
-			"Passwordless recipe is either not initialized or not correctly configured. You need to initialize the recipe with contact method as PHONE and flow type as USER_INPUT_CODE to use this secondary factor.",
 	},
 ];
 export const FactorIds = {

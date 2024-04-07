@@ -44,7 +44,7 @@ export const BuiltInProviderInfo = ({
 	);
 	const [errorState, setErrorState] = useState<Record<string, string>>({});
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
-	const { tenantInfo, resolvedProviders } = useTenantDetailContext();
+	const { tenantInfo } = useTenantDetailContext();
 	const [isSaving, setIsSaving] = useState(false);
 	const [hasAddedBoxyURLForNewSAMLProvider, setHasAddedBoxyURLForNewSAMLProvider] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
@@ -109,8 +109,8 @@ export const BuiltInProviderInfo = ({
 		const isAppleProvider = providerId.startsWith("apple");
 		let isValid = true;
 
-		const doesThirdPartyIdExist = resolvedProviders.some(
-			(provider) => provider.thirdPartyId === providerConfigState.thirdPartyId
+		const doesThirdPartyIdExist = tenantInfo.thirdParty.providers.some(
+			(providerId) => providerId === providerConfigState.thirdPartyId
 		);
 
 		setErrorState({});

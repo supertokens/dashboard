@@ -42,48 +42,37 @@ export type ProviderConfig = CommonProviderConfig & {
 
 export type TenantInfo = {
 	tenantId: string;
-	emailPassword: {
-		enabled: boolean;
-	};
 	thirdParty: {
-		enabled: boolean;
-		providers: Array<ProviderConfig>;
-		mergedProvidersFromCoreAndStatic: Array<ProviderConfig>;
+		providers: string[];
 	};
-	passwordless: {
-		enabled: boolean;
-	};
-	firstFactors?: Array<string> | null;
-	requiredSecondaryFactors?: Array<string> | null;
-	coreConfig: Record<string, unknown>;
+	firstFactors: string[];
+	requiredSecondaryFactors?: string[] | null;
+	coreConfig: CoreConfigOption[];
 	userCount: number;
-	validFirstFactors: Array<string>;
 };
 
 export type UpdateTenant = {
 	emailPasswordEnabled?: boolean;
 	passwordlessEnabled?: boolean;
 	thirdPartyEnabled?: boolean;
-	firstFactors?: Array<string> | null;
-	requiredSecondaryFactors?: Array<string> | null;
+	firstFactors?: string[] | null;
+	requiredSecondaryFactors?: string[] | null;
 	coreConfig?: Record<string, unknown>;
 };
 
-export type CoreConfigOptions = Array<
-	| {
-			name: string;
-			description: string;
-			isDifferentAcrossTenants: boolean;
-			type: "string" | "number" | "boolean";
-	  }
-	| {
-			name: string;
-			description: string;
-			isDifferentAcrossTenants: boolean;
-			type: "enum";
-			options: string[];
-	  }
->;
+export type CoreConfigOption = {
+	key: string;
+	valueType: "string" | "number" | "boolean";
+	value: string | number | boolean | null;
+	description: string;
+	isSaaSProtected: boolean;
+	isDifferentAcrossTenants: boolean;
+	isModifyableOnlyViaConfigYaml: boolean;
+	possibleValues?: string[];
+	isNullable: boolean;
+	defaultValue: string | number | boolean | null;
+	isPluginProperty: boolean;
+};
 
 export type TenantDashboardView =
 	| {
@@ -108,7 +97,7 @@ export type ProviderCustomField = {
 
 export type BuiltInProvidersCustomFields = {
 	[key: string]: {
-		additionalConfigFields?: Array<ProviderCustomField>;
-		defaultScopes?: Array<string>;
+		additionalConfigFields?: ProviderCustomField[];
+		defaultScopes?: string[];
 	};
 };

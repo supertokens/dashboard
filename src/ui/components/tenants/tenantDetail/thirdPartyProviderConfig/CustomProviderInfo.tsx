@@ -41,7 +41,7 @@ export const CustomProviderInfo = ({
 	const [providerConfigState, setProviderConfigState] = useState(getInitialProviderInfo(providerConfig));
 	const [errorState, setErrorState] = useState<Record<string, string>>({});
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
-	const { resolvedProviders, tenantInfo } = useTenantDetailContext();
+	const { tenantInfo } = useTenantDetailContext();
 	const [isSaving, setIsSaving] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
 	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
@@ -84,8 +84,8 @@ export const CustomProviderInfo = ({
 		setErrorState({});
 		const clientTypes = new Set<string>();
 		let isValid = true;
-		const doesThirdPartyIdExist = resolvedProviders.some(
-			(provider) => provider.thirdPartyId === providerConfigState.thirdPartyId
+		const doesThirdPartyIdExist = tenantInfo.thirdParty.providers.some(
+			(providerId) => providerId === providerConfigState.thirdPartyId
 		);
 
 		if (typeof providerConfigState.thirdPartyId !== "string" || providerConfigState.thirdPartyId.trim() === "") {
