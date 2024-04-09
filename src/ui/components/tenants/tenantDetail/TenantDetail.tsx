@@ -77,7 +77,7 @@ export const TenantDetail = ({
 		) {
 			setIsNoProviderAddedDialogVisible(true);
 		}
-	}, [tenant, tenantHasThirdPartyEnabled]);
+	}, [tenantHasThirdPartyEnabled, tenant?.tenantId, tenant?.thirdParty.providers.length]);
 
 	const refetchTenant = async () => {
 		setShowLoadingOverlay(true);
@@ -137,7 +137,7 @@ export const TenantDetail = ({
 							handleEditProvider={handleEditProvider}
 						/>
 					)}
-					{tenant?.tenantId !== PUBLIC_TENANT_ID && <CoreConfigSection />}
+					<CoreConfigSection />
 				</div>
 				{tenant?.tenantId !== PUBLIC_TENANT_ID && (
 					<div className="tenant-detail__delete-container">

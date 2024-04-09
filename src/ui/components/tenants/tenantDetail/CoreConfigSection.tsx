@@ -12,78 +12,26 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useUpdateCoreConfigService } from "../../../../api/tenants";
+import { ReactComponent as PencilIcon } from "../../../../assets/edit.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
-import { ReactComponent as RightArrow } from "../../../../assets/right_arrow_icon.svg";
-import { PopupContentContext } from "../../../contexts/PopupContentContext";
+import { ReactComponent as QuestionMarkIcon } from "../../../../assets/question-mark.svg";
+import { PUBLIC_TENANT_ID } from "../../../../constants";
+import Button from "../../button";
+import { Checkbox } from "../../checkbox/Checkbox";
 import InputField from "../../inputField/InputField";
+import { NativeSelect } from "../../nativeSelect/NativeSelect";
 import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
 import { useTenantDetailContext } from "./TenantDetailContext";
-import {
-	PanelHeader,
-	PanelHeaderAction,
-	PanelHeaderTitleWithTooltip,
-	PanelRoot,
-} from "./tenantDetailPanel/TenantDetailPanel";
+import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
+import { UneditablePropertyDialog } from "./uneditablePropertyDialog/UneditablePropertyDialog";
 
 export const CoreConfigSection = () => {
-	const [isEditing, setIsEditing] = useState(false);
-	const [isSavingProperties, setIsSavingProperties] = useState(false);
-	const { tenantInfo, refetchTenant } = useTenantDetailContext();
-	const { showToast } = useContext(PopupContentContext);
-	const [currentConfig, setCurrentConfig] = useState(tenantInfo?.coreConfig ?? {});
-	const [configErrors, setConfigErrors] = useState<Record<string, string>>({});
-	const hasProperties = Object.keys(tenantInfo?.coreConfig ?? {}).length > 0;
+	const { tenantInfo } = useTenantDetailContext();
 
-	// Ensure that the state reflects the latest core config
-	useEffect(() => {
-		setCurrentConfig(tenantInfo.coreConfig);
-	}, [tenantInfo.coreConfig]);
-
-	const handleSave = async () => {
-		// const errors = Object.entries(currentConfig).reduce((acc: Record<string, string>, [key, value]) => {
-		// 	const propertyObj = coreConfigOptions.find((property) => property.name === key);
-		// 	if (value === "" || value === undefined) {
-		// 		acc[key] = "Value cannot be empty";
-		// 		return acc;
-		// 	}
-		// 	if (propertyObj?.type === "number" && isNaN(Number(value))) {
-		// 		acc[key] = "Value must be a number";
-		// 		return acc;
-		// 	}
-		// 	return acc;
-		// }, {});
-		// setConfigErrors(errors);
-		// if (Object.keys(errors).length > 0) {
-		// 	return;
-		// }
-		// try {
-		// 	const parsedConfig = Object.entries(currentConfig).reduce((acc: Record<string, unknown>, [key, value]) => {
-		// 		const propertyObj = coreConfigOptions.find((property) => property.name === key);
-		// 		if (propertyObj?.type === "number") {
-		// 			acc[key] = Number(value);
-		// 		} else {
-		// 			acc[key] = value;
-		// 		}
-		// 		return acc;
-		// 	}, {});
-		// 	setIsSavingProperties(true);
-		// 	await updateTenant(tenantInfo.tenantId, {
-		// 		coreConfig: parsedConfig,
-		// 	});
-		// 	setIsEditing(false);
-		// 	await refetchTenant();
-		// } catch (_) {
-		// 	showToast({
-		// 		iconImage: getImageUrl("form-field-error-icon.svg"),
-		// 		toastType: "error",
-		// 		children: <>Something went wrong!, Failed to save config</>,
-		// 	});
-		// } finally {
-		// 	setIsSavingProperties(false);
-		// }
-	};
+	const hasPluginProperties = tenantInfo.coreConfig.some((config) => config.isPluginProperty);
 
 	return (
 		<PanelRoot>
@@ -91,56 +39,62 @@ export const CoreConfigSection = () => {
 				<PanelHeaderTitleWithTooltip tooltip="Customize the supertokens core settings that you want to use for your tenant.">
 					Core Config
 				</PanelHeaderTitleWithTooltip>
-				{hasProperties && (
-					<PanelHeaderAction
-						setIsEditing={setIsEditing}
-						isEditing={isEditing}
-						isSaving={isSavingProperties}
-						handleSave={handleSave}
-					/>
-				)}
 			</PanelHeader>
-			{!hasProperties ? (
-				<div className="block-info block-medium text-small tenant-detail__no-config-info-block">
-					<div className="tenant-detail__no-config-info-block__no-property-pill">No Property Added</div>
-					<p>
-						There are no core config properties added by you for this tenant. You can click below to add new
-						property or{" "}
-						<a
-							target="_blank"
-							rel="noreferrer noopener"
-							href="https://github.com/supertokens/supertokens-core/blob/master/config.yaml">
-							click here
-						</a>{" "}
-						to see the list of all available core config property options.
-					</p>
-				</div>
-			) : (
-				<div className="tenant-detail__core-config-table">
-					<div className="tenant-detail__core-config-table__header">
-						<div className="tenant-detail__core-config-table__header__item">Property name</div>
-						<div className="tenant-detail__core-config-table__header__item">Value</div>
-					</div>
-					<div className="tenant-detail__core-config-table__body">
-						{Object.entries(currentConfig).map(([name, value]) => {
-							const propertyObj = undefined;
-							if (propertyObj === undefined) {
-								return null;
-							}
-							return <></>;
-						})}
-					</div>
-				</div>
-			)}
-			<div className="tenant-detail__core-config-footer">
-				{hasProperties && (
-					<a
-						className="tenant-detail__core-config-footer__footer-link"
-						target="_blank"
-						rel="noreferrer noopener"
-						href="https://github.com/supertokens/supertokens-core/blob/master/config.yaml">
-						See all config properties <RightArrow />
-					</a>
+
+			<div className="tenant-detail__core-config-table">
+				{tenantInfo.coreConfig
+					.filter((config) => !config.isPluginProperty)
+					.map((config) => {
+						return (
+							<CoreConfigTableRow
+								name={config.key}
+								value={config.value}
+								type={config.valueType}
+								isNullable={config.isNullable}
+								key={config.key}
+								tooltip={config.description}
+								defaultValue={config.defaultValue}
+								isSaaSProtected={config.isSaaSProtected}
+								isDifferentAcrossTenants={config.isDifferentAcrossTenants}
+								isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
+								isPluginProperty={config.isPluginProperty}
+								possibleValues={config.possibleValues}
+							/>
+						);
+					})}
+				{hasPluginProperties && (
+					<>
+						<div className="tenant-detail__core-config-table__plugin-properties-container">
+							<h2 className="tenant-detail__core-config-table__plugin-propertier-header">
+								Plugin Properties
+							</h2>
+							<hr className="tenant-detail__core-config-table__plugin-properties-divider" />
+							<p className="tenant-detail__core-config-table__plugin-properties-description">
+								These properties cannot be directly modified from the UI, instead you can make API
+								request to core to modify these properties. Click here to see an example.
+							</p>
+						</div>
+						{tenantInfo.coreConfig
+							.filter((config) => config.isPluginProperty)
+							.map((config) => {
+								return (
+									<CoreConfigTableRow
+										name={config.key}
+										value={config.value}
+										type={config.valueType}
+										isNullable={config.isNullable}
+										key={config.key}
+										tooltip={config.description}
+										defaultValue={config.defaultValue}
+										isSaaSProtected={config.isSaaSProtected}
+										isDifferentAcrossTenants={config.isDifferentAcrossTenants}
+										isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
+										isPluginProperty={config.isPluginProperty}
+										possibleValues={config.possibleValues}
+									/>
+								);
+							})}
+					</>
 				)}
 			</div>
 		</PanelRoot>
@@ -149,62 +103,254 @@ export const CoreConfigSection = () => {
 
 type CoreConfigTableRowProps = {
 	name: string;
-	value: string | number | boolean;
-	type: "string" | "boolean" | "number" | "enum";
-	handleChange: (name: string, newValue: string | number | boolean) => void;
-	isEditing: boolean;
-	tooltip?: string;
-	error?: string;
+	value: string | number | boolean | null;
+	type: "string" | "boolean" | "number";
+	isNullable: boolean;
+	tooltip: string;
+	defaultValue: string | number | boolean | null;
+	possibleValues?: string[];
+	isSaaSProtected: boolean;
+	isDifferentAcrossTenants: boolean;
+	isModifyableOnlyViaConfigYaml: boolean;
+	isPluginProperty: boolean;
 };
+
+const isUsingSaaS = false;
+const isUsingNonPublicApp = false;
 
 const CoreConfigTableRow = ({
 	name,
 	value,
 	tooltip,
 	type,
-	isEditing,
-	handleChange,
-	error,
+	isNullable,
+	defaultValue,
+	possibleValues,
+	isSaaSProtected,
+	isDifferentAcrossTenants,
+	isModifyableOnlyViaConfigYaml,
+	isPluginProperty,
 }: CoreConfigTableRowProps) => {
+	const [isEditing, setIsEditing] = useState(false);
+	const [currentValue, setCurrentValue] = useState(value);
+	const [error, setError] = useState<string | null>(null);
+	const { tenantInfo, refetchTenant } = useTenantDetailContext();
+	const updateCoreConfig = useUpdateCoreConfigService();
+	const [isLoading, setIsLoading] = useState(false);
+	const [isUneditablePropertyDialogVisible, setIsUneditablePropertyDialogVisible] = useState(false);
+	const isMultiValue = Array.isArray(possibleValues) && possibleValues.length > 0;
+	const isPublicTenant = tenantInfo.tenantId === PUBLIC_TENANT_ID;
+
+	const isUneditable =
+		isPublicTenant ||
+		isPluginProperty ||
+		isModifyableOnlyViaConfigYaml ||
+		(isUsingSaaS && isSaaSProtected) ||
+		(!isPublicTenant && !isDifferentAcrossTenants);
+
+	// Keep the state in sync with the prop value
+	useEffect(() => {
+		setCurrentValue(value);
+	}, [value]);
+
+	const toggleNull = () => {
+		if (currentValue === null) {
+			setCurrentValue(type === "number" ? 0 : "");
+		} else {
+			setCurrentValue(null);
+		}
+	};
+
+	const handleCancelEdit = () => {
+		setIsEditing(false);
+		setCurrentValue(value);
+		setError(null);
+	};
+
+	const handleSaveProperty = async () => {
+		try {
+			setIsLoading(true);
+			setError(null);
+			const res = await updateCoreConfig(tenantInfo.tenantId, name, currentValue);
+			if (res.status !== "OK") {
+				if (res.status === "UNKNOWN_TENANT_ERROR") {
+					setError("Tenant not found.");
+				} else {
+					setError(res.message);
+				}
+				return;
+			}
+			await refetchTenant();
+			setIsEditing(false);
+		} catch (e) {
+			setError("Something went wrong. Please try again.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const renderConfigAction = () => {
+		if (isUneditable) {
+			return null;
+		}
+
+		if (!isEditing) {
+			return (
+				<button
+					className="tenant-detail__core-config-table__row-edit-button-container"
+					onClick={() => setIsEditing(true)}>
+					<PencilIcon />
+				</button>
+			);
+		}
+
+		return (
+			<div className="tenant-detail__core-config-table__row-buttons">
+				<Button
+					size="sm"
+					color="blue-outline"
+					disabled={isLoading}
+					onClick={handleCancelEdit}>
+					Cancel
+				</Button>
+				<Button
+					size="sm"
+					isLoading={isLoading}
+					disabled={isLoading}
+					onClick={handleSaveProperty}
+					color="secondary">
+					Save
+				</Button>
+			</div>
+		);
+	};
+
+	const renderUneditablePropertyReason = () => {
+		if (isPluginProperty) {
+			return "This property is a plugin property and cannot be modified from the UI. Checkout the description for this section for more details.";
+		}
+
+		if (isModifyableOnlyViaConfigYaml && isUsingSaaS) {
+			return "This property cannot be modified since you are using the managed service.";
+		}
+
+		if (isSaaSProtected && isUsingSaaS) {
+			return "This property cannot be edited or viewed since you are using a managed service and we hide it for security reasons.";
+		}
+
+		if ((isPublicTenant && !isUsingNonPublicApp) || isModifyableOnlyViaConfigYaml) {
+			return isUsingSaaS
+				? "You can modify this property via the SaaS dashboard."
+				: "This property is modifyable only via the config.yaml file.";
+		}
+
+		if (isUsingNonPublicApp && isPublicTenant) {
+			return (
+				<>
+					You would need to use{" "}
+					<a
+						href="https://supertokens.com/docs/multitenancy/new-app#create-a-new--update-an-app-in-the-core"
+						rel="noreferrer noopener"
+						target="_blank">
+						this core API
+					</a>{" "}
+					to update this property.
+				</>
+			);
+		}
+
+		return isUsingSaaS
+			? "You can modify this property via the SaaS dashboard."
+			: "This property is modifyable only via the config.yaml file.";
+	};
+
 	return (
-		<div className="tenant-detail__core-config-table__row">
-			<div className="tenant-detail__core-config-table__row__label">
-				{name}
-				{tooltip && (
-					<TooltipContainer tooltip={tooltip}>
-						<InfoIcon />
-					</TooltipContainer>
+		<>
+			<div className="tenant-detail__core-config-table__row">
+				<div
+					className={`tenant-detail__core-config-table__row-container ${
+						isEditing ? "tenant-detail__core-config-table__row-container--editing" : ""
+					} ${isUneditable ? "tenant-detail__core-config-table__row-container--uneditable" : ""}`}>
+					<div className="tenant-detail__core-config-table__row-info">
+						<div className="tenant-detail__core-config-table__row-name">
+							{tooltip && (
+								<TooltipContainer tooltip={`${tooltip} \n Default Value: ${defaultValue}`}>
+									<InfoIcon />
+								</TooltipContainer>
+							)}
+							{name}
+						</div>
+						{renderConfigAction()}
+					</div>
+					<div
+						className={`tenant-detail__core-config-table__row-value-container ${
+							type === "boolean" ? "tenant-detail__core-config-table__row-value-container--toggle" : ""
+						}`}>
+						<label htmlFor={name}>Value:</label>
+						<div className="tenant-detail__core-config-table__row-field-container">
+							{isMultiValue && (
+								<NativeSelect
+									id={name}
+									options={possibleValues}
+									value={currentValue as string}
+									disabled={!isEditing}
+									onChange={(e) => {
+										setCurrentValue(e.target.value);
+									}}
+								/>
+							)}
+
+							{(type === "string" || type === "number") && !isMultiValue && (
+								<InputField
+									type="text"
+									size="small"
+									name={name}
+									disabled={!isEditing || currentValue === null}
+									handleChange={(e) => {
+										setCurrentValue(e.target.value);
+									}}
+									error={error ?? undefined}
+									forceShowError
+									value={currentValue === null ? "[null]" : `${currentValue}`}
+								/>
+							)}
+
+							{typeof currentValue === "boolean" && type === "boolean" && (
+								<Toggle
+									name={name}
+									id={name}
+									checked={currentValue}
+									disabled={!isEditing}
+									onChange={() => {
+										setCurrentValue(!currentValue);
+									}}
+								/>
+							)}
+							{isNullable && (
+								<Checkbox
+									id={`${name}-null-checkbox`}
+									label="Set value as null"
+									checked={currentValue === null}
+									disabled={!isEditing}
+									onChange={toggleNull}
+								/>
+							)}
+						</div>
+					</div>
+				</div>
+				{isUneditable && (
+					<button
+						className="tenant-detail__core-config-table__row-uneditable-button-container"
+						onClick={() => setIsUneditablePropertyDialogVisible(true)}>
+						<QuestionMarkIcon />
+					</button>
 				)}
 			</div>
-			<div className="tenant-detail__core-config-table__row__value">
-				{(type === "string" || type === "number") &&
-					(isEditing ? (
-						<InputField
-							type="text"
-							size="small"
-							errorPlacement="prefix-tooltip"
-							error={error}
-							name={name}
-							handleChange={(e) => {
-								if (e.type === "change") {
-									handleChange(name, e.currentTarget.value);
-								}
-							}}
-							value={`${value}`}
-						/>
-					) : (
-						<div className="tenant-detail__core-config-table__row__value__text">{value}</div>
-					))}
-				{typeof value === "boolean" && type === "boolean" && (
-					<Toggle
-						name={name}
-						id={name}
-						checked={value}
-						disabled={!isEditing}
-						onChange={() => handleChange(name, !value)}
-					/>
-				)}
-			</div>
-		</div>
+			{isUneditablePropertyDialogVisible && (
+				<UneditablePropertyDialog onCloseDialog={() => setIsUneditablePropertyDialogVisible(false)}>
+					{renderUneditablePropertyReason()}
+				</UneditablePropertyDialog>
+			)}
+		</>
 	);
 };

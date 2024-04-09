@@ -29,6 +29,13 @@ export const LoginMethodsSection = () => {
 	const { tenantInfo, setTenantInfo } = useTenantDetailContext();
 	const updateFirstFactors = useUpdateFirstFactorsService();
 	const updateSecondaryFactors = useUpdateSecondaryFactorsService();
+	const [selectedFactors, setSelectedFactors] = useState<{
+		firstFactors: Array<string>;
+		requiredSecondaryFactors: Array<string>;
+	}>({
+		firstFactors: tenantInfo.firstFactors ?? [],
+		requiredSecondaryFactors: tenantInfo.requiredSecondaryFactors ?? [],
+	});
 
 	const [isFirstFactorsLoading, setIsFirstFactorsLoading] = useState(false);
 	const [isSecondaryFactorsLoading, setIsSecondaryFactorsLoading] = useState(false);
@@ -51,38 +58,22 @@ export const LoginMethodsSection = () => {
 		!tenantInfo.firstFactors?.includes(FactorIds.THIRDPARTY);
 
 	const handleFactorChange = async (factorKey: "firstFactors" | "requiredSecondaryFactors", id: string) => {
-		const prevFactors = tenantInfo[factorKey] ?? [];
-		let newFactors = [...prevFactors];
-		const doesFactorExist = prevFactors.includes(id);
+		const prevFactors = selectedFactors;
+		const newFactors = { ...prevFactors };
+		const doesFactorExist = newFactors[factorKey].includes(id);
 		if (doesFactorExist) {
-			newFactors = newFactors.filter((factor) => factor !== id);
+			newFactors[factorKey] = newFactors[factorKey].filter((factor) => factor !== id);
 		} else {
-			newFactors = [...newFactors, id];
+			newFactors[factorKey] = [...newFactors[factorKey], id];
 		}
 		// Optimistically update the state for better UX
-		setTenantInfo((prev) =>
-			prev
-				? {
-						...prev,
-						[factorKey]: newFactors,
-				  }
-				: undefined
-		);
+		setSelectedFactors(newFactors);
 		try {
 			if (factorKey === "firstFactors") {
 				setIsFirstFactorsLoading(true);
 				const res = await updateFirstFactors(tenantInfo.tenantId, id, !doesFactorExist);
 				if (res.status !== "OK") {
-					// We revert the state in case of a non-OK response
-					setTenantInfo((prev) =>
-						prev
-							? {
-									...prev,
-									firstFactors: prevFactors,
-							  }
-							: undefined
-					);
-
+					setSelectedFactors(prevFactors);
 					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK") {
 						setFactorErrors((prev) => ({
 							...prev,
@@ -91,6 +82,16 @@ export const LoginMethodsSection = () => {
 					} else {
 						throw new Error(res.status);
 					}
+				} else {
+					// Update the tenantInfo state
+					setTenantInfo((prev) =>
+						prev
+							? {
+									...prev,
+									firstFactors: newFactors.firstFactors,
+							  }
+							: undefined
+					);
 				}
 			} else {
 				setIsSecondaryFactorsLoading(true);
@@ -111,18 +112,22 @@ export const LoginMethodsSection = () => {
 					}
 
 					// We allow users to update secondary factors even if
-					// getMFARequirementsForAuth is overridden
+					// getMFARequirementsForAuth is overridden, for rest of
+					// cases we revert the state
 					if (res.status !== "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") {
-						// We revert the state in case of a non-OK response
-						setTenantInfo((prev) =>
-							prev
-								? {
-										...prev,
-										requiredSecondaryFactors: prevFactors,
-								  }
-								: undefined
-						);
+						setSelectedFactors(prevFactors);
 					}
+				}
+
+				if (res.status === "OK" || res.status === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") {
+					setTenantInfo((prev) =>
+						prev
+							? {
+									...prev,
+									requiredSecondaryFactors: newFactors.requiredSecondaryFactors,
+							  }
+							: undefined
+					);
 				}
 			}
 		} catch (error) {
@@ -174,7 +179,7 @@ export const LoginMethodsSection = () => {
 								disabled={isFirstFactorsLoading}
 								description={method.description}
 								error={factorErrors.firstFactors[method.id]}
-								checked={tenantInfo.firstFactors.includes(method.id)}
+								checked={selectedFactors.firstFactors.includes(method.id)}
 								onChange={() => handleFactorChange("firstFactors", method.id)}
 							/>
 						))}
@@ -218,7 +223,7 @@ export const LoginMethodsSection = () => {
 								fixedGap
 								description={method.description}
 								error={factorErrors.requiredSecondaryFactors[method.id]}
-								checked={tenantInfo.requiredSecondaryFactors?.includes(method.id) ?? false}
+								checked={selectedFactors.requiredSecondaryFactors.includes(method.id)}
 								onChange={() => handleFactorChange("requiredSecondaryFactors", method.id)}
 							/>
 						))}

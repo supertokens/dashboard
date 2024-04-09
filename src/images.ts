@@ -73,6 +73,7 @@ import "./assets/provider-google.svg";
 import "./assets/provider-linkedin.svg";
 import "./assets/provider-okta.png";
 import "./assets/provider-twitter.svg";
+import "./assets/question-mark.svg";
 import "./assets/refresh.svg";
 import "./assets/right_arrow_icon.svg";
 import "./assets/roles-and-permissions.svg";
