@@ -14,7 +14,8 @@
  */
 import { ChangeEvent, useContext, useState } from "react";
 import { useThirdPartyService } from "../../../../../api/tenants";
-import { ProviderClientConfig, ProviderConfig } from "../../../../../api/tenants/types";
+import { ProviderClientConfig, ProviderConfig, ProviderConfigResponse } from "../../../../../api/tenants/types";
+import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "../../../../../constants";
 import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
@@ -23,7 +24,6 @@ import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/Dele
 import { KeyValueInput } from "../keyValueInput/KeyValueInput";
 import { useTenantDetailContext } from "../TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
-import { ProviderInfoProps } from "../thirdPartyPage/types";
 import {
 	ThirdPartyProviderInput,
 	ThirdPartyProviderInputLabel,
@@ -31,13 +31,17 @@ import {
 import { ClientConfig } from "./ClientConfig";
 import "./thirdPartyProviderConfig.scss";
 
-export const CustomProviderInfo = ({
+export const ProviderInfoForm = ({
 	providerId,
 	providerConfig,
 	handleGoBack,
 	isAddingNewProvider,
-	handlePostSaveProviders,
-}: ProviderInfoProps) => {
+}: {
+	providerId?: string;
+	isAddingNewProvider: boolean;
+	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
+	providerConfig?: ProviderConfigResponse;
+}) => {
 	const [providerConfigState, setProviderConfigState] = useState(getInitialProviderInfo(providerConfig));
 	const [errorState, setErrorState] = useState<Record<string, string>>({});
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
@@ -45,11 +49,15 @@ export const CustomProviderInfo = ({
 	const [isSaving, setIsSaving] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
 	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
+	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
+	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId?.startsWith(provider.id));
+	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
+	const shouldUsePrefixField = isAddingNewProvider && (inBuiltProviderInfo || isSAMLProvider);
 
 	const handleAddNewClient = () => {
 		setProviderConfigState((prev) => ({
 			...prev,
-			clients: [...(prev?.clients ?? []), { clientId: "", clientSecret: "", scope: [""] }],
+			clients: [...(prev?.clients ?? []), { clientId: "", clientSecret: "", clientType: "", scope: [""] }],
 		}));
 	};
 
@@ -78,6 +86,21 @@ export const CustomProviderInfo = ({
 				},
 			},
 		}));
+	};
+
+	const handleThirdPartyIdSuffixChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (e.type !== "change") {
+			return;
+		}
+
+		if (e.target.value.trim() === "") {
+			setProviderConfigState((prev) => ({ ...prev, thirdPartyId: baseProviderId }));
+		} else {
+			setProviderConfigState((prev) => ({
+				...prev,
+				thirdPartyId: `${baseProviderId}-${e.target.value.trim()}`,
+			}));
+		}
 	};
 
 	const handleSave = async () => {
@@ -297,7 +320,6 @@ export const CustomProviderInfo = ({
 		try {
 			setIsSaving(true);
 			await createOrUpdateThirdPartyProvider(tenantInfo.tenantId, normalizedProviderConfig as ProviderConfig);
-			await handlePostSaveProviders("add-or-update", normalizedProviderConfig.thirdPartyId);
 			handleGoBack(true);
 		} catch (e) {
 			showToast({
@@ -325,19 +347,33 @@ export const CustomProviderInfo = ({
 				</div>
 			</PanelHeader>
 			<div className="fields-container">
-				<ThirdPartyProviderInput
-					label="Third Party Id"
-					tooltip="The Id of the provider."
-					type="text"
-					name="thirdPartyId"
-					value={providerConfigState.thirdPartyId}
-					disabled={!isAddingNewProvider}
-					error={errorState.thirdPartyId}
-					forceShowError
-					isRequired
-					handleChange={handleFieldChange}
-					minLabelWidth={120}
-				/>
+				{shouldUsePrefixField ? (
+					<ThirdPartyProviderInput
+						label="Third Party Id"
+						tooltip="The Id of the provider."
+						prefix={`${baseProviderId}-`}
+						type="text"
+						name="thirdPartyId"
+						value={providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)}
+						forceShowError
+						error={errorState.thirdPartyId}
+						handleChange={handleThirdPartyIdSuffixChange}
+					/>
+				) : (
+					<ThirdPartyProviderInput
+						label="Third Party Id"
+						tooltip="The Id of the provider."
+						type="text"
+						name="thirdPartyId"
+						value={providerConfigState.thirdPartyId}
+						disabled={!isAddingNewProvider}
+						error={errorState.thirdPartyId}
+						forceShowError
+						isRequired
+						handleChange={handleFieldChange}
+						minLabelWidth={120}
+					/>
+				)}
 				<ThirdPartyProviderInput
 					label="Name"
 					tooltip="The name of the provider."
@@ -537,7 +573,6 @@ export const CustomProviderInfo = ({
 					onCloseDialog={() => setIsDeleteProviderDialogOpen(false)}
 					thirdPartyId={providerId ?? ""}
 					goBack={() => handleGoBack(true)}
-					handlePostSaveProviders={handlePostSaveProviders}
 				/>
 			)}
 		</PanelRoot>

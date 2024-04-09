@@ -32,16 +32,16 @@ export const PUBLIC_TENANT_ID = "public";
 
 export const IN_BUILT_THIRD_PARTY_PROVIDERS = [
 	{
-		id: "google",
-		label: "Google",
-		icon: "provider-google.svg",
-		isEnterprise: false,
-	},
-	{
 		id: "google-workspaces",
 		label: "Google Workspaces",
 		icon: "provider-google.svg",
 		isEnterprise: true,
+	},
+	{
+		id: "google",
+		label: "Google",
+		icon: "provider-google.svg",
+		isEnterprise: false,
 	},
 	{
 		id: "apple",

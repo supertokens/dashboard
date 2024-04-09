@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
@@ -22,15 +23,10 @@ import Button from "../../../button";
 import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/DeleteThirdPartyProvider";
 import { useTenantDetailContext } from "../TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
-import { ProviderInfoProps } from "../thirdPartyPage/types";
 import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
 import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
 import { ClientConfig } from "./ClientConfig";
 import "./thirdPartyProviderConfig.scss";
-
-type BuiltInProviderInfoProps = ProviderInfoProps & {
-	providerId: string;
-};
 
 export const BuiltInProviderInfo = ({
 	providerId,
@@ -38,7 +34,7 @@ export const BuiltInProviderInfo = ({
 	handleGoBack,
 	isAddingNewProvider,
 	handlePostSaveProviders,
-}: BuiltInProviderInfoProps) => {
+}: any) => {
 	const [providerConfigState, setProviderConfigState] = useState<ProviderConfig>(
 		getBuiltInProviderInfo(providerId, providerConfig)
 	);
@@ -421,7 +417,6 @@ export const BuiltInProviderInfo = ({
 						onCloseDialog={() => setIsDeleteProviderDialogOpen(false)}
 						thirdPartyId={providerId}
 						goBack={() => handleGoBack(true)}
-						handlePostSaveProviders={handlePostSaveProviders}
 					/>
 				)}
 			</PanelRoot>

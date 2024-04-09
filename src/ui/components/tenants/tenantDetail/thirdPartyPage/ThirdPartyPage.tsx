@@ -12,15 +12,17 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { Dispatch, SetStateAction } from "react";
-import { useThirdPartyService } from "../../../../../api/tenants";
-import { TenantDashboardView } from "../../../../../api/tenants/types";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useGetThirdPartyProviderInfo } from "../../../../../api/tenants";
+import { ProviderConfigResponse, TenantDashboardView } from "../../../../../api/tenants/types";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "../../../../../constants";
 import { getImageUrl } from "../../../../../utils";
+import { Loader } from "../../../loader/Loader";
 import { useTenantDetailContext } from "../TenantDetailContext";
 import { TenantDetailHeader } from "../TenantDetailHeader";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
+import { ProviderInfoForm } from "../thirdPartyProviderConfig/ProviderInfoForm";
 import "./thirdPartyPage.scss";
 
 export const ThirdPartyPage = ({
@@ -80,43 +82,49 @@ const ProviderInfo = ({
 	isAddingNewProvider: boolean;
 	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
 }) => {
-	const { tenantInfo, refetchTenant } = useTenantDetailContext();
-	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
-	const providerConfig = isAddingNewProvider
-		? undefined
-		: tenantInfo.thirdParty.providers.find((pid) => pid === providerId);
+	const { tenantInfo } = useTenantDetailContext();
+	const [isProviderInfoLoading, setIsProviderInfoLoading] = useState(true);
+	const getThirdPartyProviderInfo = useGetThirdPartyProviderInfo();
+	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>(undefined);
 	const isInBuiltProvider =
 		typeof providerId === "string" && IN_BUILT_THIRD_PARTY_PROVIDERS.some(({ id }) => providerId.startsWith(id));
 	const isSAMLProvider = typeof providerId === "string" && providerId.startsWith(SAML_PROVIDER_ID);
 
-	const handlePostSaveProviders = async (action: "add-or-update" | "delete", providerId: string) => {
-		await refetchTenant();
-	};
+	useEffect(() => {
+		const fetchProviderInfo = async (id: string) => {
+			try {
+				setIsProviderInfoLoading(true);
+				const response = await getThirdPartyProviderInfo(tenantInfo.tenantId, id);
+				if (response.status === "OK") {
+					setProviderConfigResponse(response.providerConfig);
+				}
+			} catch (error) {
+			} finally {
+				setIsProviderInfoLoading(false);
+			}
+		};
 
-	return null;
+		if (typeof providerId === "string") {
+			void fetchProviderInfo(providerId);
+		}
+	}, [providerId]);
 
-	// if (isInBuiltProvider || isSAMLProvider) {
-	// 	return (
-	// 		<BuiltInProviderInfo
-	// 			providerId={providerId}
-	// 			providerConfig={providerConfig}
-	// 			handleGoBack={handleGoBack}
-	// 			isAddingNewProvider={isAddingNewProvider}
-	// 			handlePostSaveProviders={handlePostSaveProviders}
-	// 		/>
-	// 	);
-	// }
+	if (isProviderInfoLoading && typeof providerId === "string") {
+		return <Loader />;
+	}
 
-	// Handle custom providers here
-	// return (
-	// 	<CustomProviderInfo
-	// 		providerId={providerId}
-	// 		providerConfig={providerConfig}
-	// 		handleGoBack={handleGoBack}
-	// 		isAddingNewProvider={isAddingNewProvider}
-	// 		handlePostSaveProviders={handlePostSaveProviders}
-	// 	/>
-	// );
+	if (!isProviderInfoLoading && !providerConfigResponse && typeof providerId === "string") {
+		throw new Error("Provider config not found");
+	}
+
+	return (
+		<ProviderInfoForm
+			providerId={providerId}
+			providerConfig={providerConfigResponse}
+			handleGoBack={handleGoBack}
+			isAddingNewProvider={isAddingNewProvider}
+		/>
+	);
 };
 
 const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {

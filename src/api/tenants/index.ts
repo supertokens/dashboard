@@ -13,7 +13,7 @@
  * under the License.
  */
 import { getApiUrl, useFetchData } from "../../utils";
-import { ProviderConfig, TenantInfo } from "./types";
+import { ProviderConfig, ProviderConfigResponse, TenantInfo } from "./types";
 
 export const useTenantCreateService = () => {
 	const fetchData = useFetchData(true);
@@ -88,7 +88,7 @@ export const useTenantGetService = () => {
 				thirdParty: {
 					providers: [],
 				},
-				firstFactors: [],
+				firstFactors: ["thirdparty"],
 				requiredSecondaryFactors: [],
 				userCount: 12,
 				coreConfig: [
@@ -177,9 +177,7 @@ export const useTenantDeleteService = () => {
 		};
 
 		if (response.ok) {
-			return {
-				status: "OK",
-			};
+			return await response.json();
 		}
 
 		throw new Error("Unknown error");
@@ -204,7 +202,8 @@ export const useUpdateFirstFactorsService = () => {
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		return {
-			status: "OK",
+			status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK",
+			message: "Recipe not initialized",
 		};
 
 		const response = await fetchData({
@@ -219,9 +218,7 @@ export const useUpdateFirstFactorsService = () => {
 		});
 
 		if (response.ok) {
-			return {
-				status: "OK",
-			};
+			return await response.json();
 		}
 
 		throw new Error("Unknown error");
@@ -263,9 +260,7 @@ export const useUpdateSecondaryFactorsService = () => {
 		});
 
 		if (response.ok) {
-			return {
-				status: "OK",
-			};
+			return await response.json();
 		}
 
 		throw new Error("Unknown error");
@@ -304,15 +299,64 @@ export const useUpdateCoreConfigService = () => {
 		});
 
 		if (response.ok) {
-			return {
-				status: "OK",
-			};
+			return await response.json();
 		}
 
 		throw new Error("Unknown error");
 	};
 
 	return updateCoreConfig;
+};
+
+export const useGetThirdPartyProviderInfo = () => {
+	const fetchData = useFetchData();
+
+	const getThirdPartyProviderInfo = async (
+		tenantId: string,
+		providerId: string
+	): Promise<
+		| {
+				status: "OK";
+				providerConfig: ProviderConfigResponse;
+		  }
+		| {
+				status: "UNKNOWN_TENANT_ERROR";
+		  }
+	> => {
+		return {
+			status: "OK",
+			providerConfig: {
+				oidcDiscoveryEndpoint: "https://oidc.discovery.endpoint",
+				thirdPartyId: providerId,
+				name: "Provider Name",
+				clients: [
+					{
+						clientId: "client-id",
+						clientSecret: "secret",
+						scope: ["scope"],
+						forcePKCE: false,
+						additionalConfig: {},
+					},
+				],
+				isGetAuthorisationRedirectUrlOverridden: false,
+				isExchangeAuthCodeForOAuthTokensOverridden: false,
+				isGetUserInfoOverridden: false,
+			},
+		};
+
+		const response = await fetchData({
+			url: getApiUrl(`/api/thirdparty/config?third-party-id=${providerId}`, tenantId),
+			method: "GET",
+		});
+
+		if (response.ok) {
+			return await response.json();
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	return getThirdPartyProviderInfo;
 };
 
 export const useThirdPartyService = () => {

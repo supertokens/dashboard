@@ -19,19 +19,16 @@ import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
 import { useTenantDetailContext } from "../TenantDetailContext";
-import { ProviderInfoProps } from "../thirdPartyPage/types";
 import "./deleteThirdPartyProvider.scss";
 
 export const DeleteThirdPartyProviderDialog = ({
 	onCloseDialog,
 	thirdPartyId,
 	goBack,
-	handlePostSaveProviders,
 }: {
 	onCloseDialog: () => void;
 	goBack: () => void;
 	thirdPartyId: string;
-	handlePostSaveProviders: ProviderInfoProps["handlePostSaveProviders"];
 }) => {
 	const [isDeletingProvider, setIsDeletingProvider] = useState(false);
 	const { deleteThirdPartyProvider } = useThirdPartyService();
@@ -43,7 +40,6 @@ export const DeleteThirdPartyProviderDialog = ({
 			setIsDeletingProvider(true);
 			const res = await deleteThirdPartyProvider(tenantInfo.tenantId, thirdPartyId);
 			if (res.status === "OK") {
-				await handlePostSaveProviders("delete", thirdPartyId);
 				onCloseDialog();
 				goBack();
 			} else {

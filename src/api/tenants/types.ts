@@ -40,6 +40,12 @@ export type ProviderConfig = CommonProviderConfig & {
 	clients?: ProviderClientConfig[];
 };
 
+export type ProviderConfigResponse = ProviderConfig & {
+	isGetAuthorisationRedirectUrlOverridden: boolean;
+	isExchangeAuthCodeForOAuthTokensOverridden: boolean;
+	isGetUserInfoOverridden: boolean;
+};
+
 export type TenantInfo = {
 	tenantId: string;
 	thirdParty: {
