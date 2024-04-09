@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 /* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
@@ -34,7 +35,7 @@ export const BuiltInProviderInfo = ({
 	handleGoBack,
 	isAddingNewProvider,
 	handlePostSaveProviders,
-}: any) => {
+}: unknown) => {
 	const [providerConfigState, setProviderConfigState] = useState<ProviderConfig>(
 		getBuiltInProviderInfo(providerId, providerConfig)
 	);

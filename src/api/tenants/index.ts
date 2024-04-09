@@ -313,7 +313,8 @@ export const useGetThirdPartyProviderInfo = () => {
 
 	const getThirdPartyProviderInfo = async (
 		tenantId: string,
-		providerId: string
+		providerId: string,
+		additionalConfig?: Record<string, string>
 	): Promise<
 		| {
 				status: "OK";
@@ -335,7 +336,11 @@ export const useGetThirdPartyProviderInfo = () => {
 						clientSecret: "secret",
 						scope: ["scope"],
 						forcePKCE: false,
-						additionalConfig: {},
+						additionalConfig: {
+							keyId: "value",
+							privateKey: "private-key",
+							teamId: "team-id",
+						},
 					},
 				],
 				isGetAuthorisationRedirectUrlOverridden: false,
@@ -344,8 +349,15 @@ export const useGetThirdPartyProviderInfo = () => {
 			},
 		};
 
+		const additionalConfigQueryParams = new URLSearchParams(additionalConfig).toString();
+
 		const response = await fetchData({
-			url: getApiUrl(`/api/thirdparty/config?third-party-id=${providerId}`, tenantId),
+			url: getApiUrl(
+				`/api/thirdparty/config?third-party-id=${providerId}${
+					additionalConfigQueryParams ? `&${additionalConfigQueryParams}` : ""
+				}`,
+				tenantId
+			),
 			method: "GET",
 		});
 

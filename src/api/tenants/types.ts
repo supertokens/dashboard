@@ -33,7 +33,7 @@ export type ProviderClientConfig = {
 	clientSecret?: string;
 	scope?: string[] | null;
 	forcePKCE?: boolean;
-	additionalConfig?: { [key: string]: unknown };
+	additionalConfig?: { [key: string]: string };
 };
 
 export type ProviderConfig = CommonProviderConfig & {
@@ -102,8 +102,9 @@ export type ProviderCustomField = {
 };
 
 export type BuiltInProvidersCustomFields = {
-	[key: string]: {
-		additionalConfigFields?: ProviderCustomField[];
-		defaultScopes?: string[];
-	};
+	[key: string]: ProviderCustomField[];
+};
+
+export type ProviderClientState = Omit<ProviderClientConfig, "additionalConfig"> & {
+	additionalConfig: Array<[string, string | null]>;
 };

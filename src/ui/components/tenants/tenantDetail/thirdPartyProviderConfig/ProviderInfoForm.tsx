@@ -14,7 +14,12 @@
  */
 import { ChangeEvent, useContext, useState } from "react";
 import { useThirdPartyService } from "../../../../../api/tenants";
-import { ProviderClientConfig, ProviderConfig, ProviderConfigResponse } from "../../../../../api/tenants/types";
+import {
+	BuiltInProvidersCustomFields,
+	ProviderClientState,
+	ProviderConfig,
+	ProviderConfigResponse,
+} from "../../../../../api/tenants/types";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "../../../../../constants";
 import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
@@ -53,11 +58,31 @@ export const ProviderInfoForm = ({
 	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId?.startsWith(provider.id));
 	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
 	const shouldUsePrefixField = isAddingNewProvider && (inBuiltProviderInfo || isSAMLProvider);
+	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
+		providerId?.startsWith(id)
+	);
+	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : undefined;
 
 	const handleAddNewClient = () => {
+		let additionalConfigFields: Array<[string, string]> = [["", ""]];
+
+		if (customFields) {
+			additionalConfigFields = customFields.map((field) => [field.id, ""]);
+		}
+
 		setProviderConfigState((prev) => ({
 			...prev,
-			clients: [...(prev?.clients ?? []), { clientId: "", clientSecret: "", clientType: "", scope: [""] }],
+			clients: [
+				...(prev?.clients ?? []),
+				{
+					clientId: "",
+					clientSecret: "",
+					clientType: "",
+					scope: [""],
+					additionalConfig: additionalConfigFields,
+					forcePKCE: false,
+				},
+			],
 		}));
 	};
 
@@ -106,9 +131,10 @@ export const ProviderInfoForm = ({
 	const handleSave = async () => {
 		setErrorState({});
 		const clientTypes = new Set<string>();
+		const isAppleProvider = providerId?.startsWith("apple");
 		let isValid = true;
 		const doesThirdPartyIdExist = tenantInfo.thirdParty.providers.some(
-			(providerId) => providerId === providerConfigState.thirdPartyId
+			(pid) => pid === providerConfigState.thirdPartyId
 		);
 
 		if (typeof providerConfigState.thirdPartyId !== "string" || providerConfigState.thirdPartyId.trim() === "") {
@@ -135,12 +161,14 @@ export const ProviderInfoForm = ({
 				setErrorState((prev) => ({ ...prev, [`clients.${index}.clientId`]: "Client Id is required" }));
 				isValid = false;
 			}
-			if (typeof client.clientSecret !== "string" || client.clientSecret.trim() === "") {
-				setErrorState((prev) => ({
-					...prev,
-					[`clients.${index}.clientSecret`]: "Client Secret is required",
-				}));
-				isValid = false;
+			if (!isAppleProvider) {
+				if (typeof client.clientSecret !== "string" || client.clientSecret.trim() === "") {
+					setErrorState((prev) => ({
+						...prev,
+						[`clients.${index}.clientSecret`]: "Client Secret is required",
+					}));
+					isValid = false;
+				}
 			}
 			if ((providerConfigState.clients?.length ?? 0) > 1) {
 				if (typeof client.clientType !== "string" || client.clientType.trim() === "") {
@@ -158,6 +186,21 @@ export const ProviderInfoForm = ({
 				clientTypes.add(client.clientType);
 			}
 		});
+
+		if (customFields) {
+			providerConfigState.clients?.forEach((client, index) => {
+				customFields?.forEach((field) => {
+					const fieldValue = client.additionalConfig.find(([key]) => key === field.id)?.[1];
+					if (field.required && (typeof fieldValue !== "string" || fieldValue.trim() === "")) {
+						setErrorState((prev) => ({
+							...prev,
+							[`clients.${index}.additionalConfig.${field.id}`]: `${field.label} is required`,
+						}));
+						isValid = false;
+					}
+				});
+			});
+		}
 
 		if (
 			(providerConfigState.oidcDiscoveryEndpoint?.trim().length ?? 0) > 0 &&
@@ -262,6 +305,9 @@ export const ProviderInfoForm = ({
 				clientType: client.clientType?.trim(),
 				clientSecret: client.clientSecret?.trim(),
 				scope: normalizedScopes,
+				additionalConfig: Object.fromEntries(
+					client.additionalConfig.filter(([key, _]: [string, string | null]) => key.trim().length > 0)
+				),
 			};
 		});
 
@@ -397,7 +443,8 @@ export const ProviderInfoForm = ({
 							client={client}
 							clientIndex={index}
 							errors={errorState}
-							setClient={(client: ProviderClientConfig) => {
+							additionalConfigFields={customFields}
+							setClient={(client: ProviderClientState) => {
 								setProviderConfigState((prev) => ({
 									...prev,
 									clients: prev.clients?.map((c, i) => (i === index ? client : c)),
@@ -664,14 +711,19 @@ type ProviderConfigState = Omit<
 	| "authorizationEndpointQueryParams"
 	| "userInfoEndpointHeaders"
 	| "userInfoEndpointQueryParams"
+	| "clients"
 > & {
 	tokenEndpointBodyParams: Array<[string, string | null]>;
 	authorizationEndpointQueryParams: Array<[string, string | null]>;
 	userInfoEndpointHeaders: Array<[string, string | null]>;
 	userInfoEndpointQueryParams: Array<[string, string | null]>;
+	clients: ProviderClientState[];
 };
 
-const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined): ProviderConfigState => {
+const getInitialProviderInfo = (
+	providerConfig: ProviderConfig | undefined,
+	providerId?: string
+): ProviderConfigState => {
 	if (providerConfig !== undefined) {
 		return {
 			...providerConfig,
@@ -694,7 +746,25 @@ const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined): Pro
 					emailVerified: providerConfig.userInfoMap?.fromUserInfoAPI?.emailVerified ?? "",
 				},
 			},
-			clients: providerConfig.clients ?? [],
+			clients:
+				Array.isArray(providerConfig.clients) && providerConfig.clients.length > 0
+					? providerConfig.clients.map((client) => ({
+							...client,
+							additionalConfig:
+								client.additionalConfig && Object.keys(client.additionalConfig).length > 0
+									? Object.entries(client.additionalConfig)
+									: [["", ""]],
+					  }))
+					: [
+							{
+								clientId: "",
+								clientSecret: "",
+								clientType: "",
+								scope: [""],
+								additionalConfig: [["", ""]],
+								forcePKCE: false,
+							},
+					  ],
 			tokenEndpointBodyParams:
 				providerConfig.tokenEndpointBodyParams && Object.keys(providerConfig.tokenEndpointBodyParams).length > 0
 					? Object.entries(providerConfig.tokenEndpointBodyParams)
@@ -715,6 +785,13 @@ const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined): Pro
 					: [["", ""]],
 		};
 	}
+
+	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
+		providerId?.startsWith(id)
+	);
+	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : [];
+
+	const additionaConfigFields: Array<[string, string]> = customFields.map((field) => [field.id, ""]);
 
 	return {
 		thirdPartyId: "",
@@ -741,6 +818,78 @@ const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined): Pro
 			},
 		},
 		requireEmail: true,
-		clients: [{ clientId: "", clientSecret: "", clientType: "", scope: [""] }],
+		clients: [
+			{
+				clientId: "",
+				clientSecret: "",
+				clientType: "",
+				scope: [""],
+				additionalConfig: additionaConfigFields,
+				forcePKCE: false,
+			},
+		],
 	};
+};
+const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
+	apple: [
+		{
+			label: "Key Id",
+			id: "keyId",
+			tooltip: "The key Id for Apple.",
+			type: "text",
+			required: true,
+		},
+		{
+			label: "Team Id",
+			id: "teamId",
+			tooltip: "The team Id for Apple.",
+			type: "text",
+			required: true,
+		},
+		{
+			label: "Private Key",
+			id: "privateKey",
+			tooltip: "The private key for Apple.",
+			type: "text",
+			required: true,
+		},
+	],
+	"google-workspaces": [
+		{
+			label: "Hosted Domain",
+			id: "hd",
+			tooltip: "The hosted domain for Google Workspaces.",
+			type: "text",
+			required: true,
+		},
+	],
+
+	"active-directory": [
+		{
+			label: "Directory Id",
+			id: "directoryId",
+			tooltip:
+				"The id of the Microsoft Entra tenant, this is required if OIDC discovery endpoint is not provided.",
+			type: "text",
+			required: true,
+		},
+	],
+	okta: [
+		{
+			label: "Okta Domain",
+			id: "oktaDomain",
+			tooltip: "The domain of your Okta account, this is required if OIDC discovery endpoint is not provided.",
+			type: "text",
+			required: true,
+		},
+	],
+	"boxy-saml": [
+		{
+			label: "Boxy URL",
+			id: "boxyURL",
+			tooltip: "The URL of the Boxy instance.",
+			type: "text",
+			required: true,
+		},
+	],
 };

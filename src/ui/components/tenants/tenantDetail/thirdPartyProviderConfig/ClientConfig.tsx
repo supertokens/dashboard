@@ -13,13 +13,16 @@
  * under the License.
  */
 import { ChangeEvent, useState } from "react";
-import { ProviderClientConfig, ProviderCustomField } from "../../../../../api/tenants/types";
-import { ReactComponent as ChevronDown } from "../../../../../assets/chevron-down.svg";
+import { ProviderClientState, ProviderCustomField } from "../../../../../api/tenants/types";
 import { ReactComponent as TrashIcon } from "../../../../../assets/trash.svg";
-import { CollapsibleContent, CollapsibleFixed, CollapsibleRoot } from "../../../collapsible/Collapsible";
 import { DeleteCrossButton } from "../../../deleteCrossButton/DeleteCrossButton";
+import { Toggle } from "../../../toggle/Toggle";
 import { DeleteClientDialog } from "../deleteThirdPartyClient/DeleteThirdPartyClient";
-import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
+import { KeyValueInput } from "../keyValueInput/KeyValueInput";
+import {
+	ThirdPartyProviderInput,
+	ThirdPartyProviderInputLabel,
+} from "../thirdPartyProviderInput/ThirdPartyProviderInput";
 import "./thirdPartyProviderConfig.scss";
 
 const LABEL_MIN_WIDTH = 130;
@@ -35,9 +38,9 @@ export const ClientConfig = ({
 	errors,
 }: {
 	providerId: string;
-	client: ProviderClientConfig;
+	client: ProviderClientState;
 	clientsCount: number;
-	setClient: (client: ProviderClientConfig) => void;
+	setClient: (client: ProviderClientState) => void;
 	additionalConfigFields?: Array<ProviderCustomField>;
 	handleDeleteClient: () => void;
 	clientIndex: number;
@@ -51,10 +54,14 @@ export const ClientConfig = ({
 		}
 	};
 
-	const handleAdditionalConfigChange = (name: string, e: ChangeEvent<HTMLInputElement>) => {
-		if (e.type === "change") {
-			setClient({ ...client, additionalConfig: { ...client.additionalConfig, [name]: e.target.value } });
-		}
+	const handleAdditionalConfigChange = (key: string, e: ChangeEvent<HTMLInputElement>) => {
+		const newAdditionalConfig: Array<[string, string | null]> = client.additionalConfig.map(([k, v]) => {
+			if (k === key) {
+				return [k, e.target.value];
+			}
+			return [k, v];
+		});
+		setClient({ ...client, additionalConfig: newAdditionalConfig });
 	};
 
 	const handleScopesChange = (scopes: Array<string>) => {
@@ -109,7 +116,7 @@ export const ClientConfig = ({
 							tooltip={field.tooltip}
 							type={field.type}
 							name={`${field.id}-${clientIndex}`}
-							value={(client?.additionalConfig?.[field.id] as string | undefined) ?? ""}
+							value={client?.additionalConfig?.find(([key]) => key === field.id)?.[1] ?? ""}
 							isRequired={field.required}
 							minLabelWidth={LABEL_MIN_WIDTH}
 							error={errors[`clients.${clientIndex}.additionalConfig.${field.id}`]}
@@ -131,32 +138,35 @@ export const ClientConfig = ({
 					/>
 				</div>
 				<hr className="client-config-container__divider" />
-				<CollapsibleRoot>
-					<CollapsibleFixed>
-						{({ isCollapsed, setIsCollapsed }) => (
-							<div className="client-config-container__advanced-settings-header">
-								<h2 className="client-config-container__advanced-settings-title">Advanced Settings</h2>
-								<button
-									aria-label="Toggle Settings"
-									className={`client-config-container__advanced-settings-toggle ${
-										!isCollapsed ? "client-config-container__advanced-settings-toggle--open" : ""
-									}`}
-									onClick={() => setIsCollapsed(!isCollapsed)}>
-									<ChevronDown />
-								</button>
-							</div>
-						)}
-					</CollapsibleFixed>
-
-					<CollapsibleContent>
-						<div className="client-config-container__advanced-settings">
-							<Scopes
-								scopes={client.scope ?? [""]}
-								setScopes={handleScopesChange}
-							/>
-						</div>
-					</CollapsibleContent>
-				</CollapsibleRoot>
+				<div className="client-config-container__advanced-settings">
+					<Scopes
+						scopes={client.scope ?? [""]}
+						setScopes={handleScopesChange}
+					/>
+					<KeyValueInput
+						label="Additional Config"
+						name="additionalConfig"
+						fixedFields={additionalConfigFields?.map((field) => field.id) ?? []}
+						tooltip="Additional configuration for the provider for this client."
+						value={client.additionalConfig}
+						onChange={(value) => {
+							setClient({ ...client, additionalConfig: value });
+						}}
+					/>
+					<div className="fields-container__toggle-container">
+						<ThirdPartyProviderInputLabel
+							label="Force PKCE"
+							tooltip="Enable this if you want to force PKCE flow for this client."
+						/>
+						<Toggle
+							id="requireEmail"
+							checked={client.forcePKCE ?? false}
+							onChange={(e) => {
+								setClient({ ...client, forcePKCE: e.target.checked });
+							}}
+						/>
+					</div>
+				</div>
 			</div>
 			{isDeleteDialogOpen && (
 				<DeleteClientDialog

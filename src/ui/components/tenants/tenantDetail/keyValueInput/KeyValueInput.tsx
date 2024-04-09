@@ -26,10 +26,11 @@ type KeyValueInputProps = {
 	value: Array<[string, string | null]>;
 	name: string;
 	onChange: (value: Array<[string, string | null]>) => void;
+	fixedFields?: Array<string>;
 };
 
 export const KeyValueInput = (props: KeyValueInputProps) => {
-	const { label, value, tooltip, isRequired, name } = props;
+	const { label, value, tooltip, isRequired, name, fixedFields } = props;
 	return (
 		<div className="key-value-input-container">
 			<ThirdPartyProviderInputLabel
@@ -46,6 +47,7 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 								key={index}>
 								<ThirdPartyProviderInput
 									value={pair[0]}
+									disabled={fixedFields?.includes(pair[0])}
 									handleChange={(e) => {
 										const newValue: Array<[string, string | null]> = [
 											...props.value.slice(0, index),
@@ -60,6 +62,7 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 								/>
 								<ThirdPartyProviderInput
 									value={pair[1] ?? ""}
+									disabled={fixedFields?.includes(pair[0])}
 									handleChange={(e) => {
 										const newValue: Array<[string, string | null]> = [
 											...props.value.slice(0, index),
@@ -72,7 +75,7 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 									name={`value-${name}-${index}`}
 									type="text"
 								/>
-								{value.length > 1 && (
+								{value.length > 1 && fixedFields?.includes(pair[0]) === false && (
 									<DeleteCrossButton
 										onClick={() => props.onChange(props.value.filter((_, i) => i !== index))}
 										label="Delete"

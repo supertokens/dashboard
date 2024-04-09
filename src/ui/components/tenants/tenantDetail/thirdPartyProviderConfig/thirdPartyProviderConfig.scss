@@ -198,7 +198,7 @@
 	border: none;
 }
 
-.built-in-provider-footer {
+.additional-config-footer {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -268,6 +268,36 @@
 	&__primary-ctas {
 		display: flex;
 		gap: 24px;
+	}
+}
+
+.additional-config-field {
+	background-color: var(--color-factor-bg);
+	border-radius: 6px;
+	padding: 18px 24px;
+	max-width: 442px;
+}
+
+.additional-config-container {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+
+	&__header {
+		font-family: inherit;
+		font-weight: 400;
+		font-size: 14px;
+		line-height: 23px;
+		color: var(--color-secondary-text);
+	}
+
+	&__note {
+		font-family: inherit;
+		font-weight: 400;
+		font-size: 14px;
+		line-height: 23px;
+		color: var(--color-secondary-text);
+		margin-top: 4px;
 	}
 }
 
