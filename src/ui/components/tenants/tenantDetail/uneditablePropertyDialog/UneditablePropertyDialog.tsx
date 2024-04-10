@@ -12,8 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import Button from "../../../button";
-import { Dialog, DialogConfirmText, DialogContent, DialogFooter } from "../../../dialog";
+import { Dialog, DialogConfirmText, DialogContent } from "../../../dialog";
 
 export const UneditablePropertyDialog = ({
 	onCloseDialog,
@@ -28,14 +27,6 @@ export const UneditablePropertyDialog = ({
 			onCloseDialog={onCloseDialog}>
 			<DialogContent>
 				<DialogConfirmText>{children}</DialogConfirmText>
-				<DialogFooter>
-					<Button
-						onClick={onCloseDialog}
-						color="gray-outline">
-						Cancel
-					</Button>
-					<Button onClick={onCloseDialog}>Done</Button>
-				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	);

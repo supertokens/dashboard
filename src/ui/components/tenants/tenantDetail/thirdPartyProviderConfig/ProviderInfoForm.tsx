@@ -28,6 +28,7 @@ import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/Dele
 import { KeyValueInput } from "../keyValueInput/KeyValueInput";
 import { useTenantDetailContext } from "../TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
+import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
 import {
 	ThirdPartyProviderInput,
 	ThirdPartyProviderInputLabel,
@@ -46,7 +47,7 @@ export const ProviderInfoForm = ({
 	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
 	providerConfig?: ProviderConfigResponse;
 }) => {
-	const [providerConfigState, setProviderConfigState] = useState(getInitialProviderInfo(providerConfig));
+	const [providerConfigState, setProviderConfigState] = useState(getInitialProviderInfo(providerConfig, providerId));
 	const [errorState, setErrorState] = useState<Record<string, string>>({});
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
 	const { tenantInfo, refetchTenant } = useTenantDetailContext();
@@ -147,11 +148,6 @@ export const ProviderInfoForm = ({
 			isValid = false;
 		} else if (doesThirdPartyIdExist && isAddingNewProvider) {
 			setErrorState((prev) => ({ ...prev, thirdPartyId: "Third Party Id already exists" }));
-			isValid = false;
-		}
-
-		if (typeof providerConfigState.name !== "string" || providerConfigState.name.trim() === "") {
-			setErrorState((prev) => ({ ...prev, name: "Name is required" }));
 			isValid = false;
 		}
 
@@ -344,7 +340,16 @@ export const ProviderInfoForm = ({
 		<PanelRoot>
 			<PanelHeader>
 				<div className="built-in-provider-config-header">
-					<PanelHeaderTitleWithTooltip>Custom Provider Configuration</PanelHeaderTitleWithTooltip>
+					<div className="built-in-provider-config-header__title">
+						<PanelHeaderTitleWithTooltip>Provider Configuration</PanelHeaderTitleWithTooltip>
+						{inBuiltProviderInfo && (
+							<ThirdPartyProviderButton
+								title={inBuiltProviderInfo?.label}
+								icon={inBuiltProviderInfo?.icon}
+								disabled
+							/>
+						)}
+					</div>
 					{!isAddingNewProvider && (
 						<Button
 							color="danger"
@@ -390,7 +395,6 @@ export const ProviderInfoForm = ({
 					error={errorState.name}
 					forceShowError
 					value={providerConfigState.name}
-					isRequired
 					minLabelWidth={120}
 					handleChange={handleFieldChange}
 				/>
@@ -801,6 +805,12 @@ const getInitialProviderInfo = (
 	providerConfig: ProviderConfig | undefined,
 	providerId?: string
 ): ProviderConfigState => {
+	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
+		providerId?.startsWith(id)
+	);
+	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : [];
+
+	const additionaConfigFields: Array<[string, string]> = customFields.map((field) => [field.id, ""]);
 	if (providerConfig !== undefined) {
 		return {
 			...providerConfig,
@@ -838,7 +848,7 @@ const getInitialProviderInfo = (
 								clientSecret: "",
 								clientType: "",
 								scope: [""],
-								additionalConfig: [["", ""]],
+								additionalConfig: additionaConfigFields,
 								forcePKCE: false,
 							},
 					  ],
@@ -862,13 +872,6 @@ const getInitialProviderInfo = (
 					: [["", ""]],
 		};
 	}
-
-	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
-		providerId?.startsWith(id)
-	);
-	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : [];
-
-	const additionaConfigFields: Array<[string, string]> = customFields.map((field) => [field.id, ""]);
 
 	return {
 		thirdPartyId: "",

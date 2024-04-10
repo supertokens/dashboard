@@ -86,7 +86,7 @@ export const useTenantGetService = () => {
 			tenant: {
 				tenantId,
 				thirdParty: {
-					providers: [],
+					providers: ["apple", "google"],
 				},
 				firstFactors: ["thirdparty"],
 				requiredSecondaryFactors: [],
@@ -323,6 +323,9 @@ export const useGetThirdPartyProviderInfo = () => {
 				status: "UNKNOWN_TENANT_ERROR";
 		  }
 	> => {
+		// TODO: Temporary mock data
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+
 		return {
 			status: "OK",
 			providerConfig: {
@@ -331,15 +334,11 @@ export const useGetThirdPartyProviderInfo = () => {
 				name: "Provider Name",
 				clients: [
 					{
-						clientId: "client-id",
-						clientSecret: "secret",
-						scope: ["scope"],
+						clientId: "",
+						clientSecret: "",
+						scope: [""],
 						forcePKCE: false,
-						additionalConfig: {
-							keyId: "value",
-							privateKey: "private-key",
-							teamId: "team-id",
-						},
+						additionalConfig,
 					},
 				],
 				isGetAuthorisationRedirectUrlOverridden: false,
@@ -377,6 +376,13 @@ export const useCreateOrUpdateThirdPartyProvider = () => {
 		tenantId: string,
 		providerConfig: ProviderConfig
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
+		// TODO: Temporary mock data
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+
+		return {
+			status: "OK",
+		};
+
 		const response = await fetchData({
 			url: getApiUrl("/api/thirdparty/config", tenantId),
 			method: "PUT",
@@ -405,6 +411,13 @@ export const useDeleteThirdPartyProvider = () => {
 		tenantId: string,
 		providerId: string
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
+		// TODO: Temporary mock data
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+
+		return {
+			status: "OK",
+		};
+
 		const response = await fetchData({
 			url: getApiUrl(`/api/thirdparty?third-party-id=${providerId}`, tenantId),
 			method: "DELETE",
