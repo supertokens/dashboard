@@ -49,7 +49,7 @@ export const ProviderInfoForm = ({
 	const [providerConfigState, setProviderConfigState] = useState(getInitialProviderInfo(providerConfig));
 	const [errorState, setErrorState] = useState<Record<string, string>>({});
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
-	const { tenantInfo } = useTenantDetailContext();
+	const { tenantInfo, refetchTenant } = useTenantDetailContext();
 	const [isSaving, setIsSaving] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
 	const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProvider();
@@ -327,6 +327,7 @@ export const ProviderInfoForm = ({
 		try {
 			setIsSaving(true);
 			await createOrUpdateThirdPartyProvider(tenantInfo.tenantId, normalizedProviderConfig as ProviderConfig);
+			await refetchTenant();
 			handleGoBack(true);
 		} catch (e) {
 			showToast({

@@ -24,6 +24,7 @@ import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialo
 import { CoreConfigSection } from "./CoreConfigSection";
 import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";
 import { LoginMethodsSection } from "./LoginMethodsSection";
+import { ProviderListDialog } from "./providerListDialog/ProviderListDialog";
 import "./tenantDetail.scss";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
@@ -42,6 +43,7 @@ export const TenantDetail = ({
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
+	const [isProviderListVisible, setIsProviderListVisible] = useState(false);
 	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
 	const [viewObj, setViewObj] = useState<TenantDashboardView>({
 		view: "tenant-detail",
@@ -88,9 +90,7 @@ export const TenantDetail = ({
 	const handleAddNewProvider = () => {
 		window.scrollTo(0, 0);
 		setIsNoProviderAddedDialogVisible(false);
-		setViewObj({
-			view: "list-third-party-providers",
-		});
+		setIsProviderListVisible(true);
 	};
 
 	const handleEditProvider = (providerId: string) => {
@@ -107,7 +107,7 @@ export const TenantDetail = ({
 			throw new Error("This should be unreachable");
 		}
 
-		if (viewObj.view === "list-third-party-providers" || viewObj.view === "add-or-edit-third-party-provider") {
+		if (viewObj.view === "add-or-edit-third-party-provider") {
 			return (
 				<ThirdPartyPage
 					viewObj={viewObj}
@@ -153,6 +153,12 @@ export const TenantDetail = ({
 						onCloseDialog={() => setIsDeleteTenantDialogOpen(false)}
 						tenantId={tenant.tenantId}
 						goBack={onBackButtonClicked}
+					/>
+				)}
+				{isProviderListVisible && (
+					<ProviderListDialog
+						setViewObj={setViewObj}
+						onCloseDialog={() => setIsProviderListVisible(false)}
 					/>
 				)}
 			</div>

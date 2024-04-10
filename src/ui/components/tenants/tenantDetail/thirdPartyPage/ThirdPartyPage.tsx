@@ -34,16 +34,8 @@ export const ThirdPartyPage = ({
 	viewObj: TenantDashboardView;
 	setViewObj: Dispatch<SetStateAction<TenantDashboardView>>;
 }) => {
-	const handleProviderInfoBack = (shouldGoBackToDetailPage = false) => {
-		if (
-			viewObj.view === "add-or-edit-third-party-provider" &&
-			viewObj.isAddingNewProvider &&
-			!shouldGoBackToDetailPage
-		) {
-			setViewObj({ view: "list-third-party-providers" });
-		} else {
-			setViewObj({ view: "tenant-detail" });
-		}
+	const handleProviderInfoBack = () => {
+		setViewObj({ view: "tenant-detail" });
 	};
 	return (
 		<div className="third-party-section">
@@ -54,15 +46,10 @@ export const ThirdPartyPage = ({
 					src={getImageUrl("left-arrow-dark.svg")}
 					alt="Go back"
 				/>
-				<span>
-					{viewObj.view === "add-or-edit-third-party-provider" && viewObj.isAddingNewProvider
-						? "Back to add new providers"
-						: "Back to tenant info"}
-				</span>
+				<span>Back to tenant info</span>
 			</button>
 			<div className="third-party-section__cards">
 				<TenantDetailHeader onlyShowTenantId />
-				{viewObj.view === "list-third-party-providers" && <ThirdPartyProvidersList setViewObj={setViewObj} />}
 				{viewObj.view === "add-or-edit-third-party-provider" && (
 					<ProviderInfo
 						providerId={viewObj.thirdPartyId}

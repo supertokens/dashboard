@@ -32,13 +32,14 @@ export const DeleteThirdPartyProviderDialog = ({
 }) => {
 	const [isDeletingProvider, setIsDeletingProvider] = useState(false);
 	const deleteThirdPartyProvider = useDeleteThirdPartyProvider();
-	const { tenantInfo } = useTenantDetailContext();
+	const { tenantInfo, refetchTenant } = useTenantDetailContext();
 	const { showToast } = useContext(PopupContentContext);
 
 	const handleDeleteProperty = async () => {
 		try {
 			setIsDeletingProvider(true);
 			const res = await deleteThirdPartyProvider(tenantInfo.tenantId, thirdPartyId);
+			await refetchTenant();
 			if (res.status === "OK") {
 				onCloseDialog();
 				goBack();

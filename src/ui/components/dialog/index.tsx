@@ -25,7 +25,7 @@ type DialogCommonProps = {
 };
 
 type DialogProps = DialogCommonProps & {
-	title: string;
+	title?: string;
 	closeOnOverlayClick?: boolean;
 	isError?: boolean;
 	onCloseDialog: () => void;
@@ -45,13 +45,15 @@ function Dialog(props: DialogProps) {
 				}}
 			/>
 			<div className={`dialog-container ${className}`}>
-				<div className="dialog-header">
-					<div className="dialog-title">
-						{props.isError && <ErrorIcon />}
-						{title}
+				{title && (
+					<div className="dialog-header">
+						<div className="dialog-title">
+							{props.isError && <ErrorIcon />}
+							{title}
+						</div>
+						<CloseIcon onClick={onCloseDialog} />
 					</div>
-					<CloseIcon onClick={onCloseDialog} />
-				</div>
+				)}
 				{children}
 			</div>
 		</>

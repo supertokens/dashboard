@@ -1,0 +1,88 @@
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.provider-dialog-container {
+	max-width: 872px;
+	height: auto;
+	overflow-y: auto;
+}
+
+.provider-list-header {
+	margin-bottom: 8px;
+	font-family: inherit;
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 23px;
+	color: var(--color-secondary-text);
+}
+
+.provider-list-container {
+	border: solid 1px var(--color-border-command);
+	border-radius: 6px;
+	width: 100%;
+	padding: 24px;
+
+	&__header-with-divider {
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 17px;
+		color: var(--color-secondary-text);
+
+		&--margin-top-30 {
+			margin-top: 30px;
+		}
+	}
+
+	&__header-with-divider::after {
+		content: "";
+		display: block;
+		width: 100%;
+		height: 1px;
+		background-color: var(--color-border);
+		margin-top: 16px;
+		margin-bottom: 20px;
+	}
+
+	&__providers-grid {
+		display: grid;
+		width: 100%;
+		gap: 10px;
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+}
+
+.provider-list-title {
+	font-size: 20px;
+	line-height: 30px;
+	font-weight: 500;
+	color: var(--color-black);
+}
+
+.provider-list-divider {
+	display: block;
+	width: 100%;
+	height: 1px;
+	background-color: var(--color-border-command);
+	border: none;
+	margin: 24px 0px;
+}
+
+.providers-list-footer {
+	display: flex;
+	width: 100%;
+	justify-content: flex-end;
+	margin-top: 16px;
+}
