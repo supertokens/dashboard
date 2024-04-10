@@ -13,7 +13,7 @@
  * under the License.
  */
 import { ChangeEvent, useContext, useState } from "react";
-import { useThirdPartyService } from "../../../../../api/tenants";
+import { useCreateOrUpdateThirdPartyProvider } from "../../../../../api/tenants";
 import {
 	BuiltInProvidersCustomFields,
 	ProviderClientState,
@@ -24,7 +24,6 @@ import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "../../../../..
 import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
-import { Toggle } from "../../../toggle/Toggle";
 import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/DeleteThirdPartyProvider";
 import { KeyValueInput } from "../keyValueInput/KeyValueInput";
 import { useTenantDetailContext } from "../TenantDetailContext";
@@ -53,7 +52,7 @@ export const ProviderInfoForm = ({
 	const { tenantInfo } = useTenantDetailContext();
 	const [isSaving, setIsSaving] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
-	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
+	const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProvider();
 	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
 	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId?.startsWith(provider.id));
 	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
@@ -252,44 +251,6 @@ export const ProviderInfoForm = ({
 				...prev,
 				jwksURI: "JWKS URI should be a valid URL",
 			}));
-			isValid = false;
-		}
-
-		if (
-			isValid &&
-			(providerConfigState.oidcDiscoveryEndpoint?.trim().length === 0
-				? providerConfigState.authorizationEndpoint?.trim().length === 0 ||
-				  providerConfigState.tokenEndpoint?.trim().length === 0 ||
-				  providerConfigState.userInfoEndpoint?.trim().length === 0
-				: false)
-		) {
-			// Show error for remaining fields if one of the authorization, token or user info
-			// endpoints are filled but rest are empty
-			if (
-				providerConfigState.authorizationEndpoint?.trim().length > 0 ||
-				providerConfigState.tokenEndpoint?.trim().length > 0 ||
-				providerConfigState.userInfoEndpoint?.trim().length > 0
-			) {
-				setErrorState((prev) => ({
-					...prev,
-					authorizationEndpoint:
-						providerConfigState.authorizationEndpoint?.trim().length === 0
-							? "Authorization Endpoint is required"
-							: "",
-					tokenEndpoint:
-						providerConfigState.tokenEndpoint?.trim().length === 0 ? "Token Endpoint is required" : "",
-					userInfoEndpoint:
-						providerConfigState.userInfoEndpoint?.trim().length === 0
-							? "User Info Endpoint is required"
-							: "",
-				}));
-			} else {
-				setErrorState((prev) => ({
-					...prev,
-					oidcDiscoveryEndpoint:
-						"Either OIDC Discovery Endpoint or Authorization, Token and User Info Endpoints are required",
-				}));
-			}
 			isValid = false;
 		}
 
@@ -633,20 +594,6 @@ export const ProviderInfoForm = ({
 					value={providerConfigState.jwksURI}
 					handleChange={handleFieldChange}
 				/>
-
-				<div className="fields-container__toggle-container">
-					<ThirdPartyProviderInputLabel
-						label="Require Email"
-						tooltip="Whether the email is required or not."
-					/>
-					<Toggle
-						id="requireEmail"
-						checked={providerConfigState.requireEmail}
-						onChange={(e) => {
-							setProviderConfigState((prev) => ({ ...prev, requireEmail: e.target.checked }));
-						}}
-					/>
-				</div>
 			</div>
 			<hr className="provider-config-divider" />
 			<div className="custom-provider-footer">
