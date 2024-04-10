@@ -18,6 +18,7 @@ import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { Dialog, DialogContent, DialogFooter } from "../../../dialog";
+import InputField from "../../../inputField/InputField";
 import "./deleteTenant.scss";
 
 export const DeleteTenantDialog = ({
@@ -29,6 +30,7 @@ export const DeleteTenantDialog = ({
 	goBack: () => void;
 	tenantId: string;
 }) => {
+	const [currentTenantId, setCurrentTenantId] = useState("");
 	const [isDeletingTenant, setIsDeletingTenant] = useState(false);
 	const deleteTenant = useTenantDeleteService();
 	const { showToast } = useContext(PopupContentContext);
@@ -61,8 +63,16 @@ export const DeleteTenantDialog = ({
 			<DialogContent>
 				<p className="confirm-text">
 					Are you sure you want to delete the tenant: <span className="tenant-id">{tenantId}</span>? All the
-					users associated with the tenant will be moved to the public tenant
+					users associated with the tenant will be moved to the public tenant. Please enter the tenantId below
+					to confirm.
 				</p>
+				<InputField
+					label="Tenant ID"
+					value={currentTenantId}
+					type="text"
+					name="tenantId"
+					handleChange={(e) => setCurrentTenantId(e.target.value)}
+				/>
 				<DialogFooter border="border-none">
 					<Button
 						onClick={onCloseDialog}
@@ -72,7 +82,7 @@ export const DeleteTenantDialog = ({
 					<Button
 						color="danger"
 						isLoading={isDeletingTenant}
-						disabled={isDeletingTenant}
+						disabled={isDeletingTenant || currentTenantId !== tenantId}
 						onClick={handleDeleteProperty}>
 						Yes, Delete
 					</Button>
