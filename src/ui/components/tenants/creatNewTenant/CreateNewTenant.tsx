@@ -46,11 +46,11 @@ export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => 
 				} else {
 					setTenantCreationError("Tenant already exists");
 				}
-			} else if (resp?.status === "MULTITENANCY_NOT_ENABLED_IN_CORE") {
+			} else if (resp?.status === "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR") {
 				setTenantCreationError(
 					"Multitenancy is not enabled for your SuperTokens instance. Please add a license key to enable it."
 				);
-			} else if (resp?.status === "INVALID_TENANT_ID") {
+			} else if (resp?.status === "INVALID_TENANT_ID_ERROR") {
 				setTenantCreationError(resp.message);
 			} else {
 				throw new Error("Failed to create tenant");
@@ -73,6 +73,7 @@ export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => 
 							error={tenantCreationError}
 							forceShowError={true}
 							label="Tenant Id"
+							autofocus
 							name="tenantId"
 							type="text"
 							value={tenantId}

@@ -26,10 +26,10 @@ export const useTenantCreateService = () => {
 				createdNew: boolean;
 		  }
 		| {
-				status: "MULTITENANCY_NOT_ENABLED_IN_CORE";
+				status: "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR";
 		  }
 		| {
-				status: "INVALID_TENANT_ID";
+				status: "INVALID_TENANT_ID_ERROR";
 				message: string;
 		  }
 		| undefined
@@ -195,15 +195,14 @@ export const useUpdateFirstFactorsService = () => {
 		enable: boolean
 	): Promise<
 		| { status: "OK" }
-		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK"; message: string }
+		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"; message: string }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
 		// TODO: Temporary mock data
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		return {
-			status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK",
-			message: "Recipe not initialized",
+			status: "OK",
 		};
 
 		const response = await fetchData({
@@ -235,10 +234,9 @@ export const useUpdateSecondaryFactorsService = () => {
 		factorId: string,
 		enable: boolean
 	): Promise<
-		| { status: "OK" }
-		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK"; message: string }
-		| { status: "MFA_NOT_INITIALIZED" }
-		| { status: "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" }
+		| { status: "OK"; isMFARequirementsForAuthOverridden: boolean }
+		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"; message: string }
+		| { status: "MFA_NOT_INITIALIZED_ERROR" }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
 		// TODO: Temporary mock data
@@ -246,6 +244,7 @@ export const useUpdateSecondaryFactorsService = () => {
 
 		return {
 			status: "OK",
+			isMFARequirementsForAuthOverridden: true,
 		};
 
 		const response = await fetchData({
@@ -277,13 +276,13 @@ export const useUpdateCoreConfigService = () => {
 		name: string,
 		value: string | number | boolean | null
 	): Promise<
-		{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "INVALID_CONFIG"; message: string }
+		{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "INVALID_CONFIG_ERROR"; message: string }
 	> => {
 		// TODO: Temporary mock data
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
 		return {
-			status: "INVALID_CONFIG",
+			status: "INVALID_CONFIG_ERROR",
 			message: "Invalid config",
 		};
 

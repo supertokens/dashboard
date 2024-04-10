@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useUpdateFirstFactorsService, useUpdateSecondaryFactorsService } from "../../../../api/tenants";
 import { ReactComponent as ErrorIcon } from "../../../../assets/form-field-error-icon.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
@@ -26,7 +26,7 @@ import { useTenantDetailContext } from "./TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
 
 export const LoginMethodsSection = () => {
-	const { tenantInfo, setTenantInfo } = useTenantDetailContext();
+	const { tenantInfo, setTenantInfo, refetchTenant } = useTenantDetailContext();
 	const updateFirstFactors = useUpdateFirstFactorsService();
 	const updateSecondaryFactors = useUpdateSecondaryFactorsService();
 	const [selectedFactors, setSelectedFactors] = useState<{
@@ -49,6 +49,13 @@ export const LoginMethodsSection = () => {
 		firstFactors: {},
 		requiredSecondaryFactors: {},
 	});
+
+	useEffect(() => {
+		setSelectedFactors({
+			firstFactors: tenantInfo.firstFactors ?? [],
+			requiredSecondaryFactors: tenantInfo.requiredSecondaryFactors ?? [],
+		});
+	}, [tenantInfo]);
 
 	const { showToast } = useContext(PopupContentContext);
 
@@ -77,7 +84,7 @@ export const LoginMethodsSection = () => {
 					// have also added an aritificial delay so that the toggle can finish its animation and
 					// has good UX in case API responds too quickly
 					setTimeout(() => setSelectedFactors(prevFactors), 200);
-					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK") {
+					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
 						setFactorErrors((prev) => ({
 							...prev,
 							firstFactors: { ...prev.firstFactors, [id]: res.message },
@@ -100,32 +107,22 @@ export const LoginMethodsSection = () => {
 				setIsSecondaryFactorsLoading(true);
 				const res = await updateSecondaryFactors(tenantInfo.tenantId, id, !doesFactorExist);
 				if (res.status !== "OK") {
-					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK") {
+					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
 						setFactorErrors((prev) => ({
 							...prev,
 							requiredSecondaryFactors: { ...prev.requiredSecondaryFactors, [id]: res.message },
 						}));
-					} else if (
-						res.status === "MFA_NOT_INITIALIZED" ||
-						res.status === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN"
-					) {
-						setSecondaryFactorsError(res.status);
+					} else if (res.status === "MFA_NOT_INITIALIZED_ERROR") {
+						setSecondaryFactorsError("MFA_NOT_INITIALIZED");
 					} else {
 						throw new Error(res.status);
 					}
 
-					// We allow users to update secondary factors even if
-					// getMFARequirementsForAuth is overridden, for rest of
-					// cases we revert the state
-					if (res.status !== "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") {
-						// If the API returns a non success status, revert the state
-						// have also added an aritificial delay so that the toggle can finish its animation and
-						// has good UX in case API responds too quickly
-						setTimeout(() => setSelectedFactors(prevFactors), 200);
-					}
-				}
-
-				if (res.status === "OK" || res.status === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") {
+					// If the API returns a non success status, revert the state
+					// have also added an aritificial delay so that the toggle can finish its animation and
+					// has good UX in case API responds too quickly
+					setTimeout(() => setSelectedFactors(prevFactors), 200);
+				} else if (res.status === "OK") {
 					setTenantInfo((prev) =>
 						prev
 							? {
@@ -134,6 +131,10 @@ export const LoginMethodsSection = () => {
 							  }
 							: undefined
 					);
+				}
+
+				if (res.status === "OK" && res.isMFARequirementsForAuthOverridden) {
+					setSecondaryFactorsError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
 				}
 			}
 		} catch (error) {
@@ -150,6 +151,8 @@ export const LoginMethodsSection = () => {
 		} finally {
 			setIsFirstFactorsLoading(false);
 			setIsSecondaryFactorsLoading(false);
+			// TODO: Enable this when the API is ready
+			// void refetchTenant();
 		}
 	};
 

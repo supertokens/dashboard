@@ -19,7 +19,7 @@ import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.s
 import { FactorIds, PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl } from "../../../../utils";
 import Button from "../../button";
-import { Loader, LoaderOverlay } from "../../loader/Loader";
+import { Loader } from "../../loader/Loader";
 import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialog";
 import { CoreConfigSection } from "./CoreConfigSection";
 import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";
@@ -118,7 +118,7 @@ export const TenantDetail = ({
 
 		return (
 			<div className="tenant-detail">
-				{showLoadingOverlay && <LoaderOverlay />}
+				{/* {showLoadingOverlay && <LoaderOverlay />} */}
 				<button
 					className="button flat"
 					onClick={onBackButtonClicked}>
