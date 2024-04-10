@@ -17,4 +17,9 @@
 	width: 22px;
 	border: none;
 	background: transparent;
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
 }

@@ -480,10 +480,15 @@ export const ProviderInfoForm = ({
 					label="Authorization Endpoint"
 					tooltip="The authorization endpoint of the provider."
 					type="text"
+					disabled={providerConfig?.isGetAuthorisationRedirectUrlOverridden}
 					error={errorState.authorizationEndpoint}
 					forceShowError
 					name="authorizationEndpoint"
-					value={providerConfigState.authorizationEndpoint}
+					value={
+						providerConfig?.isGetAuthorisationRedirectUrlOverridden
+							? "Custom Override"
+							: providerConfigState.authorizationEndpoint
+					}
 					handleChange={handleFieldChange}
 				/>
 				<KeyValueInput
@@ -491,30 +496,53 @@ export const ProviderInfoForm = ({
 					name="authorizationEndpointQueryParams"
 					tooltip="The query params to be sent to the authorization endpoint."
 					value={providerConfigState.authorizationEndpointQueryParams}
+					isOverridden={providerConfig?.isGetAuthorisationRedirectUrlOverridden}
 					onChange={(value) => {
 						setProviderConfigState((prev) => ({ ...prev, authorizationEndpointQueryParams: value }));
 					}}
 				/>
+
+				{providerConfig?.isGetAuthorisationRedirectUrlOverridden && (
+					<div className="overridden-info">
+						<b>Note:</b> You cannot edit the above fields because this provider is using a custom override
+						for <code>getAuthorisationRedirectUrl</code>
+					</div>
+				)}
+
 				<div className="custom-provider-divider" />
 				<ThirdPartyProviderInput
 					label="Token Endpoint"
 					tooltip="The token endpoint of the provider."
 					type="text"
+					disabled={providerConfig?.isExchangeAuthCodeForOAuthTokensOverridden}
 					name="tokenEndpoint"
 					error={errorState.tokenEndpoint}
 					forceShowError
-					value={providerConfigState.tokenEndpoint}
+					value={
+						providerConfig?.isExchangeAuthCodeForOAuthTokensOverridden
+							? "Custom Override"
+							: providerConfigState.tokenEndpoint
+					}
 					handleChange={handleFieldChange}
 				/>
 				<KeyValueInput
 					label="Token Endpoint Body Params"
 					name="tokenEndpointBodyParams"
 					tooltip="The body params to be sent to the token endpoint."
+					isOverridden={providerConfig?.isExchangeAuthCodeForOAuthTokensOverridden}
 					value={providerConfigState.tokenEndpointBodyParams}
 					onChange={(value) => {
 						setProviderConfigState((prev) => ({ ...prev, tokenEndpointBodyParams: value }));
 					}}
 				/>
+
+				{providerConfig?.isExchangeAuthCodeForOAuthTokensOverridden && (
+					<div className="overridden-info">
+						<b>Note:</b> You cannot edit the above fields because this provider is using a custom override
+						for <code>exchangeAuthCodeForOAuthTokens</code>
+					</div>
+				)}
+
 				<div className="custom-provider-divider" />
 
 				<ThirdPartyProviderInput
@@ -522,9 +550,14 @@ export const ProviderInfoForm = ({
 					tooltip="The user info endpoint of the provider."
 					type="text"
 					name="userInfoEndpoint"
+					disabled={providerConfig?.isGetUserInfoOverridden}
 					error={errorState.userInfoEndpoint}
 					forceShowError
-					value={providerConfigState.userInfoEndpoint}
+					value={
+						providerConfig?.isGetUserInfoOverridden
+							? "Custom Override"
+							: providerConfigState.userInfoEndpoint
+					}
 					handleChange={handleFieldChange}
 				/>
 
@@ -533,6 +566,7 @@ export const ProviderInfoForm = ({
 					name="userInfoEndpointQueryParams"
 					tooltip="The query params to be sent to the user info endpoint."
 					value={providerConfigState.userInfoEndpointQueryParams}
+					isOverridden={providerConfig?.isGetUserInfoOverridden}
 					onChange={(value) => {
 						setProviderConfigState((prev) => ({ ...prev, userInfoEndpointQueryParams: value }));
 					}}
@@ -543,6 +577,7 @@ export const ProviderInfoForm = ({
 					name="userInfoEndpointHeaders"
 					tooltip="The headers to be sent to the user info endpoint."
 					value={providerConfigState.userInfoEndpointHeaders}
+					isOverridden={providerConfig?.isGetUserInfoOverridden}
 					onChange={(value) => {
 						setProviderConfigState((prev) => ({ ...prev, userInfoEndpointHeaders: value }));
 					}}
@@ -552,16 +587,23 @@ export const ProviderInfoForm = ({
 					label="User Info Map from UserInfo API"
 					tooltip="The mapping of the user info fields to the user info API."
 					name="fromUserInfoAPI"
+					isOverridden={providerConfig?.isGetUserInfoOverridden}
+					hasEmailOverrides
 					value={
 						providerConfigState.userInfoMap.fromUserInfoAPI ?? { userId: "", email: "", emailVerified: "" }
 					}
 					handleChange={handleUserInfoFieldChange}
+					requireEmail={providerConfigState.requireEmail}
+					handleRequireEmailChange={(value) => {
+						setProviderConfigState((prev) => ({ ...prev, requireEmail: value }));
+					}}
 				/>
 
 				<UserInfoMap
 					label="User Info Map from Id Token Payload"
 					tooltip="The mapping of the user info fields to the id token payload."
 					name="fromIdTokenPayload"
+					isOverridden={providerConfig?.isGetUserInfoOverridden}
 					value={
 						providerConfigState.userInfoMap.fromIdTokenPayload ?? {
 							userId: "",
@@ -571,6 +613,13 @@ export const ProviderInfoForm = ({
 					}
 					handleChange={handleUserInfoFieldChange}
 				/>
+
+				{providerConfig?.isGetUserInfoOverridden && (
+					<div className="overridden-info">
+						<b>Note:</b> You cannot edit the above fields because this provider is using a custom override
+						for <code>getUserInfo</code>
+					</div>
+				)}
 
 				<div className="custom-provider-divider" />
 
@@ -632,6 +681,10 @@ const UserInfoMap = ({
 	name,
 	value,
 	handleChange,
+	isOverridden,
+	hasEmailOverrides,
+	requireEmail,
+	handleRequireEmailChange,
 }: {
 	label: string;
 	tooltip: string;
@@ -650,7 +703,29 @@ const UserInfoMap = ({
 		key: string;
 		value: string;
 	}) => void;
+	isOverridden?: boolean;
+	hasEmailOverrides?: boolean;
+	requireEmail?: boolean;
+	handleRequireEmailChange?: (value: boolean) => void;
 }) => {
+	const [emailSelectValue, setEmailSelectValue] = useState<EmailSelectState>(() => {
+		if (requireEmail === false) {
+			return "never";
+		}
+		return "always";
+	});
+
+	const handleEmailSelectChange = (value: EmailSelectState) => {
+		setEmailSelectValue(value);
+		if (value === "never" && handleRequireEmailChange) {
+			handleRequireEmailChange(false);
+		} else if (value === "always" && handleRequireEmailChange) {
+			handleRequireEmailChange(true);
+		}
+	};
+
+	const isEmailFieldVisible = isOverridden || !hasEmailOverrides || emailSelectValue === "always";
+
 	return (
 		<div className="user-info-map">
 			<ThirdPartyProviderInputLabel
@@ -663,7 +738,8 @@ const UserInfoMap = ({
 					type="text"
 					name={`userId-${name}`}
 					minLabelWidth={130}
-					value={value.userId}
+					disabled={isOverridden}
+					value={isOverridden ? "Custom Override" : value.userId}
 					handleChange={(e) =>
 						handleChange({
 							name,
@@ -672,26 +748,47 @@ const UserInfoMap = ({
 						})
 					}
 				/>
-				<ThirdPartyProviderInput
-					label="email"
-					type="text"
-					name={`email-${name}`}
-					minLabelWidth={130}
-					value={value.email}
-					handleChange={(e) =>
-						handleChange({
-							name,
-							key: "email",
-							value: e.target.value,
-						})
-					}
-				/>
+				{!isOverridden && hasEmailOverrides && (
+					<div className="provider-email-select">
+						<ThirdPartyProviderInputLabel label="How often does the provider return email?" />
+						<EmailSelect
+							value={emailSelectValue}
+							setValue={handleEmailSelectChange}
+						/>
+					</div>
+				)}
+				{(emailSelectValue === "sometimes" || emailSelectValue === "never") && (
+					<div className="overridden-info">
+						<b>Note:</b>{" "}
+						{emailSelectValue === "never"
+							? "We will generate a fake email for the end users automatically using their user id. If you want override how the fake email is generated by the SDK you can do so by overriding the generateFakeEmail method in the provider config"
+							: "Add a custom override for the getUserInfo method for this provider to handle the case when provider doesn't return email."}
+					</div>
+				)}
+				{isEmailFieldVisible && (
+					<ThirdPartyProviderInput
+						label="email"
+						type="text"
+						name={`email-${name}`}
+						disabled={isOverridden}
+						minLabelWidth={130}
+						value={isOverridden ? "Custom Override" : value.email}
+						handleChange={(e) =>
+							handleChange({
+								name,
+								key: "email",
+								value: e.target.value,
+							})
+						}
+					/>
+				)}
 				<ThirdPartyProviderInput
 					label="emailVerified"
 					type="text"
 					name="emailVerified"
+					disabled={isOverridden}
 					minLabelWidth={130}
-					value={value.emailVerified}
+					value={isOverridden ? "Custom Override" : value.emailVerified}
 					handleChange={(e) =>
 						handleChange({
 							name,
@@ -701,6 +798,38 @@ const UserInfoMap = ({
 					}
 				/>
 			</div>
+		</div>
+	);
+};
+
+type EmailSelectState = "always" | "sometimes" | "never";
+
+const EmailSelectValues: Array<{ label: string; value: EmailSelectState }> = [
+	{
+		label: "All the time",
+		value: "always",
+	},
+	{
+		label: "Sometimes",
+		value: "sometimes",
+	},
+	{
+		label: "Never",
+		value: "never",
+	},
+];
+
+const EmailSelect = ({ value, setValue }: { value: EmailSelectState; setValue: (value: EmailSelectState) => void }) => {
+	return (
+		<div className="email-select-container">
+			{EmailSelectValues.map((option) => (
+				<button
+					key={option.value}
+					className={`email-select-option ${value === option.value ? "email-select-option--selected" : ""}`}
+					onClick={() => setValue(option.value)}>
+					{option.label}
+				</button>
+			))}
 		</div>
 	);
 };
