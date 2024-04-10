@@ -34,14 +34,6 @@ export const useTenantCreateService = () => {
 		  }
 		| undefined
 	> => {
-		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		return {
-			status: "OK",
-			createdNew: true,
-		};
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant"),
 			method: "PUT",
@@ -78,72 +70,6 @@ export const useTenantGetService = () => {
 		  }
 		| undefined
 	> => {
-		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 10));
-
-		return {
-			status: "OK",
-			tenant: {
-				tenantId,
-				thirdParty: {
-					providers: [],
-				},
-				firstFactors: ["thirdparty"],
-				requiredSecondaryFactors: [],
-				userCount: 12,
-				coreConfig: [
-					{
-						key: "password_reset_token_lifetime",
-						valueType: "number",
-						value: 3600000,
-						description: "The time in milliseconds for which the password reset token is valid.",
-						isSaaSProtected: false,
-						isDifferentAcrossTenants: true,
-						isModifyableOnlyViaConfigYaml: false,
-						defaultValue: 3600000,
-						isNullable: false,
-						isPluginProperty: false,
-					},
-					{
-						key: "access_token_blacklisting",
-						valueType: "boolean",
-						value: false,
-						description: "Whether to blacklist access tokens or not.",
-						isSaaSProtected: false,
-						isDifferentAcrossTenants: true,
-						isModifyableOnlyViaConfigYaml: false,
-						defaultValue: false,
-						isNullable: false,
-						isPluginProperty: false,
-					},
-					{
-						key: "ip_allow_regex",
-						valueType: "string",
-						value: null,
-						description: "The regex to match the IP address of the user.",
-						isSaaSProtected: false,
-						isDifferentAcrossTenants: true,
-						isModifyableOnlyViaConfigYaml: false,
-						defaultValue: null,
-						isNullable: true,
-						isPluginProperty: false,
-					},
-					{
-						key: "postgresql_emailpassword_users_table_name",
-						valueType: "string",
-						value: null,
-						description: "The name of the table where the emailpassword users are stored.",
-						isSaaSProtected: false,
-						isDifferentAcrossTenants: true,
-						isModifyableOnlyViaConfigYaml: false,
-						defaultValue: 3600000,
-						isNullable: true,
-						isPluginProperty: true,
-					},
-				],
-			},
-		};
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant", tenantId),
 			method: "GET",
@@ -169,13 +95,6 @@ export const useTenantDeleteService = () => {
 			method: "DELETE",
 		});
 
-		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		return {
-			status: "OK",
-		};
-
 		if (response.ok) {
 			return await response.json();
 		}
@@ -198,14 +117,6 @@ export const useUpdateFirstFactorsService = () => {
 		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK"; message: string }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
-		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		return {
-			status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK",
-			message: "Recipe not initialized",
-		};
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant/first-factor", tenantId),
 			method: "PUT",
@@ -241,13 +152,6 @@ export const useUpdateSecondaryFactorsService = () => {
 		| { status: "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
-		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		return {
-			status: "OK",
-		};
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant/secondary-factor", tenantId),
 			method: "PUT",
