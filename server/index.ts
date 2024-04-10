@@ -22,6 +22,7 @@ import Dashboard from "supertokens-node/lib/build/recipe/dashboard/recipe";
 import AccountLinking from "supertokens-node/recipe/accountlinking";
 import EmailPassword from "supertokens-node/recipe/emailpassword";
 import EmailVerification from "supertokens-node/recipe/emailverification";
+import MultifactorAuth from "supertokens-node/recipe/multifactorauth";
 import Passwordless from "supertokens-node/recipe/passwordless";
 import Session from "supertokens-node/recipe/session";
 import ThirdParty from "supertokens-node/recipe/thirdparty";
@@ -90,6 +91,18 @@ SuperTokens.init({
 		Session.init(),
 		AccountLinking.init(),
 		UserRoles.init(),
+		MultifactorAuth.init({
+			override: {
+				// functions: (originalImplementation) => {
+				// 	return {
+				// 		...originalImplementation,
+				// 		// getMFARequirementsForAuth: async (input) => {
+				// 		// 	return []
+				// 		// }
+				// 	}
+				// },
+			},
+		}),
 	],
 });
 

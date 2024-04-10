@@ -183,14 +183,6 @@ export const useUpdateCoreConfigService = () => {
 	): Promise<
 		{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "INVALID_CONFIG"; message: string }
 	> => {
-		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		return {
-			status: "INVALID_CONFIG",
-			message: "Invalid config",
-		};
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant/core-config", tenantId),
 			method: "PUT",
