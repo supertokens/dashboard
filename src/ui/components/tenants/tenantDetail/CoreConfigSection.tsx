@@ -12,12 +12,14 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useUpdateCoreConfigService } from "../../../../api/tenants";
 import { ReactComponent as PencilIcon } from "../../../../assets/edit.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import { ReactComponent as QuestionMarkIcon } from "../../../../assets/question-mark.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
+import { getImageUrl } from "../../../../utils";
+import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import Button from "../../button";
 import { Checkbox } from "../../checkbox/Checkbox";
 import InputField from "../../inputField/InputField";
@@ -133,13 +135,13 @@ const CoreConfigTableRow = ({
 }: CoreConfigTableRowProps) => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [currentValue, setCurrentValue] = useState(value);
-	const [error, setError] = useState<string | null>(null);
 	const { tenantInfo, refetchTenant } = useTenantDetailContext();
 	const updateCoreConfig = useUpdateCoreConfigService();
 	const [isLoading, setIsLoading] = useState(false);
 	const [isUneditablePropertyDialogVisible, setIsUneditablePropertyDialogVisible] = useState(false);
 	const isMultiValue = Array.isArray(possibleValues) && possibleValues.length > 0;
 	const isPublicTenant = tenantInfo.tenantId === PUBLIC_TENANT_ID;
+	const { showToast } = useContext(PopupContentContext);
 
 	const isUneditable =
 		isPublicTenant ||
@@ -164,26 +166,36 @@ const CoreConfigTableRow = ({
 	const handleCancelEdit = () => {
 		setIsEditing(false);
 		setCurrentValue(value);
-		setError(null);
 	};
 
 	const handleSaveProperty = async () => {
 		try {
 			setIsLoading(true);
-			setError(null);
 			const res = await updateCoreConfig(tenantInfo.tenantId, name, currentValue);
 			if (res.status !== "OK") {
 				if (res.status === "UNKNOWN_TENANT_ERROR") {
-					setError("Tenant not found.");
+					showToast({
+						iconImage: getImageUrl("form-field-error-icon.svg"),
+						toastType: "error",
+						children: <>Tenant not found.</>,
+					});
 				} else {
-					setError(res.message);
+					showToast({
+						iconImage: getImageUrl("form-field-error-icon.svg"),
+						toastType: "error",
+						children: <>{res.message}</>,
+					});
 				}
 				return;
 			}
 			await refetchTenant();
 			setIsEditing(false);
 		} catch (e) {
-			setError("Something went wrong. Please try again.");
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong please try again.</>,
+			});
 		} finally {
 			setIsLoading(false);
 		}
@@ -305,12 +317,11 @@ const CoreConfigTableRow = ({
 									type="text"
 									size="small"
 									name={name}
+									autofocus
 									disabled={!isEditing || currentValue === null}
 									handleChange={(e) => {
 										setCurrentValue(e.target.value);
 									}}
-									error={error ?? undefined}
-									forceShowError
 									value={currentValue === null ? "[null]" : `${currentValue}`}
 								/>
 							)}

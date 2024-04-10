@@ -85,9 +85,6 @@ export type TenantDashboardView =
 			view: "tenant-detail";
 	  }
 	| {
-			view: "list-third-party-providers";
-	  }
-	| {
 			view: "add-or-edit-third-party-provider";
 			thirdPartyId?: string;
 			isAddingNewProvider: boolean;

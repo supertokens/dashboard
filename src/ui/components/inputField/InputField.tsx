@@ -31,6 +31,7 @@ export type InputFieldPropTypes = {
 	forceShowError?: boolean;
 	disabled?: boolean;
 	prefix?: string;
+	autofocus?: boolean;
 	handleChange: React.ChangeEventHandler<HTMLInputElement>;
 	/** @default "bottom" */
 	errorPlacement?: "bottom" | "prefix-tooltip";
@@ -83,6 +84,7 @@ const InputField: React.FC<InputFieldPropTypes> = (props) => {
 					onChange={onChange}
 					onKeyUp={onChange}
 					value={props.value}
+					autoFocus={props.autofocus}
 					onFocus={() => setIsFocused(true)}
 					onBlur={() => setIsFocused(false)}
 					disabled={props.disabled}

@@ -43,15 +43,10 @@ export const ThirdPartySection = ({
 						const builtInProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.find((p) => providerId.startsWith(p.id));
 
 						if (builtInProvider) {
-							const hasDefaultId = IN_BUILT_THIRD_PARTY_PROVIDERS.some((p) => p.id === providerId);
 							return (
 								<ThirdPartyProviderButton
 									key={providerId}
-									title={
-										hasDefaultId
-											? builtInProvider.label
-											: `${builtInProvider.label} (${providerId})`
-									}
+									title={providerId}
 									icon={builtInProvider.icon}
 									onClick={() => handleEditProvider(providerId)}
 								/>

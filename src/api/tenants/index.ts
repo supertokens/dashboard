@@ -26,10 +26,10 @@ export const useTenantCreateService = () => {
 				createdNew: boolean;
 		  }
 		| {
-				status: "MULTITENANCY_NOT_ENABLED_IN_CORE";
+				status: "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR";
 		  }
 		| {
-				status: "INVALID_TENANT_ID";
+				status: "INVALID_TENANT_ID_ERROR";
 				message: string;
 		  }
 		| undefined
@@ -114,7 +114,7 @@ export const useUpdateFirstFactorsService = () => {
 		enable: boolean
 	): Promise<
 		| { status: "OK" }
-		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK"; message: string }
+		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"; message: string }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
 		const response = await fetchData({
@@ -146,10 +146,9 @@ export const useUpdateSecondaryFactorsService = () => {
 		factorId: string,
 		enable: boolean
 	): Promise<
-		| { status: "OK" }
-		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK"; message: string }
-		| { status: "MFA_NOT_INITIALIZED" }
-		| { status: "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" }
+		| { status: "OK"; isMFARequirementsForAuthOverridden: boolean }
+		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"; message: string }
+		| { status: "MFA_NOT_INITIALIZED_ERROR" }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
 		const response = await fetchData({
@@ -181,7 +180,7 @@ export const useUpdateCoreConfigService = () => {
 		name: string,
 		value: string | number | boolean | null
 	): Promise<
-		{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "INVALID_CONFIG"; message: string }
+		{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "INVALID_CONFIG_ERROR"; message: string }
 	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant/core-config", tenantId),
@@ -220,31 +219,6 @@ export const useGetThirdPartyProviderInfo = () => {
 				status: "UNKNOWN_TENANT_ERROR";
 		  }
 	> => {
-		return {
-			status: "OK",
-			providerConfig: {
-				oidcDiscoveryEndpoint: "https://oidc.discovery.endpoint",
-				thirdPartyId: providerId,
-				name: "Provider Name",
-				clients: [
-					{
-						clientId: "client-id",
-						clientSecret: "secret",
-						scope: ["scope"],
-						forcePKCE: false,
-						additionalConfig: {
-							keyId: "value",
-							privateKey: "private-key",
-							teamId: "team-id",
-						},
-					},
-				],
-				isGetAuthorisationRedirectUrlOverridden: false,
-				isExchangeAuthCodeForOAuthTokensOverridden: false,
-				isGetUserInfoOverridden: false,
-			},
-		};
-
 		const additionalConfigQueryParams = new URLSearchParams(additionalConfig).toString();
 
 		const response = await fetchData({
@@ -274,6 +248,13 @@ export const useCreateOrUpdateThirdPartyProvider = () => {
 		tenantId: string,
 		providerConfig: ProviderConfig
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
+		// TODO: Temporary mock data
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+
+		return {
+			status: "OK",
+		};
+
 		const response = await fetchData({
 			url: getApiUrl("/api/thirdparty/config", tenantId),
 			method: "PUT",
@@ -302,6 +283,13 @@ export const useDeleteThirdPartyProvider = () => {
 		tenantId: string,
 		providerId: string
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
+		// TODO: Temporary mock data
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+
+		return {
+			status: "OK",
+		};
+
 		const response = await fetchData({
 			url: getApiUrl(`/api/thirdparty?third-party-id=${providerId}`, tenantId),
 			method: "DELETE",
