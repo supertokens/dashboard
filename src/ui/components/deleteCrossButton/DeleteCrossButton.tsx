@@ -18,16 +18,25 @@ import { ReactComponent as CloseIconDefault } from "../../../assets/close-inacti
 
 import "./deleteCrossButton.scss";
 
-export const DeleteCrossButton = ({ onClick, label }: { onClick: () => void; label: string }) => {
+export const DeleteCrossButton = ({
+	onClick,
+	label,
+	disabled,
+}: {
+	onClick: () => void;
+	label: string;
+	disabled?: boolean;
+}) => {
 	const [isHovered, setIsHovered] = useState(false);
 	return (
 		<button
 			className="delete-cross-button"
 			onClick={onClick}
+			disabled={disabled}
 			aria-label={label}
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}>
-			{isHovered ? <CloseIconActive /> : <CloseIconDefault />}
+			{isHovered && !disabled ? <CloseIconActive /> : <CloseIconDefault />}
 		</button>
 	);
 };

@@ -13,13 +13,17 @@
  * under the License.
  */
 import { ChangeEvent, useContext, useState } from "react";
-import { useThirdPartyService } from "../../../../../api/tenants";
-import { ProviderClientConfig, ProviderConfig, ProviderConfigResponse } from "../../../../../api/tenants/types";
+import { useCreateOrUpdateThirdPartyProvider } from "../../../../../api/tenants";
+import {
+	BuiltInProvidersCustomFields,
+	ProviderClientState,
+	ProviderConfig,
+	ProviderConfigResponse,
+} from "../../../../../api/tenants/types";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "../../../../../constants";
 import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
-import { Toggle } from "../../../toggle/Toggle";
 import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/DeleteThirdPartyProvider";
 import { KeyValueInput } from "../keyValueInput/KeyValueInput";
 import { useTenantDetailContext } from "../TenantDetailContext";
@@ -48,16 +52,36 @@ export const ProviderInfoForm = ({
 	const { tenantInfo } = useTenantDetailContext();
 	const [isSaving, setIsSaving] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
-	const { createOrUpdateThirdPartyProvider } = useThirdPartyService();
+	const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProvider();
 	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
 	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId?.startsWith(provider.id));
 	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
 	const shouldUsePrefixField = isAddingNewProvider && (inBuiltProviderInfo || isSAMLProvider);
+	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
+		providerId?.startsWith(id)
+	);
+	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : undefined;
 
 	const handleAddNewClient = () => {
+		let additionalConfigFields: Array<[string, string]> = [["", ""]];
+
+		if (customFields) {
+			additionalConfigFields = customFields.map((field) => [field.id, ""]);
+		}
+
 		setProviderConfigState((prev) => ({
 			...prev,
-			clients: [...(prev?.clients ?? []), { clientId: "", clientSecret: "", clientType: "", scope: [""] }],
+			clients: [
+				...(prev?.clients ?? []),
+				{
+					clientId: "",
+					clientSecret: "",
+					clientType: "",
+					scope: [""],
+					additionalConfig: additionalConfigFields,
+					forcePKCE: false,
+				},
+			],
 		}));
 	};
 
@@ -106,9 +130,10 @@ export const ProviderInfoForm = ({
 	const handleSave = async () => {
 		setErrorState({});
 		const clientTypes = new Set<string>();
+		const isAppleProvider = providerId?.startsWith("apple");
 		let isValid = true;
 		const doesThirdPartyIdExist = tenantInfo.thirdParty.providers.some(
-			(providerId) => providerId === providerConfigState.thirdPartyId
+			(pid) => pid === providerConfigState.thirdPartyId
 		);
 
 		if (typeof providerConfigState.thirdPartyId !== "string" || providerConfigState.thirdPartyId.trim() === "") {
@@ -135,12 +160,14 @@ export const ProviderInfoForm = ({
 				setErrorState((prev) => ({ ...prev, [`clients.${index}.clientId`]: "Client Id is required" }));
 				isValid = false;
 			}
-			if (typeof client.clientSecret !== "string" || client.clientSecret.trim() === "") {
-				setErrorState((prev) => ({
-					...prev,
-					[`clients.${index}.clientSecret`]: "Client Secret is required",
-				}));
-				isValid = false;
+			if (!isAppleProvider) {
+				if (typeof client.clientSecret !== "string" || client.clientSecret.trim() === "") {
+					setErrorState((prev) => ({
+						...prev,
+						[`clients.${index}.clientSecret`]: "Client Secret is required",
+					}));
+					isValid = false;
+				}
 			}
 			if ((providerConfigState.clients?.length ?? 0) > 1) {
 				if (typeof client.clientType !== "string" || client.clientType.trim() === "") {
@@ -158,6 +185,21 @@ export const ProviderInfoForm = ({
 				clientTypes.add(client.clientType);
 			}
 		});
+
+		if (customFields) {
+			providerConfigState.clients?.forEach((client, index) => {
+				customFields?.forEach((field) => {
+					const fieldValue = client.additionalConfig.find(([key]) => key === field.id)?.[1];
+					if (field.required && (typeof fieldValue !== "string" || fieldValue.trim() === "")) {
+						setErrorState((prev) => ({
+							...prev,
+							[`clients.${index}.additionalConfig.${field.id}`]: `${field.label} is required`,
+						}));
+						isValid = false;
+					}
+				});
+			});
+		}
 
 		if (
 			(providerConfigState.oidcDiscoveryEndpoint?.trim().length ?? 0) > 0 &&
@@ -212,44 +254,6 @@ export const ProviderInfoForm = ({
 			isValid = false;
 		}
 
-		if (
-			isValid &&
-			(providerConfigState.oidcDiscoveryEndpoint?.trim().length === 0
-				? providerConfigState.authorizationEndpoint?.trim().length === 0 ||
-				  providerConfigState.tokenEndpoint?.trim().length === 0 ||
-				  providerConfigState.userInfoEndpoint?.trim().length === 0
-				: false)
-		) {
-			// Show error for remaining fields if one of the authorization, token or user info
-			// endpoints are filled but rest are empty
-			if (
-				providerConfigState.authorizationEndpoint?.trim().length > 0 ||
-				providerConfigState.tokenEndpoint?.trim().length > 0 ||
-				providerConfigState.userInfoEndpoint?.trim().length > 0
-			) {
-				setErrorState((prev) => ({
-					...prev,
-					authorizationEndpoint:
-						providerConfigState.authorizationEndpoint?.trim().length === 0
-							? "Authorization Endpoint is required"
-							: "",
-					tokenEndpoint:
-						providerConfigState.tokenEndpoint?.trim().length === 0 ? "Token Endpoint is required" : "",
-					userInfoEndpoint:
-						providerConfigState.userInfoEndpoint?.trim().length === 0
-							? "User Info Endpoint is required"
-							: "",
-				}));
-			} else {
-				setErrorState((prev) => ({
-					...prev,
-					oidcDiscoveryEndpoint:
-						"Either OIDC Discovery Endpoint or Authorization, Token and User Info Endpoints are required",
-				}));
-			}
-			isValid = false;
-		}
-
 		if (!isValid) {
 			return;
 		}
@@ -262,6 +266,9 @@ export const ProviderInfoForm = ({
 				clientType: client.clientType?.trim(),
 				clientSecret: client.clientSecret?.trim(),
 				scope: normalizedScopes,
+				additionalConfig: Object.fromEntries(
+					client.additionalConfig.filter(([key, _]: [string, string | null]) => key.trim().length > 0)
+				),
 			};
 		});
 
@@ -397,7 +404,8 @@ export const ProviderInfoForm = ({
 							client={client}
 							clientIndex={index}
 							errors={errorState}
-							setClient={(client: ProviderClientConfig) => {
+							additionalConfigFields={customFields}
+							setClient={(client: ProviderClientState) => {
 								setProviderConfigState((prev) => ({
 									...prev,
 									clients: prev.clients?.map((c, i) => (i === index ? client : c)),
@@ -433,10 +441,15 @@ export const ProviderInfoForm = ({
 					label="Authorization Endpoint"
 					tooltip="The authorization endpoint of the provider."
 					type="text"
+					disabled={providerConfig?.isGetAuthorisationRedirectUrlOverridden}
 					error={errorState.authorizationEndpoint}
 					forceShowError
 					name="authorizationEndpoint"
-					value={providerConfigState.authorizationEndpoint}
+					value={
+						providerConfig?.isGetAuthorisationRedirectUrlOverridden
+							? "Custom Override"
+							: providerConfigState.authorizationEndpoint
+					}
 					handleChange={handleFieldChange}
 				/>
 				<KeyValueInput
@@ -444,30 +457,53 @@ export const ProviderInfoForm = ({
 					name="authorizationEndpointQueryParams"
 					tooltip="The query params to be sent to the authorization endpoint."
 					value={providerConfigState.authorizationEndpointQueryParams}
+					isOverridden={providerConfig?.isGetAuthorisationRedirectUrlOverridden}
 					onChange={(value) => {
 						setProviderConfigState((prev) => ({ ...prev, authorizationEndpointQueryParams: value }));
 					}}
 				/>
+
+				{providerConfig?.isGetAuthorisationRedirectUrlOverridden && (
+					<div className="overridden-info">
+						<b>Note:</b> You cannot edit the above fields because this provider is using a custom override
+						for <code>getAuthorisationRedirectUrl</code>
+					</div>
+				)}
+
 				<div className="custom-provider-divider" />
 				<ThirdPartyProviderInput
 					label="Token Endpoint"
 					tooltip="The token endpoint of the provider."
 					type="text"
+					disabled={providerConfig?.isExchangeAuthCodeForOAuthTokensOverridden}
 					name="tokenEndpoint"
 					error={errorState.tokenEndpoint}
 					forceShowError
-					value={providerConfigState.tokenEndpoint}
+					value={
+						providerConfig?.isExchangeAuthCodeForOAuthTokensOverridden
+							? "Custom Override"
+							: providerConfigState.tokenEndpoint
+					}
 					handleChange={handleFieldChange}
 				/>
 				<KeyValueInput
 					label="Token Endpoint Body Params"
 					name="tokenEndpointBodyParams"
 					tooltip="The body params to be sent to the token endpoint."
+					isOverridden={providerConfig?.isExchangeAuthCodeForOAuthTokensOverridden}
 					value={providerConfigState.tokenEndpointBodyParams}
 					onChange={(value) => {
 						setProviderConfigState((prev) => ({ ...prev, tokenEndpointBodyParams: value }));
 					}}
 				/>
+
+				{providerConfig?.isExchangeAuthCodeForOAuthTokensOverridden && (
+					<div className="overridden-info">
+						<b>Note:</b> You cannot edit the above fields because this provider is using a custom override
+						for <code>exchangeAuthCodeForOAuthTokens</code>
+					</div>
+				)}
+
 				<div className="custom-provider-divider" />
 
 				<ThirdPartyProviderInput
@@ -475,9 +511,14 @@ export const ProviderInfoForm = ({
 					tooltip="The user info endpoint of the provider."
 					type="text"
 					name="userInfoEndpoint"
+					disabled={providerConfig?.isGetUserInfoOverridden}
 					error={errorState.userInfoEndpoint}
 					forceShowError
-					value={providerConfigState.userInfoEndpoint}
+					value={
+						providerConfig?.isGetUserInfoOverridden
+							? "Custom Override"
+							: providerConfigState.userInfoEndpoint
+					}
 					handleChange={handleFieldChange}
 				/>
 
@@ -486,6 +527,7 @@ export const ProviderInfoForm = ({
 					name="userInfoEndpointQueryParams"
 					tooltip="The query params to be sent to the user info endpoint."
 					value={providerConfigState.userInfoEndpointQueryParams}
+					isOverridden={providerConfig?.isGetUserInfoOverridden}
 					onChange={(value) => {
 						setProviderConfigState((prev) => ({ ...prev, userInfoEndpointQueryParams: value }));
 					}}
@@ -496,6 +538,7 @@ export const ProviderInfoForm = ({
 					name="userInfoEndpointHeaders"
 					tooltip="The headers to be sent to the user info endpoint."
 					value={providerConfigState.userInfoEndpointHeaders}
+					isOverridden={providerConfig?.isGetUserInfoOverridden}
 					onChange={(value) => {
 						setProviderConfigState((prev) => ({ ...prev, userInfoEndpointHeaders: value }));
 					}}
@@ -505,16 +548,23 @@ export const ProviderInfoForm = ({
 					label="User Info Map from UserInfo API"
 					tooltip="The mapping of the user info fields to the user info API."
 					name="fromUserInfoAPI"
+					isOverridden={providerConfig?.isGetUserInfoOverridden}
+					hasEmailOverrides
 					value={
 						providerConfigState.userInfoMap.fromUserInfoAPI ?? { userId: "", email: "", emailVerified: "" }
 					}
 					handleChange={handleUserInfoFieldChange}
+					requireEmail={providerConfigState.requireEmail}
+					handleRequireEmailChange={(value) => {
+						setProviderConfigState((prev) => ({ ...prev, requireEmail: value }));
+					}}
 				/>
 
 				<UserInfoMap
 					label="User Info Map from Id Token Payload"
 					tooltip="The mapping of the user info fields to the id token payload."
 					name="fromIdTokenPayload"
+					isOverridden={providerConfig?.isGetUserInfoOverridden}
 					value={
 						providerConfigState.userInfoMap.fromIdTokenPayload ?? {
 							userId: "",
@@ -524,6 +574,13 @@ export const ProviderInfoForm = ({
 					}
 					handleChange={handleUserInfoFieldChange}
 				/>
+
+				{providerConfig?.isGetUserInfoOverridden && (
+					<div className="overridden-info">
+						<b>Note:</b> You cannot edit the above fields because this provider is using a custom override
+						for <code>getUserInfo</code>
+					</div>
+				)}
 
 				<div className="custom-provider-divider" />
 
@@ -537,20 +594,6 @@ export const ProviderInfoForm = ({
 					value={providerConfigState.jwksURI}
 					handleChange={handleFieldChange}
 				/>
-
-				<div className="fields-container__toggle-container">
-					<ThirdPartyProviderInputLabel
-						label="Require Email"
-						tooltip="Whether the email is required or not."
-					/>
-					<Toggle
-						id="requireEmail"
-						checked={providerConfigState.requireEmail}
-						onChange={(e) => {
-							setProviderConfigState((prev) => ({ ...prev, requireEmail: e.target.checked }));
-						}}
-					/>
-				</div>
 			</div>
 			<hr className="provider-config-divider" />
 			<div className="custom-provider-footer">
@@ -585,6 +628,10 @@ const UserInfoMap = ({
 	name,
 	value,
 	handleChange,
+	isOverridden,
+	hasEmailOverrides,
+	requireEmail,
+	handleRequireEmailChange,
 }: {
 	label: string;
 	tooltip: string;
@@ -603,7 +650,29 @@ const UserInfoMap = ({
 		key: string;
 		value: string;
 	}) => void;
+	isOverridden?: boolean;
+	hasEmailOverrides?: boolean;
+	requireEmail?: boolean;
+	handleRequireEmailChange?: (value: boolean) => void;
 }) => {
+	const [emailSelectValue, setEmailSelectValue] = useState<EmailSelectState>(() => {
+		if (requireEmail === false) {
+			return "never";
+		}
+		return "always";
+	});
+
+	const handleEmailSelectChange = (value: EmailSelectState) => {
+		setEmailSelectValue(value);
+		if (value === "never" && handleRequireEmailChange) {
+			handleRequireEmailChange(false);
+		} else if (value === "always" && handleRequireEmailChange) {
+			handleRequireEmailChange(true);
+		}
+	};
+
+	const isEmailFieldVisible = isOverridden || !hasEmailOverrides || emailSelectValue === "always";
+
 	return (
 		<div className="user-info-map">
 			<ThirdPartyProviderInputLabel
@@ -616,7 +685,8 @@ const UserInfoMap = ({
 					type="text"
 					name={`userId-${name}`}
 					minLabelWidth={130}
-					value={value.userId}
+					disabled={isOverridden}
+					value={isOverridden ? "Custom Override" : value.userId}
 					handleChange={(e) =>
 						handleChange({
 							name,
@@ -625,26 +695,47 @@ const UserInfoMap = ({
 						})
 					}
 				/>
-				<ThirdPartyProviderInput
-					label="email"
-					type="text"
-					name={`email-${name}`}
-					minLabelWidth={130}
-					value={value.email}
-					handleChange={(e) =>
-						handleChange({
-							name,
-							key: "email",
-							value: e.target.value,
-						})
-					}
-				/>
+				{!isOverridden && hasEmailOverrides && (
+					<div className="provider-email-select">
+						<ThirdPartyProviderInputLabel label="How often does the provider return email?" />
+						<EmailSelect
+							value={emailSelectValue}
+							setValue={handleEmailSelectChange}
+						/>
+					</div>
+				)}
+				{(emailSelectValue === "sometimes" || emailSelectValue === "never") && (
+					<div className="overridden-info">
+						<b>Note:</b>{" "}
+						{emailSelectValue === "never"
+							? "We will generate a fake email for the end users automatically using their user id. If you want override how the fake email is generated by the SDK you can do so by overriding the generateFakeEmail method in the provider config"
+							: "Add a custom override for the getUserInfo method for this provider to handle the case when provider doesn't return email."}
+					</div>
+				)}
+				{isEmailFieldVisible && (
+					<ThirdPartyProviderInput
+						label="email"
+						type="text"
+						name={`email-${name}`}
+						disabled={isOverridden}
+						minLabelWidth={130}
+						value={isOverridden ? "Custom Override" : value.email}
+						handleChange={(e) =>
+							handleChange({
+								name,
+								key: "email",
+								value: e.target.value,
+							})
+						}
+					/>
+				)}
 				<ThirdPartyProviderInput
 					label="emailVerified"
 					type="text"
 					name="emailVerified"
+					disabled={isOverridden}
 					minLabelWidth={130}
-					value={value.emailVerified}
+					value={isOverridden ? "Custom Override" : value.emailVerified}
 					handleChange={(e) =>
 						handleChange({
 							name,
@@ -658,20 +749,57 @@ const UserInfoMap = ({
 	);
 };
 
+type EmailSelectState = "always" | "sometimes" | "never";
+
+const EmailSelectValues: Array<{ label: string; value: EmailSelectState }> = [
+	{
+		label: "All the time",
+		value: "always",
+	},
+	{
+		label: "Sometimes",
+		value: "sometimes",
+	},
+	{
+		label: "Never",
+		value: "never",
+	},
+];
+
+const EmailSelect = ({ value, setValue }: { value: EmailSelectState; setValue: (value: EmailSelectState) => void }) => {
+	return (
+		<div className="email-select-container">
+			{EmailSelectValues.map((option) => (
+				<button
+					key={option.value}
+					className={`email-select-option ${value === option.value ? "email-select-option--selected" : ""}`}
+					onClick={() => setValue(option.value)}>
+					{option.label}
+				</button>
+			))}
+		</div>
+	);
+};
+
 type ProviderConfigState = Omit<
 	Required<ProviderConfig>,
 	| "tokenEndpointBodyParams"
 	| "authorizationEndpointQueryParams"
 	| "userInfoEndpointHeaders"
 	| "userInfoEndpointQueryParams"
+	| "clients"
 > & {
 	tokenEndpointBodyParams: Array<[string, string | null]>;
 	authorizationEndpointQueryParams: Array<[string, string | null]>;
 	userInfoEndpointHeaders: Array<[string, string | null]>;
 	userInfoEndpointQueryParams: Array<[string, string | null]>;
+	clients: ProviderClientState[];
 };
 
-const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined): ProviderConfigState => {
+const getInitialProviderInfo = (
+	providerConfig: ProviderConfig | undefined,
+	providerId?: string
+): ProviderConfigState => {
 	if (providerConfig !== undefined) {
 		return {
 			...providerConfig,
@@ -694,7 +822,25 @@ const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined): Pro
 					emailVerified: providerConfig.userInfoMap?.fromUserInfoAPI?.emailVerified ?? "",
 				},
 			},
-			clients: providerConfig.clients ?? [],
+			clients:
+				Array.isArray(providerConfig.clients) && providerConfig.clients.length > 0
+					? providerConfig.clients.map((client) => ({
+							...client,
+							additionalConfig:
+								client.additionalConfig && Object.keys(client.additionalConfig).length > 0
+									? Object.entries(client.additionalConfig)
+									: [["", ""]],
+					  }))
+					: [
+							{
+								clientId: "",
+								clientSecret: "",
+								clientType: "",
+								scope: [""],
+								additionalConfig: [["", ""]],
+								forcePKCE: false,
+							},
+					  ],
 			tokenEndpointBodyParams:
 				providerConfig.tokenEndpointBodyParams && Object.keys(providerConfig.tokenEndpointBodyParams).length > 0
 					? Object.entries(providerConfig.tokenEndpointBodyParams)
@@ -715,6 +861,13 @@ const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined): Pro
 					: [["", ""]],
 		};
 	}
+
+	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
+		providerId?.startsWith(id)
+	);
+	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : [];
+
+	const additionaConfigFields: Array<[string, string]> = customFields.map((field) => [field.id, ""]);
 
 	return {
 		thirdPartyId: "",
@@ -741,6 +894,78 @@ const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined): Pro
 			},
 		},
 		requireEmail: true,
-		clients: [{ clientId: "", clientSecret: "", clientType: "", scope: [""] }],
+		clients: [
+			{
+				clientId: "",
+				clientSecret: "",
+				clientType: "",
+				scope: [""],
+				additionalConfig: additionaConfigFields,
+				forcePKCE: false,
+			},
+		],
 	};
+};
+const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
+	apple: [
+		{
+			label: "Key Id",
+			id: "keyId",
+			tooltip: "The key Id for Apple.",
+			type: "text",
+			required: true,
+		},
+		{
+			label: "Team Id",
+			id: "teamId",
+			tooltip: "The team Id for Apple.",
+			type: "text",
+			required: true,
+		},
+		{
+			label: "Private Key",
+			id: "privateKey",
+			tooltip: "The private key for Apple.",
+			type: "text",
+			required: true,
+		},
+	],
+	"google-workspaces": [
+		{
+			label: "Hosted Domain",
+			id: "hd",
+			tooltip: "The hosted domain for Google Workspaces.",
+			type: "text",
+			required: true,
+		},
+	],
+
+	"active-directory": [
+		{
+			label: "Directory Id",
+			id: "directoryId",
+			tooltip:
+				"The id of the Microsoft Entra tenant, this is required if OIDC discovery endpoint is not provided.",
+			type: "text",
+			required: true,
+		},
+	],
+	okta: [
+		{
+			label: "Okta Domain",
+			id: "oktaDomain",
+			tooltip: "The domain of your Okta account, this is required if OIDC discovery endpoint is not provided.",
+			type: "text",
+			required: true,
+		},
+	],
+	"boxy-saml": [
+		{
+			label: "Boxy URL",
+			id: "boxyURL",
+			tooltip: "The URL of the Boxy instance.",
+			type: "text",
+			required: true,
+		},
+	],
 };

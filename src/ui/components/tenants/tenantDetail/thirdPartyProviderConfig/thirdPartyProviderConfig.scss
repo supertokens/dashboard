@@ -198,7 +198,7 @@
 	border: none;
 }
 
-.built-in-provider-footer {
+.additional-config-footer {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -271,6 +271,36 @@
 	}
 }
 
+.additional-config-field {
+	background-color: var(--color-factor-bg);
+	border-radius: 6px;
+	padding: 18px 24px;
+	max-width: 442px;
+}
+
+.additional-config-container {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+
+	&__header {
+		font-family: inherit;
+		font-weight: 400;
+		font-size: 14px;
+		line-height: 23px;
+		color: var(--color-secondary-text);
+	}
+
+	&__note {
+		font-family: inherit;
+		font-weight: 400;
+		font-size: 14px;
+		line-height: 23px;
+		color: var(--color-secondary-text);
+		margin-top: 4px;
+	}
+}
+
 .saml-intro-container {
 	&__header {
 		font-family: inherit;
@@ -329,6 +359,68 @@
 			color: var(--color-secondary);
 			font-weight: 500;
 			text-decoration: underline;
+		}
+	}
+}
+
+.overridden-info {
+	font-family: inherit;
+	font-weight: 400;
+	font-size: 13px;
+	line-height: 21px;
+	background-color: var(--color-info-bg);
+	color: var(--color-info);
+	border-radius: 4px;
+	border: 1px solid var(--color-border-info);
+	padding: 9px 12px;
+}
+
+.provider-email-select {
+	display: flex;
+	gap: 75px;
+}
+
+.email-select-container {
+	border: 1px solid var(--color-border-command);
+	border-radius: 4px;
+	width: 276px;
+	height: 40px;
+	display: flex;
+}
+
+.email-select-option {
+	background: transparent;
+	width: 92px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	border: none;
+	font-family: inherit;
+	font-weight: 400;
+	font-size: 13px;
+	line-height: 21px;
+	color: var(--color-secondary-text);
+
+	&:not(:last-child) {
+		border-right: 1px solid var(--color-border-command);
+	}
+
+	&--selected {
+		background: var(--color-primary-opacity-40);
+		color: black;
+		border: 1px solid var(--color-primary);
+		outline: 2px solid rgb(255, 231, 206);
+		&:not(:last-child) {
+			border-color: var(--color-primary);
+		}
+		&:first-child {
+			border-top-left-radius: 4px;
+			border-bottom-left-radius: 4px;
+		}
+		&:last-child {
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
 		}
 	}
 }

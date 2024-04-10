@@ -73,7 +73,10 @@ export const LoginMethodsSection = () => {
 				setIsFirstFactorsLoading(true);
 				const res = await updateFirstFactors(tenantInfo.tenantId, id, !doesFactorExist);
 				if (res.status !== "OK") {
-					setSelectedFactors(prevFactors);
+					// If the API returns a non success status, revert the state
+					// have also added an aritificial delay so that the toggle can finish its animation and
+					// has good UX in case API responds too quickly
+					setTimeout(() => setSelectedFactors(prevFactors), 200);
 					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK") {
 						setFactorErrors((prev) => ({
 							...prev,
@@ -115,7 +118,10 @@ export const LoginMethodsSection = () => {
 					// getMFARequirementsForAuth is overridden, for rest of
 					// cases we revert the state
 					if (res.status !== "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") {
-						setSelectedFactors(prevFactors);
+						// If the API returns a non success status, revert the state
+						// have also added an aritificial delay so that the toggle can finish its animation and
+						// has good UX in case API responds too quickly
+						setTimeout(() => setSelectedFactors(prevFactors), 200);
 					}
 				}
 

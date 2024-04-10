@@ -16,7 +16,7 @@ import { getApiUrl, useFetchData } from "../../utils";
 import { ProviderConfig, ProviderConfigResponse, TenantInfo } from "./types";
 
 export const useTenantCreateService = () => {
-	const fetchData = useFetchData(true);
+	const fetchData = useFetchData();
 
 	const createOrUpdateTenant = async (
 		tenantId: string
@@ -217,7 +217,8 @@ export const useGetThirdPartyProviderInfo = () => {
 
 	const getThirdPartyProviderInfo = async (
 		tenantId: string,
-		providerId: string
+		providerId: string,
+		additionalConfig?: Record<string, string>
 	): Promise<
 		| {
 				status: "OK";
@@ -239,7 +240,11 @@ export const useGetThirdPartyProviderInfo = () => {
 						clientSecret: "secret",
 						scope: ["scope"],
 						forcePKCE: false,
-						additionalConfig: {},
+						additionalConfig: {
+							keyId: "value",
+							privateKey: "private-key",
+							teamId: "team-id",
+						},
 					},
 				],
 				isGetAuthorisationRedirectUrlOverridden: false,
@@ -248,8 +253,15 @@ export const useGetThirdPartyProviderInfo = () => {
 			},
 		};
 
+		const additionalConfigQueryParams = new URLSearchParams(additionalConfig).toString();
+
 		const response = await fetchData({
-			url: getApiUrl(`/api/thirdparty/config?third-party-id=${providerId}`, tenantId),
+			url: getApiUrl(
+				`/api/thirdparty/config?third-party-id=${providerId}${
+					additionalConfigQueryParams ? `&${additionalConfigQueryParams}` : ""
+				}`,
+				tenantId
+			),
 			method: "GET",
 		});
 
@@ -263,12 +275,15 @@ export const useGetThirdPartyProviderInfo = () => {
 	return getThirdPartyProviderInfo;
 };
 
-export const useThirdPartyService = () => {
+export const useCreateOrUpdateThirdPartyProvider = () => {
 	const fetchData = useFetchData();
 
-	const createOrUpdateThirdPartyProvider = async (tenantId: string, providerConfig: ProviderConfig) => {
+	const createOrUpdateThirdPartyProvider = async (
+		tenantId: string,
+		providerConfig: ProviderConfig
+	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/tenants/third-party", tenantId),
+			url: getApiUrl("/api/thirdparty/config", tenantId),
 			method: "PUT",
 			config: {
 				body: JSON.stringify({
@@ -285,9 +300,18 @@ export const useThirdPartyService = () => {
 		throw new Error("Unknown error");
 	};
 
-	const deleteThirdPartyProvider = async (tenantId: string, providerId: string) => {
+	return createOrUpdateThirdPartyProvider;
+};
+
+export const useDeleteThirdPartyProvider = () => {
+	const fetchData = useFetchData();
+
+	const deleteThirdPartyProvider = async (
+		tenantId: string,
+		providerId: string
+	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
 		const response = await fetchData({
-			url: getApiUrl(`/api/tenants/third-party?thirdPartyId=${providerId}`, tenantId),
+			url: getApiUrl(`/api/thirdparty?third-party-id=${providerId}`, tenantId),
 			method: "DELETE",
 		});
 
@@ -300,8 +324,5 @@ export const useThirdPartyService = () => {
 		throw new Error("Unknown error");
 	};
 
-	return {
-		createOrUpdateThirdPartyProvider,
-		deleteThirdPartyProvider,
-	};
+	return deleteThirdPartyProvider;
 };

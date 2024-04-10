@@ -13,7 +13,7 @@
  * under the License.
  */
 import { useContext, useState } from "react";
-import { useThirdPartyService } from "../../../../../api/tenants";
+import { useDeleteThirdPartyProvider } from "../../../../../api/tenants";
 import { getImageUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
@@ -31,7 +31,7 @@ export const DeleteThirdPartyProviderDialog = ({
 	thirdPartyId: string;
 }) => {
 	const [isDeletingProvider, setIsDeletingProvider] = useState(false);
-	const { deleteThirdPartyProvider } = useThirdPartyService();
+	const deleteThirdPartyProvider = useDeleteThirdPartyProvider();
 	const { tenantInfo } = useTenantDetailContext();
 	const { showToast } = useContext(PopupContentContext);
 

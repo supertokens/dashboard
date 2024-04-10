@@ -26,10 +26,12 @@ type KeyValueInputProps = {
 	value: Array<[string, string | null]>;
 	name: string;
 	onChange: (value: Array<[string, string | null]>) => void;
+	fixedFields?: Array<string>;
+	isOverridden?: boolean;
 };
 
 export const KeyValueInput = (props: KeyValueInputProps) => {
-	const { label, value, tooltip, isRequired, name } = props;
+	const { label, value, tooltip, isRequired, name, fixedFields, isOverridden } = props;
 	return (
 		<div className="key-value-input-container">
 			<ThirdPartyProviderInputLabel
@@ -39,13 +41,14 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 			/>
 			<div className="key-value-input-container__fields-container">
 				<div className="key-value-input-container__fields-list">
-					{value.map((pair, index) => {
+					{value.slice(0, isOverridden ? 1 : value.length).map((pair, index) => {
 						return (
 							<div
 								className="key-value-input-container__field"
 								key={index}>
 								<ThirdPartyProviderInput
-									value={pair[0]}
+									value={isOverridden ? "Custom Override" : pair[0]}
+									disabled={fixedFields?.includes(pair[0]) || isOverridden}
 									handleChange={(e) => {
 										const newValue: Array<[string, string | null]> = [
 											...props.value.slice(0, index),
@@ -59,7 +62,8 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 									type="text"
 								/>
 								<ThirdPartyProviderInput
-									value={pair[1] ?? ""}
+									value={isOverridden ? "Custom Override" : pair[1] ?? ""}
+									disabled={fixedFields?.includes(pair[0]) || isOverridden}
 									handleChange={(e) => {
 										const newValue: Array<[string, string | null]> = [
 											...props.value.slice(0, index),
@@ -76,6 +80,7 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 									<DeleteCrossButton
 										onClick={() => props.onChange(props.value.filter((_, i) => i !== index))}
 										label="Delete"
+										disabled={fixedFields?.includes(pair[0])}
 									/>
 								)}
 							</div>
