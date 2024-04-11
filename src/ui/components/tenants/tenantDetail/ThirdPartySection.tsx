@@ -39,25 +39,27 @@ export const ThirdPartySection = ({
 
 			{providers?.length > 0 ? (
 				<div className="tenant-detail__existing-providers">
-					{providers.map((providerId) => {
-						const builtInProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.find((p) => providerId.startsWith(p.id));
+					{providers.map((provider) => {
+						const builtInProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.find((p) =>
+							provider.thirdPartyId.startsWith(p.id)
+						);
 
 						if (builtInProvider) {
 							return (
 								<ThirdPartyProviderButton
-									key={providerId}
-									title={providerId}
+									key={provider.thirdPartyId}
+									title={provider.name ?? provider.thirdPartyId}
 									icon={builtInProvider.icon}
-									onClick={() => handleEditProvider(providerId)}
+									onClick={() => handleEditProvider(provider.thirdPartyId)}
 								/>
 							);
 						}
 						return (
 							<ThirdPartyProviderButton
-								key={providerId}
-								title={providerId}
+								key={provider.thirdPartyId}
+								title={provider.name ?? provider.thirdPartyId}
 								type="without-icon"
-								onClick={() => handleEditProvider(providerId)}
+								onClick={() => handleEditProvider(provider.thirdPartyId)}
 							/>
 						);
 					})}

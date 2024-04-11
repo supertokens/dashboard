@@ -49,7 +49,7 @@ export type ProviderConfigResponse = ProviderConfig & {
 export type TenantInfo = {
 	tenantId: string;
 	thirdParty: {
-		providers: string[];
+		providers: { thirdPartyId: string; name: string }[];
 	};
 	firstFactors: string[];
 	requiredSecondaryFactors?: string[] | null;
