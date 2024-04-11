@@ -40,7 +40,7 @@ export const CoreConfigSection = () => {
 	let databaseType: "postgres" | "mysql" | null = null;
 
 	if (hasPluginProperties) {
-		if (tenantInfo.coreConfig.some((property) => property.key.startsWith("postgres_"))) {
+		if (tenantInfo.coreConfig.some((property) => property.key.startsWith("postgresql_"))) {
 			databaseType = "postgres";
 		} else if (tenantInfo.coreConfig.some((property) => property.key.startsWith("mysql_"))) {
 			databaseType = "mysql";
@@ -72,6 +72,7 @@ export const CoreConfigSection = () => {
 								isDifferentAcrossTenants={config.isDifferentAcrossTenants}
 								isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
 								isPluginProperty={config.isPluginProperty}
+								isPluginPropertyEditable={config.isPluginPropertyEditable}
 								possibleValues={config.possibleValues}
 							/>
 						);
@@ -84,8 +85,9 @@ export const CoreConfigSection = () => {
 							</h2>
 							<hr className="tenant-detail__core-config-table__plugin-properties-divider" />
 							<p className="tenant-detail__core-config-table__plugin-properties-description">
-								Some of these properties cannot be directly modified from the UI, instead you can make
-								an API request to core to modify these properties.{" "}
+								Some of these properties need to be modified together, hence they cannot be directly
+								modified from the UI, instead you can make an API request to core to modify these
+								properties.{" "}
 								<button
 									onClick={() => setShowPluginDialog(true)}
 									className="tenant-detail__core-config-table__button-link">
@@ -110,6 +112,7 @@ export const CoreConfigSection = () => {
 										isDifferentAcrossTenants={config.isDifferentAcrossTenants}
 										isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
 										isPluginProperty={config.isPluginProperty}
+										isPluginPropertyEditable={config.isPluginPropertyEditable}
 										possibleValues={config.possibleValues}
 									/>
 								);
@@ -141,6 +144,7 @@ type CoreConfigTableRowProps = {
 	isDifferentAcrossTenants: boolean;
 	isModifyableOnlyViaConfigYaml: boolean;
 	isPluginProperty: boolean;
+	isPluginPropertyEditable: boolean;
 };
 
 const isUsingSaaS = localStorage.getItem("isUsingSaaS") === "true";
@@ -152,12 +156,12 @@ const CoreConfigTableRow = ({
 	tooltip,
 	type,
 	isNullable,
-	defaultValue,
 	possibleValues,
 	isSaaSProtected,
 	isDifferentAcrossTenants,
 	isModifyableOnlyViaConfigYaml,
 	isPluginProperty,
+	isPluginPropertyEditable,
 }: CoreConfigTableRowProps) => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [currentValue, setCurrentValue] = useState(value);
@@ -171,7 +175,7 @@ const CoreConfigTableRow = ({
 
 	const isUneditable =
 		isPublicTenant ||
-		isPluginProperty ||
+		(isPluginProperty && !isPluginPropertyEditable) ||
 		isModifyableOnlyViaConfigYaml ||
 		(isUsingSaaS && isSaaSProtected) ||
 		(!isPublicTenant && !isDifferentAcrossTenants);
@@ -264,10 +268,6 @@ const CoreConfigTableRow = ({
 	};
 
 	const renderUneditablePropertyReason = () => {
-		if (isPluginProperty) {
-			return "This property is a database property cannot be modified from the UI. Checkout the description for this section for more details.";
-		}
-
 		if (isModifyableOnlyViaConfigYaml && isUsingSaaS) {
 			return "This property cannot be modified since you are using the managed service.";
 		}
@@ -297,6 +297,10 @@ const CoreConfigTableRow = ({
 			);
 		}
 
+		if (isPluginProperty && !isPluginPropertyEditable) {
+			return "This property is a database property that cannot be directly modified from the UI. Checkout the description for this section for more details.";
+		}
+
 		return isUsingSaaS
 			? "You can modify this property via the SaaS dashboard."
 			: "This property is modifyable only via the config.yaml file or via Docker env variables.";
@@ -312,7 +316,7 @@ const CoreConfigTableRow = ({
 					<div className="tenant-detail__core-config-table__row-info">
 						<div className="tenant-detail__core-config-table__row-name">
 							{tooltip && (
-								<TooltipContainer tooltip={`${tooltip} \n Default Value: ${defaultValue}`}>
+								<TooltipContainer tooltip={`${tooltip}`}>
 									<InfoIcon />
 								</TooltipContainer>
 							)}

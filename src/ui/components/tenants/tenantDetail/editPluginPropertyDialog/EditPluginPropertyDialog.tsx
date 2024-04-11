@@ -60,7 +60,7 @@ ${commonHeaders.trim()}
         "${databaseType === "mysql" ? "mysql_port" : "postgresql_port"}": 5432,
         "${databaseType === "mysql" ? "mysql_user" : "postgresql_user"}": "root",
         "${databaseType === "mysql" ? "mysql_password" : "postgresql_password"}": "root",
-		"${databaseType === "mysql" ? "mysql_database_name" : "postgresql_database_name"}": "supertokens"
+        "${databaseType === "mysql" ? "mysql_database_name" : "postgresql_database_name"}": "supertokens"
     }
 }'`;
 
@@ -70,12 +70,12 @@ ${commonHeaders.trim()}
 
 	return (
 		<Dialog
-			title="Edit Plugin Property"
+			title="Edit Database Properties"
 			onCloseDialog={onCloseDialog}
-			className="dialog-container-600">
+			className="dialog-container-650">
 			<DialogContent>
 				<DialogConfirmText>
-					Use the following curl request to modify multiple plugin properties at once.
+					Use the following curl request to modify multiple database properties at once.
 				</DialogConfirmText>
 				<div className="command-container">
 					<code

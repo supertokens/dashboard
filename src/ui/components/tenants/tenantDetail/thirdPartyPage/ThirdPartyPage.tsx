@@ -15,14 +15,12 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useGetThirdPartyProviderInfo } from "../../../../../api/tenants";
 import { ProviderConfigResponse, TenantDashboardView } from "../../../../../api/tenants/types";
-import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "../../../../../constants";
 import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import Button from "../../../button";
 import { Loader } from "../../../loader/Loader";
 import { useTenantDetailContext } from "../TenantDetailContext";
 import { TenantDetailHeader } from "../TenantDetailHeader";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
-import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
 import { ProviderInfoForm } from "../thirdPartyProviderConfig/ProviderInfoForm";
 import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
 import "./thirdPartyPage.scss";
@@ -131,84 +129,6 @@ const ProviderInfo = ({
 			handleGoBack={handleGoBack}
 			isAddingNewProvider={isAddingNewProvider}
 		/>
-	);
-};
-
-const ThirdPartyProvidersList = ({ setViewObj }: { setViewObj: Dispatch<SetStateAction<TenantDashboardView>> }) => {
-	const handleAddNewInBuiltProvider = (providerId: string) => {
-		window.scrollTo(0, 0);
-		setViewObj({
-			view: "add-or-edit-third-party-provider",
-			thirdPartyId: providerId,
-			isAddingNewProvider: true,
-		});
-	};
-
-	return (
-		<PanelRoot>
-			<PanelHeader>
-				<PanelHeaderTitleWithTooltip>Add new Social / Enterprise Login Provider</PanelHeaderTitleWithTooltip>
-			</PanelHeader>
-			<div className="provider-list-header">
-				Select the Provider that you want to add for you tenant from the list below
-			</div>
-			<div className="provider-list-container">
-				<h2 className="provider-list-container__header-with-divider">Enterprise Providers</h2>
-				<div className="provider-list-container__providers-grid">
-					{IN_BUILT_THIRD_PARTY_PROVIDERS.filter((provider) => provider.isEnterprise).map((provider) => {
-						return (
-							<ThirdPartyProviderButton
-								key={provider.id}
-								title={provider.label}
-								icon={provider.icon}
-								onClick={() => handleAddNewInBuiltProvider(provider.id)}
-							/>
-						);
-					})}
-				</div>
-				<h2 className="provider-list-container__header-with-divider provider-list-container__header-with-divider--margin-top-30">
-					Social Providers
-				</h2>
-				<div className="provider-list-container__providers-grid">
-					{IN_BUILT_THIRD_PARTY_PROVIDERS.filter((provider) => !provider.isEnterprise).map((provider) => {
-						return (
-							<ThirdPartyProviderButton
-								key={provider.id}
-								title={provider.label}
-								icon={provider.icon}
-								onClick={() => handleAddNewInBuiltProvider(provider.id)}
-							/>
-						);
-					})}
-				</div>
-				<h2 className="provider-list-container__header-with-divider provider-list-container__header-with-divider--margin-top-30">
-					Custom OAuth Providers
-				</h2>
-				<div className="provider-list-container__providers-grid">
-					<ThirdPartyProviderButton
-						title="Add Custom Provider"
-						type="without-icon"
-						onClick={() => {
-							window.scrollTo(0, 0);
-							setViewObj({
-								view: "add-or-edit-third-party-provider",
-								isAddingNewProvider: true,
-							});
-						}}
-					/>
-				</div>
-				<h2 className="provider-list-container__header-with-divider provider-list-container__header-with-divider--margin-top-30">
-					SAML
-				</h2>
-				<div className="provider-list-container__providers-grid">
-					<ThirdPartyProviderButton
-						title="Add SAML Provider"
-						type="without-icon"
-						onClick={() => handleAddNewInBuiltProvider(SAML_PROVIDER_ID)}
-					/>
-				</div>
-			</div>
-		</PanelRoot>
 	);
 };
 
@@ -379,6 +299,10 @@ const ActiveDirectoryForm = ({ handleContinue, handleGoBack }: AdditionalConfigF
 				/>
 			</div>
 
+			<p className="additional-config-container__note">
+				For example: <code>97f9a564-fcee-4b88-ae34-a1fbc4656593</code>
+			</p>
+
 			<hr className="provider-config-divider" />
 			<div className="additional-config-footer">
 				<div />
@@ -425,6 +349,8 @@ const OktaForm = ({ handleContinue, handleGoBack }: AdditionalConfigFormProps) =
 					}}
 				/>
 			</div>
+
+			<p className="additional-config-container__note">For example: https://dev-123456.okta.com</p>
 
 			<hr className="provider-config-divider" />
 			<div className="additional-config-footer">

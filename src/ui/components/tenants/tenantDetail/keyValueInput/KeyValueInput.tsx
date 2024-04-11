@@ -32,6 +32,7 @@ type KeyValueInputProps = {
 
 export const KeyValueInput = (props: KeyValueInputProps) => {
 	const { label, value, tooltip, isRequired, name, fixedFields, isOverridden } = props;
+	const hasOnlyOneEmptyKeyValuePair = value.length === 1 && value[0][0]?.trim() === "" && value[0][1]?.trim() === "";
 	return (
 		<div className="key-value-input-container">
 			<ThirdPartyProviderInputLabel
@@ -76,13 +77,17 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 									name={`value-${name}-${index}`}
 									type="text"
 								/>
-								{value.length > 1 && (
-									<DeleteCrossButton
-										onClick={() => props.onChange(props.value.filter((_, i) => i !== index))}
-										label="Delete"
-										disabled={fixedFields?.includes(pair[0])}
-									/>
-								)}
+								<DeleteCrossButton
+									onClick={() => {
+										if (value.length === 1) {
+											props.onChange([["", ""]]);
+										} else {
+											props.onChange(props.value.filter((_, i) => i !== index));
+										}
+									}}
+									label="Delete"
+									disabled={fixedFields?.includes(pair[0]) || hasOnlyOneEmptyKeyValuePair}
+								/>
 							</div>
 						);
 					})}

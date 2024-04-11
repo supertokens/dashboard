@@ -78,6 +78,7 @@ export type CoreConfigOption = {
 	isNullable: boolean;
 	defaultValue: string | number | boolean | null;
 	isPluginProperty: boolean;
+	isPluginPropertyEditable: boolean;
 };
 
 export type TenantDashboardView =

@@ -13,8 +13,8 @@
  * under the License.
  */
 
-.dialog-container-600 {
-	max-width: 600px;
+.dialog-container-650 {
+	max-width: 650px;
 }
 
 .command-container {
@@ -49,7 +49,7 @@
 		line-height: 1.6;
 		color: var(--color-command);
 		flex: 1;
-		max-height: 250px;
+		max-height: 300px;
 		overflow-y: scroll;
 
 		.hljs-string {

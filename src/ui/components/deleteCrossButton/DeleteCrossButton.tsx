@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReactComponent as CloseIconActive } from "../../../assets/close-active.svg";
 import { ReactComponent as CloseIconDefault } from "../../../assets/close-inactive.svg";
 
@@ -28,6 +28,13 @@ export const DeleteCrossButton = ({
 	disabled?: boolean;
 }) => {
 	const [isHovered, setIsHovered] = useState(false);
+
+	useEffect(() => {
+		if (disabled) {
+			setIsHovered(false);
+		}
+	}, [disabled]);
+
 	return (
 		<button
 			className="delete-cross-button"
@@ -35,7 +42,9 @@ export const DeleteCrossButton = ({
 			disabled={disabled}
 			aria-label={label}
 			onMouseEnter={() => setIsHovered(true)}
-			onMouseLeave={() => setIsHovered(false)}>
+			onMouseLeave={() => setIsHovered(false)}
+			onMouseOver={() => setIsHovered(true)}
+			onMouseOut={() => setIsHovered(false)}>
 			{isHovered && !disabled ? <CloseIconActive /> : <CloseIconDefault />}
 		</button>
 	);
