@@ -78,7 +78,7 @@ input[type="checkbox"] {
 					-moz-transition: width 0.2s cubic-bezier(0, 0, 0, 0.1);
 					-o-transition: width 0.2s cubic-bezier(0, 0, 0, 0.1);
 					-webkit-transition: width 0.2s cubic-bezier(0, 0, 0, 0.1);
-					transition: width 0.2s cubic-bezier(0, 0, 0, 0.1);
+					transition: width, background 0.2s cubic-bezier(0, 0, 0, 0.1);
 				}
 				&:after {
 					left: 22px;

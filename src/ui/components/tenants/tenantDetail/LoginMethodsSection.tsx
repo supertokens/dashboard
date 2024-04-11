@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useUpdateFirstFactorsService, useUpdateSecondaryFactorsService } from "../../../../api/tenants";
 import { ReactComponent as ErrorIcon } from "../../../../assets/form-field-error-icon.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
@@ -26,135 +26,15 @@ import { useTenantDetailContext } from "./TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
 
 export const LoginMethodsSection = () => {
-	const { tenantInfo, setTenantInfo, refetchTenant } = useTenantDetailContext();
-	const updateFirstFactors = useUpdateFirstFactorsService();
-	const updateSecondaryFactors = useUpdateSecondaryFactorsService();
-	const [selectedFactors, setSelectedFactors] = useState<{
-		firstFactors: Array<string>;
-		requiredSecondaryFactors: Array<string>;
-	}>({
-		firstFactors: tenantInfo.firstFactors ?? [],
-		requiredSecondaryFactors: tenantInfo.requiredSecondaryFactors ?? [],
-	});
-
-	const [isFirstFactorsLoading, setIsFirstFactorsLoading] = useState(false);
-	const [isSecondaryFactorsLoading, setIsSecondaryFactorsLoading] = useState(false);
+	const { tenantInfo } = useTenantDetailContext();
 	const [secondaryFactorsError, setSecondaryFactorsError] = useState<
 		null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN"
 	>(null);
-	const [factorErrors, setFactorErrors] = useState<{
-		firstFactors: Record<string, string>;
-		requiredSecondaryFactors: Record<string, string>;
-	}>({
-		firstFactors: {},
-		requiredSecondaryFactors: {},
-	});
-
-	useEffect(() => {
-		setSelectedFactors({
-			firstFactors: tenantInfo.firstFactors ?? [],
-			requiredSecondaryFactors: tenantInfo.requiredSecondaryFactors ?? [],
-		});
-	}, [tenantInfo]);
-
-	const { showToast } = useContext(PopupContentContext);
 
 	const doesTenantHasEmailPasswordAndPasswordlessEnabled =
 		tenantInfo.firstFactors?.includes(FactorIds.EMAILPASSWORD) &&
 		doesTenantHasPasswordlessEnabled(tenantInfo.firstFactors) &&
 		!tenantInfo.firstFactors?.includes(FactorIds.THIRDPARTY);
-
-	const handleFactorChange = async (factorKey: "firstFactors" | "requiredSecondaryFactors", id: string) => {
-		const prevFactors = selectedFactors;
-		const newFactors = { ...prevFactors };
-		const doesFactorExist = newFactors[factorKey].includes(id);
-		if (doesFactorExist) {
-			newFactors[factorKey] = newFactors[factorKey].filter((factor) => factor !== id);
-		} else {
-			newFactors[factorKey] = [...newFactors[factorKey], id];
-		}
-		// Optimistically update the state for better UX
-		setSelectedFactors(newFactors);
-		try {
-			if (factorKey === "firstFactors") {
-				setIsFirstFactorsLoading(true);
-				const res = await updateFirstFactors(tenantInfo.tenantId, id, !doesFactorExist);
-				if (res.status !== "OK") {
-					// If the API returns a non success status, revert the state
-					// have also added an aritificial delay so that the toggle can finish its animation and
-					// has good UX in case API responds too quickly
-					setTimeout(() => setSelectedFactors(prevFactors), 400);
-					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
-						setFactorErrors((prev) => ({
-							...prev,
-							firstFactors: { ...prev.firstFactors, [id]: res.message },
-						}));
-					} else {
-						throw new Error(res.status);
-					}
-				} else {
-					// Update the tenantInfo state
-					setTenantInfo((prev) =>
-						prev
-							? {
-									...prev,
-									firstFactors: newFactors.firstFactors,
-							  }
-							: undefined
-					);
-				}
-			} else {
-				setIsSecondaryFactorsLoading(true);
-				const res = await updateSecondaryFactors(tenantInfo.tenantId, id, !doesFactorExist);
-				if (res.status !== "OK") {
-					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
-						setFactorErrors((prev) => ({
-							...prev,
-							requiredSecondaryFactors: { ...prev.requiredSecondaryFactors, [id]: res.message },
-						}));
-					} else if (res.status === "MFA_NOT_INITIALIZED_ERROR") {
-						setSecondaryFactorsError("MFA_NOT_INITIALIZED");
-					} else {
-						throw new Error(res.status);
-					}
-
-					// If the API returns a non success status, revert the state
-					// have also added an aritificial delay so that the toggle can finish its animation and
-					// has good UX in case API responds too quickly
-					setTimeout(() => setSelectedFactors(prevFactors), 400);
-				} else if (res.status === "OK") {
-					setTenantInfo((prev) =>
-						prev
-							? {
-									...prev,
-									requiredSecondaryFactors: newFactors.requiredSecondaryFactors,
-							  }
-							: undefined
-					);
-				}
-
-				if (res.status === "OK" && res.isMFARequirementsForAuthOverridden) {
-					setSecondaryFactorsError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
-				}
-			}
-		} catch (error) {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children:
-					(error as Error).message === "UNKNOWN_TENANT_ERROR" ? (
-						<>Tenant does not exist</>
-					) : (
-						<>Something went wrong!</>
-					),
-			});
-		} finally {
-			setIsFirstFactorsLoading(false);
-			setIsSecondaryFactorsLoading(false);
-			await new Promise((r) => setTimeout(r, 400));
-			void refetchTenant();
-		}
-	};
 
 	return (
 		<>
@@ -182,14 +62,13 @@ export const LoginMethodsSection = () => {
 					<div className="tenant-detail__factors-container__grid">
 						{FIRST_FACTOR_IDS.map((method) => (
 							<LoginFactor
-								id={`first-factor-${method.id}`}
+								id={method.id}
+								type="first-factor"
 								key={`first-factor-${method.id}`}
 								label={method.label}
-								disabled={isFirstFactorsLoading}
 								description={method.description}
-								error={factorErrors.firstFactors[method.id]}
-								checked={selectedFactors.firstFactors.includes(method.id)}
-								onChange={() => handleFactorChange("firstFactors", method.id)}
+								checked={tenantInfo?.firstFactors.includes(method.id)}
+								setSecondaryFactorsError={setSecondaryFactorsError}
 							/>
 						))}
 					</div>
@@ -225,15 +104,14 @@ export const LoginMethodsSection = () => {
 					<div className="tenant-detail__factors-container__grid">
 						{SECONDARY_FACTOR_IDS.map((method) => (
 							<LoginFactor
-								id={`secondary-factor-${method.id}`}
+								id={method.id}
+								type="secondary-factor"
 								key={`secondary-factor-${method.id}`}
 								label={method.label}
-								disabled={isSecondaryFactorsLoading}
 								fixedGap
 								description={method.description}
-								error={factorErrors.requiredSecondaryFactors[method.id]}
-								checked={selectedFactors.requiredSecondaryFactors.includes(method.id)}
-								onChange={() => handleFactorChange("requiredSecondaryFactors", method.id)}
+								checked={tenantInfo.requiredSecondaryFactors?.includes(method.id) ?? false}
+								setSecondaryFactorsError={setSecondaryFactorsError}
 							/>
 						))}
 					</div>
@@ -247,22 +125,74 @@ const LoginFactor = ({
 	id,
 	label,
 	description,
-	error,
 	checked,
-	onChange,
 	fixedGap,
-	disabled,
+	type,
+	setSecondaryFactorsError,
 }: {
 	id: string;
 	label: string;
 	description: string;
-	error?: string;
 	checked: boolean;
-	onChange: () => void;
 	fixedGap?: boolean;
-	disabled?: boolean;
+	type: "first-factor" | "secondary-factor";
+	setSecondaryFactorsError: (error: null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") => void;
 }) => {
-	const hasError = typeof error === "string";
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const { tenantInfo, refetchTenant } = useTenantDetailContext();
+	const updateFirstFactors = useUpdateFirstFactorsService();
+	const updateSecondaryFactors = useUpdateSecondaryFactorsService();
+	const hasError = error !== null;
+	const { showToast } = useContext(PopupContentContext);
+
+	const handleFactorChange = async () => {
+		const doesFactorExist = checked;
+
+		try {
+			setIsLoading(true);
+			if (type === "first-factor") {
+				const res = await updateFirstFactors(tenantInfo.tenantId, id, !doesFactorExist);
+				if (res.status !== "OK") {
+					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
+						setError(res.message);
+					} else {
+						throw new Error(res.status);
+					}
+				}
+			} else {
+				const res = await updateSecondaryFactors(tenantInfo.tenantId, id, !doesFactorExist);
+				if (res.status !== "OK") {
+					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
+						setError(res.message);
+					} else if (res.status === "MFA_NOT_INITIALIZED_ERROR") {
+						setSecondaryFactorsError("MFA_NOT_INITIALIZED");
+					} else {
+						throw new Error(res.status);
+					}
+				}
+
+				if (res.status === "OK" && res.isMFARequirementsForAuthOverridden) {
+					setSecondaryFactorsError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
+				}
+			}
+		} catch (error) {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children:
+					(error as Error).message === "UNKNOWN_TENANT_ERROR" ? (
+						<>Tenant does not exist</>
+					) : (
+						<>Something went wrong!</>
+					),
+			});
+		} finally {
+			setIsLoading(false);
+			void refetchTenant();
+		}
+	};
+
 	return (
 		<div
 			className={`tenant-detail__factors-container__grid__factor${
@@ -280,9 +210,9 @@ const LoginFactor = ({
 			</div>
 			<Toggle
 				checked={checked}
-				onChange={onChange}
-				id={id}
-				disabled={disabled}
+				onChange={handleFactorChange}
+				id={`${type}-${id}`}
+				disabled={isLoading}
 			/>
 		</div>
 	);
