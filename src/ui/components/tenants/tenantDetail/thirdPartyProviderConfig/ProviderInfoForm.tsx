@@ -81,6 +81,7 @@ export const ProviderInfoForm = ({
 					scope: [""],
 					additionalConfig: additionalConfigFields,
 					forcePKCE: false,
+					key: crypto.randomUUID(),
 				},
 			],
 		}));
@@ -257,7 +258,6 @@ export const ProviderInfoForm = ({
 		const normalizedProviderConfigClients = providerConfigState.clients?.map((client) => {
 			const normalizedScopes = client.scope?.filter((scope) => scope && scope?.trim() !== "") ?? [];
 			return {
-				...client,
 				clientId: client.clientId.trim(),
 				clientType: client.clientType?.trim(),
 				clientSecret: client.clientSecret?.trim(),
@@ -265,6 +265,7 @@ export const ProviderInfoForm = ({
 				additionalConfig: Object.fromEntries(
 					client.additionalConfig.filter(([key, _]: [string, string | null]) => key.trim().length > 0)
 				),
+				forcePKCE: client.forcePKCE,
 			};
 		});
 
@@ -333,6 +334,7 @@ export const ProviderInfoForm = ({
 			});
 		} finally {
 			setIsSaving(false);
+			window.scrollTo(0, 0);
 		}
 	};
 
@@ -403,7 +405,7 @@ export const ProviderInfoForm = ({
 					<div className="custom-provider-client-config__header">Clients</div>
 					{providerConfigState.clients?.map((client, index) => (
 						<ClientConfig
-							key={index}
+							key={client.key}
 							providerId={providerConfigState.thirdPartyId}
 							clientsCount={providerConfigState.clients?.length ?? 0}
 							client={client}
@@ -841,6 +843,7 @@ const getInitialProviderInfo = (
 								client.additionalConfig && Object.keys(client.additionalConfig).length > 0
 									? Object.entries(client.additionalConfig)
 									: [["", ""]],
+							key: crypto.randomUUID(),
 					  }))
 					: [
 							{
@@ -850,6 +853,7 @@ const getInitialProviderInfo = (
 								scope: [""],
 								additionalConfig: additionaConfigFields,
 								forcePKCE: false,
+								key: crypto.randomUUID(),
 							},
 					  ],
 			tokenEndpointBodyParams:
@@ -906,6 +910,7 @@ const getInitialProviderInfo = (
 				scope: [""],
 				additionalConfig: additionaConfigFields,
 				forcePKCE: false,
+				key: crypto.randomUUID(),
 			},
 		],
 	};
@@ -930,44 +935,6 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 			label: "Private Key",
 			id: "privateKey",
 			tooltip: "The private key for Apple.",
-			type: "text",
-			required: true,
-		},
-	],
-	"google-workspaces": [
-		{
-			label: "Hosted Domain",
-			id: "hd",
-			tooltip: "The hosted domain for Google Workspaces.",
-			type: "text",
-			required: true,
-		},
-	],
-
-	"active-directory": [
-		{
-			label: "Directory Id",
-			id: "directoryId",
-			tooltip:
-				"The id of the Microsoft Entra tenant, this is required if OIDC discovery endpoint is not provided.",
-			type: "text",
-			required: true,
-		},
-	],
-	okta: [
-		{
-			label: "Okta Domain",
-			id: "oktaDomain",
-			tooltip: "The domain of your Okta account, this is required if OIDC discovery endpoint is not provided.",
-			type: "text",
-			required: true,
-		},
-	],
-	"boxy-saml": [
-		{
-			label: "Boxy URL",
-			id: "boxyURL",
-			tooltip: "The URL of the Boxy instance.",
 			type: "text",
 			required: true,
 		},

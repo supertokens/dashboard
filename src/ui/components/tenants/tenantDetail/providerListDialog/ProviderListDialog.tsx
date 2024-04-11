@@ -12,7 +12,6 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { Dispatch, SetStateAction } from "react";
 import { TenantDashboardView } from "../../../../../api/tenants/types";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "../../../../../constants";
 import Button from "../../../button";
@@ -21,15 +20,15 @@ import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdParty
 import "./thirdPartyProvidersList.scss";
 
 export const ProviderListDialog = ({
-	setViewObj,
+	handleAddNewProvider,
 	onCloseDialog,
 }: {
-	setViewObj: Dispatch<SetStateAction<TenantDashboardView>>;
+	handleAddNewProvider: (view: TenantDashboardView) => void;
 	onCloseDialog: () => void;
 }) => {
 	const handleAddNewInBuiltProvider = (providerId: string) => {
 		window.scrollTo(0, 0);
-		setViewObj({
+		handleAddNewProvider({
 			view: "add-or-edit-third-party-provider",
 			thirdPartyId: providerId,
 			isAddingNewProvider: true,
@@ -90,7 +89,7 @@ export const ProviderListDialog = ({
 								type="without-icon"
 								onClick={() => {
 									window.scrollTo(0, 0);
-									setViewObj({
+									handleAddNewProvider({
 										view: "add-or-edit-third-party-provider",
 										isAddingNewProvider: true,
 									});

@@ -83,7 +83,7 @@ export const LoginMethodsSection = () => {
 					// If the API returns a non success status, revert the state
 					// have also added an aritificial delay so that the toggle can finish its animation and
 					// has good UX in case API responds too quickly
-					setTimeout(() => setSelectedFactors(prevFactors), 200);
+					setTimeout(() => setSelectedFactors(prevFactors), 400);
 					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
 						setFactorErrors((prev) => ({
 							...prev,
@@ -121,7 +121,7 @@ export const LoginMethodsSection = () => {
 					// If the API returns a non success status, revert the state
 					// have also added an aritificial delay so that the toggle can finish its animation and
 					// has good UX in case API responds too quickly
-					setTimeout(() => setSelectedFactors(prevFactors), 200);
+					setTimeout(() => setSelectedFactors(prevFactors), 400);
 				} else if (res.status === "OK") {
 					setTenantInfo((prev) =>
 						prev
@@ -151,8 +151,8 @@ export const LoginMethodsSection = () => {
 		} finally {
 			setIsFirstFactorsLoading(false);
 			setIsSecondaryFactorsLoading(false);
-			// TODO: Enable this when the API is ready
-			// void refetchTenant();
+			await new Promise((r) => setTimeout(r, 400));
+			void refetchTenant();
 		}
 	};
 

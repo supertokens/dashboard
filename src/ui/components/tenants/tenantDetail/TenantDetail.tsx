@@ -44,7 +44,6 @@ export const TenantDetail = ({
 	const [isLoading, setIsLoading] = useState(true);
 	const [isDeleteTenantDialogOpen, setIsDeleteTenantDialogOpen] = useState(false);
 	const [isProviderListVisible, setIsProviderListVisible] = useState(false);
-	const [showLoadingOverlay, setShowLoadingOverlay] = useState(false);
 	const [viewObj, setViewObj] = useState<TenantDashboardView>({
 		view: "tenant-detail",
 	});
@@ -82,12 +81,10 @@ export const TenantDetail = ({
 	}, [tenantHasThirdPartyEnabled, tenant?.tenantId, tenant?.thirdParty.providers.length]);
 
 	const refetchTenant = async () => {
-		setShowLoadingOverlay(true);
 		await getTenant();
-		setShowLoadingOverlay(false);
 	};
 
-	const handleAddNewProvider = () => {
+	const handleAddNewProviderModal = () => {
 		window.scrollTo(0, 0);
 		setIsNoProviderAddedDialogVisible(false);
 		setIsProviderListVisible(true);
@@ -100,6 +97,11 @@ export const TenantDetail = ({
 			thirdPartyId: providerId,
 			isAddingNewProvider: false,
 		});
+	};
+
+	const handleAddNewProvider = (viewObj: TenantDashboardView) => {
+		setIsProviderListVisible(false);
+		setViewObj(viewObj);
 	};
 
 	const renderView = () => {
@@ -133,7 +135,7 @@ export const TenantDetail = ({
 					<LoginMethodsSection />
 					{tenantHasThirdPartyEnabled && (
 						<ThirdPartySection
-							handleAddNewProvider={handleAddNewProvider}
+							handleAddNewProvider={handleAddNewProviderModal}
 							handleEditProvider={handleEditProvider}
 						/>
 					)}
@@ -157,7 +159,7 @@ export const TenantDetail = ({
 				)}
 				{isProviderListVisible && (
 					<ProviderListDialog
-						setViewObj={setViewObj}
+						handleAddNewProvider={handleAddNewProvider}
 						onCloseDialog={() => setIsProviderListVisible(false)}
 					/>
 				)}
@@ -192,7 +194,7 @@ export const TenantDetail = ({
 			{isNoProviderAddedDialogVisible && (
 				<AddNewProviderDialog
 					onCloseDialog={() => setIsNoProviderAddedDialogVisible(false)}
-					handleContinue={handleAddNewProvider}
+					handleContinue={handleAddNewProviderModal}
 				/>
 			)}
 		</TenantDetailContextProvider>
