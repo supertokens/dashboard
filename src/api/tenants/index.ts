@@ -223,7 +223,7 @@ export const useGetThirdPartyProviderInfo = () => {
 
 		const response = await fetchData({
 			url: getApiUrl(
-				`/api/thirdparty/config?third-party-id=${providerId}${
+				`/api/thirdparty/config?thirdPartyId=${providerId}${
 					additionalConfigQueryParams ? `&${additionalConfigQueryParams}` : ""
 				}`,
 				tenantId
@@ -248,13 +248,6 @@ export const useCreateOrUpdateThirdPartyProvider = () => {
 		tenantId: string,
 		providerConfig: ProviderConfig
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
-		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		return {
-			status: "OK",
-		};
-
 		const response = await fetchData({
 			url: getApiUrl("/api/thirdparty/config", tenantId),
 			method: "PUT",
@@ -283,15 +276,8 @@ export const useDeleteThirdPartyProvider = () => {
 		tenantId: string,
 		providerId: string
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
-		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		return {
-			status: "OK",
-		};
-
 		const response = await fetchData({
-			url: getApiUrl(`/api/thirdparty?third-party-id=${providerId}`, tenantId),
+			url: getApiUrl(`/api/thirdparty/config?thirdPartyId=${providerId}`, tenantId),
 			method: "DELETE",
 		});
 
