@@ -104,5 +104,6 @@ export type BuiltInProvidersCustomFields = {
 
 export type ProviderClientState = Omit<ProviderClientConfig, "additionalConfig"> & {
 	additionalConfig: Array<[string, string | null]>;
+	// Generated locally to correctly render clients list
 	key: string;
 };

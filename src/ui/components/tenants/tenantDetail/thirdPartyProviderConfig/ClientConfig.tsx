@@ -159,7 +159,7 @@ export const ClientConfig = ({
 							tooltip="Enable this if you want to force PKCE flow for this client."
 						/>
 						<Toggle
-							id="requireEmail"
+							id="forcePKCE"
 							checked={client.forcePKCE ?? false}
 							onChange={(e) => {
 								setClient({ ...client, forcePKCE: e.target.checked });

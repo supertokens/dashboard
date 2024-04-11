@@ -312,7 +312,9 @@ const CoreConfigTableRow = ({
 					</div>
 					<div
 						className={`tenant-detail__core-config-table__row-value-container ${
-							type === "boolean" ? "tenant-detail__core-config-table__row-value-container--toggle" : ""
+							type === "boolean" || isMultiValue
+								? "tenant-detail__core-config-table__row-value-container--toggle"
+								: ""
 						}`}>
 						<label htmlFor={name}>Value:</label>
 						<div className="tenant-detail__core-config-table__row-field-container">

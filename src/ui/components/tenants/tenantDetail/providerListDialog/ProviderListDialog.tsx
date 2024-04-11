@@ -48,7 +48,7 @@ export const ProviderListDialog = ({
 						Select the Provider that you want to add for you tenant from the list below
 					</div>
 					<div className="provider-list-container">
-						<h2 className="provider-list-container__header-with-divider">Enterprise Providers</h2>
+						<h2 className="provider-list-container__header-with-divider">Enterprise Providers (OAuth)</h2>
 						<div className="provider-list-container__providers-grid">
 							{IN_BUILT_THIRD_PARTY_PROVIDERS.filter((provider) => provider.isEnterprise).map(
 								(provider) => {
@@ -64,7 +64,7 @@ export const ProviderListDialog = ({
 							)}
 						</div>
 						<h2 className="provider-list-container__header-with-divider provider-list-container__header-with-divider--margin-top-30">
-							Social Providers
+							Social Providers (OAuth)
 						</h2>
 						<div className="provider-list-container__providers-grid">
 							{IN_BUILT_THIRD_PARTY_PROVIDERS.filter((provider) => !provider.isEnterprise).map(
