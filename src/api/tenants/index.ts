@@ -382,28 +382,28 @@ export const useGetThirdPartyProviderInfo = () => {
 		  }
 	> => {
 		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		// await new Promise((resolve) => setTimeout(resolve, 1000));
 
-		return {
-			status: "OK",
-			providerConfig: {
-				oidcDiscoveryEndpoint: "https://oidc.discovery.endpoint",
-				thirdPartyId: providerId,
-				name: "Provider Name",
-				clients: [
-					{
-						clientId: "",
-						clientSecret: "",
-						scope: [""],
-						forcePKCE: false,
-						additionalConfig,
-					},
-				],
-				isGetAuthorisationRedirectUrlOverridden: false,
-				isExchangeAuthCodeForOAuthTokensOverridden: false,
-				isGetUserInfoOverridden: false,
-			},
-		};
+		// return {
+		// 	status: "OK",
+		// 	providerConfig: {
+		// 		oidcDiscoveryEndpoint: "https://oidc.discovery.endpoint",
+		// 		thirdPartyId: providerId,
+		// 		name: "Provider Name",
+		// 		clients: [
+		// 			{
+		// 				clientId: "",
+		// 				clientSecret: "",
+		// 				scope: [""],
+		// 				forcePKCE: false,
+		// 				additionalConfig,
+		// 			},
+		// 		],
+		// 		isGetAuthorisationRedirectUrlOverridden: false,
+		// 		isExchangeAuthCodeForOAuthTokensOverridden: false,
+		// 		isGetUserInfoOverridden: false,
+		// 	},
+		// };
 
 		const additionalConfigQueryParams = new URLSearchParams(additionalConfig).toString();
 
@@ -435,11 +435,11 @@ export const useCreateOrUpdateThirdPartyProvider = () => {
 		providerConfig: ProviderConfig
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
 		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		// await new Promise((resolve) => setTimeout(resolve, 1000));
 
-		return {
-			status: "OK",
-		};
+		// return {
+		// 	status: "OK",
+		// };
 
 		const response = await fetchData({
 			url: getApiUrl("/api/thirdparty/config", tenantId),
@@ -470,14 +470,14 @@ export const useDeleteThirdPartyProvider = () => {
 		providerId: string
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
 		// TODO: Temporary mock data
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		// await new Promise((resolve) => setTimeout(resolve, 1000));
 
-		return {
-			status: "OK",
-		};
+		// return {
+		// 	status: "OK",
+		// };
 
 		const response = await fetchData({
-			url: getApiUrl(`/api/thirdparty?third-party-id=${providerId}`, tenantId),
+			url: getApiUrl(`/api/thirdparty/config?thirdPartyId=${providerId}`, tenantId),
 			method: "DELETE",
 		});
 
