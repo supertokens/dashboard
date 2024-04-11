@@ -409,7 +409,7 @@ export const useGetThirdPartyProviderInfo = () => {
 
 		const response = await fetchData({
 			url: getApiUrl(
-				`/api/thirdparty/config?third-party-id=${providerId}${
+				`/api/thirdparty/config?thirdPartyId=${providerId}${
 					additionalConfigQueryParams ? `&${additionalConfigQueryParams}` : ""
 				}`,
 				tenantId

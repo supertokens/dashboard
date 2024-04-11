@@ -135,7 +135,7 @@ export const ProviderInfoForm = ({
 		const isAppleProvider = providerId?.startsWith("apple");
 		let isValid = true;
 		const doesThirdPartyIdExist = tenantInfo.thirdParty.providers.some(
-			(pid) => pid === providerConfigState.thirdPartyId
+			(provider) => provider.thirdPartyId === providerConfigState.thirdPartyId
 		);
 
 		if (typeof providerConfigState.thirdPartyId !== "string" || providerConfigState.thirdPartyId.trim() === "") {
