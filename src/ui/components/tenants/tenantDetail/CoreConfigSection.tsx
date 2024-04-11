@@ -26,12 +26,14 @@ import InputField from "../../inputField/InputField";
 import { NativeSelect } from "../../nativeSelect/NativeSelect";
 import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
+import { EditPluginPropertyDialog } from "./editPluginPropertyDialog/EditPluginPropertyDialog";
 import { useTenantDetailContext } from "./TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
 import { UneditablePropertyDialog } from "./uneditablePropertyDialog/UneditablePropertyDialog";
 
 export const CoreConfigSection = () => {
 	const { tenantInfo } = useTenantDetailContext();
+	const [showPluginDialog, setShowPluginDialog] = useState(false);
 
 	const hasPluginProperties = tenantInfo.coreConfig.some((config) => config.isPluginProperty);
 
@@ -73,7 +75,13 @@ export const CoreConfigSection = () => {
 							<hr className="tenant-detail__core-config-table__plugin-properties-divider" />
 							<p className="tenant-detail__core-config-table__plugin-properties-description">
 								These properties cannot be directly modified from the UI, instead you can make API
-								request to core to modify these properties. Click here to see an example.
+								request to core to modify these properties.{" "}
+								<button
+									onClick={() => setShowPluginDialog(true)}
+									className="tenant-detail__core-config-table__button-link">
+									Click here
+								</button>{" "}
+								to see an example.
 							</p>
 						</div>
 						{tenantInfo.coreConfig
@@ -96,6 +104,14 @@ export const CoreConfigSection = () => {
 									/>
 								);
 							})}
+
+						{showPluginDialog && (
+							<EditPluginPropertyDialog
+								onCloseDialog={() => setShowPluginDialog(false)}
+								tenantId={tenantInfo.tenantId}
+								property={tenantInfo.coreConfig.find((config) => config.isPluginProperty)?.key ?? ""}
+							/>
+						)}
 					</>
 				)}
 			</div>
@@ -117,8 +133,8 @@ type CoreConfigTableRowProps = {
 	isPluginProperty: boolean;
 };
 
-const isUsingSaaS = false;
-const isUsingNonPublicApp = false;
+const isUsingSaaS = localStorage.getItem("isUsingSaaS") === "true";
+const isUsingNonPublicApp = localStorage.getItem("isUsingNonPublicApp") === "true";
 
 const CoreConfigTableRow = ({
 	name,
