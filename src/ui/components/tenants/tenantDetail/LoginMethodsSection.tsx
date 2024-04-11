@@ -175,6 +175,14 @@ const LoginFactor = ({
 				if (res.status === "OK" && res.isMFARequirementsForAuthOverridden) {
 					setSecondaryFactorsError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
 				}
+
+				// If this is not a MFA related error then clear the error
+				if (
+					(res.status === "OK" && !res.isMFARequirementsForAuthOverridden) ||
+					res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"
+				) {
+					setSecondaryFactorsError(null);
+				}
 			}
 		} catch (error) {
 			showToast({

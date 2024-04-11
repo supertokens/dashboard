@@ -37,6 +37,16 @@ export const CoreConfigSection = () => {
 
 	const hasPluginProperties = tenantInfo.coreConfig.some((config) => config.isPluginProperty);
 
+	let databaseType: "postgres" | "mysql" | null = null;
+
+	if (hasPluginProperties) {
+		if (tenantInfo.coreConfig.some((property) => property.key.startsWith("postgres_"))) {
+			databaseType = "postgres";
+		} else if (tenantInfo.coreConfig.some((property) => property.key.startsWith("mysql_"))) {
+			databaseType = "mysql";
+		}
+	}
+
 	return (
 		<PanelRoot>
 			<PanelHeader>
@@ -70,12 +80,12 @@ export const CoreConfigSection = () => {
 					<>
 						<div className="tenant-detail__core-config-table__plugin-properties-container">
 							<h2 className="tenant-detail__core-config-table__plugin-propertier-header">
-								Plugin Properties
+								Database Properties
 							</h2>
 							<hr className="tenant-detail__core-config-table__plugin-properties-divider" />
 							<p className="tenant-detail__core-config-table__plugin-properties-description">
-								These properties cannot be directly modified from the UI, instead you can make API
-								request to core to modify these properties.{" "}
+								Some of these properties cannot be directly modified from the UI, instead you can make
+								an API request to core to modify these properties.{" "}
 								<button
 									onClick={() => setShowPluginDialog(true)}
 									className="tenant-detail__core-config-table__button-link">
@@ -105,11 +115,11 @@ export const CoreConfigSection = () => {
 								);
 							})}
 
-						{showPluginDialog && (
+						{showPluginDialog && databaseType !== null && (
 							<EditPluginPropertyDialog
 								onCloseDialog={() => setShowPluginDialog(false)}
 								tenantId={tenantInfo.tenantId}
-								property={tenantInfo.coreConfig.find((config) => config.isPluginProperty)?.key ?? ""}
+								databaseType={databaseType}
 							/>
 						)}
 					</>
@@ -255,7 +265,7 @@ const CoreConfigTableRow = ({
 
 	const renderUneditablePropertyReason = () => {
 		if (isPluginProperty) {
-			return "This property is a plugin property and cannot be modified from the UI. Checkout the description for this section for more details.";
+			return "This property is a database property cannot be modified from the UI. Checkout the description for this section for more details.";
 		}
 
 		if (isModifyableOnlyViaConfigYaml && isUsingSaaS) {
@@ -269,7 +279,7 @@ const CoreConfigTableRow = ({
 		if ((isPublicTenant && !isUsingNonPublicApp) || isModifyableOnlyViaConfigYaml) {
 			return isUsingSaaS
 				? "You can modify this property via the SaaS dashboard."
-				: "This property is modifyable only via the config.yaml file.";
+				: "This property is modifyable only via the config.yaml file or via Docker env variables.";
 		}
 
 		if (isUsingNonPublicApp && isPublicTenant) {
@@ -289,7 +299,7 @@ const CoreConfigTableRow = ({
 
 		return isUsingSaaS
 			? "You can modify this property via the SaaS dashboard."
-			: "This property is modifyable only via the config.yaml file.";
+			: "This property is modifyable only via the config.yaml file or via Docker env variables.";
 	};
 
 	return (

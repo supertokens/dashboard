@@ -17,7 +17,7 @@ import { useTenantGetService } from "../../../../api/tenants";
 import { TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { FactorIds, PUBLIC_TENANT_ID } from "../../../../constants";
-import { getImageUrl } from "../../../../utils";
+import { getImageUrl, usePrevious } from "../../../../utils";
 import Button from "../../button";
 import { Loader } from "../../loader/Loader";
 import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialog";
@@ -49,6 +49,7 @@ export const TenantDetail = ({
 	});
 
 	const tenantHasThirdPartyEnabled = tenant?.firstFactors?.includes(FactorIds.THIRDPARTY);
+	const prevTenantHasThirdPartyEnabled = usePrevious(tenantHasThirdPartyEnabled);
 
 	const getTenant = async () => {
 		const response = await getTenantInfo(tenantId);
@@ -74,11 +75,18 @@ export const TenantDetail = ({
 		if (
 			typeof tenant?.tenantId === "string" &&
 			tenantHasThirdPartyEnabled &&
+			prevTenantHasThirdPartyEnabled !== tenantHasThirdPartyEnabled &&
+			typeof prevTenantHasThirdPartyEnabled === "boolean" &&
 			tenant?.thirdParty.providers.length === 0
 		) {
 			setIsNoProviderAddedDialogVisible(true);
 		}
-	}, [tenantHasThirdPartyEnabled, tenant?.tenantId, tenant?.thirdParty.providers.length]);
+	}, [
+		tenantHasThirdPartyEnabled,
+		tenant?.tenantId,
+		tenant?.thirdParty.providers.length,
+		prevTenantHasThirdPartyEnabled,
+	]);
 
 	const refetchTenant = async () => {
 		await getTenant();

@@ -27,11 +27,11 @@ const commonHeaders = `
 export const EditPluginPropertyDialog = ({
 	onCloseDialog,
 	tenantId,
-	property,
+	databaseType,
 }: {
 	onCloseDialog: () => void;
 	tenantId: string;
-	property: string;
+	databaseType: "postgres" | "mysql";
 }) => {
 	const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
 
@@ -56,7 +56,11 @@ ${commonHeaders.trim()}
 --data-raw '{
     "tenantId": "${tenantId}",
     "coreConfig": {
-        "${property}": <VALUE>
+        "${databaseType === "mysql" ? "mysql_host" : "postgresql_host"}": "localhost",
+        "${databaseType === "mysql" ? "mysql_port" : "postgresql_port"}": 5432,
+        "${databaseType === "mysql" ? "mysql_user" : "postgresql_user"}": "root",
+        "${databaseType === "mysql" ? "mysql_password" : "postgresql_password"}": "root",
+		"${databaseType === "mysql" ? "mysql_database_name" : "postgresql_database_name"}": "supertokens"
     }
 }'`;
 

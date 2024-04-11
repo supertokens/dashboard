@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { FactorIds, HTTPStatusCodes, StorageKeys } from "../constants";
 import { getAccessDeniedEvent } from "../events/accessDenied";
@@ -344,3 +344,16 @@ export const doesTenantHasPasswordlessEnabled = (tenantFirstFactors: string[]): 
 		tenantFirstFactors.includes(FactorIds.LINK_PHONE)
 	);
 };
+
+export function usePrevious<T>(value: T) {
+	// create a new reference
+	const ref = useRef<T>();
+
+	// store current value in ref
+	useEffect(() => {
+		ref.current = value;
+	}, [value]); // only re-run if value changes
+
+	// return previous value (happens before update in useEffect above)
+	return ref.current;
+}
