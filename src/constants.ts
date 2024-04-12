@@ -82,13 +82,13 @@ export const IN_BUILT_THIRD_PARTY_PROVIDERS = [
 	{
 		id: "active-directory",
 		label: "Active Directory",
-		icon: "provider-active-directory.png",
+		icon: "provider-active-directory.svg",
 		isEnterprise: true,
 	},
 	{
 		id: "okta",
 		label: "Okta",
-		icon: "provider-okta.png",
+		icon: "provider-okta.svg",
 		isEnterprise: true,
 	},
 	{
