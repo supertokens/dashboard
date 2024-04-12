@@ -12,20 +12,18 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useContext, useEffect, useState } from "react";
-import { useUpdateCoreConfigService } from "../../../../api/tenants";
-import { ReactComponent as PencilIcon } from "../../../../assets/edit.svg";
+import { useState } from "react";
+import { ReactComponent as PencilIcon } from "../../../../assets/edit-unfilled.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import { ReactComponent as QuestionMarkIcon } from "../../../../assets/question-mark.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
-import { getConnectionUri, getImageUrl } from "../../../../utils";
-import { PopupContentContext } from "../../../contexts/PopupContentContext";
-import Button from "../../button";
-import { Checkbox } from "../../checkbox/Checkbox";
-import InputField from "../../inputField/InputField";
-import { NativeSelect } from "../../nativeSelect/NativeSelect";
-import { Toggle } from "../../toggle/Toggle";
+import { getConnectionUri } from "../../../../utils";
+// import { Checkbox } from "../../checkbox/Checkbox";
+// import InputField from "../../inputField/InputField";
+// import { NativeSelect } from "../../nativeSelect/NativeSelect";
+// import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
+import { EditCoreConfigPropertyDialog } from "./editCoreConfigPropertyDialog/EditCoreConfigPropertyDialog";
 import { EditPluginPropertyDialog } from "./editPluginPropertyDialog/EditPluginPropertyDialog";
 import { useTenantDetailContext } from "./TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
@@ -56,67 +54,81 @@ export const CoreConfigSection = () => {
 			</PanelHeader>
 
 			<div className="tenant-detail__core-config-table">
-				{tenantInfo.coreConfig
-					.filter((config) => !config.isPluginProperty)
-					.map((config) => {
-						return (
-							<CoreConfigTableRow
-								name={config.key}
-								value={config.value}
-								type={config.valueType}
-								isNullable={config.isNullable}
-								key={config.key}
-								tooltip={config.description}
-								defaultValue={config.defaultValue}
-								isSaaSProtected={config.isSaaSProtected}
-								isDifferentAcrossTenants={config.isDifferentAcrossTenants}
-								isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
-								isPluginProperty={config.isPluginProperty}
-								isPluginPropertyEditable={config.isPluginPropertyEditable}
-								possibleValues={config.possibleValues}
-							/>
-						);
-					})}
-				{hasPluginProperties && (
-					<>
-						<div className="tenant-detail__core-config-table__plugin-properties-container">
-							<h2 className="tenant-detail__core-config-table__plugin-propertier-header">
-								Database Properties
-							</h2>
-							<hr className="tenant-detail__core-config-table__plugin-properties-divider" />
-							<p className="tenant-detail__core-config-table__plugin-properties-description">
-								Some of these properties need to be modified together, hence they cannot be directly
-								modified from the UI, instead you can make an API request to core to modify these
-								properties.{" "}
-								<button
-									onClick={() => setShowPluginDialog(true)}
-									className="tenant-detail__core-config-table__button-link">
-									Click here
-								</button>{" "}
-								to see an example.
-							</p>
+				<div className="tenant-detail__core-config-table__header">
+					<div className="tenant-detail__core-config-table__header__item">Property name</div>
+					<div className="tenant-detail__core-config-table__header__item">Value</div>
+				</div>
+				<div className="tenant-detail__core-config-table__body">
+					{tenantInfo.coreConfig
+						.filter((config) => !config.isPluginProperty)
+						.map((config) => {
+							return (
+								<CoreConfigTableRow
+									name={config.key}
+									value={config.value}
+									type={config.valueType}
+									isNullable={config.isNullable}
+									key={config.key}
+									tooltip={config.description}
+									defaultValue={config.defaultValue}
+									isSaaSProtected={config.isSaaSProtected}
+									isDifferentAcrossTenants={config.isDifferentAcrossTenants}
+									isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
+									isPluginProperty={config.isPluginProperty}
+									isPluginPropertyEditable={config.isPluginPropertyEditable}
+									possibleValues={config.possibleValues}
+								/>
+							);
+						})}
+				</div>
+			</div>
+			{hasPluginProperties && (
+				<>
+					<div className="tenant-detail__core-config-table__plugin-properties-container">
+						<h2 className="tenant-detail__core-config-table__plugin-propertier-header">
+							Database Properties
+						</h2>
+						<hr className="tenant-detail__core-config-table__plugin-properties-divider" />
+						<p className="tenant-detail__core-config-table__plugin-properties-description">
+							Some of these properties need to be modified together, hence they cannot be directly
+							modified from the UI, instead you can make an API request to core to modify these
+							properties.{" "}
+							<button
+								onClick={() => setShowPluginDialog(true)}
+								className="tenant-detail__core-config-table__button-link">
+								Click here
+							</button>{" "}
+							to see an example.
+						</p>
+					</div>
+					<div className="tenant-detail__core-config-table">
+						<div className="tenant-detail__core-config-table__header">
+							<div className="tenant-detail__core-config-table__header__item">Property name</div>
+							<div className="tenant-detail__core-config-table__header__item">Value</div>
 						</div>
-						{tenantInfo.coreConfig
-							.filter((config) => config.isPluginProperty)
-							.map((config) => {
-								return (
-									<CoreConfigTableRow
-										name={config.key}
-										value={config.value}
-										type={config.valueType}
-										isNullable={config.isNullable}
-										key={config.key}
-										tooltip={config.description}
-										defaultValue={config.defaultValue}
-										isSaaSProtected={config.isSaaSProtected}
-										isDifferentAcrossTenants={config.isDifferentAcrossTenants}
-										isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
-										isPluginProperty={config.isPluginProperty}
-										isPluginPropertyEditable={config.isPluginPropertyEditable}
-										possibleValues={config.possibleValues}
-									/>
-								);
-							})}
+						<div className="tenant-detail__core-config-table__body">
+							{tenantInfo.coreConfig
+								.filter((config) => config.isPluginProperty)
+								.map((config) => {
+									return (
+										<CoreConfigTableRow
+											name={config.key}
+											value={config.value}
+											type={config.valueType}
+											isNullable={config.isNullable}
+											key={config.key}
+											tooltip={config.description}
+											defaultValue={config.defaultValue}
+											isSaaSProtected={config.isSaaSProtected}
+											isDifferentAcrossTenants={config.isDifferentAcrossTenants}
+											isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
+											isPluginProperty={config.isPluginProperty}
+											isPluginPropertyEditable={config.isPluginPropertyEditable}
+											possibleValues={config.possibleValues}
+										/>
+									);
+								})}
+						</div>
 
 						{showPluginDialog && databaseType !== null && (
 							<EditPluginPropertyDialog
@@ -125,9 +137,9 @@ export const CoreConfigSection = () => {
 								databaseType={databaseType}
 							/>
 						)}
-					</>
-				)}
-			</div>
+					</div>
+				</>
+			)}
 		</PanelRoot>
 	);
 };
@@ -162,16 +174,12 @@ const CoreConfigTableRow = ({
 	isModifyableOnlyViaConfigYaml,
 	isPluginProperty,
 	isPluginPropertyEditable,
+	defaultValue,
 }: CoreConfigTableRowProps) => {
-	const [isEditing, setIsEditing] = useState(false);
-	const [currentValue, setCurrentValue] = useState(value);
-	const { tenantInfo, refetchTenant } = useTenantDetailContext();
-	const updateCoreConfig = useUpdateCoreConfigService();
-	const [isLoading, setIsLoading] = useState(false);
+	const { tenantInfo } = useTenantDetailContext();
 	const [isUneditablePropertyDialogVisible, setIsUneditablePropertyDialogVisible] = useState(false);
-	const isMultiValue = Array.isArray(possibleValues) && possibleValues.length > 0;
+	const [isEditPropertyDialogVisible, setIsEditPropertyDialogVisible] = useState(false);
 	const isPublicTenant = tenantInfo.tenantId === PUBLIC_TENANT_ID;
-	const { showToast } = useContext(PopupContentContext);
 
 	const isUneditable =
 		isPublicTenant ||
@@ -179,93 +187,6 @@ const CoreConfigTableRow = ({
 		isModifyableOnlyViaConfigYaml ||
 		(isUsingSaaS && isSaaSProtected) ||
 		(!isPublicTenant && !isDifferentAcrossTenants);
-
-	// Keep the state in sync with the prop value
-	useEffect(() => {
-		setCurrentValue(value);
-	}, [value]);
-
-	const toggleNull = () => {
-		if (currentValue === null) {
-			setCurrentValue(type === "number" ? 0 : "");
-		} else {
-			setCurrentValue(null);
-		}
-	};
-
-	const handleCancelEdit = () => {
-		setIsEditing(false);
-		setCurrentValue(value);
-	};
-
-	const handleSaveProperty = async () => {
-		try {
-			setIsLoading(true);
-			const res = await updateCoreConfig(tenantInfo.tenantId, name, currentValue);
-			if (res.status !== "OK") {
-				if (res.status === "UNKNOWN_TENANT_ERROR") {
-					showToast({
-						iconImage: getImageUrl("form-field-error-icon.svg"),
-						toastType: "error",
-						children: <>Tenant not found.</>,
-					});
-				} else {
-					showToast({
-						iconImage: getImageUrl("form-field-error-icon.svg"),
-						toastType: "error",
-						children: <>{res.message}</>,
-					});
-				}
-				return;
-			}
-			await refetchTenant();
-			setIsEditing(false);
-		} catch (e) {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children: <>Something went wrong please try again.</>,
-			});
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const renderConfigAction = () => {
-		if (isUneditable) {
-			return null;
-		}
-
-		if (!isEditing) {
-			return (
-				<button
-					className="tenant-detail__core-config-table__row-edit-button-container"
-					onClick={() => setIsEditing(true)}>
-					<PencilIcon />
-				</button>
-			);
-		}
-
-		return (
-			<div className="tenant-detail__core-config-table__row-buttons">
-				<Button
-					size="sm"
-					color="blue-outline"
-					disabled={isLoading}
-					onClick={handleCancelEdit}>
-					Cancel
-				</Button>
-				<Button
-					size="sm"
-					isLoading={isLoading}
-					disabled={isLoading}
-					onClick={handleSaveProperty}
-					color="secondary">
-					Save
-				</Button>
-			</div>
-		);
-	};
 
 	const renderUneditablePropertyReason = () => {
 		if (isModifyableOnlyViaConfigYaml && isUsingSaaS) {
@@ -309,86 +230,51 @@ const CoreConfigTableRow = ({
 	return (
 		<>
 			<div className="tenant-detail__core-config-table__row">
-				<div
-					className={`tenant-detail__core-config-table__row-container ${
-						isEditing ? "tenant-detail__core-config-table__row-container--editing" : ""
-					} ${isUneditable ? "tenant-detail__core-config-table__row-container--uneditable" : ""}`}>
-					<div className="tenant-detail__core-config-table__row-info">
-						<div className="tenant-detail__core-config-table__row-name">
-							{tooltip && (
-								<TooltipContainer tooltip={`${tooltip}`}>
-									<InfoIcon />
-								</TooltipContainer>
-							)}
-							{name}
-						</div>
-						{renderConfigAction()}
-					</div>
-					<div
-						className={`tenant-detail__core-config-table__row-value-container ${
-							type === "boolean" || isMultiValue
-								? "tenant-detail__core-config-table__row-value-container--toggle"
-								: ""
-						}`}>
-						<label htmlFor={name}>Value:</label>
-						<div className="tenant-detail__core-config-table__row-field-container">
-							{isMultiValue && (
-								<NativeSelect
-									id={name}
-									options={possibleValues}
-									value={currentValue as string}
-									disabled={!isEditing}
-									onChange={(e) => {
-										setCurrentValue(e.target.value);
-									}}
-								/>
-							)}
-
-							{(type === "string" || type === "number") && !isMultiValue && (
-								<InputField
-									type="text"
-									size="small"
-									name={name}
-									autofocus
-									disabled={!isEditing || currentValue === null}
-									handleChange={(e) => {
-										setCurrentValue(e.target.value);
-									}}
-									value={currentValue === null ? "[null]" : `${currentValue}`}
-								/>
-							)}
-
-							{typeof currentValue === "boolean" && type === "boolean" && (
-								<Toggle
-									name={name}
-									id={name}
-									checked={currentValue}
-									disabled={!isEditing}
-									onChange={() => {
-										setCurrentValue(!currentValue);
-									}}
-								/>
-							)}
-							{isNullable && (
-								<Checkbox
-									id={`${name}-null-checkbox`}
-									label="Set value as null"
-									checked={currentValue === null}
-									disabled={!isEditing}
-									onChange={toggleNull}
-								/>
-							)}
-						</div>
-					</div>
+				<div className="tenant-detail__core-config-table__row__label-container">
+					{tooltip && (
+						<TooltipContainer
+							tooltipWidth={465}
+							tooltip={
+								<>
+									<b>{name}</b>
+									<div style={{ height: 8 }} />
+									{tooltip}
+								</>
+							}>
+							<InfoIcon />
+						</TooltipContainer>
+					)}
+					<div className="tenant-detail__core-config-table__row__label">{name}</div>
 				</div>
-				{isUneditable && (
-					<button
-						className="tenant-detail__core-config-table__row-uneditable-button-container"
-						onClick={() => setIsUneditablePropertyDialogVisible(true)}>
-						<QuestionMarkIcon />
-					</button>
-				)}
+				<div className="tenant-detail__core-config-table__row__value">
+					<div className="tenant-detail__core-config-table__row__value__text">{`${value}`}</div>
+					{isUneditable ? (
+						<button
+							className="tenant-detail__core-config-table__row__uneditable-button-container"
+							onClick={() => setIsUneditablePropertyDialogVisible(true)}>
+							<QuestionMarkIcon />
+						</button>
+					) : (
+						<button
+							className="tenant-detail__core-config-table__row__edit-button-container"
+							onClick={() => setIsEditPropertyDialogVisible(true)}>
+							<PencilIcon />
+						</button>
+					)}
+				</div>
 			</div>
+			{isEditPropertyDialogVisible && (
+				<EditCoreConfigPropertyDialog
+					name={name}
+					value={value}
+					type={type}
+					isNullable={isNullable}
+					possibleValues={possibleValues}
+					onCloseDialog={() => setIsEditPropertyDialogVisible(false)}
+					defaultValue={defaultValue}
+					description={tooltip}
+				/>
+			)}
 			{isUneditablePropertyDialogVisible && (
 				<UneditablePropertyDialog onCloseDialog={() => setIsUneditablePropertyDialogVisible(false)}>
 					{renderUneditablePropertyReason()}

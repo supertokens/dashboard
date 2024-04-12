@@ -37,6 +37,7 @@ import "./assets/cross.svg";
 import "./assets/delete-login-method.png";
 import "./assets/delete.svg";
 import "./assets/edit-login-method.png";
+import "./assets/edit-unfilled.svg";
 import "./assets/edit.svg";
 import "./assets/email.svg";
 import "./assets/envelope-green.svg";
