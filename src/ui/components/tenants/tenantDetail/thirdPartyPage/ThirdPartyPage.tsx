@@ -12,10 +12,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useGetThirdPartyProviderInfo } from "../../../../../api/tenants";
-import { ProviderConfigResponse, TenantDashboardView } from "../../../../../api/tenants/types";
+import { ProviderConfigResponse } from "../../../../../api/tenants/types";
 import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
+import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { Loader } from "../../../loader/Loader";
 import { useTenantDetailContext } from "../TenantDetailContext";
@@ -26,20 +27,19 @@ import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyPr
 import "./thirdPartyPage.scss";
 
 export const ThirdPartyPage = ({
-	viewObj,
-	setViewObj,
+	providerId,
+	isAddingNewProvider,
+	handleGoBack,
 }: {
-	viewObj: TenantDashboardView;
-	setViewObj: Dispatch<SetStateAction<TenantDashboardView>>;
+	providerId?: string;
+	isAddingNewProvider: boolean;
+	handleGoBack: () => void;
 }) => {
-	const handleProviderInfoBack = () => {
-		setViewObj({ view: "tenant-detail" });
-	};
 	return (
 		<div className="third-party-section">
 			<button
 				className="button flat"
-				onClick={() => handleProviderInfoBack()}>
+				onClick={() => handleGoBack()}>
 				<img
 					src={getImageUrl("left-arrow-dark.svg")}
 					alt="Go back"
@@ -48,13 +48,11 @@ export const ThirdPartyPage = ({
 			</button>
 			<div className="third-party-section__cards">
 				<TenantDetailHeader onlyShowTenantId />
-				{viewObj.view === "add-or-edit-third-party-provider" && (
-					<ProviderInfo
-						providerId={viewObj.thirdPartyId}
-						isAddingNewProvider={viewObj.isAddingNewProvider}
-						handleGoBack={handleProviderInfoBack}
-					/>
-				)}
+				<ProviderInfo
+					providerId={providerId}
+					isAddingNewProvider={isAddingNewProvider}
+					handleGoBack={handleGoBack}
+				/>
 			</div>
 		</div>
 	);
@@ -78,6 +76,7 @@ const ProviderInfo = ({
 	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>(undefined);
 	const providerHasCustomFields =
 		typeof providerId === "string" && PROVIDERS_WITH_ADDITIONAL_CONFIG.includes(providerId);
+	const { showToast } = useContext(PopupContentContext);
 
 	const fetchProviderInfo = async (id: string, additionalConfig?: Record<string, string>) => {
 		setHasFilledCustomFieldsForProvider(true);
@@ -88,6 +87,11 @@ const ProviderInfo = ({
 				setProviderConfigResponse(response.providerConfig);
 			}
 		} catch (error) {
+			showToast({
+				iconImage: getImageUrl("form-field-error-icon.svg"),
+				toastType: "error",
+				children: <>Something went wrong please try refreshing the page</>,
+			});
 		} finally {
 			setIsProviderInfoLoading(false);
 		}

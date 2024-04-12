@@ -12,12 +12,13 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useTenantGetService } from "../../../../api/tenants";
 import { TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { FactorIds, PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl, usePrevious } from "../../../../utils";
+import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import Button from "../../button";
 import { Loader } from "../../loader/Loader";
 import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialog";
@@ -47,13 +48,14 @@ export const TenantDetail = ({
 	const [viewObj, setViewObj] = useState<TenantDashboardView>({
 		view: "tenant-detail",
 	});
+	const { showToast } = useContext(PopupContentContext);
 
 	const tenantHasThirdPartyEnabled = tenant?.firstFactors?.includes(FactorIds.THIRDPARTY);
 	const prevTenantHasThirdPartyEnabled = usePrevious(tenantHasThirdPartyEnabled);
 
 	const getTenant = async () => {
 		const response = await getTenantInfo(tenantId);
-		if (response?.status === "OK") {
+		if (response.status === "OK") {
 			setTenant(response.tenant);
 		}
 	};
@@ -63,7 +65,12 @@ export const TenantDetail = ({
 			try {
 				setIsLoading(true);
 				await getTenant();
-			} catch (_) {
+			} catch (error) {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Something went wrong please try refreshing the page</>,
+				});
 			} finally {
 				setIsLoading(false);
 			}
@@ -120,8 +127,9 @@ export const TenantDetail = ({
 		if (viewObj.view === "add-or-edit-third-party-provider") {
 			return (
 				<ThirdPartyPage
-					viewObj={viewObj}
-					setViewObj={setViewObj}
+					providerId={viewObj.thirdPartyId}
+					isAddingNewProvider={viewObj.isAddingNewProvider}
+					handleGoBack={() => setViewObj({ view: "tenant-detail" })}
 				/>
 			);
 		}
@@ -196,7 +204,6 @@ export const TenantDetail = ({
 	return (
 		<TenantDetailContextProvider
 			tenantInfo={tenant}
-			setTenantInfo={setTenant}
 			refetchTenant={refetchTenant}>
 			{renderView()}
 			{isNoProviderAddedDialogVisible && (

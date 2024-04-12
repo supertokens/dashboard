@@ -32,7 +32,6 @@ export const useTenantCreateService = () => {
 				status: "INVALID_TENANT_ID_ERROR";
 				message: string;
 		  }
-		| undefined
 	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant"),
@@ -49,7 +48,7 @@ export const useTenantCreateService = () => {
 			return body;
 		}
 
-		return undefined;
+		throw new Error("Unknown error");
 	};
 
 	return createOrUpdateTenant;
@@ -68,7 +67,6 @@ export const useTenantGetService = () => {
 		| {
 				status: "UNKNOWN_TENANT_ERROR";
 		  }
-		| undefined
 	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant", tenantId),

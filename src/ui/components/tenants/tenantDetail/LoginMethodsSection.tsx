@@ -33,8 +33,7 @@ export const LoginMethodsSection = () => {
 
 	const doesTenantHasEmailPasswordAndPasswordlessEnabled =
 		tenantInfo.firstFactors?.includes(FactorIds.EMAILPASSWORD) &&
-		doesTenantHasPasswordlessEnabled(tenantInfo.firstFactors) &&
-		!tenantInfo.firstFactors?.includes(FactorIds.THIRDPARTY);
+		doesTenantHasPasswordlessEnabled(tenantInfo.firstFactors);
 
 	return (
 		<>
@@ -68,7 +67,6 @@ export const LoginMethodsSection = () => {
 								label={method.label}
 								description={method.description}
 								checked={tenantInfo?.firstFactors.includes(method.id)}
-								setMfaError={setMfaError}
 							/>
 						))}
 					</div>
@@ -136,7 +134,7 @@ const LoginFactor = ({
 	checked: boolean;
 	fixedGap?: boolean;
 	type: "first-factor" | "secondary-factor";
-	setMfaError: (error: null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") => void;
+	setMfaError?: (error: null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") => void;
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -168,7 +166,7 @@ const LoginFactor = ({
 					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
 						setError(res.message);
 					} else if (res.status === "MFA_NOT_INITIALIZED_ERROR") {
-						setMfaError("MFA_NOT_INITIALIZED");
+						setMfaError?.("MFA_NOT_INITIALIZED");
 					} else {
 						throw new Error(res.status);
 					}
@@ -177,7 +175,7 @@ const LoginFactor = ({
 				}
 
 				if (res.status === "OK" && res.isMFARequirementsForAuthOverridden) {
-					setMfaError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
+					setMfaError?.("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
 				}
 
 				// If this is not a MFA related error then clear the error
@@ -185,7 +183,7 @@ const LoginFactor = ({
 					(res.status === "OK" && !res.isMFARequirementsForAuthOverridden) ||
 					res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"
 				) {
-					setMfaError(null);
+					setMfaError?.(null);
 				}
 			}
 		} catch (error) {

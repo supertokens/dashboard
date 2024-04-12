@@ -18,10 +18,6 @@ import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import { ReactComponent as QuestionMarkIcon } from "../../../../assets/question-mark.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getConnectionUri } from "../../../../utils";
-// import { Checkbox } from "../../checkbox/Checkbox";
-// import InputField from "../../inputField/InputField";
-// import { NativeSelect } from "../../nativeSelect/NativeSelect";
-// import { Toggle } from "../../toggle/Toggle";
 import TooltipContainer from "../../tooltip/tooltip";
 import { EditCoreConfigPropertyDialog } from "./editCoreConfigPropertyDialog/EditCoreConfigPropertyDialog";
 import { EditPluginPropertyDialog } from "./editPluginPropertyDialog/EditPluginPropertyDialog";
@@ -159,7 +155,8 @@ type CoreConfigTableRowProps = {
 	isPluginPropertyEditable: boolean;
 };
 
-const isUsingSaaS = localStorage.getItem("isUsingSaaS") === "true";
+// TODO: Use the connectionURI to determine if the user is using SaaS
+const isUsingSaaS = false;
 const isUsingNonPublicApp = /appid-.*$/.test(getConnectionUri());
 
 const CoreConfigTableRow = ({
@@ -200,7 +197,7 @@ const CoreConfigTableRow = ({
 		if ((isPublicTenant && !isUsingNonPublicApp) || isModifyableOnlyViaConfigYaml) {
 			return isUsingSaaS
 				? "To modify this property, please visit the dashboard on supertokens.com and click on the edit configuration button."
-				: "This property is modifyable only via the config.yaml file or via Docker env variables.";
+				: "This property is modifiable only via the config.yaml file or via Docker env variables.";
 		}
 
 		if (isUsingNonPublicApp && isPublicTenant) {

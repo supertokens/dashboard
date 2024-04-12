@@ -24,7 +24,7 @@ import { useTenantCreateService } from "../../../../api/tenants";
 import "./createNewTenant.scss";
 
 export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => void }) => {
-	const createOrUpdateTenant = useTenantCreateService();
+	const createTenant = useTenantCreateService();
 	const navigate = useNavigate();
 	const [tenantCreationError, setTenantCreationError] = useState<string | undefined>(undefined);
 	const [isCreatingTenant, setIsCreatingTenant] = useState(false);
@@ -38,19 +38,19 @@ export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => 
 		}
 		try {
 			setIsCreatingTenant(true);
-			const resp = await createOrUpdateTenant(tenantId);
-			if (resp?.status === "OK") {
+			const resp = await createTenant(tenantId);
+			if (resp.status === "OK") {
 				if (resp.createdNew) {
 					navigate(`?tenantId=${tenantId.toLowerCase()}`);
 					onCloseDialog();
 				} else {
 					setTenantCreationError("Tenant already exists");
 				}
-			} else if (resp?.status === "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR") {
+			} else if (resp.status === "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR") {
 				setTenantCreationError(
 					"Multitenancy is not enabled for your SuperTokens instance. Please add a license key to enable it."
 				);
-			} else if (resp?.status === "INVALID_TENANT_ID_ERROR") {
+			} else if (resp.status === "INVALID_TENANT_ID_ERROR") {
 				setTenantCreationError(resp.message);
 			} else {
 				throw new Error("Failed to create tenant");
