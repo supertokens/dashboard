@@ -28,7 +28,7 @@ import ThirdParty from "supertokens-node/recipe/thirdparty";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
 import UserRoles from "supertokens-node/recipe/userroles";
 
-const websiteDomain = "http://localhost:5173";
+const websiteDomain = "http://localhost:3000";
 
 let app = express();
 app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[content-length]"));
@@ -36,7 +36,7 @@ app.use(morgan("[:date[iso]] :url :method :status :response-time ms - :res[conte
 SuperTokens.init({
 	framework: "express",
 	supertokens: {
-		connectionURI: "http://localhost:3567",
+		connectionURI: "try.supertokens.com",
 	},
 	appInfo: {
 		appName: "Dashboard Dev Node",
@@ -101,10 +101,8 @@ app.use(
 	})
 );
 
-// @ts-ignore
 app.use(middleware());
 
-// @ts-ignore
 app.use(errorHandler());
 
 app.get("/status", (req, res) => {
