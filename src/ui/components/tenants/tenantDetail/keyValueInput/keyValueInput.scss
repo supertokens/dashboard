@@ -40,6 +40,12 @@
 		.third-party-provider-input-container {
 			gap: 10px;
 		}
+
+		@media screen and (max-width: 480px) {
+			flex-direction: column;
+			gap: 10px;
+			padding-bottom: 10px;
+		}
 	}
 
 	&__divider {

@@ -18,6 +18,11 @@
 	width: 100%;
 	gap: 20px;
 
+	@media screen and (max-width: 480px) {
+		flex-direction: column;
+		gap: 12px;
+	}
+
 	&__label {
 		font-family: inherit;
 		font-weight: 500;

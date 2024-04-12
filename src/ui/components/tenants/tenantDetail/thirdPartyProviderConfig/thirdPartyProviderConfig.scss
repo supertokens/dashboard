@@ -20,6 +20,12 @@
 	width: 100%;
 	align-items: center;
 
+	@media screen and (max-width: 480px) {
+		flex-direction: column;
+		gap: 10px;
+		align-items: flex-start;
+	}
+
 	&__title {
 		display: flex;
 		gap: 20px;
@@ -394,6 +400,10 @@
 .provider-email-select {
 	display: flex;
 	gap: 75px;
+	@media screen and (max-width: 480px) {
+		flex-direction: column;
+		gap: 10px;
+	}
 }
 
 .email-select-container {
