@@ -18,7 +18,7 @@ import { ReactComponent as PencilIcon } from "../../../../assets/edit.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
 import { ReactComponent as QuestionMarkIcon } from "../../../../assets/question-mark.svg";
 import { PUBLIC_TENANT_ID } from "../../../../constants";
-import { getImageUrl } from "../../../../utils";
+import { getConnectionUri, getImageUrl } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import Button from "../../button";
 import { Checkbox } from "../../checkbox/Checkbox";
@@ -148,7 +148,7 @@ type CoreConfigTableRowProps = {
 };
 
 const isUsingSaaS = localStorage.getItem("isUsingSaaS") === "true";
-const isUsingNonPublicApp = localStorage.getItem("isUsingNonPublicApp") === "true";
+const isUsingNonPublicApp = /appid-.*$/.test(getConnectionUri());
 
 const CoreConfigTableRow = ({
 	name,
@@ -278,7 +278,7 @@ const CoreConfigTableRow = ({
 
 		if ((isPublicTenant && !isUsingNonPublicApp) || isModifyableOnlyViaConfigYaml) {
 			return isUsingSaaS
-				? "You can modify this property via the SaaS dashboard."
+				? "To modify this property, please visit the dashboard on supertokens.com and click on the edit configuration button."
 				: "This property is modifyable only via the config.yaml file or via Docker env variables.";
 		}
 

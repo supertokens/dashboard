@@ -402,7 +402,8 @@ const GoogleWorkspacesForm = ({ handleContinue, handleGoBack }: AdditionalConfig
 			</div>
 
 			<p className="additional-config-container__note">
-				Enter “ * “ if you want to allow logins for any google workspace domain.
+				For example: use "example.com" if you want to allow logins only from that domain. Enter “ * “ if you
+				want to allow logins for any google workspace domain.
 			</p>
 
 			<hr className="provider-config-divider" />

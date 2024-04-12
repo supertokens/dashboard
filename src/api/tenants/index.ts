@@ -34,28 +34,6 @@ export const useTenantCreateService = () => {
 		  }
 		| undefined
 	> => {
-		// TODO: Temporary mock data
-		// await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// const status = localStorage.getItem("create-tenant-status");
-		// if (status === "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR") {
-		// 	return {
-		// 		status: "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR",
-		// 	};
-		// }
-
-		// if (status === "INVALID_TENANT_ID_ERROR") {
-		// 	return {
-		// 		status: "INVALID_TENANT_ID_ERROR",
-		// 		message: "tenant id is invalid",
-		// 	};
-		// }
-
-		// return {
-		// 	status: "OK",
-		// 	createdNew: true,
-		// };
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant"),
 			method: "PUT",
@@ -92,79 +70,6 @@ export const useTenantGetService = () => {
 		  }
 		| undefined
 	> => {
-		// TODO: Temporary mock data
-		// await new Promise((resolve) => setTimeout(resolve, 10));
-
-		// const status = localStorage.getItem("get-tenant-status");
-		// if (status === "UNKNOWN_TENANT_ERROR") {
-		// 	return {
-		// 		status: "UNKNOWN_TENANT_ERROR",
-		// 	};
-		// }
-
-		// return {
-		// 	status: "OK",
-		// 	tenant: {
-		// 		tenantId,
-		// 		thirdParty: {
-		// 			providers: ["apple", "google"],
-		// 		},
-		// 		firstFactors: ["thirdparty"],
-		// 		requiredSecondaryFactors: [],
-		// 		userCount: 12,
-		// 		coreConfig: [
-		// 			{
-		// 				key: "password_reset_token_lifetime",
-		// 				valueType: "number",
-		// 				value: 3600000,
-		// 				description: "The time in milliseconds for which the password reset token is valid.",
-		// 				isSaaSProtected: false,
-		// 				isDifferentAcrossTenants: true,
-		// 				isModifyableOnlyViaConfigYaml: false,
-		// 				defaultValue: 3600000,
-		// 				isNullable: false,
-		// 				isPluginProperty: false,
-		// 			},
-		// 			{
-		// 				key: "access_token_blacklisting",
-		// 				valueType: "boolean",
-		// 				value: false,
-		// 				description: "Whether to blacklist access tokens or not.",
-		// 				isSaaSProtected: false,
-		// 				isDifferentAcrossTenants: true,
-		// 				isModifyableOnlyViaConfigYaml: false,
-		// 				defaultValue: false,
-		// 				isNullable: false,
-		// 				isPluginProperty: false,
-		// 			},
-		// 			{
-		// 				key: "ip_allow_regex",
-		// 				valueType: "string",
-		// 				value: null,
-		// 				description: "The regex to match the IP address of the user.",
-		// 				isSaaSProtected: false,
-		// 				isDifferentAcrossTenants: true,
-		// 				isModifyableOnlyViaConfigYaml: false,
-		// 				defaultValue: null,
-		// 				isNullable: true,
-		// 				isPluginProperty: false,
-		// 			},
-		// 			{
-		// 				key: "postgresql_emailpassword_users_table_name",
-		// 				valueType: "string",
-		// 				value: null,
-		// 				description: "The name of the table where the emailpassword users are stored.",
-		// 				isSaaSProtected: false,
-		// 				isDifferentAcrossTenants: true,
-		// 				isModifyableOnlyViaConfigYaml: false,
-		// 				defaultValue: 3600000,
-		// 				isNullable: true,
-		// 				isPluginProperty: true,
-		// 			},
-		// 		],
-		// 	},
-		// };
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant", tenantId),
 			method: "GET",
@@ -190,13 +95,6 @@ export const useTenantDeleteService = () => {
 			method: "DELETE",
 		});
 
-		// TODO: Temporary mock data
-		// await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// return {
-		// 	status: "OK",
-		// };
-
 		if (response.ok) {
 			return await response.json();
 		}
@@ -219,27 +117,6 @@ export const useUpdateFirstFactorsService = () => {
 		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"; message: string }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
-		// TODO: Temporary mock data
-		// await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// const status = localStorage.getItem("update-first-factors-status");
-		// if (status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
-		// 	return {
-		// 		status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR",
-		// 		message: "Recipe not configured",
-		// 	};
-		// }
-
-		// if (status === "UNKNOWN_TENANT_ERROR") {
-		// 	return {
-		// 		status: "UNKNOWN_TENANT_ERROR",
-		// 	};
-		// }
-
-		// return {
-		// 	status: "OK",
-		// };
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant/first-factor", tenantId),
 			method: "PUT",
@@ -274,37 +151,6 @@ export const useUpdateSecondaryFactorsService = () => {
 		| { status: "MFA_NOT_INITIALIZED_ERROR" }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
-		// TODO: Temporary mock data
-		// await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// const status = localStorage.getItem("update-secondary-factors-status");
-		// if (status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
-		// 	return {
-		// 		status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR",
-		// 		message: "Recipe not configured",
-		// 	};
-		// }
-
-		// if (status === "MFA_NOT_INITIALIZED_ERROR") {
-		// 	return {
-		// 		status: "MFA_NOT_INITIALIZED_ERROR",
-		// 	};
-		// }
-
-		// if (status === "UNKNOWN_TENANT_ERROR") {
-		// 	return {
-		// 		status: "UNKNOWN_TENANT_ERROR",
-		// 	};
-		// }
-
-		// const isMFARequirementsForAuthOverridden =
-		// 	localStorage.getItem("isMFARequirementsForAuthOverridden") === "true";
-
-		// return {
-		// 	status: "OK",
-		// 	isMFARequirementsForAuthOverridden: isMFARequirementsForAuthOverridden,
-		// };
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant/secondary-factor", tenantId),
 			method: "PUT",
@@ -336,14 +182,6 @@ export const useUpdateCoreConfigService = () => {
 	): Promise<
 		{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "INVALID_CONFIG_ERROR"; message: string }
 	> => {
-		// TODO: Temporary mock data
-		// await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// return {
-		// 	status: "INVALID_CONFIG_ERROR",
-		// 	message: "Invalid config",
-		// };
-
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant/core-config", tenantId),
 			method: "PUT",
@@ -381,30 +219,6 @@ export const useGetThirdPartyProviderInfo = () => {
 				status: "UNKNOWN_TENANT_ERROR";
 		  }
 	> => {
-		// TODO: Temporary mock data
-		// await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// return {
-		// 	status: "OK",
-		// 	providerConfig: {
-		// 		oidcDiscoveryEndpoint: "https://oidc.discovery.endpoint",
-		// 		thirdPartyId: providerId,
-		// 		name: "Provider Name",
-		// 		clients: [
-		// 			{
-		// 				clientId: "",
-		// 				clientSecret: "",
-		// 				scope: [""],
-		// 				forcePKCE: false,
-		// 				additionalConfig,
-		// 			},
-		// 		],
-		// 		isGetAuthorisationRedirectUrlOverridden: false,
-		// 		isExchangeAuthCodeForOAuthTokensOverridden: false,
-		// 		isGetUserInfoOverridden: false,
-		// 	},
-		// };
-
 		const additionalConfigQueryParams = new URLSearchParams(additionalConfig).toString();
 
 		const response = await fetchData({
@@ -434,13 +248,6 @@ export const useCreateOrUpdateThirdPartyProvider = () => {
 		tenantId: string,
 		providerConfig: ProviderConfig
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
-		// TODO: Temporary mock data
-		// await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// return {
-		// 	status: "OK",
-		// };
-
 		const response = await fetchData({
 			url: getApiUrl("/api/thirdparty/config", tenantId),
 			method: "PUT",
@@ -469,13 +276,6 @@ export const useDeleteThirdPartyProvider = () => {
 		tenantId: string,
 		providerId: string
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
-		// TODO: Temporary mock data
-		// await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		// return {
-		// 	status: "OK",
-		// };
-
 		const response = await fetchData({
 			url: getApiUrl(`/api/thirdparty/config?thirdPartyId=${providerId}`, tenantId),
 			method: "DELETE",

@@ -37,13 +37,13 @@ export type ThirdPartyProviderButtonProps =
 export const ThirdPartyProviderButton = (props: ThirdPartyProviderButtonProps) => {
 	return (
 		<button
-			className={`third-party-provider-cta ${
-				props.type === "without-icon" ? "third-party-provider-cta--without-icon-padding" : ""
-			}`}
+			className={"third-party-provider-cta"}
 			onClick={props.onClick}
 			disabled={props.disabled}>
 			{props.type === "without-icon" ? (
-				<span>{props.title}</span>
+				<div className="third-party-provider-cta__logo-container">
+					<span>+ {props.title}</span>
+				</div>
 			) : (
 				<div className="third-party-provider-cta__logo-container">
 					<img

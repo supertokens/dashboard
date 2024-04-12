@@ -112,37 +112,31 @@ export const FIRST_FACTOR_IDS = [
 		label: "Email Password",
 		description: "Sign in/up using email and password (Requires the EmailPassword recipe to be initialized)",
 		id: "emailpassword",
-		loginMethod: "emailpassword",
 	},
 	{
 		label: "OTP - Email",
 		description: "Sign in/up using OTP sent to email (Requires the Passwordless recipe to be initialized)",
 		id: "otp-email",
-		loginMethod: "passwordless",
 	},
 	{
 		label: "OTP - Phone",
 		description: "Sign in/up using OTP sent to phone (Requires the Passwordless recipe to be initialized)",
 		id: "otp-phone",
-		loginMethod: "passwordless",
 	},
 	{
 		label: "Link - Email",
 		description: "Sign in/up using link sent to email (Requires the Passwordless recipe to be initialized)",
 		id: "link-email",
-		loginMethod: "passwordless",
 	},
 	{
 		label: "Link - Phone",
 		description: "Sign in/up using link sent to phone (Requires the Passwordless recipe to be initialized)",
 		id: "link-phone",
-		loginMethod: "passwordless",
 	},
 	{
 		label: "Third Party",
 		description: "Sign in/up using third party providers (Requires the ThirdParty recipe to be initialized)",
 		id: "thirdparty",
-		loginMethod: "thirdparty",
 	},
 ];
 
@@ -158,14 +152,12 @@ export const SECONDARY_FACTOR_IDS = [
 		description:
 			"Require OTP sent to email as a secondary factor for successful authentication (Requires the Passwordless recipe to be initialized)",
 		id: "otp-email",
-		loginMethod: "passwordless",
 	},
 	{
 		label: "OTP - Phone",
 		description:
 			"Require OTP sent to phone as a secondary factor for successful authentication (Requires the Passwordless recipe to be initialized)",
 		id: "otp-phone",
-		loginMethod: "passwordless",
 	},
 ];
 export const FactorIds = {

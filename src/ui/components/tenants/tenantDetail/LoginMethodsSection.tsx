@@ -27,9 +27,9 @@ import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDet
 
 export const LoginMethodsSection = () => {
 	const { tenantInfo } = useTenantDetailContext();
-	const [secondaryFactorsError, setSecondaryFactorsError] = useState<
-		null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN"
-	>(null);
+	const [mfaError, setMfaError] = useState<null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN">(
+		null
+	);
 
 	const doesTenantHasEmailPasswordAndPasswordlessEnabled =
 		tenantInfo.firstFactors?.includes(FactorIds.EMAILPASSWORD) &&
@@ -68,7 +68,7 @@ export const LoginMethodsSection = () => {
 								label={method.label}
 								description={method.description}
 								checked={tenantInfo?.firstFactors.includes(method.id)}
-								setSecondaryFactorsError={setSecondaryFactorsError}
+								setMfaError={setMfaError}
 							/>
 						))}
 					</div>
@@ -81,7 +81,7 @@ export const LoginMethodsSection = () => {
 						Secondary Factors
 					</PanelHeaderTitleWithTooltip>
 				</PanelHeader>
-				{secondaryFactorsError === "MFA_NOT_INITIALIZED" && (
+				{mfaError === "MFA_NOT_INITIALIZED" && (
 					<ErrorBlock className="tenant-detail__factors-error-block">
 						You need to initialize the MFA recipe to use secondary factors.{" "}
 						<a
@@ -93,7 +93,7 @@ export const LoginMethodsSection = () => {
 						to see MFA docs for more info.
 					</ErrorBlock>
 				)}
-				{secondaryFactorsError === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" && (
+				{mfaError === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" && (
 					<ErrorBlock className="tenant-detail__factors-error-block">
 						Setting secondary factors might not take effect as <b>getMFARequirementsForAuth</b> has been
 						overridden in the SDK. To be able to modify the secondary factors from the UI you would need to
@@ -111,7 +111,7 @@ export const LoginMethodsSection = () => {
 								fixedGap
 								description={method.description}
 								checked={tenantInfo.requiredSecondaryFactors?.includes(method.id) ?? false}
-								setSecondaryFactorsError={setSecondaryFactorsError}
+								setMfaError={setMfaError}
 							/>
 						))}
 					</div>
@@ -128,7 +128,7 @@ const LoginFactor = ({
 	checked,
 	fixedGap,
 	type,
-	setSecondaryFactorsError,
+	setMfaError,
 }: {
 	id: string;
 	label: string;
@@ -136,7 +136,7 @@ const LoginFactor = ({
 	checked: boolean;
 	fixedGap?: boolean;
 	type: "first-factor" | "secondary-factor";
-	setSecondaryFactorsError: (error: null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") => void;
+	setMfaError: (error: null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN") => void;
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -166,14 +166,14 @@ const LoginFactor = ({
 					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
 						setError(res.message);
 					} else if (res.status === "MFA_NOT_INITIALIZED_ERROR") {
-						setSecondaryFactorsError("MFA_NOT_INITIALIZED");
+						setMfaError("MFA_NOT_INITIALIZED");
 					} else {
 						throw new Error(res.status);
 					}
 				}
 
 				if (res.status === "OK" && res.isMFARequirementsForAuthOverridden) {
-					setSecondaryFactorsError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
+					setMfaError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
 				}
 
 				// If this is not a MFA related error then clear the error
@@ -181,7 +181,7 @@ const LoginFactor = ({
 					(res.status === "OK" && !res.isMFARequirementsForAuthOverridden) ||
 					res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"
 				) {
-					setSecondaryFactorsError(null);
+					setMfaError(null);
 				}
 			}
 		} catch (error) {

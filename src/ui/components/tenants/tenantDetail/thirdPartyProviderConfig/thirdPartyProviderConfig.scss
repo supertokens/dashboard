@@ -13,7 +13,7 @@
  * under the License.
  */
 
-.built-in-provider-config-header {
+.custom-provider-config-header {
 	margin-bottom: -7px;
 	display: flex;
 	justify-content: space-between;
@@ -265,6 +265,22 @@
 	display: flex;
 	justify-content: flex-end;
 	width: 100%;
+
+	&__form-error {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	&__form-error-icon {
+		height: 16px;
+		width: 16px;
+	}
+
+	&--error {
+		justify-content: space-between;
+	}
+
 	&__primary-ctas {
 		display: flex;
 		gap: 24px;
