@@ -25,6 +25,7 @@ import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { Toggle } from "../../../toggle/Toggle";
+import TooltipContainer from "../../../tooltip/tooltip";
 import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/DeleteThirdPartyProvider";
 import { KeyValueInput } from "../keyValueInput/KeyValueInput";
 import { useTenantDetailContext } from "../TenantDetailContext";
@@ -50,6 +51,7 @@ export const ProviderInfoForm = ({
 }) => {
 	const [providerConfigState, setProviderConfigState] = useState(getInitialProviderInfo(providerConfig, providerId));
 	const [errorState, setErrorState] = useState<Record<string, string>>({});
+	const [isSuffixFieldVisible, setIsSuffixFieldVisible] = useState(false);
 	const [emailSelectValue, setEmailSelectValue] = useState<EmailSelectState>(() => {
 		if (providerConfig?.requireEmail === false) {
 			return "sometimes";
@@ -154,9 +156,21 @@ export const ProviderInfoForm = ({
 		} else {
 			setProviderConfigState((prev) => ({
 				...prev,
-				thirdPartyId: `${baseProviderId}-${e.target.value.trim()}`,
+				thirdPartyId: `${baseProviderId}${e.target.value.trim()}`,
 			}));
 		}
+	};
+
+	const showSuffixField = () => {
+		setIsSuffixFieldVisible(true);
+		setProviderConfigState((prev) => ({
+			...prev,
+			thirdPartyId: `${baseProviderId}-`,
+		}));
+		setErrorState((prev) => {
+			const { thirdPartyId: _, ...rest } = prev;
+			return rest;
+		});
 	};
 
 	const handleSave = async () => {
@@ -178,7 +192,11 @@ export const ProviderInfoForm = ({
 			}));
 			isValid = false;
 		} else if (doesThirdPartyIdExist && isAddingNewProvider) {
-			setErrorState((prev) => ({ ...prev, thirdPartyId: "Third Party Id already exists" }));
+			setErrorState((prev) => ({
+				...prev,
+				thirdPartyId:
+					"Another provider with this third party id already exists, please enter a unique third party id or a unique suffix if adding a built-in provider.",
+			}));
 			isValid = false;
 		}
 
@@ -395,17 +413,46 @@ export const ProviderInfoForm = ({
 			</PanelHeader>
 			<div className="fields-container">
 				{shouldUsePrefixField ? (
-					<ThirdPartyProviderInput
-						label="Third Party Id"
-						tooltip="The Id of the provider."
-						prefix={`${baseProviderId}-`}
-						type="text"
-						name="thirdPartyId"
-						value={providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)}
-						forceShowError
-						error={errorState.thirdPartyId}
-						handleChange={handleThirdPartyIdSuffixChange}
-					/>
+					isSuffixFieldVisible ? (
+						<ThirdPartyProviderInput
+							label="Third Party Id"
+							tooltip="The Id of the provider."
+							prefix={`${baseProviderId}`}
+							type="text"
+							name="thirdPartyId"
+							value={providerConfigState.thirdPartyId.slice(baseProviderId.length)}
+							forceShowError
+							error={errorState.thirdPartyId}
+							handleChange={handleThirdPartyIdSuffixChange}
+						/>
+					) : (
+						<div className="suffix-preview-field">
+							<ThirdPartyProviderInputLabel
+								label="Third Party Id"
+								tooltip="The Id of the provider."
+								minLabelWidth={120}
+							/>
+							<div className="suffix-preview-container">
+								<div className="suffix-preview-container__suffix">
+									<span className="prefix-preview">{baseProviderId}</span>
+									<div className="suffix-button-container">
+										<button onClick={showSuffixField}>+ Add suffix</button>
+										<TooltipContainer tooltip="You can add multiple providers of the same type by adding a unique suffix to the third party id.">
+											<span className="suffix-button-container__help-icon">
+												<img
+													src={getImageUrl("help-circle.svg")}
+													alt="help"
+												/>
+											</span>
+										</TooltipContainer>
+									</div>
+								</div>
+								{errorState.thirdPartyId && (
+									<div className="suffix-preview-container__error">{errorState.thirdPartyId}</div>
+								)}
+							</div>
+						</div>
+					)
 				) : (
 					<ThirdPartyProviderInput
 						label="Third Party Id"

@@ -450,3 +450,60 @@
 		}
 	}
 }
+
+.suffix-preview-field {
+	display: flex;
+	gap: 20px;
+
+	@media screen and (max-width: 480px) {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.third-party-provider-input-container__label-container {
+		margin-top: 3.5px;
+	}
+}
+
+.suffix-preview-container {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+
+	&__suffix {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+	}
+
+	&__error {
+		font-family: inherit;
+		font-weight: 400;
+		font-size: 13px;
+		line-height: 21px;
+		color: var(--color-error);
+	}
+}
+
+.prefix-preview {
+	font-family: inherit;
+	font-size: 14.5px;
+	line-height: 21px;
+	color: var(--color-black);
+}
+
+.suffix-button-container {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+
+	button {
+		border: none;
+		background: transparent;
+		font-family: inherit;
+		font-weight: 500;
+		font-size: 14px;
+		line-height: 17px;
+		color: var(--color-secondary);
+	}
+}
