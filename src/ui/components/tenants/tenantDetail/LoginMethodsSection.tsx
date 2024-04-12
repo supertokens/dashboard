@@ -159,6 +159,8 @@ const LoginFactor = ({
 					} else {
 						throw new Error(res.status);
 					}
+				} else {
+					setError(null);
 				}
 			} else {
 				const res = await updateSecondaryFactors(tenantInfo.tenantId, id, !doesFactorExist);
@@ -170,6 +172,8 @@ const LoginFactor = ({
 					} else {
 						throw new Error(res.status);
 					}
+				} else {
+					setError(null);
 				}
 
 				if (res.status === "OK" && res.isMFARequirementsForAuthOverridden) {
