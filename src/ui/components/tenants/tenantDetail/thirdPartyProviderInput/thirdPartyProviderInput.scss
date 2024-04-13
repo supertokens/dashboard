@@ -29,6 +29,10 @@
 		font-size: 14px;
 		color: var(--color-secondary-text);
 		min-width: max-content;
+
+		@media screen and (max-width: 480px) {
+			min-width: unset;
+		}
 	}
 
 	&__required {

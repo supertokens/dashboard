@@ -163,6 +163,10 @@
 	flex-direction: column;
 	gap: 15px;
 
+	@media screen and (max-width: 480px) {
+		gap: 0px;
+	}
+
 	&__divider {
 		display: block;
 		height: 0px;
@@ -175,10 +179,22 @@
 		display: flex;
 		gap: 10px;
 		align-items: center;
+
+		@media screen and (max-width: 480px) {
+			align-items: flex-end;
+
+			.delete-cross-button {
+				transform: translateY(-5px);
+			}
+		}
 	}
 
 	&__footer {
 		margin-left: 128px;
+		@media screen and (max-width: 480px) {
+			margin-left: 0px;
+			margin-top: 18px;
+		}
 	}
 
 	&__add-new {

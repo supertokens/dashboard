@@ -166,7 +166,7 @@ const LoginFactor = ({
 					if (res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
 						setError(res.message);
 					} else if (res.status === "MFA_NOT_INITIALIZED_ERROR") {
-						setMfaError?.("MFA_NOT_INITIALIZED");
+						setMfaError!("MFA_NOT_INITIALIZED");
 					} else {
 						throw new Error(res.status);
 					}
@@ -175,7 +175,7 @@ const LoginFactor = ({
 				}
 
 				if (res.status === "OK" && res.isMFARequirementsForAuthOverridden) {
-					setMfaError?.("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
+					setMfaError!("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
 				}
 
 				// If this is not a MFA related error then clear the error
@@ -183,7 +183,7 @@ const LoginFactor = ({
 					(res.status === "OK" && !res.isMFARequirementsForAuthOverridden) ||
 					res.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"
 				) {
-					setMfaError?.(null);
+					setMfaError!(null);
 				}
 			}
 		} catch (error) {
