@@ -19,9 +19,9 @@ import { ReactComponent as QuestionMarkIcon } from "../../../../assets/question-
 import { PUBLIC_TENANT_ID } from "../../../../constants";
 import { getConnectionUri } from "../../../../utils";
 import TooltipContainer from "../../tooltip/tooltip";
+import { useTenantDetailContext } from "./TenantDetailContext";
 import { EditCoreConfigPropertyDialog } from "./editCoreConfigPropertyDialog/EditCoreConfigPropertyDialog";
 import { EditPluginPropertyDialog } from "./editPluginPropertyDialog/EditPluginPropertyDialog";
-import { useTenantDetailContext } from "./TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "./tenantDetailPanel/TenantDetailPanel";
 import { UneditablePropertyDialog } from "./uneditablePropertyDialog/UneditablePropertyDialog";
 
@@ -67,9 +67,7 @@ export const CoreConfigSection = () => {
 									key={config.key}
 									tooltip={config.description}
 									defaultValue={config.defaultValue}
-									isSaaSProtected={config.isSaaSProtected}
 									isDifferentAcrossTenants={config.isDifferentAcrossTenants}
-									isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
 									isPluginProperty={config.isPluginProperty}
 									isPluginPropertyEditable={config.isPluginPropertyEditable}
 									possibleValues={config.possibleValues}
@@ -115,9 +113,7 @@ export const CoreConfigSection = () => {
 											key={config.key}
 											tooltip={config.description}
 											defaultValue={config.defaultValue}
-											isSaaSProtected={config.isSaaSProtected}
 											isDifferentAcrossTenants={config.isDifferentAcrossTenants}
-											isModifyableOnlyViaConfigYaml={config.isModifyableOnlyViaConfigYaml}
 											isPluginProperty={config.isPluginProperty}
 											isPluginPropertyEditable={config.isPluginPropertyEditable}
 											possibleValues={config.possibleValues}
@@ -148,9 +144,7 @@ type CoreConfigTableRowProps = {
 	tooltip: string;
 	defaultValue: string | number | boolean | null;
 	possibleValues?: string[];
-	isSaaSProtected: boolean;
 	isDifferentAcrossTenants: boolean;
-	isModifyableOnlyViaConfigYaml: boolean;
 	isPluginProperty: boolean;
 	isPluginPropertyEditable: boolean;
 };
@@ -166,9 +160,7 @@ const CoreConfigTableRow = ({
 	type,
 	isNullable,
 	possibleValues,
-	isSaaSProtected,
 	isDifferentAcrossTenants,
-	isModifyableOnlyViaConfigYaml,
 	isPluginProperty,
 	isPluginPropertyEditable,
 	defaultValue,
@@ -181,24 +173,22 @@ const CoreConfigTableRow = ({
 	const isUneditable =
 		isPublicTenant ||
 		(isPluginProperty && !isPluginPropertyEditable) ||
-		isModifyableOnlyViaConfigYaml ||
-		(isUsingSaaS && isSaaSProtected) ||
 		(!isPublicTenant && !isDifferentAcrossTenants);
 
 	const renderUneditablePropertyReason = () => {
-		if (isModifyableOnlyViaConfigYaml && isUsingSaaS) {
-			return "This property cannot be modified since you are using the managed service.";
-		}
+		// if (isModifyableOnlyViaConfigYaml && isUsingSaaS) {
+		// 	return "This property cannot be modified since you are using the managed service.";
+		// }
 
-		if (isSaaSProtected && isUsingSaaS) {
-			return "This property cannot be edited or viewed since you are using a managed service and we hide it for security reasons.";
-		}
+		// if (isSaaSProtected && isUsingSaaS) {
+		// 	return "This property cannot be edited or viewed since you are using a managed service and we hide it for security reasons.";
+		// }
 
-		if ((isPublicTenant && !isUsingNonPublicApp) || isModifyableOnlyViaConfigYaml) {
-			return isUsingSaaS
-				? "To modify this property, please visit the dashboard on supertokens.com and click on the edit configuration button."
-				: "This property is modifiable only via the config.yaml file or via Docker env variables.";
-		}
+		// if ((isPublicTenant && !isUsingNonPublicApp) || isModifyableOnlyViaConfigYaml) {
+		// 	return isUsingSaaS
+		// 		? "To modify this property, please visit the dashboard on supertokens.com and click on the edit configuration button."
+		// 		: "This property is modifiable only via the config.yaml file or via Docker env variables.";
+		// }
 
 		if (isUsingNonPublicApp && isPublicTenant) {
 			return (

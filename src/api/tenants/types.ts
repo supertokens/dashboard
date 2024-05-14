@@ -53,7 +53,7 @@ export type TenantInfo = {
 	};
 	firstFactors: string[];
 	requiredSecondaryFactors?: string[] | null;
-	coreConfig: CoreConfigOption[];
+	coreConfig: CoreConfigFieldInfo[];
 	userCount: number;
 };
 
@@ -66,14 +66,12 @@ export type UpdateTenant = {
 	coreConfig?: Record<string, unknown>;
 };
 
-export type CoreConfigOption = {
+export type CoreConfigFieldInfo = {
 	key: string;
-	valueType: "string" | "number" | "boolean";
+	valueType: "string" | "boolean" | "number";
 	value: string | number | boolean | null;
 	description: string;
-	isSaaSProtected: boolean;
 	isDifferentAcrossTenants: boolean;
-	isModifyableOnlyViaConfigYaml: boolean;
 	possibleValues?: string[];
 	isNullable: boolean;
 	defaultValue: string | number | boolean | null;
