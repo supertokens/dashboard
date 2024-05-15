@@ -15,7 +15,7 @@
 
 import { useContext, useDeferredValue, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useGetTenants, type Tenant } from "../../../api/tenants/list";
+import { useListTenants, type Tenant } from "../../../api/tenants/list";
 import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { getImageUrl, useQuery } from "../../../utils";
 import Button from "../../components/button";
@@ -37,7 +37,7 @@ const TenantList = ({
 	searchQuery: string;
 	setSearchQuery: (searchQuery: string) => void;
 }) => {
-	const { fetchTenants } = useGetTenants();
+	const { fetchTenants } = useListTenants();
 	const { showToast } = useContext(PopupContentContext);
 	const [tenants, setTenants] = useState<Array<Tenant> | undefined>(undefined);
 	const [isCreateTenantDialogOpen, setIsCreateTenantDialogOpen] = useState(false);

@@ -31,12 +31,12 @@ type TenantsListService = {
 	fetchTenants: () => Promise<TenantsLoginMethodsResponse | undefined>;
 };
 
-export const useGetTenants = (): TenantsListService => {
+export const useListTenants = (): TenantsListService => {
 	const fetchData = useFetchData();
 	const fetchTenants = async (): Promise<TenantsLoginMethodsResponse> => {
 		const response = await fetchData({
 			method: "GET",
-			url: getApiUrl("/api/tenants/login-methods"),
+			url: getApiUrl("/api/tenants"),
 		});
 
 		return response.ok ? await response.json() : undefined;
