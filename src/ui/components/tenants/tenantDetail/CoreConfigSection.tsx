@@ -149,9 +149,9 @@ type CoreConfigTableRowProps = {
 	isPluginPropertyEditable: boolean;
 };
 
-// TODO: Use the connectionURI to determine if the user is using SaaS
-const isUsingSaaS = false;
-const isUsingNonPublicApp = /appid-.*$/.test(getConnectionUri());
+const connectionURI = getConnectionUri();
+const isUsingSaaS = connectionURI.includes("aws.supertokens.io");
+const isUsingPublicApp = !/appid-.*$/.test(connectionURI);
 
 const CoreConfigTableRow = ({
 	name,
@@ -176,42 +176,97 @@ const CoreConfigTableRow = ({
 		(!isPublicTenant && !isDifferentAcrossTenants);
 
 	const renderUneditablePropertyReason = () => {
-		// if (isModifyableOnlyViaConfigYaml && isUsingSaaS) {
-		// 	return "This property cannot be modified since you are using the managed service.";
-		// }
-
-		// if (isSaaSProtected && isUsingSaaS) {
-		// 	return "This property cannot be edited or viewed since you are using a managed service and we hide it for security reasons.";
-		// }
-
-		// if ((isPublicTenant && !isUsingNonPublicApp) || isModifyableOnlyViaConfigYaml) {
-		// 	return isUsingSaaS
-		// 		? "To modify this property, please visit the dashboard on supertokens.com and click on the edit configuration button."
-		// 		: "This property is modifiable only via the config.yaml file or via Docker env variables.";
-		// }
-
-		if (isUsingNonPublicApp && isPublicTenant) {
-			return (
-				<>
-					You would need to use{" "}
-					<a
-						href="https://supertokens.com/docs/multitenancy/new-app#create-a-new--update-an-app-in-the-core"
-						rel="noreferrer noopener"
-						target="_blank">
-						this core API
-					</a>{" "}
-					to update this property.
-				</>
-			);
+		if (isUsingSaaS) {
+			if (isUsingPublicApp) {
+				if (isPublicTenant) {
+					// SaaS / public app / public tenant
+					return (
+						<>
+							Please use the{" "}
+							<a href="https://supertokens.com/dashboard-saas">SuperTokens SaaS Dashboard</a> to edit this
+							property.
+						</>
+					);
+				} else {
+					// SaaS / public app / non-public tenant
+					// You are not allowed to edit value of the property because it cannot be different across tenants
+					// So you still need to update the app, which happens on the SuperTokens SaaS dashboard
+					return (
+						<>
+							Please use the{" "}
+							<a href="https://supertokens.com/dashboard-saas">SuperTokens SaaS Dashboard</a> to edit this
+							property.
+						</>
+					);
+				}
+			} else {
+				if (isPublicTenant) {
+					// SaaS / non-public app / public tenant
+					// Updating app is not allowed from the SDK, so use the core API directly
+					return (
+						<>
+							Please use the Update App API to configure this property. Refer to the{" "}
+							<a href="https://supertokens.com/docs/multitenancy/new-app#create-a-new--update-an-app-in-the-core">
+								docs
+							</a>{" "}
+							for more information.
+						</>
+					);
+				} else {
+					// SaaS / non-public app / non-public tenant
+					// Updating properties that are not different across tenants, will happen through app updation, so
+					// use the Core API directly to do the update
+					return (
+						<>
+							Please use the Update App API to configure this property. Refer to the{" "}
+							<a href="https://supertokens.com/docs/multitenancy/new-app#create-a-new--update-an-app-in-the-core">
+								docs
+							</a>{" "}
+							for more information.
+						</>
+					);
+				}
+			}
+		} else {
+			if (isUsingPublicApp) {
+				if (isPublicTenant) {
+					// No SaaS (self hosted) / public app / public tenant
+					// We don't consider the CUD case as it's not common for self-hosted users to use CUDs. CUDs are
+					// mostly used in the SuperTokens SaaS
+					return "This property is configurable only via the config.yaml file or via Docker env variables.";
+				} else {
+					// No SaaS (self hosted) / public app / non-public tenant
+					// Not different across tenants, so it should be configured via config.yaml / Docker env
+					return "This property is configurable only via the config.yaml file or via Docker env variables.";
+				}
+			} else {
+				if (isPublicTenant) {
+					// No SaaS (self hosted) / non-public app / public tenant
+					// Should use the update App API, which is not available in the SDK
+					return (
+						<>
+							Please use the Update App API to configure this property. Refer to the{" "}
+							<a href="https://supertokens.com/docs/multitenancy/new-app#create-a-new--update-an-app-in-the-core">
+								docs
+							</a>{" "}
+							for more information.
+						</>
+					);
+				} else {
+					// No SaaS (self hosted) / non-public app / non-public tenant
+					// Not different across tenant property should be updated on the app
+					return (
+						<>
+							Please use the Update App API to configure this property. Refer to the{" "}
+							<a href="https://supertokens.com/docs/multitenancy/new-app#create-a-new--update-an-app-in-the-core">
+								docs
+							</a>{" "}
+							for more information.
+						</>
+					);
+				}
+			}
 		}
-
-		if (isPluginProperty && !isPluginPropertyEditable) {
-			return "This property is a database property that cannot be directly modified from the UI. Checkout the description for this section for more details.";
-		}
-
-		return isUsingSaaS
-			? "You can modify this property via the SaaS dashboard."
-			: "This property is modifyable only via the config.yaml file or via Docker env variables.";
 	};
 
 	return (
