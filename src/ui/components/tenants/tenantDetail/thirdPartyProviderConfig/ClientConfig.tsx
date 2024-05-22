@@ -41,7 +41,7 @@ export const ClientConfig = ({
 	client: ProviderClientState;
 	clientsCount: number;
 	setClient: (client: ProviderClientState) => void;
-	additionalConfigFields?: Array<ProviderCustomField>;
+	additionalConfigFields?: ProviderCustomField[];
 	handleDeleteClient: () => void;
 	clientIndex: number;
 	errors: Record<string, string>;
@@ -61,7 +61,7 @@ export const ClientConfig = ({
 		key: string,
 		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
 	) => {
-		const newAdditionalConfig: Array<[string, string | null]> = client.additionalConfig.map(([k, v]) => {
+		const newAdditionalConfig: [string, string | null][] = client.additionalConfig.map(([k, v]) => {
 			if (k === key) {
 				return [k, e.target.value];
 			}
@@ -70,7 +70,7 @@ export const ClientConfig = ({
 		setClient({ ...client, additionalConfig: newAdditionalConfig });
 	};
 
-	const handleScopesChange = (scopes: Array<string>) => {
+	const handleScopesChange = (scopes: string[]) => {
 		setClient({ ...client, scope: scopes });
 	};
 

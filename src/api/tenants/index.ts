@@ -13,9 +13,36 @@
  * under the License.
  */
 import { getApiUrl, useFetchData } from "../../utils";
-import { ProviderConfig, ProviderConfigResponse, TenantInfo } from "./types";
+import { ProviderConfig, ProviderConfigResponse, Tenant, TenantInfo } from "./types";
 
-export const useTenantCreateService = () => {
+export const useListTenantsService = () => {
+	const fetchData = useFetchData();
+
+	const fetchTenants = async (): Promise<{
+		status: "OK";
+		tenants: Tenant[];
+	}> => {
+		const response = await fetchData({
+			method: "GET",
+			url: getApiUrl("/api/tenants"),
+		});
+
+		const result = response.ok ? await response.json() : undefined;
+
+		// Ensure the public tenant is the first result, followed by all other tenants in alphabetical order
+		result.tenants.sort((a: Tenant, b: Tenant) =>
+			(a.tenantId === "public" ? "" : a.tenantId).localeCompare(b.tenantId === "public" ? "" : b.tenantId)
+		);
+
+		return result;
+	};
+
+	return {
+		fetchTenants,
+	};
+};
+
+export const useCreateOrUpdateTenantService = () => {
 	const fetchData = useFetchData();
 
 	const createOrUpdateTenant = async (
@@ -54,7 +81,7 @@ export const useTenantCreateService = () => {
 	return createOrUpdateTenant;
 };
 
-export const useTenantGetService = () => {
+export const useGetTenantInfoService = () => {
 	const fetchData = useFetchData();
 
 	const getTenantInfo = async (
@@ -84,7 +111,7 @@ export const useTenantGetService = () => {
 	return getTenantInfo;
 };
 
-export const useTenantDeleteService = () => {
+export const useDeleteTenantService = () => {
 	const fetchData = useFetchData();
 
 	const deleteTenant = async (tenantId: string): Promise<{ status: "OK" }> => {
@@ -103,10 +130,10 @@ export const useTenantDeleteService = () => {
 	return deleteTenant;
 };
 
-export const useUpdateFirstFactorsService = () => {
+export const useUpdateFirstFactorService = () => {
 	const fetchData = useFetchData();
 
-	const updateFirstFactors = async (
+	const updateFirstFactor = async (
 		tenantId: string,
 		factorId: string,
 		enable: boolean
@@ -133,13 +160,13 @@ export const useUpdateFirstFactorsService = () => {
 		throw new Error("Unknown error");
 	};
 
-	return updateFirstFactors;
+	return updateFirstFactor;
 };
 
-export const useUpdateSecondaryFactorsService = () => {
+export const useUpdateRequiredSecondaryFactorService = () => {
 	const fetchData = useFetchData();
 
-	const updateSecondaryFactors = async (
+	const updateRequiredSecondaryFactor = async (
 		tenantId: string,
 		factorId: string,
 		enable: boolean
@@ -150,7 +177,7 @@ export const useUpdateSecondaryFactorsService = () => {
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
 		const response = await fetchData({
-			url: getApiUrl("/api/tenant/secondary-factor", tenantId),
+			url: getApiUrl("/api/tenant/required-secondary-factor", tenantId),
 			method: "PUT",
 			config: {
 				body: JSON.stringify({
@@ -167,7 +194,7 @@ export const useUpdateSecondaryFactorsService = () => {
 		throw new Error("Unknown error");
 	};
 
-	return updateSecondaryFactors;
+	return updateRequiredSecondaryFactor;
 };
 
 export const useUpdateCoreConfigService = () => {
@@ -201,7 +228,7 @@ export const useUpdateCoreConfigService = () => {
 	return updateCoreConfig;
 };
 
-export const useGetThirdPartyProviderInfo = () => {
+export const useGetThirdPartyProviderInfoService = () => {
 	const fetchData = useFetchData();
 
 	const getThirdPartyProviderInfo = async (
@@ -239,7 +266,7 @@ export const useGetThirdPartyProviderInfo = () => {
 	return getThirdPartyProviderInfo;
 };
 
-export const useCreateOrUpdateThirdPartyProvider = () => {
+export const useCreateOrUpdateThirdPartyProviderService = () => {
 	const fetchData = useFetchData();
 
 	const createOrUpdateThirdPartyProvider = async (
@@ -267,7 +294,7 @@ export const useCreateOrUpdateThirdPartyProvider = () => {
 	return createOrUpdateThirdPartyProvider;
 };
 
-export const useDeleteThirdPartyProvider = () => {
+export const useDeleteThirdPartyProviderService = () => {
 	const fetchData = useFetchData();
 
 	const deleteThirdPartyProvider = async (

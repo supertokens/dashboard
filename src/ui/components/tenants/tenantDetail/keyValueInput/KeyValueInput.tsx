@@ -23,10 +23,10 @@ type KeyValueInputProps = {
 	label: string;
 	tooltip?: string;
 	isRequired?: boolean;
-	value: Array<[string, string | null]>;
+	value: [string, string | null][];
 	name: string;
-	onChange: (value: Array<[string, string | null]>) => void;
-	fixedFields?: Array<string>;
+	onChange: (value: [string, string | null][]) => void;
+	fixedFields?: string[];
 	isOverridden?: boolean;
 };
 
@@ -51,7 +51,7 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 									value={isOverridden ? "Custom Override" : pair[0]}
 									disabled={fixedFields?.includes(pair[0]) || isOverridden}
 									handleChange={(e) => {
-										const newValue: Array<[string, string | null]> = [
+										const newValue: [string, string | null][] = [
 											...props.value.slice(0, index),
 											[e.target.value, props.value[index][1]],
 											...props.value.slice(index + 1),
@@ -66,7 +66,7 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 									value={isOverridden ? "Custom Override" : pair[1] ?? ""}
 									disabled={fixedFields?.includes(pair[0]) || isOverridden}
 									handleChange={(e) => {
-										const newValue: Array<[string, string | null]> = [
+										const newValue: [string, string | null][] = [
 											...props.value.slice(0, index),
 											[props.value[index][0], e.target.value],
 											...props.value.slice(index + 1),

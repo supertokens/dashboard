@@ -14,7 +14,7 @@
  */
 
 import { FC, useContext, useState } from "react";
-import { Tenant } from "../../../api/tenants/list";
+import { Tenant } from "../../../api/tenants/types";
 import { useUserService } from "../../../api/user";
 import usePasswordResetService from "../../../api/user/password/reset";
 import { FactorIds } from "../../../constants";

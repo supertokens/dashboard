@@ -13,7 +13,7 @@
  * under the License.
  */
 import { useContext, useEffect, useState } from "react";
-import { useGetThirdPartyProviderInfo } from "../../../../../api/tenants";
+import { useGetThirdPartyProviderInfoService } from "../../../../../api/tenants";
 import { ProviderConfigResponse } from "../../../../../api/tenants/types";
 import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
@@ -72,7 +72,7 @@ const ProviderInfo = ({
 	const [hasFilledCustomFieldsForProvider, setHasFilledCustomFieldsForProvider] = useState(
 		!PROVIDERS_WITH_ADDITIONAL_CONFIG.includes(providerId ?? "")
 	);
-	const getThirdPartyProviderInfo = useGetThirdPartyProviderInfo();
+	const getThirdPartyProviderInfo = useGetThirdPartyProviderInfoService();
 	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>(undefined);
 	const providerHasCustomFields =
 		typeof providerId === "string" && PROVIDERS_WITH_ADDITIONAL_CONFIG.includes(providerId);

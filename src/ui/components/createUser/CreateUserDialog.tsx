@@ -16,7 +16,7 @@
 import "./createUserDialog.scss";
 
 import { useState } from "react";
-import { PasswordlessContactMethod, Tenant } from "../../../api/tenants/list";
+import { PasswordlessContactMethod, Tenant } from "../../../api/tenants/types";
 import { FactorIds } from "../../../constants";
 import { doesTenantHasPasswordlessEnabled } from "../../../utils";
 import Alert from "../alert";

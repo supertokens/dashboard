@@ -13,9 +13,8 @@
  * under the License.
  */
 import { PropsWithChildren, createContext, useContext, useState } from "react";
-import { Tenant } from "../../../../api/tenants/list";
+import { Tenant } from "../../../../api/tenants/types";
 import { User } from "../../../pages/usersList/types";
-import UserDetail from "../userDetail";
 import { SessionInfo } from "../userDetailSessionList";
 
 type UserDetailContextType = {

@@ -20,11 +20,11 @@ import { Dialog, DialogContent, DialogFooter } from "../../dialog";
 import InputField from "../../inputField/InputField";
 
 import { useNavigate } from "react-router-dom";
-import { useTenantCreateService } from "../../../../api/tenants";
+import { useCreateOrUpdateTenantService } from "../../../../api/tenants";
 import "./createNewTenant.scss";
 
 export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => void }) => {
-	const createTenant = useTenantCreateService();
+	const createTenant = useCreateOrUpdateTenantService();
 	const navigate = useNavigate();
 	const [tenantCreationError, setTenantCreationError] = useState<string | undefined>(undefined);
 	const [isCreatingTenant, setIsCreatingTenant] = useState(false);

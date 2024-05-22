@@ -16,7 +16,7 @@
 import "./nativeSelect.scss";
 
 type NativeSelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
-	options: Array<string>;
+	options: string[];
 	label?: string;
 	isRequired?: boolean;
 };

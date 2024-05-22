@@ -15,7 +15,7 @@
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useListTenants } from "../../../api/tenants/list";
+import { useListTenantsService } from "../../../api/tenants";
 import useDeleteUserService from "../../../api/user/delete";
 import useVerifyEmailService from "../../../api/user/email/verify";
 import useVerifyUserTokenService from "../../../api/user/email/verify/token";
@@ -83,7 +83,7 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	const { fetchUsers } = useFetchUsersService();
 	const { fetchCount } = useFetchCount();
-	const { fetchTenants } = useListTenants();
+	const { fetchTenants } = useListTenantsService();
 	const fetchData = useFetchData();
 	const { setTenantsListToStore, tenantsListFromStore, getSelectedTenant, setSelectedTenant } =
 		useTenantsListContext();

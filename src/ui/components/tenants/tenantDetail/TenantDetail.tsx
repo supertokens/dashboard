@@ -13,7 +13,7 @@
  * under the License.
  */
 import { useContext, useEffect, useState } from "react";
-import { useTenantGetService } from "../../../../api/tenants";
+import { useGetTenantInfoService } from "../../../../api/tenants";
 import { TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { FactorIds, PUBLIC_TENANT_ID } from "../../../../constants";
@@ -21,16 +21,16 @@ import { getImageUrl, usePrevious } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import Button from "../../button";
 import { Loader } from "../../loader/Loader";
-import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialog";
 import { CoreConfigSection } from "./CoreConfigSection";
-import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";
 import { LoginMethodsSection } from "./LoginMethodsSection";
-import { ProviderListDialog } from "./providerListDialog/ProviderListDialog";
-import "./tenantDetail.scss";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
 import { TenantDetailHeader } from "./TenantDetailHeader";
-import { ThirdPartyPage } from "./thirdPartyPage/ThirdPartyPage";
 import { ThirdPartySection } from "./ThirdPartySection";
+import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialog";
+import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";
+import { ProviderListDialog } from "./providerListDialog/ProviderListDialog";
+import "./tenantDetail.scss";
+import { ThirdPartyPage } from "./thirdPartyPage/ThirdPartyPage";
 
 export const TenantDetail = ({
 	onBackButtonClicked,
@@ -39,7 +39,7 @@ export const TenantDetail = ({
 	onBackButtonClicked: () => void;
 	tenantId: string;
 }) => {
-	const getTenantInfo = useTenantGetService();
+	const getTenantInfo = useGetTenantInfoService();
 	const [isNoProviderAddedDialogVisible, setIsNoProviderAddedDialogVisible] = useState(false);
 	const [tenant, setTenant] = useState<TenantInfo | undefined>(undefined);
 	const [isLoading, setIsLoading] = useState(true);

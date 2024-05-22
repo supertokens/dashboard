@@ -13,7 +13,7 @@
  * under the License.
  */
 import { ChangeEvent, useContext, useState } from "react";
-import { useCreateOrUpdateThirdPartyProvider } from "../../../../../api/tenants";
+import { useCreateOrUpdateThirdPartyProviderService } from "../../../../../api/tenants";
 import {
 	BuiltInProvidersCustomFields,
 	ProviderClientState,
@@ -62,7 +62,7 @@ export const ProviderInfoForm = ({
 	const { tenantInfo, refetchTenant } = useTenantDetailContext();
 	const [isSaving, setIsSaving] = useState(false);
 	const { showToast } = useContext(PopupContentContext);
-	const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProvider();
+	const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProviderService();
 	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
 	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId?.startsWith(provider.id));
 	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
@@ -836,7 +836,7 @@ const UserInfoMap = ({
 
 type EmailSelectState = "always" | "sometimes" | "never";
 
-const EmailSelectValues: Array<{ label: string; value: EmailSelectState }> = [
+const EmailSelectValues: { label: string; value: EmailSelectState }[] = [
 	{
 		label: "All the time",
 		value: "always",
@@ -874,10 +874,10 @@ type ProviderConfigState = Omit<
 	| "userInfoEndpointQueryParams"
 	| "clients"
 > & {
-	tokenEndpointBodyParams: Array<[string, string | null]>;
-	authorizationEndpointQueryParams: Array<[string, string | null]>;
-	userInfoEndpointHeaders: Array<[string, string | null]>;
-	userInfoEndpointQueryParams: Array<[string, string | null]>;
+	tokenEndpointBodyParams: [string, string | null][];
+	authorizationEndpointQueryParams: [string, string | null][];
+	userInfoEndpointHeaders: [string, string | null][];
+	userInfoEndpointQueryParams: [string, string | null][];
 	clients: ProviderClientState[];
 };
 
@@ -890,7 +890,7 @@ const getInitialProviderInfo = (
 	);
 	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : [];
 
-	let additionaConfigFields: Array<[string, string]> = customFields.map((field) => [field.id, ""]);
+	let additionaConfigFields: [string, string][] = customFields.map((field) => [field.id, ""]);
 
 	if (additionaConfigFields.length === 0) {
 		additionaConfigFields = [["", ""]];

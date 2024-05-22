@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { Tenant } from "../../../../api/tenants/list";
+import { Tenant } from "../../../../api/tenants/types";
 import { FactorIds } from "../../../../constants";
 import { doesTenantHasPasswordlessEnabled, getImageUrl } from "../../../../utils";
 import Pagination from "../../pagination";
@@ -23,7 +23,7 @@ import { NoTenants } from "../noTenants/NoTenants";
 import "./tenantsListTable.scss";
 
 type TenantsListTableProps = {
-	tenants: Array<Tenant> | undefined;
+	tenants: Tenant[] | undefined;
 	currentActivePage: number;
 	totalPages: number;
 	totalTenantsCount: number;

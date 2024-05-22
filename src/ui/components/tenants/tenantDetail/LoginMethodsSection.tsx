@@ -13,10 +13,10 @@
  * under the License.
  */
 import { useContext, useState } from "react";
-import { useUpdateFirstFactorsService, useUpdateSecondaryFactorsService } from "../../../../api/tenants";
+import { useUpdateFirstFactorService, useUpdateRequiredSecondaryFactorService } from "../../../../api/tenants";
 import { ReactComponent as ErrorIcon } from "../../../../assets/form-field-error-icon.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
-import { FactorIds, FIRST_FACTOR_IDS, SECONDARY_FACTOR_IDS } from "../../../../constants";
+import { FIRST_FACTOR_IDS, FactorIds, SECONDARY_FACTOR_IDS } from "../../../../constants";
 import { doesTenantHasPasswordlessEnabled, getImageUrl } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import { ErrorBlock } from "../../errorBlock/ErrorBlock";
@@ -139,8 +139,8 @@ const LoginFactor = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const { tenantInfo, refetchTenant } = useTenantDetailContext();
-	const updateFirstFactors = useUpdateFirstFactorsService();
-	const updateSecondaryFactors = useUpdateSecondaryFactorsService();
+	const updateFirstFactors = useUpdateFirstFactorService();
+	const updateSecondaryFactors = useUpdateRequiredSecondaryFactorService();
 	const hasError = error !== null;
 	const { showToast } = useContext(PopupContentContext);
 

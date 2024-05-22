@@ -1,3 +1,10 @@
+export type Tenant = {
+	tenantId: string;
+	firstFactors: string[];
+};
+
+export type PasswordlessContactMethod = "PHONE" | "EMAIL" | "EMAIL_OR_PHONE";
+
 export type UserInfoMap = {
 	fromIdTokenPayload?: {
 		userId?: string;
@@ -102,7 +109,7 @@ export type BuiltInProvidersCustomFields = {
 };
 
 export type ProviderClientState = Omit<ProviderClientConfig, "additionalConfig"> & {
-	additionalConfig: Array<[string, string | null]>;
+	additionalConfig: [string, string | null][];
 	// Generated locally to correctly render clients list
 	key: string;
 };

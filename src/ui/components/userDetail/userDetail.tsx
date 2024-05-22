@@ -14,7 +14,7 @@
  */
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Tenant } from "../../../api/tenants/list";
+import { Tenant } from "../../../api/tenants/types";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";

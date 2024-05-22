@@ -13,7 +13,7 @@
  * under the License.
  */
 import { PropsWithChildren, createContext, useContext, useState } from "react";
-import { Tenant } from "../../api/tenants/list";
+import { Tenant } from "../../api/tenants/types";
 import { getSelectedTenantId, setSelectedTenantId } from "../../utils";
 
 type TenantsListContextType = {
