@@ -40,12 +40,8 @@ export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => 
 			setIsCreatingTenant(true);
 			const resp = await createTenant(tenantId);
 			if (resp.status === "OK") {
-				if (resp.createdNew) {
-					navigate(`?tenantId=${tenantId.toLowerCase()}`);
-					onCloseDialog();
-				} else {
-					setTenantCreationError("Tenant already exists");
-				}
+				navigate(`?tenantId=${tenantId.toLowerCase()}`);
+				onCloseDialog();
 			} else if (resp.status === "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR") {
 				setTenantCreationError(
 					"Multitenancy is not enabled for your SuperTokens instance. Please add a license key to enable it."
