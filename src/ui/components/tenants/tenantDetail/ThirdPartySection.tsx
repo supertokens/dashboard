@@ -65,9 +65,10 @@ export const ThirdPartySection = ({
 					})}
 				</div>
 			) : (
-				<div className="tenant-detail__no-providers-added-container">
-					<div className="tenant-detail__no-providers-added-container__text">No providers added</div>
-				</div>
+				<>
+					No providers are configured for this tenant. Add at least one provider to be able to use third-party
+					login.
+				</>
 			)}
 
 			<hr className="tenant-detail__third-party-divider" />

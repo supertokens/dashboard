@@ -93,7 +93,7 @@ export type ProviderCustomField = {
 	label: string;
 	id: string;
 	tooltip: string;
-	type: "text" | "password";
+	type: "text" | "password" | "multiline";
 	required: boolean;
 };
 

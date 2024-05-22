@@ -52,7 +52,9 @@ const SignInWithApiKeyContent = (props: SignInWithApiKeyContentProps) => {
 		}
 	};
 
-	const handleApiKeyFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleApiKeyFieldChange = (
+		e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
+	) => {
 		setApiKey(e.target.value);
 	};
 

@@ -48,13 +48,19 @@ export const ClientConfig = ({
 }) => {
 	const isAppleProvider = providerId.startsWith("apple");
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-	const handleClientFieldChange = (name: string, e: ChangeEvent<HTMLInputElement>) => {
+	const handleClientFieldChange = (
+		name: string,
+		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
+	) => {
 		if (e.type === "change") {
 			setClient({ ...client, [name]: e.target.value });
 		}
 	};
 
-	const handleAdditionalConfigChange = (key: string, e: ChangeEvent<HTMLInputElement>) => {
+	const handleAdditionalConfigChange = (
+		key: string,
+		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
+	) => {
 		const newAdditionalConfig: Array<[string, string | null]> = client.additionalConfig.map(([k, v]) => {
 			if (k === key) {
 				return [k, e.target.value];

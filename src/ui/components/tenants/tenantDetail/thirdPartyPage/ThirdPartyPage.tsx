@@ -354,7 +354,7 @@ const OktaForm = ({ handleContinue, handleGoBack }: AdditionalConfigFormProps) =
 				/>
 			</div>
 
-			<p className="additional-config-container__note">For example: https://dev-123456.okta.com</p>
+			<p className="additional-config-container__note">For example: https://dev-8636097.okta.com</p>
 
 			<hr className="provider-config-divider" />
 			<div className="additional-config-footer">

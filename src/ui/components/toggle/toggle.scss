@@ -29,6 +29,7 @@ input[type="checkbox"] {
 		opacity: 0;
 		position: absolute;
 		& + label {
+			cursor: pointer;
 			position: relative;
 			display: inline-block;
 			user-select: none;

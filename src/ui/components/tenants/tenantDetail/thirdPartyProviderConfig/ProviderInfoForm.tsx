@@ -26,9 +26,9 @@ import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { Toggle } from "../../../toggle/Toggle";
 import TooltipContainer from "../../../tooltip/tooltip";
+import { useTenantDetailContext } from "../TenantDetailContext";
 import { DeleteThirdPartyProviderDialog } from "../deleteThirdPartyProvider/DeleteThirdPartyProvider";
 import { KeyValueInput } from "../keyValueInput/KeyValueInput";
-import { useTenantDetailContext } from "../TenantDetailContext";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ThirdPartyProviderButton } from "../thirdPartyProviderButton/ThirdPartyProviderButton";
 import {
@@ -110,7 +110,7 @@ export const ProviderInfoForm = ({
 		});
 	};
 
-	const handleFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleFieldChange = (e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
 		if (e.type === "change") {
 			setProviderConfigState({ ...providerConfigState, [e.target.name]: e.target.value });
 		}
@@ -146,7 +146,9 @@ export const ProviderInfoForm = ({
 		}
 	};
 
-	const handleThirdPartyIdSuffixChange = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleThirdPartyIdSuffixChange = (
+		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
+	) => {
 		if (e.type !== "change") {
 			return;
 		}
@@ -1016,7 +1018,7 @@ const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
 			label: "Private Key",
 			id: "privateKey",
 			tooltip: "The private key for Apple.",
-			type: "text",
+			type: "multiline",
 			required: true,
 		},
 	],

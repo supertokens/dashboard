@@ -39,7 +39,14 @@ export const useListTenants = (): TenantsListService => {
 			url: getApiUrl("/api/tenants"),
 		});
 
-		return response.ok ? await response.json() : undefined;
+		const result = response.ok ? await response.json() : undefined;
+
+		// Ensure the public tenant is the first result, followed by all other tenants in alphabetical order
+		result.tenants.sort((a: Tenant, b: Tenant) =>
+			(a.tenantId === "public" ? "" : a.tenantId).localeCompare(b.tenantId === "public" ? "" : b.tenantId)
+		);
+
+		return result;
 	};
 
 	return {
