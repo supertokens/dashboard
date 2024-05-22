@@ -20,11 +20,11 @@ import { Dialog, DialogContent, DialogFooter } from "../../dialog";
 import InputField from "../../inputField/InputField";
 
 import { useNavigate } from "react-router-dom";
-import { useCreateOrUpdateTenantService } from "../../../../api/tenants";
+import { useCreateTenantService } from "../../../../api/tenants";
 import "./createNewTenant.scss";
 
 export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => void }) => {
-	const createTenant = useCreateOrUpdateTenantService();
+	const createTenant = useCreateTenantService();
 	const navigate = useNavigate();
 	const [tenantCreationError, setTenantCreationError] = useState<string | undefined>(undefined);
 	const [isCreatingTenant, setIsCreatingTenant] = useState(false);
@@ -50,6 +50,8 @@ export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => 
 				setTenantCreationError(
 					"Multitenancy is not enabled for your SuperTokens instance. Please add a license key to enable it."
 				);
+			} else if (resp.status === "TENANT_ID_ALREADY_EXISTS_ERROR") {
+				setTenantCreationError("Provided tenant id already exists.");
 			} else if (resp.status === "INVALID_TENANT_ID_ERROR") {
 				setTenantCreationError(resp.message);
 			} else {

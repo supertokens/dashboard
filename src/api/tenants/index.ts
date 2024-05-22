@@ -42,10 +42,10 @@ export const useListTenantsService = () => {
 	};
 };
 
-export const useCreateOrUpdateTenantService = () => {
+export const useCreateTenantService = () => {
 	const fetchData = useFetchData();
 
-	const createOrUpdateTenant = async (
+	const createTenant = async (
 		tenantId: string
 	): Promise<
 		| {
@@ -53,7 +53,7 @@ export const useCreateOrUpdateTenantService = () => {
 				createdNew: boolean;
 		  }
 		| {
-				status: "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR";
+				status: "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR" | "TENANT_ID_ALREADY_EXISTS_ERROR";
 		  }
 		| {
 				status: "INVALID_TENANT_ID_ERROR";
@@ -62,7 +62,7 @@ export const useCreateOrUpdateTenantService = () => {
 	> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/tenant"),
-			method: "PUT",
+			method: "POST",
 			config: {
 				body: JSON.stringify({
 					tenantId,
@@ -78,7 +78,7 @@ export const useCreateOrUpdateTenantService = () => {
 		throw new Error("Unknown error");
 	};
 
-	return createOrUpdateTenant;
+	return createTenant;
 };
 
 export const useGetTenantInfoService = () => {
