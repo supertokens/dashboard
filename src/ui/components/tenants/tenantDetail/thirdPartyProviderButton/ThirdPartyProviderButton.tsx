@@ -42,7 +42,7 @@ export const ThirdPartyProviderButton = (props: ThirdPartyProviderButtonProps) =
 			disabled={props.disabled}>
 			{props.type === "without-icon" ? (
 				<div className="third-party-provider-cta__logo-container">
-					<span>+ {props.title}</span>
+					<span>{props.title}</span>
 				</div>
 			) : (
 				<div className="third-party-provider-cta__logo-container">

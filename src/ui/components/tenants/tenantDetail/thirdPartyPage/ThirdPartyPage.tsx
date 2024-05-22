@@ -68,14 +68,13 @@ const ProviderInfo = ({
 	handleGoBack: (shouldGoBackToDetailPage?: boolean) => void;
 }) => {
 	const { tenantInfo } = useTenantDetailContext();
-	const [isProviderInfoLoading, setIsProviderInfoLoading] = useState(true);
+	const [isProviderInfoLoading, setIsProviderInfoLoading] = useState(false);
 	const [hasFilledCustomFieldsForProvider, setHasFilledCustomFieldsForProvider] = useState(
 		!PROVIDERS_WITH_ADDITIONAL_CONFIG.includes(providerId ?? "")
 	);
 	const getThirdPartyProviderInfo = useGetThirdPartyProviderInfoService();
 	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>(undefined);
-	const providerHasCustomFields =
-		typeof providerId === "string" && PROVIDERS_WITH_ADDITIONAL_CONFIG.includes(providerId);
+	const providerHasCustomFields = PROVIDERS_WITH_ADDITIONAL_CONFIG.includes(providerId ?? "");
 	const { showToast } = useContext(PopupContentContext);
 
 	const fetchProviderInfo = async (id: string, additionalConfig?: Record<string, string>) => {
@@ -98,17 +97,16 @@ const ProviderInfo = ({
 	};
 
 	useEffect(() => {
-		if (typeof providerId === "string" && !(isAddingNewProvider && providerHasCustomFields)) {
+		if (providerId !== undefined && !(isAddingNewProvider && providerHasCustomFields)) {
 			void fetchProviderInfo(providerId);
 		}
 	}, [providerId]);
 
-	if (
-		providerHasCustomFields &&
-		!hasFilledCustomFieldsForProvider &&
-		isAddingNewProvider &&
-		typeof providerId === "string"
-	) {
+	if (providerHasCustomFields && !hasFilledCustomFieldsForProvider && isAddingNewProvider) {
+		if (providerId === undefined) {
+			throw new Error("should never come here");
+		}
+
 		return (
 			<ProviderAdditionalConfigForm
 				providerId={providerId}
@@ -118,12 +116,8 @@ const ProviderInfo = ({
 		);
 	}
 
-	if (isProviderInfoLoading && typeof providerId === "string") {
+	if (isProviderInfoLoading) {
 		return <Loader />;
-	}
-
-	if (!isProviderInfoLoading && !providerConfigResponse && typeof providerId === "string") {
-		throw new Error("Provider config not found");
 	}
 
 	return (
