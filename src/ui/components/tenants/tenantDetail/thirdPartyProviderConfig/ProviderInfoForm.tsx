@@ -186,7 +186,7 @@ export const ProviderInfoForm = ({
 			(provider) => provider.thirdPartyId === providerConfigState.thirdPartyId
 		);
 
-		if (typeof providerConfigState.thirdPartyId !== "string" || providerConfigState.thirdPartyId.trim() === "") {
+		if (providerConfigState.thirdPartyId.trim() === "") {
 			setErrorState((prev) => ({ ...prev, thirdPartyId: "Third Party Id is required" }));
 			isValid = false;
 		} else if (!providerConfigState.thirdPartyId.match(/^[a-z0-9-]+$/)) {
@@ -210,7 +210,7 @@ export const ProviderInfoForm = ({
 				isValid = false;
 			}
 			if (!isAppleProvider) {
-				if (typeof client.clientSecret !== "string" || client.clientSecret.trim() === "") {
+				if (client.clientSecret === undefined || client.clientSecret.trim() === "") {
 					setErrorState((prev) => ({
 						...prev,
 						[`clients.${index}.clientSecret`]: "Client Secret is required",
@@ -219,7 +219,7 @@ export const ProviderInfoForm = ({
 				}
 			}
 			if ((providerConfigState.clients?.length ?? 0) > 1) {
-				if (typeof client.clientType !== "string" || client.clientType.trim() === "") {
+				if (client.clientType === undefined || client.clientType.trim() === "") {
 					setErrorState((prev) => ({ ...prev, [`clients.${index}.clientType`]: "Client Type is required" }));
 					isValid = false;
 					return;
@@ -235,7 +235,7 @@ export const ProviderInfoForm = ({
 			}
 		});
 
-		if (customFields) {
+		if (customFields !== undefined && customFields.length > 0) {
 			providerConfigState.clients?.forEach((client, index) => {
 				customFields?.forEach((field) => {
 					const fieldValue = client.additionalConfig.find(([key]) => key === field.id)?.[1];
@@ -251,8 +251,8 @@ export const ProviderInfoForm = ({
 		}
 
 		if (
-			(providerConfigState.oidcDiscoveryEndpoint?.trim().length ?? 0) > 0 &&
-			!isValidHttpUrl(providerConfigState.oidcDiscoveryEndpoint)
+			providerConfigState.oidcDiscoveryEndpoint !== undefined &&
+			!isValidHttpUrl(providerConfigState.oidcDiscoveryEndpoint.trim())
 		) {
 			setErrorState((prev) => ({
 				...prev,
@@ -262,8 +262,8 @@ export const ProviderInfoForm = ({
 		}
 
 		if (
-			(providerConfigState.tokenEndpoint?.trim().length ?? 0) > 0 &&
-			!isValidHttpUrl(providerConfigState.tokenEndpoint)
+			providerConfigState.tokenEndpoint !== undefined &&
+			!isValidHttpUrl(providerConfigState.tokenEndpoint.trim())
 		) {
 			setErrorState((prev) => ({
 				...prev,
@@ -274,8 +274,8 @@ export const ProviderInfoForm = ({
 		}
 
 		if (
-			(providerConfigState.authorizationEndpoint?.trim().length ?? 0) > 0 &&
-			!isValidHttpUrl(providerConfigState.authorizationEndpoint)
+			providerConfigState.authorizationEndpoint !== undefined &&
+			!isValidHttpUrl(providerConfigState.authorizationEndpoint.trim())
 		) {
 			setErrorState((prev) => ({
 				...prev,
@@ -285,8 +285,8 @@ export const ProviderInfoForm = ({
 		}
 
 		if (
-			(providerConfigState.userInfoEndpoint?.trim().length ?? 0) > 0 &&
-			!isValidHttpUrl(providerConfigState.userInfoEndpoint)
+			providerConfigState.userInfoEndpoint !== undefined &&
+			!isValidHttpUrl(providerConfigState.userInfoEndpoint.trim())
 		) {
 			setErrorState((prev) => ({
 				...prev,
@@ -295,7 +295,7 @@ export const ProviderInfoForm = ({
 			isValid = false;
 		}
 
-		if ((providerConfigState.jwksURI?.trim().length ?? 0) > 0 && !isValidHttpUrl(providerConfigState.jwksURI)) {
+		if (providerConfigState.jwksURI !== undefined && !isValidHttpUrl(providerConfigState.jwksURI.trim())) {
 			setErrorState((prev) => ({
 				...prev,
 				jwksURI: "JWKS URI should be a valid URL",

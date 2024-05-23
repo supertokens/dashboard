@@ -12,13 +12,12 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetTenantInfoService } from "../../../../api/tenants";
 import { TenantDashboardView, TenantInfo } from "../../../../api/tenants/types";
 import { ReactComponent as NoTenantFound } from "../../../../assets/no-tenants.svg";
 import { FactorIds, PUBLIC_TENANT_ID } from "../../../../constants";
 import { getImageUrl, usePrevious } from "../../../../utils";
-import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import Button from "../../button";
 import { Loader } from "../../loader/Loader";
 import { CoreConfigSection } from "./CoreConfigSection";
@@ -48,8 +47,6 @@ export const TenantDetail = ({
 	const [viewObj, setViewObj] = useState<TenantDashboardView>({
 		view: "tenant-detail",
 	});
-	const { showToast } = useContext(PopupContentContext);
-
 	const tenantHasThirdPartyEnabled = tenant?.firstFactors?.includes(FactorIds.THIRDPARTY);
 	const prevTenantHasThirdPartyEnabled = usePrevious(tenantHasThirdPartyEnabled);
 
@@ -62,25 +59,16 @@ export const TenantDetail = ({
 
 	useEffect(() => {
 		const fetchData = async () => {
-			try {
-				setIsLoading(true);
-				await getTenant();
-			} catch (error) {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>Something went wrong please try refreshing the page</>,
-				});
-			} finally {
-				setIsLoading(false);
-			}
+			setIsLoading(true);
+			await getTenant();
+			setIsLoading(false);
 		};
 		void fetchData();
 	}, [tenantId]);
 
 	useEffect(() => {
 		if (
-			typeof tenant?.tenantId === "string" &&
+			tenant?.tenantId !== undefined &&
 			tenantHasThirdPartyEnabled &&
 			prevTenantHasThirdPartyEnabled !== tenantHasThirdPartyEnabled &&
 			typeof prevTenantHasThirdPartyEnabled === "boolean" &&
