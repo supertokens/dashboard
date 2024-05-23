@@ -324,11 +324,11 @@ export const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: nu
 		});
 };
 
-export const isValidHttpUrl = (urlToBeValidated?: string) => {
+export const isValidHttpUrl = (urlToBeValidated: string) => {
 	let url;
 
 	try {
-		url = new URL(urlToBeValidated ?? "");
+		url = new URL(urlToBeValidated);
 	} catch (_) {
 		return false;
 	}

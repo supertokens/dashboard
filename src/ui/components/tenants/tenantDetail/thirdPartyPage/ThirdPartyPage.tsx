@@ -12,11 +12,10 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetThirdPartyProviderInfoService } from "../../../../../api/tenants";
 import { ProviderConfigResponse } from "../../../../../api/tenants/types";
 import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
-import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { Loader } from "../../../loader/Loader";
 import { useTenantDetailContext } from "../TenantDetailContext";
@@ -75,25 +74,15 @@ const ProviderInfo = ({
 	const getThirdPartyProviderInfo = useGetThirdPartyProviderInfoService();
 	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>(undefined);
 	const providerHasCustomFields = PROVIDERS_WITH_ADDITIONAL_CONFIG.includes(providerId ?? "");
-	const { showToast } = useContext(PopupContentContext);
 
 	const fetchProviderInfo = async (id: string, additionalConfig?: Record<string, string>) => {
 		setHasFilledCustomFieldsForProvider(true);
-		try {
-			setIsProviderInfoLoading(true);
-			const response = await getThirdPartyProviderInfo(tenantInfo.tenantId, id, additionalConfig);
-			if (response.status === "OK") {
-				setProviderConfigResponse(response.providerConfig);
-			}
-		} catch (error) {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children: <>Something went wrong please try refreshing the page</>,
-			});
-		} finally {
-			setIsProviderInfoLoading(false);
+		setIsProviderInfoLoading(true);
+		const response = await getThirdPartyProviderInfo(tenantInfo.tenantId, id, additionalConfig);
+		if (response.status === "OK") {
+			setProviderConfigResponse(response.providerConfig);
 		}
+		setIsProviderInfoLoading(false);
 	};
 
 	useEffect(() => {
