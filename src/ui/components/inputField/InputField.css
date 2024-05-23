@@ -71,6 +71,7 @@
 textarea.input-field {
 	resize: vertical;
 	min-height: 8em;
+	line-height: 1.8em;
 }
 
 .input-field-small {

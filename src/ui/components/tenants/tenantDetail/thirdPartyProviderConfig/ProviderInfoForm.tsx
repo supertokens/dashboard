@@ -67,10 +67,12 @@ export const ProviderInfoForm = ({
 	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId?.startsWith(provider.id));
 	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
 	const shouldUsePrefixField = isAddingNewProvider && (inBuiltProviderInfo || isSAMLProvider);
-	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
+	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT).find((id) =>
 		providerId?.startsWith(id)
 	);
-	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : undefined;
+	const customFields = customFieldProviderKey
+		? IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT[customFieldProviderKey]
+		: undefined;
 	const formHasError = Object.values(errorState).some((error) => error !== "");
 
 	const handleAddNewClient = () => {
@@ -158,7 +160,7 @@ export const ProviderInfoForm = ({
 		} else {
 			setProviderConfigState((prev) => ({
 				...prev,
-				thirdPartyId: `${baseProviderId}${e.target.value.trim()}`,
+				thirdPartyId: `${baseProviderId}-${e.target.value.trim()}`,
 			}));
 		}
 	};
@@ -167,7 +169,7 @@ export const ProviderInfoForm = ({
 		setIsSuffixFieldVisible(true);
 		setProviderConfigState((prev) => ({
 			...prev,
-			thirdPartyId: `${baseProviderId}-`,
+			thirdPartyId: `${baseProviderId}`,
 		}));
 		setErrorState((prev) => {
 			const { thirdPartyId: _, ...rest } = prev;
@@ -419,10 +421,10 @@ export const ProviderInfoForm = ({
 						<ThirdPartyProviderInput
 							label="Third Party Id"
 							tooltip="The Id of the provider."
-							prefix={`${baseProviderId}`}
+							prefix={`${baseProviderId}-`}
 							type="text"
 							name="thirdPartyId"
-							value={providerConfigState.thirdPartyId.slice(baseProviderId.length)}
+							value={providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)}
 							forceShowError
 							error={errorState.thirdPartyId}
 							handleChange={handleThirdPartyIdSuffixChange}
@@ -885,10 +887,12 @@ const getInitialProviderInfo = (
 	providerConfig: ProviderConfig | undefined,
 	providerId?: string
 ): ProviderConfigState => {
-	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS).find((id) =>
+	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT).find((id) =>
 		providerId?.startsWith(id)
 	);
-	const customFields = customFieldProviderKey ? IN_BUILT_PROVIDERS_CUSTOM_FIELDS[customFieldProviderKey] : [];
+	const customFields = customFieldProviderKey
+		? IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT[customFieldProviderKey]
+		: [];
 
 	let additionaConfigFields: [string, string][] = customFields.map((field) => [field.id, ""]);
 
@@ -998,7 +1002,7 @@ const getInitialProviderInfo = (
 		],
 	};
 };
-const IN_BUILT_PROVIDERS_CUSTOM_FIELDS: BuiltInProvidersCustomFields = {
+const IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT: BuiltInProvidersCustomFields = {
 	apple: [
 		{
 			label: "Key Id",
