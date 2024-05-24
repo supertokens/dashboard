@@ -26,6 +26,7 @@ type DialogCommonProps = {
 
 type DialogProps = DialogCommonProps & {
 	title?: string;
+	/** Determines whether the dialog should be closed when user clicks on the overlay, true by default */
 	closeOnOverlayClick?: boolean;
 	isError?: boolean;
 	onCloseDialog: () => void;
@@ -41,7 +42,7 @@ function removeNoScrollFromBody() {
 }
 
 function Dialog(props: DialogProps) {
-	const { children, className = "", closeOnOverlayClick = false, onCloseDialog, title, lockScroll = true } = props;
+	const { children, className = "", closeOnOverlayClick = true, onCloseDialog, title, lockScroll = true } = props;
 
 	useEffect(() => {
 		if (!lockScroll) return;
