@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
 import { ReactComponent as ErrorIcon } from "../../../assets/form-field-error-icon.svg";
 
@@ -29,10 +29,25 @@ type DialogProps = DialogCommonProps & {
 	closeOnOverlayClick?: boolean;
 	isError?: boolean;
 	onCloseDialog: () => void;
+	/** Determines whether body scroll should be locked when dialog is open, true by default*/
+	lockScroll?: boolean;
 };
 
+function addNoScrollToBody() {
+	document.body.classList.add("no-scroll");
+}
+function removeNoScrollFromBody() {
+	document.body.classList.remove("no-scroll");
+}
+
 function Dialog(props: DialogProps) {
-	const { children, className = "", closeOnOverlayClick = false, onCloseDialog, title } = props;
+	const { children, className = "", closeOnOverlayClick = false, onCloseDialog, title, lockScroll = true } = props;
+
+	useEffect(() => {
+		if (!lockScroll) return;
+		addNoScrollToBody();
+		return removeNoScrollFromBody;
+	}, [lockScroll]);
 
 	return (
 		<>
@@ -90,4 +105,4 @@ function DialogFooter(props: DialogFooterProps) {
 	return <div className={`dialog-footer ${flexDirection} ${justifyContent} ${border} ${className}`}>{children}</div>;
 }
 
-export { Dialog, DialogContent, DialogFooter, DialogConfirmText };
+export { Dialog, DialogConfirmText, DialogContent, DialogFooter };

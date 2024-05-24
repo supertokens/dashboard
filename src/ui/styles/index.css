@@ -75,3 +75,7 @@ button:disabled {
 ::-webkit-scrollbar-track {
 	background-color: transparent; /* Set track color for Chrome and Safari */
 }
+
+body.no-scroll {
+	overflow: hidden;
+}
