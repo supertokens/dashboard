@@ -50,13 +50,6 @@ export const LoginMethodsSection = () => {
 					</ErrorBlock>
 				)}
 
-				{doesTenantHasEmailPasswordAndPasswordlessEnabled && (
-					<div className="block-warn block-warn-medium text-small tenant-detail__factors-error-block">
-						<b>Note:</b> Pre-built might not work as expected because we don’t have a combination recipe for
-						EmailPassword and Passwordless yet.
-					</div>
-				)}
-
 				<div className="tenant-detail__factors-container">
 					<div className="tenant-detail__factors-container__grid">
 						{FIRST_FACTOR_IDS.map((method) => (
