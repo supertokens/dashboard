@@ -26,14 +26,14 @@ import "./createNewTenant.scss";
 export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => void }) => {
 	const createTenant = useCreateTenantService();
 	const navigate = useNavigate();
-	const [tenantCreationError, setTenantCreationError] = useState<string | undefined>(undefined);
+	const [tenantCreationError, setTenantCreationError] = useState<JSX.Element | undefined>(undefined);
 	const [isCreatingTenant, setIsCreatingTenant] = useState(false);
 	const [tenantId, setTenantId] = useState("");
 
 	const handleCreateTenant = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		if (tenantId.trim().length === 0) {
-			setTenantCreationError("Please enter a valid Tenant Id!");
+			setTenantCreationError(<>Please enter a valid Tenant Id!</>);
 			return;
 		}
 		try {
@@ -44,17 +44,26 @@ export const CreateNewTenantDialog = ({ onCloseDialog }: { onCloseDialog: () => 
 				onCloseDialog();
 			} else if (resp.status === "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR") {
 				setTenantCreationError(
-					"Multitenancy is not enabled for your SuperTokens instance. Please add a license key to enable it."
+					<>
+						Multitenancy is a paid feature and is not available on your core instance. Please{" "}
+						<a
+							href="https://supertokens.com/auth"
+							target="_blank"
+							rel="noopener noreferrer">
+							Sign up
+						</a>{" "}
+						to get a license key and follow the instructions sent to you by email.
+					</>
 				);
 			} else if (resp.status === "TENANT_ID_ALREADY_EXISTS_ERROR") {
-				setTenantCreationError("Provided tenant id already exists.");
+				setTenantCreationError(<>Provided tenant id already exists.</>);
 			} else if (resp.status === "INVALID_TENANT_ID_ERROR") {
-				setTenantCreationError(resp.message);
+				setTenantCreationError(<>{resp.message}</>);
 			} else {
 				throw new Error("Failed to create tenant");
 			}
 		} catch (e) {
-			setTenantCreationError("Something went wrong. Please try again later.");
+			setTenantCreationError(<>Something went wrong. Please try again later.</>);
 		} finally {
 			setIsCreatingTenant(false);
 		}

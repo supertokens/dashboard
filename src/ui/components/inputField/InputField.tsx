@@ -25,7 +25,7 @@ export type InputFieldPropTypes = {
 	label?: string;
 	value?: string | undefined;
 	placeholder?: string;
-	error?: string;
+	error?: string | JSX.Element;
 	isRequired?: boolean;
 	hideColon?: boolean;
 	forceShowError?: boolean;

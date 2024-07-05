@@ -171,9 +171,9 @@ const CoreConfigTableRow = ({
 	const isPublicTenant = tenantInfo.tenantId === PUBLIC_TENANT_ID;
 
 	const isUneditable =
-		isPublicTenant ||
-		(isPluginProperty && !isPluginPropertyEditable) ||
-		(!isPublicTenant && !isDifferentAcrossTenants);
+		isPublicTenant || // config of public tenant are not editable
+		(isPluginProperty && !isPluginPropertyEditable) || // plugin property that is marked as not editable
+		(!isPublicTenant && !isDifferentAcrossTenants); // in a non-public tenant, config that's not different across tenants are not editable
 
 	const renderUneditablePropertyReason = () => {
 		if (isUsingSaaS) {
