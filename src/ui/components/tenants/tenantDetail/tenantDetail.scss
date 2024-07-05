@@ -61,7 +61,7 @@
 		border-radius: 6px;
 		width: 100%;
 
-		@media screen and (max-width: 480px) {
+		@media screen and (max-width: 640px) {
 			padding: 0px;
 			border: none;
 			margin-top: 20px;
@@ -83,7 +83,7 @@
 				flex: 1;
 			}
 
-			@media screen and (max-width: 480px) {
+			@media screen and (max-width: 640px) {
 				display: none;
 			}
 		}
@@ -94,7 +94,7 @@
 			gap: 16px;
 			margin-top: 20px;
 
-			@media screen and (max-width: 480px) {
+			@media screen and (max-width: 640px) {
 				margin-top: 0px;
 			}
 		}
@@ -111,7 +111,7 @@
 			font-weight: 500;
 			line-height: normal;
 
-			@media screen and (max-width: 480px) {
+			@media screen and (max-width: 640px) {
 				flex-direction: column;
 				align-items: flex-start;
 				justify-content: space-between;
@@ -124,8 +124,11 @@
 				overflow: hidden;
 				text-overflow: ellipsis;
 
-				@media screen and (max-width: 480px) {
+				@media screen and (max-width: 640px) {
 					max-width: 205px;
+				}
+				@media screen and (max-width: 380px) {
+					max-width: 180px;
 				}
 			}
 
@@ -143,7 +146,7 @@
 				justify-content: space-between;
 				align-items: center;
 
-				@media screen and (max-width: 480px) {
+				@media screen and (max-width: 640px) {
 					padding-left: 0px;
 					width: 100%;
 				}
@@ -250,7 +253,7 @@
 	&__header {
 		justify-content: space-between;
 
-		@media screen and (max-width: 480px) {
+		@media screen and (max-width: 640px) {
 			flex-direction: column;
 			gap: 16px;
 			button {
@@ -291,7 +294,7 @@
 			grid-template-columns: 1fr 1fr 1fr;
 			gap: 16px;
 
-			@media screen and (max-width: 480px) {
+			@media screen and (max-width: 640px) {
 				grid-template-columns: 1fr;
 			}
 
@@ -302,7 +305,7 @@
 				max-width: 185px;
 				justify-content: space-between;
 
-				@media screen and (max-width: 480px) {
+				@media screen and (max-width: 640px) {
 					max-width: 100%;
 				}
 
@@ -319,7 +322,7 @@
 				}
 
 				&--fixed-gap {
-					@media screen and (min-width: 480px) {
+					@media screen and (min-width: 640px) {
 						gap: 16px;
 						justify-content: flex-start;
 					}

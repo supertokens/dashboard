@@ -38,7 +38,6 @@ export const ProviderListDialog = ({
 	return (
 		<Dialog
 			onCloseDialog={onCloseDialog}
-			closeOnOverlayClick
 			className="provider-dialog-container">
 			<DialogContent>
 				<div>

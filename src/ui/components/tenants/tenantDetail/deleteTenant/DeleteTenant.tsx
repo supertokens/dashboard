@@ -62,13 +62,16 @@ export const DeleteTenantDialog = ({
 			onCloseDialog={onCloseDialog}>
 			<DialogContent>
 				<p className="confirm-text">
-					Are you sure you want to delete the tenant: <span className="tenant-id">{tenantId}</span>? All the
-					users associated with the tenant will be moved to the public tenant. Please enter the tenantId below
-					to confirm.
+					Are you sure you want to delete the tenant: <span className="tenant-id">{tenantId}</span> ?
+					<br />
+					Users associated with the tenant will be moved to the public tenant.
+					<br />
+					<br />
+					Please enter the <span className="tenant-id">{tenantId}</span> below to confirm.
 				</p>
 				<InputField
-					label="Tenant ID"
 					value={currentTenantId}
+					placeholder={tenantId}
 					type="text"
 					name="tenantId"
 					handleChange={(e) => setCurrentTenantId(e.target.value)}

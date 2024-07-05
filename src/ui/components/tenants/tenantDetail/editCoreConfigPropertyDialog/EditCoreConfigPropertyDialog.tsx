@@ -62,7 +62,9 @@ export const EditCoreConfigPropertyDialog = ({
 	const handleSaveProperty = async () => {
 		try {
 			setIsLoading(true);
-			const res = await updateCoreConfig(tenantInfo.tenantId, name, currentValue);
+			const parsedValue =
+				type === "number" && typeof currentValue === "string" ? parseInt(currentValue) : currentValue;
+			const res = await updateCoreConfig(tenantInfo.tenantId, name, parsedValue);
 			if (res.status !== "OK") {
 				if (res.status === "UNKNOWN_TENANT_ERROR") {
 					showToast({
@@ -94,7 +96,7 @@ export const EditCoreConfigPropertyDialog = ({
 
 	return (
 		<Dialog
-			title="Edit Property?"
+			title="Edit Property"
 			onCloseDialog={onCloseDialog}>
 			<DialogContent>
 				<div>
