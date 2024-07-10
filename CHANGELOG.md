@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
--   Add Multitenancy Dashboard
--   Fixes UI issues in tenant management page
+## [0.12.0]
+
+-   Adds Multitenancy support to the dashboard
 
 ## [0.11.1] - 2024-04-01
 
