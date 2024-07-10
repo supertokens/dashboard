@@ -252,6 +252,7 @@ export const ProviderInfoForm = ({
 
 		if (
 			providerConfigState.oidcDiscoveryEndpoint !== undefined &&
+			providerConfigState.oidcDiscoveryEndpoint !== "" &&
 			!isValidHttpUrl(providerConfigState.oidcDiscoveryEndpoint.trim())
 		) {
 			setErrorState((prev) => ({
@@ -263,6 +264,7 @@ export const ProviderInfoForm = ({
 
 		if (
 			providerConfigState.tokenEndpoint !== undefined &&
+			providerConfigState.tokenEndpoint !== "" &&
 			!isValidHttpUrl(providerConfigState.tokenEndpoint.trim())
 		) {
 			setErrorState((prev) => ({
@@ -275,6 +277,7 @@ export const ProviderInfoForm = ({
 
 		if (
 			providerConfigState.authorizationEndpoint !== undefined &&
+			providerConfigState.authorizationEndpoint !== "" &&
 			!isValidHttpUrl(providerConfigState.authorizationEndpoint.trim())
 		) {
 			setErrorState((prev) => ({
@@ -286,6 +289,7 @@ export const ProviderInfoForm = ({
 
 		if (
 			providerConfigState.userInfoEndpoint !== undefined &&
+			providerConfigState.userInfoEndpoint !== "" &&
 			!isValidHttpUrl(providerConfigState.userInfoEndpoint.trim())
 		) {
 			setErrorState((prev) => ({
@@ -295,7 +299,11 @@ export const ProviderInfoForm = ({
 			isValid = false;
 		}
 
-		if (providerConfigState.jwksURI !== undefined && !isValidHttpUrl(providerConfigState.jwksURI.trim())) {
+		if (
+			providerConfigState.jwksURI !== undefined &&
+			providerConfigState.jwksURI !== "" &&
+			!isValidHttpUrl(providerConfigState.jwksURI.trim())
+		) {
 			setErrorState((prev) => ({
 				...prev,
 				jwksURI: "JWKS URI should be a valid URL",
@@ -348,23 +356,24 @@ export const ProviderInfoForm = ({
 		const normalizedProviderConfig = {
 			thirdPartyId: providerConfigState.thirdPartyId,
 			name: providerConfigState.name.trim(),
-			oidcDiscoveryEndpoint: providerConfigState.oidcDiscoveryEndpoint.trim() || null,
-			tokenEndpoint: providerConfigState.tokenEndpoint.trim() || null,
-			userInfoEndpoint: providerConfigState.userInfoEndpoint.trim() || null,
-			authorizationEndpoint: providerConfigState.authorizationEndpoint.trim() || null,
-			jwksURI: providerConfigState.jwksURI.trim() || null,
+			oidcDiscoveryEndpoint: providerConfigState.oidcDiscoveryEndpoint.trim() || undefined,
+			tokenEndpoint: providerConfigState.tokenEndpoint.trim() || undefined,
+			userInfoEndpoint: providerConfigState.userInfoEndpoint.trim() || undefined,
+			authorizationEndpoint: providerConfigState.authorizationEndpoint.trim() || undefined,
+			jwksURI: providerConfigState.jwksURI.trim() || undefined,
 			requireEmail: providerConfigState.requireEmail,
 			clients: normalizedProviderConfigClients,
 			userInfoMap: {
 				fromIdTokenPayload: {
-					userId: providerConfigState.userInfoMap.fromIdTokenPayload?.userId?.trim() || null,
-					email: providerConfigState.userInfoMap.fromIdTokenPayload?.email?.trim() || null,
-					emailVerified: providerConfigState.userInfoMap.fromIdTokenPayload?.emailVerified?.trim() || null,
+					userId: providerConfigState.userInfoMap.fromIdTokenPayload?.userId?.trim() || undefined,
+					email: providerConfigState.userInfoMap.fromIdTokenPayload?.email?.trim() || undefined,
+					emailVerified:
+						providerConfigState.userInfoMap.fromIdTokenPayload?.emailVerified?.trim() || undefined,
 				},
 				fromUserInfoAPI: {
-					userId: providerConfigState.userInfoMap.fromUserInfoAPI?.userId?.trim() || null,
-					email: providerConfigState.userInfoMap.fromUserInfoAPI?.email?.trim() || null,
-					emailVerified: providerConfigState.userInfoMap.fromUserInfoAPI?.emailVerified?.trim() || null,
+					userId: providerConfigState.userInfoMap.fromUserInfoAPI?.userId?.trim() || undefined,
+					email: providerConfigState.userInfoMap.fromUserInfoAPI?.email?.trim() || undefined,
+					emailVerified: providerConfigState.userInfoMap.fromUserInfoAPI?.emailVerified?.trim() || undefined,
 				},
 			},
 			authorizationEndpointQueryParams: normalizedAuthorizationEndpointQueryParams,
