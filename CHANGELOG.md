@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Adds Multitenancy support to the dashboard
 
+## [0.11.2] - 2024-05-23
+
+-   Fixes link to swaggerhub for create new user popup
+
 ## [0.11.1] - 2024-04-01
 
 -   Fixes a regression bug in user management dashboard that causes the add user button to not be visible when there is only one tenant.

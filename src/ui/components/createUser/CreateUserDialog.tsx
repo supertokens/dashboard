@@ -73,7 +73,7 @@ export default function CreateUserDialog({
 					padding="sm"
 					title="Warning"
 					type="primary">
-					Custom API overrides for the <code>consumeCodePOST</code> API won’t run as the API to create a user
+					Custom API overrides for the <code>consumeCodePOST</code> API won't run as the API to create a user
 					via the dashboard is different. However, custom functions override for <code>consumeCode</code> will
 					run.
 				</Alert>
@@ -88,7 +88,7 @@ export default function CreateUserDialog({
 					type="primary">
 					<ul>
 						<li>
-							Custom API overrides for the sign up post API won’t be run as the API to create a user via
+							Custom API overrides for the sign up post API won't be run as the API to create a user via
 							the dashboard is different. However, custom functions override for sign up will run.
 						</li>{" "}
 						<li>
@@ -96,7 +96,7 @@ export default function CreateUserDialog({
 							a user via the dashboard. If you want to include any custom form fields in the request,
 							please call the{" "}
 							<a
-								href="https://app.swaggerhub.com/apis/supertokens/FDI/1.18.0#/ThirdPartyEmailPassword%20Recipe/thirdPartyEmailPasswordsignUp"
+								href="https://app.swaggerhub.com/apis/supertokens/FDI/#/EmailPassword%20Recipe/signUp"
 								target="_blank"
 								rel="noreferrer">
 								sign up API manually
