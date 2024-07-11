@@ -51,7 +51,7 @@ export const EditPluginPropertyDialog = ({
 	const command = `curl --location --request PUT '${
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(window as any).connectionURI
-	}/recipe/multitenancy/tenant' \\
+	}/recipe/multitenancy/tenant/v2' \\
 ${commonHeaders.trim()}
 --data-raw '{
     "tenantId": "${tenantId}",

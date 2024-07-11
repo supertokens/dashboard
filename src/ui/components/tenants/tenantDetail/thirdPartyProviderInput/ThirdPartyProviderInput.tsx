@@ -13,17 +13,19 @@
  * under the License.
  */
 import { ReactComponent as InfoIcon } from "../../../../../assets/info-icon.svg";
+import InputDropdown from "../../../inputField/InputDropdown";
 import InputField, { InputFieldPropTypes } from "../../../inputField/InputField";
 import TooltipContainer from "../../../tooltip/tooltip";
 import "./thirdPartyProviderInput.scss";
 
 type ThirdPartyProviderInputProps = InputFieldPropTypes & {
+	options?: string[];
 	tooltip?: string;
 	minLabelWidth?: number;
 };
 
 export const ThirdPartyProviderInput = (props: ThirdPartyProviderInputProps) => {
-	const { label, ...rest } = props;
+	const { label, options, type, ...rest } = props;
 	return (
 		<div className="third-party-provider-input-container">
 			<ThirdPartyProviderInputLabel
@@ -34,7 +36,17 @@ export const ThirdPartyProviderInput = (props: ThirdPartyProviderInputProps) => 
 				minLabelWidth={props.minLabelWidth}
 			/>
 
-			<InputField {...rest} />
+			{options === undefined ? (
+				<InputField
+					type={type}
+					{...rest}
+				/>
+			) : (
+				<InputDropdown
+					options={options}
+					{...rest}
+				/>
+			)}
 		</div>
 	);
 };

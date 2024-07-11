@@ -112,7 +112,9 @@ export const ProviderInfoForm = ({
 		});
 	};
 
-	const handleFieldChange = (e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+	const handleFieldChange = (
+		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>
+	) => {
 		if (e.type === "change") {
 			setProviderConfigState({ ...providerConfigState, [e.target.name]: e.target.value });
 		}
@@ -149,7 +151,7 @@ export const ProviderInfoForm = ({
 	};
 
 	const handleThirdPartyIdSuffixChange = (
-		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
+		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>
 	) => {
 		if (e.type !== "change") {
 			return;
@@ -319,8 +321,8 @@ export const ProviderInfoForm = ({
 			const normalizedScopes = client.scope?.filter((scope) => scope && scope?.trim() !== "") ?? [];
 			return {
 				clientId: client.clientId.trim(),
-				clientType: client.clientType?.trim(),
-				clientSecret: client.clientSecret?.trim(),
+				clientType: client.clientType?.trim() || undefined,
+				clientSecret: client.clientSecret?.trim() || undefined,
 				scope: normalizedScopes,
 				additionalConfig: Object.fromEntries(
 					client.additionalConfig.filter(([key, _]: [string, string | null]) => key.trim().length > 0)
@@ -481,17 +483,45 @@ export const ProviderInfoForm = ({
 						minLabelWidth={120}
 					/>
 				)}
-				<ThirdPartyProviderInput
-					label="Name"
-					tooltip="The name of the provider."
-					type="text"
-					name="name"
-					error={errorState.name}
-					forceShowError
-					value={providerConfigState.name}
-					minLabelWidth={120}
-					handleChange={handleFieldChange}
-				/>
+				{providerConfigState.thirdPartyId.startsWith("boxy-saml") ? (
+					<ThirdPartyProviderInput
+						label="Name"
+						tooltip="The name of the provider."
+						type="text"
+						name="name"
+						options={[
+							"Microsoft Entra ID",
+							"Microsoft AD FS",
+							"Okta",
+							"Auth0",
+							"Google",
+							"OneLogin",
+							"PingOne",
+							"JumpCloud",
+							"Rippling",
+							"OpenID",
+							"SAML",
+						]}
+						error={errorState.name}
+						forceShowError
+						value={providerConfigState.name}
+						minLabelWidth={120}
+						handleChange={handleFieldChange}
+					/>
+				) : (
+					<ThirdPartyProviderInput
+						label="Name"
+						tooltip="The name of the provider."
+						type="text"
+						name="name"
+						error={errorState.name}
+						forceShowError
+						value={providerConfigState.name}
+						minLabelWidth={120}
+						handleChange={handleFieldChange}
+					/>
+				)}
+
 				<div className="custom-provider-divider" />
 				<div className="custom-provider-client-config">
 					<div className="custom-provider-client-config__header">Clients</div>
