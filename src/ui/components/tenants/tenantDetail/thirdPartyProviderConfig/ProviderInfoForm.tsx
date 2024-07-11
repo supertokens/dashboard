@@ -252,6 +252,13 @@ export const ProviderInfoForm = ({
 			});
 		}
 
+		if (!isKnownThirdPartyId(providerConfigState.thirdPartyId)) {
+			if (providerConfigState.name.trim() === "") {
+				setErrorState((prev) => ({ ...prev, name: "Name is required" }));
+				isValid = false;
+			}
+		}
+
 		if (
 			providerConfigState.oidcDiscoveryEndpoint !== undefined &&
 			providerConfigState.oidcDiscoveryEndpoint !== "" &&
@@ -357,7 +364,7 @@ export const ProviderInfoForm = ({
 
 		const normalizedProviderConfig = {
 			thirdPartyId: providerConfigState.thirdPartyId,
-			name: providerConfigState.name.trim(),
+			name: providerConfigState.name.trim() || undefined,
 			oidcDiscoveryEndpoint: providerConfigState.oidcDiscoveryEndpoint.trim() || undefined,
 			tokenEndpoint: providerConfigState.tokenEndpoint.trim() || undefined,
 			userInfoEndpoint: providerConfigState.userInfoEndpoint.trim() || undefined,
@@ -399,6 +406,11 @@ export const ProviderInfoForm = ({
 			setIsSaving(false);
 			window.scrollTo(0, 0);
 		}
+	};
+
+	const isKnownThirdPartyId = (thirdPartyId: string) => {
+		if (thirdPartyId.startsWith("boxy-saml")) return true;
+		return IN_BUILT_THIRD_PARTY_PROVIDERS.some((provider) => thirdPartyId.startsWith(provider.id));
 	};
 
 	return (
@@ -518,6 +530,7 @@ export const ProviderInfoForm = ({
 						value={providerConfigState.name}
 						minLabelWidth={120}
 						handleChange={handleFieldChange}
+						isRequired={!isKnownThirdPartyId(providerConfigState.thirdPartyId)}
 					/>
 				)}
 
