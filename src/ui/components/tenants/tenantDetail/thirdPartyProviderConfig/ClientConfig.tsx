@@ -61,12 +61,17 @@ export const ClientConfig = ({
 		key: string,
 		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>
 	) => {
+		let found = false;
 		const newAdditionalConfig: [string, string | null][] = client.additionalConfig.map(([k, v]) => {
 			if (k === key) {
+				found = true;
 				return [k, e.target.value];
 			}
 			return [k, v];
 		});
+		if (!found) {
+			newAdditionalConfig.push([key, e.target.value]);
+		}
 		setClient({ ...client, additionalConfig: newAdditionalConfig });
 	};
 
