@@ -499,7 +499,6 @@ export const ProviderInfoForm = ({
 							"PingOne",
 							"JumpCloud",
 							"Rippling",
-							"OpenID",
 							"SAML",
 						]}
 						error={errorState.name}
