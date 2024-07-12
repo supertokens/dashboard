@@ -16,8 +16,8 @@ import { useContext, useState } from "react";
 import { useUpdateFirstFactorService, useUpdateRequiredSecondaryFactorService } from "../../../../api/tenants";
 import { ReactComponent as ErrorIcon } from "../../../../assets/form-field-error-icon.svg";
 import { ReactComponent as InfoIcon } from "../../../../assets/info-icon.svg";
-import { FIRST_FACTOR_IDS, FactorIds, SECONDARY_FACTOR_IDS } from "../../../../constants";
-import { doesTenantHasPasswordlessEnabled, getImageUrl } from "../../../../utils";
+import { FIRST_FACTOR_IDS, SECONDARY_FACTOR_IDS } from "../../../../constants";
+import { getImageUrl } from "../../../../utils";
 import { PopupContentContext } from "../../../contexts/PopupContentContext";
 import { ErrorBlock } from "../../errorBlock/ErrorBlock";
 import { Toggle } from "../../toggle/Toggle";
@@ -30,10 +30,6 @@ export const LoginMethodsSection = () => {
 	const [mfaError, setMfaError] = useState<null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN">(
 		null
 	);
-
-	const doesTenantHasEmailPasswordAndPasswordlessEnabled =
-		tenantInfo.firstFactors?.includes(FactorIds.EMAILPASSWORD) &&
-		doesTenantHasPasswordlessEnabled(tenantInfo.firstFactors);
 
 	return (
 		<>
@@ -86,9 +82,8 @@ export const LoginMethodsSection = () => {
 				)}
 				{mfaError === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" && (
 					<ErrorBlock className="tenant-detail__factors-error-block">
-						Setting secondary factors might not take effect as <b>getMFARequirementsForAuth</b> has been
-						overridden in the SDK. To be able to modify the secondary factors from the UI you would need to
-						remove the custom function that you have added.
+						Please note that the MFA functions are overridden in the SDK and the required secondary factors
+						settings will be based on the overridden logic.
 					</ErrorBlock>
 				)}
 				<div className="tenant-detail__factors-container">
@@ -164,11 +159,11 @@ const LoginFactor = ({
 						throw new Error(res.status);
 					}
 				} else {
-					setError(null);
-				}
-
-				if (res.status === "OK" && res.isMFARequirementsForAuthOverridden) {
-					setMfaError!("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
+					if (res.isMFARequirementsForAuthOverridden) {
+						setMfaError!("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
+					} else {
+						setError(null);
+					}
 				}
 
 				// If this is not a MFA related error then clear the error
