@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.12.0]
 
--   Adds Multi-tenancy support to the dashboard
+-   Adds Multitenancy support to the dashboard
 
 ## [0.11.2] - 2024-05-23
 
