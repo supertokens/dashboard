@@ -133,7 +133,7 @@ textarea.input-field {
 
 .input-dropdown-options {
 	position: absolute;
-	width: fit-content;
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	top: 44px;

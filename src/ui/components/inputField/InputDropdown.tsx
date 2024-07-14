@@ -102,7 +102,7 @@ const InputDropdown: React.FC<InputDropdownPropTypes> = (props) => {
 					autoFocus={props.autofocus}
 					onFocus={() => setIsFocused(true)}
 					onBlur={() => {
-						setTimeout(() => setIsFocused(false), 100);
+						setTimeout(() => setIsFocused(false), 200);
 					}}
 					className={`input-dropdown text-small text-black input-field ${
 						showError ? "input-field-error-state" : ""
