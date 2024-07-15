@@ -323,7 +323,11 @@ export const ProviderInfoForm = ({
 		}
 
 		const normalizedProviderConfigClients = providerConfigState.clients?.map((client) => {
-			const normalizedScopes = client.scope?.filter((scope) => scope && scope?.trim() !== "") ?? [];
+			let normalizedScopes: string[] | undefined =
+				client.scope?.filter((scope) => scope && scope?.trim() !== "") ?? [];
+			if (normalizedScopes.length === 0) {
+				normalizedScopes = undefined;
+			}
 			return {
 				clientId: client.clientId.trim(),
 				clientType: client.clientType?.trim() || undefined,
