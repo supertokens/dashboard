@@ -590,7 +590,7 @@ export const ProviderInfoForm = ({
 					name="authorizationEndpoint"
 					value={
 						providerConfig?.isGetAuthorisationRedirectUrlOverridden
-							? "Custom Override"
+							? "Cannot edit this because you have provided a custom override"
 							: providerConfigState.authorizationEndpoint
 					}
 					handleChange={handleFieldChange}
@@ -624,7 +624,7 @@ export const ProviderInfoForm = ({
 					forceShowError
 					value={
 						providerConfig?.isExchangeAuthCodeForOAuthTokensOverridden
-							? "Custom Override"
+							? "Cannot edit this because you have provided a custom override"
 							: providerConfigState.tokenEndpoint
 					}
 					handleChange={handleFieldChange}
@@ -659,7 +659,7 @@ export const ProviderInfoForm = ({
 					forceShowError
 					value={
 						providerConfig?.isGetUserInfoOverridden
-							? "Custom Override"
+							? "Cannot edit this because you have provided a custom override"
 							: providerConfigState.userInfoEndpoint
 					}
 					handleChange={handleFieldChange}
@@ -843,7 +843,7 @@ const UserInfoMap = ({
 					name={`userId-${name}`}
 					minLabelWidth={130}
 					disabled={isOverridden}
-					value={isOverridden ? "Custom Override" : value.userId}
+					value={isOverridden ? "Cannot edit this because you have provided a custom override" : value.userId}
 					handleChange={(e) =>
 						handleChange({
 							name,
@@ -859,7 +859,7 @@ const UserInfoMap = ({
 					name={`email-${name}`}
 					disabled={isOverridden}
 					minLabelWidth={130}
-					value={isOverridden ? "Custom Override" : value.email}
+					value={isOverridden ? "Cannot edit this because you have provided a custom override" : value.email}
 					handleChange={(e) =>
 						handleChange({
 							name,
@@ -875,7 +875,11 @@ const UserInfoMap = ({
 					name="emailVerified"
 					disabled={isOverridden}
 					minLabelWidth={130}
-					value={isOverridden ? "Custom Override" : value.emailVerified}
+					value={
+						isOverridden
+							? "Cannot edit this because you have provided a custom override"
+							: value.emailVerified
+					}
 					handleChange={(e) =>
 						handleChange({
 							name,

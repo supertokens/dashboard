@@ -48,7 +48,11 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 								className="key-value-input-container__field"
 								key={index}>
 								<ThirdPartyProviderInput
-									value={isOverridden ? "Custom Override" : pair[0]}
+									value={
+										isOverridden
+											? "Cannot edit this because you have provided a custom override"
+											: pair[0]
+									}
 									disabled={fixedFields?.includes(pair[0]) || isOverridden}
 									handleChange={(e) => {
 										const newValue: [string, string | null][] = [
@@ -63,7 +67,11 @@ export const KeyValueInput = (props: KeyValueInputProps) => {
 									type="text"
 								/>
 								<ThirdPartyProviderInput
-									value={isOverridden ? "Custom Override" : pair[1] ?? ""}
+									value={
+										isOverridden
+											? "Cannot edit this because you have provided a custom override"
+											: pair[1] ?? ""
+									}
 									disabled={fixedFields?.includes(pair[0]) || isOverridden}
 									handleChange={(e) => {
 										const newValue: [string, string | null][] = [

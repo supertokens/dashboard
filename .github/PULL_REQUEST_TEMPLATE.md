@@ -131,15 +131,17 @@
 -   [ ] Tenant Management
     -   [ ] Tenant Listing page
         -   [ ] There should be only one tenant by default (public) and the login methods should be same as what is initialised in the SDK
-            -   [ ] Initialise only thirdpartyemailpassword recipe and check if only emailpassword and thirdparty is shown for the public tenant
+            -   [ ] Initialise only thirdparty and emailpassword recipe and check if only emailpassword and thirdparty is shown for the public tenant
+            -   [ ] Initialise passwordless with different contact methods and flow type and ensure the factor toggles are reflected as per what is initialised
         -   [ ] Create a new tenant
             -   [ ] Should display an error message if multitenancy license is not added to the core
             -   [ ] Should be able to create tenant once the multitenancy license is added to the core
-            -   [ ] Should not be able to create tenants with some stop words like `recipe` or `config`
+            -   [ ] Should not be able to create tenants with some stop words like `recipe`, `config`, `hello`, `appid-t1`
             -   [ ] Should not be able to create tenants with special characters in the name
             -   [ ] When creating a tenant with capital letters, it should automatically convert to lowercase once the tenant is created
             -   [ ] For newly created tenant, no recipes should be enabled by default
             -   [ ] Creating more than 10 tenants should show pagination
+            -   [ ] Creating existing tenant id should show an error
         -   [ ] Tenant search and pagination
             -   [ ] Should be able to search for tenants
             -   [ ] Tenant search should be case insensitive
@@ -150,12 +152,12 @@
             -   [ ] The whole tenant row must be clickable and on click should take to tenant details page
             -   [ ] Create some users for the tenant and ensure user count matches
             -   [ ] See users button must take you to users listing page with the tenant selected on a new window
+            -   [ ] Should see a warning when no login methods are enabled
             -   [ ] Enabled login methods
                 -   [ ] Should be able to toggle only login methods based on the initialised recipes
-                    -   [ ] if only thirdpartyemailpassword recipe is initialised, should not be able to turn on any of the passwordless login methods (otp-phone, otp-email, etc)
+                    -   [ ] if only thirdparty and emailpassword recipe is initialised, should not be able to turn on any of the passwordless login methods (otp-phone, otp-email, etc)
                     -   [ ] if passwordless is initialised with contact method email only, should not be able to turn on otp-phone, link-phone
                 -   [ ] should be able to turn off all login methods
-                -   [ ] if we turn on emailpassword and a passwordless login method, a warning should be shown that we do not have a pre-built UI for this yet
             -   [ ] Secondary login methods
                 -   [ ] With mfa not initialised, should not be able to turn on any secondary login methods
                 -   [ ] Should be able to toggle only login methods based on initialised recipes
