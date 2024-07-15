@@ -15,7 +15,7 @@
 
 import React, { MutableRefObject, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useGetTenants } from "../../../api/tenants/list";
+import { useListTenantsService } from "../../../api/tenants";
 import useDeleteUserService from "../../../api/user/delete";
 import useVerifyEmailService from "../../../api/user/email/verify";
 import useVerifyUserTokenService from "../../../api/user/email/verify/token";
@@ -46,8 +46,8 @@ import UsersListTable, {
 } from "../../components/usersListTable/UsersListTable";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useTenantsListContext } from "../../contexts/TenantsListContext";
-import { EmailVerificationStatus, User } from "./types";
 import "./UsersList.scss";
+import { EmailVerificationStatus, User } from "./types";
 
 type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined>;
 
@@ -83,7 +83,7 @@ export const UsersList: React.FC<UserListProps> = ({
 
 	const { fetchUsers } = useFetchUsersService();
 	const { fetchCount } = useFetchCount();
-	const { fetchTenants } = useGetTenants();
+	const { fetchTenants } = useListTenantsService();
 	const fetchData = useFetchData();
 	const { setTenantsListToStore, tenantsListFromStore, getSelectedTenant, setSelectedTenant } =
 		useTenantsListContext();

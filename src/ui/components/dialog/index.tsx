@@ -13,8 +13,10 @@
  * under the License.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
+import { ReactComponent as ErrorIcon } from "../../../assets/form-field-error-icon.svg";
+
 import "./dialog.scss";
 
 type DialogCommonProps = {
@@ -23,13 +25,30 @@ type DialogCommonProps = {
 };
 
 type DialogProps = DialogCommonProps & {
-	title: string;
+	title?: string;
+	/** Determines whether the dialog should be closed when user clicks on the overlay, true by default */
 	closeOnOverlayClick?: boolean;
+	isError?: boolean;
 	onCloseDialog: () => void;
+	/** Determines whether body scroll should be locked when dialog is open, true by default*/
+	lockScroll?: boolean;
 };
 
+function addNoScrollToBody() {
+	document.body.classList.add("no-scroll");
+}
+function removeNoScrollFromBody() {
+	document.body.classList.remove("no-scroll");
+}
+
 function Dialog(props: DialogProps) {
-	const { children, className = "", closeOnOverlayClick = false, onCloseDialog, title } = props;
+	const { children, className = "", closeOnOverlayClick = true, onCloseDialog, title, lockScroll = true } = props;
+
+	useEffect(() => {
+		if (!lockScroll) return;
+		addNoScrollToBody();
+		return removeNoScrollFromBody;
+	}, [lockScroll]);
 
 	return (
 		<>
@@ -42,9 +61,15 @@ function Dialog(props: DialogProps) {
 				}}
 			/>
 			<div className={`dialog-container ${className}`}>
-				<div className="dialog-header">
-					{title} <CloseIcon onClick={onCloseDialog} />
-				</div>
+				{title && (
+					<div className="dialog-header">
+						<div className="dialog-title">
+							{props.isError && <ErrorIcon />}
+							{title}
+						</div>
+						<CloseIcon onClick={onCloseDialog} />
+					</div>
+				)}
 				{children}
 			</div>
 		</>
@@ -55,6 +80,12 @@ function DialogContent(props: DialogCommonProps) {
 	const { children, className = "" } = props;
 
 	return <div className={`dialog-content ${className}`}>{children}</div>;
+}
+
+function DialogConfirmText(props: DialogCommonProps) {
+	const { children, className = "" } = props;
+
+	return <p className={`dialog-confirm-text ${className}`}>{children}</p>;
 }
 
 type DialogFooterProps = DialogCommonProps & {
@@ -75,4 +106,4 @@ function DialogFooter(props: DialogFooterProps) {
 	return <div className={`dialog-footer ${flexDirection} ${justifyContent} ${border} ${className}`}>{children}</div>;
 }
 
-export { Dialog, DialogContent, DialogFooter };
+export { Dialog, DialogConfirmText, DialogContent, DialogFooter };

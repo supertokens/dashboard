@@ -17,6 +17,24 @@
 	display: flex;
 	flex-flow: column;
 	margin-bottom: 24px;
+	position: relative;
+}
+
+.input-field-prefix {
+	padding: 9px 5px 9px 12px;
+	color: var(--color-disabled);
+	background-color: var(--color-input-field-prefix-bg);
+	border-right: 1px solid transparent;
+	font-size: 13px;
+	line-height: 21px;
+}
+
+.input-field-prefix-focused {
+	border-right-color: var(--color-primary);
+}
+
+.input-field-prefix-error {
+	border-right-color: var(--color-error);
 }
 
 .input-label {
@@ -36,6 +54,7 @@
 	border: 1px solid rgb(224, 224, 224);
 	border-radius: 6px;
 	outline: none;
+	overflow: hidden;
 }
 
 .input-field {
@@ -46,18 +65,35 @@
 	border-radius: 6px;
 	border: none;
 	outline: none;
-	background-color: rgb(250, 250, 250);
-}
-
-.input-field:focus,
-.input-field:hover {
 	background-color: white;
 }
 
+textarea.input-field {
+	resize: vertical;
+	min-height: 8em;
+	line-height: 1.8em;
+}
+
+.input-field-small {
+	padding: 8px;
+	font-size: 13px !important;
+	height: 24px;
+}
+
+.input-field:disabled {
+	color: var(--color-disabled);
+	background-color: var(--color-input-unfocused);
+}
+
 .input-field-inset-focused,
-.input-field-inset:active {
+.input-field-inset:active .input-field:not(:disabled) {
 	border-color: var(--color-primary);
 	box-shadow: 0px 0px 0px 2px var(--color-primary-opacity-40);
+}
+
+.input-field-inset-with-prefix.input-field-inset:active .input-field:not(:disabled) {
+	border-color: initial;
+	box-shadow: initial;
 }
 
 .input-field-inset-error-state,
@@ -87,4 +123,33 @@
 
 .input-field-error-text {
 	line-height: normal !important;
+}
+
+.input-error-prefix-tooltip {
+	position: absolute;
+	top: 20%;
+	left: -24px;
+}
+
+.input-dropdown-options {
+	position: absolute;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	top: 44px;
+	left: 0;
+	z-index: 1000;
+	border-radius: 6px;
+	border: none;
+	outline: none;
+	background-color: white;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.input-dropdown-option {
+	padding: 12px 15px 12px;
+	cursor: pointer;
+	font-size: 13px;
+}
+.input-dropdown-option:hover {
+	background-color: var(--color-input-field-prefix-bg);
 }

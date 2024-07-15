@@ -42,6 +42,9 @@
 		span {
 			color: #ed344e;
 			font-weight: bold;
+			word-break: break-all;
+			hyphens: auto;
+			overflow-wrap: anywhere;
 		}
 	}
 }

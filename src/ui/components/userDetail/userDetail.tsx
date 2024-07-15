@@ -14,7 +14,7 @@
  */
 
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Tenant } from "../../../api/tenants/list";
+import { Tenant } from "../../../api/tenants/types";
 import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from "../../../api/user";
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
@@ -24,6 +24,7 @@ import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
 import { getMissingTenantIdModalProps } from "../common/modals/TenantIdModals";
+import { Loader, LoaderOverlay } from "../loader/Loader";
 import { UserDetailContextProvider } from "./context/UserDetailContext";
 import { LoginMethods } from "./loginMethods/LoginMethods";
 import "./tenantList/UserTenantsList.scss";
@@ -180,11 +181,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 	}, []);
 
 	if (userDetail === undefined || isLoading) {
-		return (
-			<div className="user-detail-page-loader">
-				<div className="loader"></div>
-			</div>
-		);
+		return <Loader />;
 	}
 
 	if (userDetail.status === "NO_USER_FOUND_ERROR") {
@@ -230,13 +227,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 			func={userFunctions}
 			userId={user}>
 			<div className="user-detail">
-				{shouldShowLoadingOverlay && (
-					<div className="full-screen-loading-overlay">
-						<div className="loader-container">
-							<div className="loader"></div>
-						</div>
-					</div>
-				)}
+				{shouldShowLoadingOverlay && <LoaderOverlay />}
 				<div className="user-detail__navigation">
 					<button
 						className="button flat"

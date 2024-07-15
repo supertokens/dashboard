@@ -4,6 +4,7 @@
 	.main-content {
 		margin-top: 44px;
 		margin-left: var(--sidebar-width);
+		padding: 0 20px;
 		min-height: 100vh;
 	}
 }
@@ -12,6 +13,7 @@
 	.main-layout-container {
 		.main-content {
 			margin-left: 0;
+			padding: 0;
 		}
 	}
 }

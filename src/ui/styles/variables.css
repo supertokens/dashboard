@@ -36,18 +36,36 @@ body {
 	--color-error-bg: rgb(253, 240, 241);
 	--color-info-shadow: rgba(158, 37, 38, 0.16);
 	--color-info-bg: rgb(235, 245, 255);
+	--color-warn-bg: rgb(255, 229, 172);
 	--color-success-bg: rgb(241, 250, 247);
 	--color-success-shadow: rgba(4, 84, 62, 0.16);
 	--color-link: rgb(0, 122, 255);
 	--color-input-unfocused: rgb(250, 250, 250);
 	--color-badge-bg: rgba(255, 242, 202);
-
+	--color-info-pill-bg: rgba(0, 98, 225);
+	--color-toggle-active-bg: rgb(29, 201, 160);
+	--color-toggle-inactive-bg: rgb(209, 209, 214);
+	--color-trash-button-hover-bg: rgba(237, 52, 78, 0.15);
+	--color-factor-bg: rgb(250, 250, 250);
+	--color-third-party-button-container-bg: rgb(250, 250, 250);
+	--color-third-party-button-container-bg-hover: rgb(255, 245, 235);
+	--color-third-party-button-bg: rgb(222, 228, 232);
+	--color-client-config-header-bg: rgb(250, 250, 250);
+	--color-input-field-prefix-bg: rgb(250, 250, 250);
+	--color-error-block-bg: rgba(255, 213, 213);
+	--color-info-box-bg: rgba(246, 246, 246);
+	--color-config-bg: rgba(240, 244, 255);
+	--color-config-name-bg: rgba(147, 176, 255, 0.33);
+	--color-config-action-hover-bg: rgba(0, 122, 255, 0.2);
 	/* Border Colors */
 	--color-border: rgb(229, 229, 229);
 	--color-border-error: rgb(239, 121, 119);
 	--color-border-info: rgb(151, 189, 250);
+	--color-border-warn: rgb(255, 183, 29);
 	--color-border-success: rgb(73, 200, 153);
 	--color-border-command: rgb(221, 221, 221);
+	--color-border-error-block: rgba(255, 18, 18, 1);
+	--color-border-icon-button: rgb(227, 227, 227);
 
 	/* Text Colors */
 	--color-secondary-text: rgb(110, 106, 101); /* Below title, table headers, placeholders etc */
@@ -57,6 +75,11 @@ body {
 	--color-link: rgb(0, 118, 255);
 	--color-command: rgb(214, 80, 120);
 	--color-badge: rgba(220, 141, 13);
+	--color-required: rgb(237, 52, 78);
+	--color-disabled: rgb(125, 125, 125);
+	--color-transparent-button: rgb(136, 136, 136);
+	--color-info-box-header: rgb(83, 83, 83);
+	--color-config-property-label: rgba(74, 91, 135, 1);
 
 	/* Recipe Pill Colors */
 	--color-emailpassword-bg: rgb(221, 252, 247);
@@ -89,6 +112,9 @@ body {
 	--color-button-error-disabled: rgb(221, 221, 221);
 	--color-button-error-hover: rgb(222, 35, 61);
 	--color-button-error-shadow: rgba(237, 52, 78, 0.16);
+	--color-trash-button-hover: rgb(237, 52, 78);
+	--color-trash-button: rgb(141, 141, 141);
+	--color-third-party-button: rgba(20, 52, 88, 1);
 
 	/* Z-index value for different of popup element */
 	--z-index-inline-popup: 1;

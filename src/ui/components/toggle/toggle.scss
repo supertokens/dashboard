@@ -1,0 +1,101 @@
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.toggle-container {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.toggle-label {
+	color: var(--color-secondary-text);
+	font-weight: 500;
+}
+
+input[type="checkbox"] {
+	&.toggle {
+		opacity: 0;
+		position: absolute;
+		& + label {
+			cursor: pointer;
+			position: relative;
+			display: inline-block;
+			user-select: none;
+			-moz-transition: 0.4s ease;
+			-o-transition: 0.4s ease;
+			-webkit-transition: 0.4s ease;
+			transition: 0.4s ease;
+			-webkit-tap-highlight-color: transparent;
+			height: 20px;
+			width: 40px;
+			border-radius: 60px;
+			&:before {
+				content: "";
+				position: absolute;
+				display: block;
+				background: var(--color-toggle-inactive-bg);
+				-moz-transition: 0.2s cubic-bezier(0.24, 0, 0.5, 1);
+				-o-transition: 0.2s cubic-bezier(0.24, 0, 0.5, 1);
+				-webkit-transition: 0.2s cubic-bezier(0.24, 0, 0.5, 1);
+				transition: 0.2s cubic-bezier(0.24, 0, 0.5, 1);
+				height: 20px;
+				width: 40px;
+				top: 0;
+				left: 0;
+				border-radius: 30px;
+			}
+			&:after {
+				content: "";
+				position: absolute;
+				display: block;
+				-moz-transition: 0.35s cubic-bezier(0.54, 1.6, 0.5, 1);
+				-o-transition: 0.35s cubic-bezier(0.54, 1.6, 0.5, 1);
+				-webkit-transition: 0.35s cubic-bezier(0.54, 1.6, 0.5, 1);
+				transition: 0.35s cubic-bezier(0.54, 1.6, 0.5, 1);
+				background: white;
+				height: 16px;
+				width: 16px;
+				top: 2px;
+				left: 2px;
+				border-radius: 60px;
+			}
+		}
+		&:checked {
+			& + label {
+				&:before {
+					background: var(--color-toggle-active-bg);
+					-moz-transition: width 0.2s cubic-bezier(0, 0, 0, 0.1);
+					-o-transition: width 0.2s cubic-bezier(0, 0, 0, 0.1);
+					-webkit-transition: width 0.2s cubic-bezier(0, 0, 0, 0.1);
+					transition: width, background 0.2s cubic-bezier(0, 0, 0, 0.1);
+				}
+				&:after {
+					left: 22px;
+				}
+			}
+		}
+		&:disabled {
+			& + label {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+		}
+		&:focus-visible {
+			& + label {
+				box-shadow: 0 0 0 2px var(--color-primary);
+			}
+		}
+	}
+}

@@ -16,6 +16,7 @@
 import { Link, useLocation } from "react-router-dom";
 
 import { ReactComponent as PermissionsIcon } from "../../../assets/roles-and-permissions.svg";
+import { ReactComponent as TenantManagementIcon } from "../../../assets/tenant-management.svg";
 import { ReactComponent as UserManagementIcon } from "../../../assets/user-managment.svg";
 
 import "./sidebar.scss";
@@ -32,6 +33,12 @@ const sidebarItems = [
 		title: "Roles and Permissions",
 		href: "/roles",
 		icon: <PermissionsIcon />,
+	},
+	{
+		id: "tenant-management",
+		title: "Tenant Management",
+		href: "/tenants",
+		icon: <TenantManagementIcon />,
 	},
 ];
 

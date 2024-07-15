@@ -121,11 +121,72 @@
         -   [ ] Test user-defined custom email and phoneNumber validators to ensure they are working properly.
     -   [ ] Test AccountLinking by creating an `emailpassword` and `passwordless` user with the same email and make sure that the accounts are linked.
 -   [ ] User details
+
     -   [ ] Can edit email of non third party login method if there is only 1 login method for the user
     -   [ ] Can edit email of non third party login method if there are >= 2 login methods for the user
     -   [ ] Deleting a non primary login method for a user only deletes that login method, and not the whole user
     -   [ ] Deleting a primary login method for a user deletes only that primary login method and not the user
     -   [ ] Deleting a user deletes all the login methods for that user as well
+
+-   [ ] Tenant Management
+    -   [ ] Tenant Listing page
+        -   [ ] There should be only one tenant by default (public) and the login methods should be same as what is initialised in the SDK
+            -   [ ] Initialise only thirdparty and emailpassword recipe and check if only emailpassword and thirdparty is shown for the public tenant
+            -   [ ] Initialise passwordless with different contact methods and flow type and ensure the factor toggles are reflected as per what is initialised
+        -   [ ] Create a new tenant
+            -   [ ] Should display an error message if multitenancy license is not added to the core
+            -   [ ] Should be able to create tenant once the multitenancy license is added to the core
+            -   [ ] Should not be able to create tenants with some stop words like `recipe`, `config`, `hello`, `appid-t1`
+            -   [ ] Should not be able to create tenants with special characters in the name
+            -   [ ] When creating a tenant with capital letters, it should automatically convert to lowercase once the tenant is created
+            -   [ ] For newly created tenant, no recipes should be enabled by default
+            -   [ ] Creating more than 10 tenants should show pagination
+            -   [ ] Creating existing tenant id should show an error
+        -   [ ] Tenant search and pagination
+            -   [ ] Should be able to search for tenants
+            -   [ ] Tenant search should be case insensitive
+            -   [ ] Tenant search should match if the sub-string is in the middle of the tenant name
+            -   [ ] When tenant search matches with more than 10 tenants, pagination should still be active
+            -   [ ] When there is a search term, click on a tenant and then come back to the tenant listing page. The search term should remain.
+        -   [ ] Tenant details
+            -   [ ] The whole tenant row must be clickable and on click should take to tenant details page
+            -   [ ] Create some users for the tenant and ensure user count matches
+            -   [ ] See users button must take you to users listing page with the tenant selected on a new window
+            -   [ ] Should see a warning when no login methods are enabled
+            -   [ ] Enabled login methods
+                -   [ ] Should be able to toggle only login methods based on the initialised recipes
+                    -   [ ] if only thirdparty and emailpassword recipe is initialised, should not be able to turn on any of the passwordless login methods (otp-phone, otp-email, etc)
+                    -   [ ] if passwordless is initialised with contact method email only, should not be able to turn on otp-phone, link-phone
+                -   [ ] should be able to turn off all login methods
+            -   [ ] Secondary login methods
+                -   [ ] With mfa not initialised, should not be able to turn on any secondary login methods
+                -   [ ] Should be able to toggle only login methods based on initialised recipes
+                    -   [ ] If passwordless is not initialised, should not be able to turn on otp-phone
+                    -   [ ] If totp is not initialised, should not be able to turn on totp
+                    -   [ ] If passwordless is initialised with contact method email only, should not be able to turn on otp-phone
+                    -   [ ] Once all the recipes are initialised, should be able to turn on/off all the secondary login methods
+            -   [ ] Social/Enterprise logins
+                -   [ ] This section should not be visible if thirdparty login method is turned off
+                -   [ ] This section should be visible if thirdparty login method is turned on
+                -   [ ] With static provider list
+                    -   [ ] The static provider list should show up by default for all the tenants
+                    -   [ ] Should be able to delete third party providers from static list
+                    -   [ ] When deleting the last one, thirdparty should get disabled
+                    -   [ ] When there are no providers for a tenant, when turning on thirdparty login method, a popup to add a third party provider should be shown
+                -   [ ] For creating Enterprise providers, there should be an additional step where the user has to provide directoryId or okta domain, etc. When a valid value is entered, the OIDC endpoint and other endpoints should be populated automatically.
+                    -   [ ] If directoryId or okta domain is invalid, appropriate error message should be shown
+                -   [ ] In the thirdparty form, all the fields should be editable and persist correctly. Change every field, save and then go into edit mode again and check if the change has been persisted correctly.
+                -   [ ] Should be able to add all built-in providers. When adding provider, check relavant fields are already populated, like OIDC endpoint, authorization endpoint, token endpoint, etc.
+                -   [ ] Clients list
+                    -   [ ] Should be able to add / remove clients in any order
+                    -   [ ] Client Type should be required whenever there are more than 1 clients
+                    -   [ ] Minimum one client should be required
+                    -   [ ] Should not be able to save when required fields are not filled
+                -   [ ] Fake email generation
+                    -   [ ] Should ask for fake email generation when `Sometimes` option is selected for `How often does the provider return email?`
+                    -   [ ] Should not ask for fake email generation when `Always` option is selected for `How often does the provider return email?`
+                    -   [ ] Should not ask for fake email generation when `Never` option is selected for `How often does the provider return email?`
+                        -   [ ] Select never option and save the provider. Come back into edit mode of this, we should see that the option is `Sometimes` and the fake email generation is set to true
 
 ## Documentation changes
 

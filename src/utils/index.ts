@@ -13,7 +13,8 @@
  * under the License.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { FactorIds, HTTPStatusCodes, StorageKeys } from "../constants";
 import { getAccessDeniedEvent } from "../events/accessDenied";
 import NetworkManager from "../services/network";
@@ -304,6 +305,37 @@ export const getSelectedTenantId = (): string | undefined => {
 	return localStorageHandler.getItem(StorageKeys.TENANT_ID);
 };
 
+export const useQuery = () => {
+	const { search } = useLocation();
+
+	return useMemo(() => new URLSearchParams(search), [search]);
+};
+
+export const debounce = <F extends (...args: any[]) => any>(func: F, waitFor: number) => {
+	let timeout: NodeJS.Timeout | null = null;
+
+	return (...args: Parameters<F>): Promise<ReturnType<F>> =>
+		new Promise((resolve) => {
+			if (timeout) {
+				clearTimeout(timeout);
+			}
+
+			timeout = setTimeout(() => resolve(func(...args)), waitFor);
+		});
+};
+
+export const isValidHttpUrl = (urlToBeValidated: string) => {
+	let url;
+
+	try {
+		url = new URL(urlToBeValidated);
+	} catch (_) {
+		return false;
+	}
+
+	// To ensure that the URL is an HTTP URL
+	return url.protocol === "http:" || url.protocol === "https:";
+};
 export const doesTenantHasPasswordlessEnabled = (tenantFirstFactors: string[]): boolean => {
 	return (
 		tenantFirstFactors.includes(FactorIds.OTP_EMAIL) ||
@@ -312,3 +344,16 @@ export const doesTenantHasPasswordlessEnabled = (tenantFirstFactors: string[]): 
 		tenantFirstFactors.includes(FactorIds.LINK_PHONE)
 	);
 };
+
+export function usePrevious<T>(value: T) {
+	// create a new reference
+	const ref = useRef<T>();
+
+	// store current value in ref
+	useEffect(() => {
+		ref.current = value;
+	}, [value]); // only re-run if value changes
+
+	// return previous value (happens before update in useEffect above)
+	return ref.current;
+}

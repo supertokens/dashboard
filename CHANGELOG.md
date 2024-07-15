@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.12.0]
+
+-   Adds Multitenancy support to the dashboard
+
 ## [0.11.2] - 2024-05-23
 
 -   Fixes link to swaggerhub for create new user popup

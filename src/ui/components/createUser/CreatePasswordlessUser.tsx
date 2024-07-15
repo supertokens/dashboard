@@ -14,7 +14,7 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { PasswordlessContactMethod } from "../../../api/tenants/list";
+import { PasswordlessContactMethod } from "../../../api/tenants/types";
 import useCreateUserService, { CreatePasswordlessUserPayload } from "../../../api/user/create";
 import { getApiUrl, getImageUrl } from "../../../utils";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
