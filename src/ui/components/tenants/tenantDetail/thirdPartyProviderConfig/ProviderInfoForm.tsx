@@ -112,9 +112,7 @@ export const ProviderInfoForm = ({
 		});
 	};
 
-	const handleFieldChange = (
-		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>
-	) => {
+	const handleFieldChange = (e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
 		if (e.type === "change") {
 			setProviderConfigState({ ...providerConfigState, [e.target.name]: e.target.value });
 		}
@@ -151,7 +149,7 @@ export const ProviderInfoForm = ({
 	};
 
 	const handleThirdPartyIdSuffixChange = (
-		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>
+		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
 	) => {
 		if (e.type !== "change") {
 			return;

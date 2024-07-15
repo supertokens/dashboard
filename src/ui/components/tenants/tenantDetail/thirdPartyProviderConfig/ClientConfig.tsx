@@ -50,7 +50,7 @@ export const ClientConfig = ({
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const handleClientFieldChange = (
 		name: string,
-		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>
+		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
 	) => {
 		if (e.type === "change") {
 			setClient({ ...client, [name]: e.target.value });
@@ -59,7 +59,7 @@ export const ClientConfig = ({
 
 	const handleAdditionalConfigChange = (
 		key: string,
-		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>
+		e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
 	) => {
 		let found = false;
 		const newAdditionalConfig: [string, string | null][] = client.additionalConfig.map(([k, v]) => {

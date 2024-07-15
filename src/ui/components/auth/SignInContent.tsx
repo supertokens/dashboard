@@ -116,19 +116,13 @@ const SignInContent: React.FC<SignInContentProps> = ({
 	};
 
 	const handleEmailFieldChange = (
-		e:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.ChangeEvent<HTMLTextAreaElement>
-			| React.ChangeEvent<HTMLSelectElement>
+		e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
 	) => {
 		setEmail(e.target.value);
 	};
 
 	const handlePasswordFieldChange = (
-		e:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.ChangeEvent<HTMLTextAreaElement>
-			| React.ChangeEvent<HTMLSelectElement>
+		e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
 	) => {
 		setPassword(e.target.value);
 	};

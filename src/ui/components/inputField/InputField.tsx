@@ -32,12 +32,7 @@ export type InputFieldPropTypes = {
 	disabled?: boolean;
 	prefix?: string;
 	autofocus?: boolean;
-	handleChange: (
-		event:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.ChangeEvent<HTMLTextAreaElement>
-			| React.ChangeEvent<HTMLSelectElement>
-	) => void;
+	handleChange: (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void;
 	/** @default "bottom" */
 	errorPlacement?: "bottom" | "prefix-tooltip";
 };

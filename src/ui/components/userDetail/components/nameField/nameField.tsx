@@ -21,12 +21,7 @@ type Props = {
 	fieldName: "first_name" | "last_name";
 	label: string;
 	isEditing: boolean;
-	onChange: (
-		event:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.ChangeEvent<HTMLTextAreaElement>
-			| React.ChangeEvent<HTMLSelectElement>
-	) => void;
+	onChange: (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void;
 };
 
 export const UserDetailNameField: React.FC<Props> = ({ value, fieldName, label, isEditing, onChange }: Props) => {
