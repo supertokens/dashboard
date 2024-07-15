@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { getImageUrl } from "../../../utils";
 import TooltipContainer from "../tooltip/tooltip";
 
@@ -48,6 +48,8 @@ const InputDropdown: React.FC<InputDropdownPropTypes> = (props) => {
 	const [isFocused, setIsFocused] = useState<boolean>(false);
 	const [isTouched, setIsTouched] = useState(false);
 
+	const inputRef = useRef<HTMLInputElement>(null);
+
 	const onChange = useCallback(
 		(
 			event:
@@ -64,7 +66,13 @@ const InputDropdown: React.FC<InputDropdownPropTypes> = (props) => {
 	const showError = props.error && (isTouched || props.forceShowError);
 
 	return (
-		<div className="input-field-container">
+		<div
+			className="input-field-container"
+			onBlur={() => {
+				setTimeout(() => {
+					setIsFocused(false);
+				}, 100);
+			}}>
 			{props.label && (
 				<label
 					htmlFor={props.name}
@@ -86,26 +94,44 @@ const InputDropdown: React.FC<InputDropdownPropTypes> = (props) => {
 						{props.prefix}
 					</div>
 				)}
-				<select
+				<input
 					name={props.name}
 					id={props.name + "-text"}
 					onChange={onChange}
 					value={props.value}
 					autoFocus={props.autofocus}
 					onFocus={() => setIsFocused(true)}
-					onBlur={() => setIsFocused(false)}
-					className={`text-small text-black input-field ${showError ? "input-field-error-state" : ""} ${
-						props.size === "small" ? "input-field-small" : ""
-					}`}>
-					{props.options.map((option, index) => (
-						<option
-							key={index}
-							value={option}>
-							{option}
-						</option>
-					))}
-				</select>
+					onBlur={() => {
+						setTimeout(() => setIsFocused(false), 200);
+					}}
+					className={`input-dropdown text-small text-black input-field ${
+						showError ? "input-field-error-state" : ""
+					} ${props.size === "small" ? "input-field-small" : ""}`}
+					type="text"
+					ref={inputRef}
+				/>
 			</div>
+			{isFocused && (
+				<div className="input-dropdown-options">
+					{props.options.map((option, index) => (
+						<div
+							key={index}
+							className="input-dropdown-option"
+							onClick={() => {
+								if (inputRef.current) {
+									const syntheticChangeEvent = new Event("change", { bubbles: true });
+									Object.defineProperty(syntheticChangeEvent, "target", {
+										value: { value: option, name: props.name },
+										writable: true,
+									});
+									onChange(syntheticChangeEvent as unknown as React.ChangeEvent<HTMLInputElement>);
+								}
+							}}>
+							{option}
+						</div>
+					))}
+				</div>
+			)}
 			{showError && errorPlacement === "bottom" && (
 				<div className="input-field-error block-small block-error">
 					<img
