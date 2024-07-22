@@ -40,7 +40,7 @@ export type ProviderClientConfig = {
 	clientSecret?: string;
 	scope?: string[] | null;
 	forcePKCE?: boolean;
-	additionalConfig?: { [key: string]: string };
+	additionalConfig?: { [key: string]: any };
 };
 
 export type ProviderConfig = CommonProviderConfig & {

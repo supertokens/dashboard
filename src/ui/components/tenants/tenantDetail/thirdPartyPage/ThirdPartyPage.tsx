@@ -22,6 +22,7 @@ import { useTenantDetailContext } from "../TenantDetailContext";
 import { TenantDetailHeader } from "../TenantDetailHeader";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ProviderInfoForm } from "../thirdPartyProviderConfig/ProviderInfoForm";
+import { ProviderInfoFormForBoxy } from "../thirdPartyProviderConfig/ProviderInfoFormForBoxy";
 import { ThirdPartyProviderInput } from "../thirdPartyProviderInput/ThirdPartyProviderInput";
 import "./thirdPartyPage.scss";
 
@@ -109,6 +110,17 @@ const ProviderInfo = ({
 		return <Loader />;
 	}
 
+	if (providerId?.startsWith("boxy-saml")) {
+		return (
+			<ProviderInfoFormForBoxy
+				providerId={providerId}
+				providerConfig={providerConfigResponse}
+				handleGoBack={handleGoBack}
+				isAddingNewProvider={isAddingNewProvider}
+			/>
+		);
+	}
+
 	return (
 		<ProviderInfoForm
 			providerId={providerId}
@@ -188,6 +200,7 @@ type AdditionalConfigFormProps = {
 
 const BoxySamlForm = ({ handleContinue, handleGoBack }: AdditionalConfigFormProps) => {
 	const [boxyUrl, setBoxyUrl] = useState("");
+	const [boxyAPIKey, setBoxyAPIKey] = useState("");
 	const [error, setError] = useState<string | null>(null);
 
 	const onContinue = () => {
@@ -195,7 +208,7 @@ const BoxySamlForm = ({ handleContinue, handleGoBack }: AdditionalConfigFormProp
 			setError("Please enter a valid URL");
 			return;
 		}
-		handleContinue({ boxyUrl });
+		handleContinue({ boxyUrl, boxyAPIKey });
 	};
 
 	return (
@@ -220,7 +233,7 @@ const BoxySamlForm = ({ handleContinue, handleGoBack }: AdditionalConfigFormProp
 				to get your Boxy URL and continue setup of your SAML client.
 			</SAMLInfoBox>
 
-			<p className="saml-intro-container__boxy-url-header">Add the Boxy URL below</p>
+			<p className="saml-intro-container__boxy-url-header">Add the Boxy Details below</p>
 
 			<div className="additional-config-field">
 				<ThirdPartyProviderInput
@@ -232,6 +245,21 @@ const BoxySamlForm = ({ handleContinue, handleGoBack }: AdditionalConfigFormProp
 					error={error ?? undefined}
 					handleChange={(e) => {
 						setBoxyUrl(e.target.value);
+						setError(null);
+					}}
+				/>
+
+				<div style={{ height: "10px" }}></div>
+
+				<ThirdPartyProviderInput
+					label="Boxy API Key"
+					type="password"
+					name="boxyAPIKey"
+					value={boxyAPIKey}
+					forceShowError
+					error={error ?? undefined}
+					handleChange={(e) => {
+						setBoxyAPIKey(e.target.value);
 						setError(null);
 					}}
 				/>
