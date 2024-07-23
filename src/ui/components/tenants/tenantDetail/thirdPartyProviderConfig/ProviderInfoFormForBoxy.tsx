@@ -16,7 +16,7 @@ import { ChangeEvent, useContext, useState } from "react";
 import { useCreateOrUpdateThirdPartyProviderService } from "../../../../../api/tenants";
 import { ProviderConfig, ProviderConfigResponse } from "../../../../../api/tenants/types";
 import { SAML_PROVIDER_ID } from "../../../../../constants";
-import { getImageUrl } from "../../../../../utils";
+import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import { PopupContentContext } from "../../../../contexts/PopupContentContext";
 import Button from "../../../button";
 import { DeleteCrossButton } from "../../../deleteCrossButton/DeleteCrossButton";
@@ -64,9 +64,18 @@ export const ProviderInfoFormForBoxy = ({
 	const { showToast } = useContext(PopupContentContext);
 	const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProviderService();
 	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
-	const [samlInputType, setSamlInputType] = useState<"xml" | "url">(
-		() => (providerConfigState.clients![0]?.additionalConfig?.samlInputType as "xml" | "url") || "xml"
-	);
+	const hasBoxyAPIKey =
+		providerConfigState.clients?.[0]?.additionalConfig?.boxyAPIKey !== undefined &&
+		providerConfigState.clients?.[0]?.additionalConfig?.boxyAPIKey !== "" &&
+		providerConfigState.clients?.[0]?.additionalConfig?.boxyAPIKey !== null;
+	const [samlInputType, setSamlInputType] = useState<"xml" | "url" | "manual">(() => {
+		if (!hasBoxyAPIKey) {
+			return "manual";
+		}
+		return (
+			(providerConfigState.clients![0]?.additionalConfig?.samlInputType as "xml" | "url" | "manual") || "manual"
+		);
+	});
 	const baseProviderId = SAML_PROVIDER_ID;
 	const shouldUsePrefixField = isAddingNewProvider && isSAMLProvider;
 
@@ -95,6 +104,9 @@ export const ProviderInfoFormForBoxy = ({
 
 	const handleSamlInputChange = (e: ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
 		if (e.type === "change") {
+			if (samlInputType !== "xml" && samlInputType !== "url") {
+				throw new Error("should never happen");
+			}
 			setProviderConfigState((prev) => ({
 				...prev,
 				clients: prev.clients!.map((client, index) =>
@@ -112,7 +124,10 @@ export const ProviderInfoFormForBoxy = ({
 		}
 	};
 
-	const handleSamlInputTypeChange = (type: "xml" | "url") => {
+	const handleSamlInputTypeChange = (type: "xml" | "url" | "manual") => {
+		if (!hasBoxyAPIKey) {
+			return;
+		}
 		setSamlInputType(type);
 		setProviderConfigState((prev) => ({
 			...prev,
@@ -194,6 +209,40 @@ export const ProviderInfoFormForBoxy = ({
 			isValid = false;
 		}
 
+		if (samlInputType === "xml" || samlInputType === "url") {
+			const redirectURLs = (providerConfigState.clients![0].additionalConfig?.redirectURLs || []) as string[];
+			const filteredRedirectURLs = redirectURLs.filter((url) => url.trim() !== "");
+
+			if (filteredRedirectURLs.length === 0) {
+				setErrorState((prev) => ({ ...prev, redirectURLs: "At least one redirect URL is required" }));
+				isValid = false;
+			} else {
+				const invalidURLs = filteredRedirectURLs.filter((url) => !isValidHttpUrl(url));
+				if (invalidURLs.length > 0) {
+					setErrorState((prev) => ({ ...prev, redirectURLs: "One or more redirect URLs are invalid" }));
+					isValid = false;
+				}
+			}
+
+			if (
+				samlInputType === "xml" &&
+				(!providerConfigState.clients![0].additionalConfig?.samlXML ||
+					providerConfigState.clients![0].additionalConfig.samlXML.trim() === "")
+			) {
+				setErrorState((prev) => ({ ...prev, samlXML: "SAML XML is required" }));
+				isValid = false;
+			}
+
+			if (
+				samlInputType === "url" &&
+				(!providerConfigState.clients![0].additionalConfig?.samlURL ||
+					!isValidHttpUrl(providerConfigState.clients![0].additionalConfig.samlURL))
+			) {
+				setErrorState((prev) => ({ ...prev, samlURL: "A valid SAML URL is required" }));
+				isValid = false;
+			}
+		}
+
 		if (!isValid) {
 			return;
 		}
@@ -215,9 +264,20 @@ export const ProviderInfoFormForBoxy = ({
 
 		try {
 			setIsSaving(true);
-			await createOrUpdateThirdPartyProvider(tenantInfo.tenantId, normalizedProviderConfig as ProviderConfig);
-			await refetchTenant();
-			handleGoBack(true);
+			const resp = await createOrUpdateThirdPartyProvider(
+				tenantInfo.tenantId,
+				normalizedProviderConfig as ProviderConfig
+			);
+			if (resp.status === "OK") {
+				await refetchTenant();
+				handleGoBack(true);
+			} else if (resp.status === "BOXY_ERROR") {
+				showToast({
+					iconImage: getImageUrl("form-field-error-icon.svg"),
+					toastType: "error",
+					children: <>Error from boxy: {resp.message}</>,
+				});
+			}
 		} catch (e) {
 			showToast({
 				iconImage: getImageUrl("form-field-error-icon.svg"),
@@ -325,12 +385,6 @@ export const ProviderInfoFormForBoxy = ({
 					handleChange={handleFieldChange}
 					isRequired
 				/>
-				<div>
-					<RedirectURLs
-						redirectURLs={providerConfigState?.clients![0].additionalConfig?.redirectURLs ?? [""]}
-						setRedirectURLs={handleRedirectURLsChange}
-					/>
-				</div>
 				<div className="saml-input-type">
 					<ThirdPartyProviderInputLabel
 						label="SAML Input Type"
@@ -355,30 +409,113 @@ export const ProviderInfoFormForBoxy = ({
 							/>
 							URL
 						</label>
+						<label>
+							<input
+								type="radio"
+								value="manual"
+								checked={samlInputType === "manual"}
+								onChange={() => handleSamlInputTypeChange("manual")}
+							/>
+							Manual
+						</label>
 					</div>
 				</div>
-				{samlInputType === "xml" ? (
-					<ThirdPartyProviderInput
-						label="SAML XML"
-						tooltip="The SAML XML configuration."
-						type="multiline"
-						name="samlXML"
-						isRequired={true}
-						value={providerConfigState.clients![0].additionalConfig?.samlXML || ""}
-						handleChange={handleSamlInputChange}
-						minLabelWidth={120}
-					/>
-				) : (
-					<ThirdPartyProviderInput
-						label="SAML URL"
-						tooltip="The URL to fetch SAML configuration."
-						type="text"
-						name="samlURL"
-						isRequired={true}
-						value={providerConfigState.clients![0].additionalConfig?.samlURL || ""}
-						handleChange={handleSamlInputChange}
-						minLabelWidth={120}
-					/>
+				{(samlInputType === "xml" || samlInputType === "url") && (
+					<>
+						<div>
+							<RedirectURLs
+								redirectURLs={providerConfigState?.clients![0].additionalConfig?.redirectURLs ?? [""]}
+								setRedirectURLs={handleRedirectURLsChange}
+							/>
+						</div>
+						{samlInputType === "xml" ? (
+							<ThirdPartyProviderInput
+								label="SAML XML"
+								tooltip="The SAML XML configuration."
+								type="multiline"
+								name="samlXML"
+								isRequired={true}
+								value={providerConfigState.clients![0].additionalConfig?.samlXML || ""}
+								handleChange={handleSamlInputChange}
+								minLabelWidth={120}
+							/>
+						) : (
+							<ThirdPartyProviderInput
+								label="SAML URL"
+								tooltip="The URL to fetch SAML configuration."
+								type="text"
+								name="samlURL"
+								isRequired={true}
+								value={providerConfigState.clients![0].additionalConfig?.samlURL || ""}
+								handleChange={handleSamlInputChange}
+								minLabelWidth={120}
+							/>
+						)}
+					</>
+				)}
+
+				{samlInputType === "manual" && (
+					<>
+						<ThirdPartyProviderInput
+							label="Client ID"
+							tooltip="The client ID for the SAML provider."
+							type="text"
+							name="clientId"
+							isRequired={true}
+							value={providerConfigState.clients![0].clientId || ""}
+							handleChange={(e) => {
+								setProviderConfigState((prev) => ({
+									...prev,
+									clients: prev.clients!.map((client, index) =>
+										index === 0 ? { ...client, clientId: e.target.value } : client
+									),
+								}));
+							}}
+							minLabelWidth={120}
+						/>
+						<ThirdPartyProviderInput
+							label="Client Secret"
+							tooltip="The client secret for the SAML provider."
+							type="password"
+							name="clientSecret"
+							isRequired={true}
+							value={providerConfigState.clients![0].clientSecret || ""}
+							handleChange={(e) => {
+								setProviderConfigState((prev) => ({
+									...prev,
+									clients: prev.clients!.map((client, index) =>
+										index === 0 ? { ...client, clientSecret: e.target.value } : client
+									),
+								}));
+							}}
+							minLabelWidth={120}
+						/>
+						<ThirdPartyProviderInput
+							label="Boxy URL"
+							tooltip="The URL for the Boxy service."
+							type="text"
+							name="boxyURL"
+							isRequired={true}
+							value={providerConfigState.clients![0].additionalConfig?.boxyURL || ""}
+							handleChange={(e) => {
+								setProviderConfigState((prev) => ({
+									...prev,
+									clients: prev.clients!.map((client, index) =>
+										index === 0
+											? {
+													...client,
+													additionalConfig: {
+														...client.additionalConfig,
+														boxyURL: e.target.value,
+													},
+											  }
+											: client
+									),
+								}));
+							}}
+							minLabelWidth={120}
+						/>
+					</>
 				)}
 			</div>
 			<hr className="provider-config-divider" />
