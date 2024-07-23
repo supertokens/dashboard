@@ -94,6 +94,8 @@ const ProviderInfo = ({
 	};
 
 	useEffect(() => {
+		setHasFilledCustomFieldsForProvider(false);
+
 		if (providerId !== undefined && !(isAddingNewProvider && providerHasCustomFields)) {
 			void fetchProviderInfo(providerId);
 		}
