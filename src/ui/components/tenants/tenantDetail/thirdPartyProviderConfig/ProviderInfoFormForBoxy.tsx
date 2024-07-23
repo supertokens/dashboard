@@ -56,7 +56,7 @@ export const ProviderInfoFormForBoxy = ({
 	providerConfig?: ProviderConfigResponse;
 }) => {
 	const [providerConfigState, setProviderConfigState] = useState(getInitialProviderInfo(providerConfig, providerId));
-	const [errorState, setErrorState] = useState<Record<string, string>>({});
+	const [errorState, setErrorState] = useState<Record<string, string | (string | undefined)[]>>({});
 	const [isSuffixFieldVisible, setIsSuffixFieldVisible] = useState(false);
 	const [isDeleteProviderDialogOpen, setIsDeleteProviderDialogOpen] = useState(false);
 	const { tenantInfo, refetchTenant } = useTenantDetailContext();
@@ -214,12 +214,15 @@ export const ProviderInfoFormForBoxy = ({
 			const filteredRedirectURLs = redirectURLs.filter((url) => url.trim() !== "");
 
 			if (filteredRedirectURLs.length === 0) {
-				setErrorState((prev) => ({ ...prev, redirectURLs: "At least one redirect URL is required" }));
+				setErrorState((prev) => ({ ...prev, redirectURLs: ["At least one redirect URL is required"] }));
 				isValid = false;
 			} else {
-				const invalidURLs = filteredRedirectURLs.filter((url) => !isValidHttpUrl(url));
+				const invalidURLs = redirectURLs.filter((url) => !isValidHttpUrl(url));
 				if (invalidURLs.length > 0) {
-					setErrorState((prev) => ({ ...prev, redirectURLs: "One or more redirect URLs are invalid" }));
+					const errors = redirectURLs.map((url) =>
+						url === "" || isValidHttpUrl(url) ? undefined : "Invalid URL"
+					);
+					setErrorState((prev) => ({ ...prev, redirectURLs: errors }));
 					isValid = false;
 				}
 			}
@@ -326,7 +329,7 @@ export const ProviderInfoFormForBoxy = ({
 							name="thirdPartyId"
 							value={providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)}
 							forceShowError
-							error={errorState.thirdPartyId}
+							error={errorState.thirdPartyId as string}
 							handleChange={handleThirdPartyIdSuffixChange}
 						/>
 					) : (
@@ -365,7 +368,7 @@ export const ProviderInfoFormForBoxy = ({
 						name="thirdPartyId"
 						value={providerConfigState.thirdPartyId}
 						disabled={!isAddingNewProvider}
-						error={errorState.thirdPartyId}
+						error={errorState.thirdPartyId as string}
 						forceShowError
 						isRequired
 						handleChange={handleFieldChange}
@@ -378,7 +381,7 @@ export const ProviderInfoFormForBoxy = ({
 					type="text"
 					name="name"
 					options={providerConfigState.thirdPartyId.startsWith("boxy-saml") ? samlProviderOptions : undefined}
-					error={errorState.name}
+					error={errorState.name as string}
 					forceShowError
 					value={providerConfigState.name}
 					minLabelWidth={120}
@@ -428,6 +431,7 @@ export const ProviderInfoFormForBoxy = ({
 							<RedirectURLs
 								redirectURLs={providerConfigState?.clients![0].additionalConfig?.redirectURLs ?? [""]}
 								setRedirectURLs={handleRedirectURLsChange}
+								error={errorState.redirectURLs as string[]}
 							/>
 						</div>
 						{samlInputType === "xml" ? (
@@ -440,6 +444,7 @@ export const ProviderInfoFormForBoxy = ({
 								value={providerConfigState.clients![0].additionalConfig?.samlXML || ""}
 								handleChange={handleSamlInputChange}
 								minLabelWidth={120}
+								error={errorState.samlXML as string}
 							/>
 						) : (
 							<ThirdPartyProviderInput
@@ -451,6 +456,7 @@ export const ProviderInfoFormForBoxy = ({
 								value={providerConfigState.clients![0].additionalConfig?.samlURL || ""}
 								handleChange={handleSamlInputChange}
 								minLabelWidth={120}
+								error={errorState.samlURL as string}
 							/>
 						)}
 					</>
@@ -628,9 +634,11 @@ const getInitialProviderInfo = (providerConfig: ProviderConfig | undefined, prov
 const RedirectURLs = ({
 	redirectURLs,
 	setRedirectURLs,
+	error,
 }: {
 	redirectURLs: string[];
 	setRedirectURLs: (redirectURLs: string[]) => void;
+	error?: string[];
 }) => {
 	return (
 		<div className="redirect-urls-container">
@@ -641,6 +649,9 @@ const RedirectURLs = ({
 					type="text"
 					name="redirect_urls"
 					value={redirectURLs[0] ?? ""}
+					isRequired={true}
+					error={error !== undefined ? error[0] : undefined}
+					forceShowError
 					handleChange={(e) => {
 						const newRedirectURLs = [...redirectURLs];
 						newRedirectURLs[0] = e.target.value;
@@ -670,6 +681,8 @@ const RedirectURLs = ({
 						name={`redirect-url-${index}`}
 						type="text"
 						value={redirectURL}
+						error={error !== undefined ? error[index + 1] : undefined}
+						forceShowError
 						handleChange={(e) => {
 							const newRedirectURLs = [...redirectURLs];
 							newRedirectURLs[index + 1] = e.target.value;
