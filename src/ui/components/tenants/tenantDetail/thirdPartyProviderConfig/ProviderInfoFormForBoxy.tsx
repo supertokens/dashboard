@@ -68,6 +68,7 @@ export const ProviderInfoFormForBoxy = ({
 		() => (providerConfigState.clients![0]?.additionalConfig?.samlInputType as "xml" | "url") || "xml"
 	);
 	const baseProviderId = SAML_PROVIDER_ID;
+	const shouldUsePrefixField = isAddingNewProvider && isSAMLProvider;
 
 	const handleFieldChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLSelectElement> | React.ChangeEvent<HTMLTextAreaElement>
@@ -255,45 +256,61 @@ export const ProviderInfoFormForBoxy = ({
 				</div>
 			</PanelHeader>
 			<div className="fields-container">
-				{isSuffixFieldVisible ? (
+				{shouldUsePrefixField ? (
+					isSuffixFieldVisible ? (
+						<ThirdPartyProviderInput
+							label="Third Party Id"
+							tooltip="The Id of the provider."
+							prefix={`${baseProviderId}-`}
+							type="text"
+							name="thirdPartyId"
+							value={providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)}
+							forceShowError
+							error={errorState.thirdPartyId}
+							handleChange={handleThirdPartyIdSuffixChange}
+						/>
+					) : (
+						<div className="suffix-preview-field">
+							<ThirdPartyProviderInputLabel
+								label="Third Party Id"
+								tooltip="The Id of the provider."
+								minLabelWidth={120}
+							/>
+							<div className="suffix-preview-container">
+								<div className="suffix-preview-container__suffix">
+									<span className="prefix-preview">{baseProviderId}</span>
+									<div className="suffix-button-container">
+										<button onClick={showSuffixField}>+ Add suffix</button>
+										<TooltipContainer tooltip="You can add multiple providers of the same type by adding a unique suffix to the third party id.">
+											<span className="suffix-button-container__help-icon">
+												<img
+													src={getImageUrl("help-circle.svg")}
+													alt="help"
+												/>
+											</span>
+										</TooltipContainer>
+									</div>
+								</div>
+								{errorState.thirdPartyId && (
+									<div className="suffix-preview-container__error">{errorState.thirdPartyId}</div>
+								)}
+							</div>
+						</div>
+					)
+				) : (
 					<ThirdPartyProviderInput
 						label="Third Party Id"
 						tooltip="The Id of the provider."
-						prefix={`${baseProviderId}-`}
 						type="text"
 						name="thirdPartyId"
-						value={providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)}
-						forceShowError
+						value={providerConfigState.thirdPartyId}
+						disabled={!isAddingNewProvider}
 						error={errorState.thirdPartyId}
-						handleChange={handleThirdPartyIdSuffixChange}
+						forceShowError
+						isRequired
+						handleChange={handleFieldChange}
+						minLabelWidth={120}
 					/>
-				) : (
-					<div className="suffix-preview-field">
-						<ThirdPartyProviderInputLabel
-							label="Third Party Id"
-							tooltip="The Id of the provider."
-							minLabelWidth={120}
-						/>
-						<div className="suffix-preview-container">
-							<div className="suffix-preview-container__suffix">
-								<span className="prefix-preview">{baseProviderId}</span>
-								<div className="suffix-button-container">
-									<button onClick={showSuffixField}>+ Add suffix</button>
-									<TooltipContainer tooltip="You can add multiple providers of the same type by adding a unique suffix to the third party id.">
-										<span className="suffix-button-container__help-icon">
-											<img
-												src={getImageUrl("help-circle.svg")}
-												alt="help"
-											/>
-										</span>
-									</TooltipContainer>
-								</div>
-							</div>
-							{errorState.thirdPartyId && (
-								<div className="suffix-preview-container__error">{errorState.thirdPartyId}</div>
-							)}
-						</div>
-					</div>
 				)}
 				<ThirdPartyProviderInput
 					label="Name"
@@ -470,7 +487,7 @@ const RedirectURLs = ({
 			<div className="redirect-urls-container__input-container">
 				<ThirdPartyProviderInput
 					label="Redirect URLs"
-					tooltip="The scopes required by the third-party provider."
+					tooltip="The redirect URLs for the SAML provider."
 					type="text"
 					name="redirect_urls"
 					value={redirectURLs[0] ?? ""}
@@ -490,13 +507,13 @@ const RedirectURLs = ({
 								setRedirectURLs([""]);
 							}
 						}}
-						label="Delete Scope"
+						label="Delete URL"
 					/>
 				)}
 			</div>
 			{redirectURLs?.slice(1).map((redirectURL, index) => (
 				<div
-					className="scopes-container__input-container"
+					className="redirect-urls-container__input-container"
 					key={index}>
 					<ThirdPartyProviderInput
 						label=""
@@ -504,22 +521,22 @@ const RedirectURLs = ({
 						type="text"
 						value={redirectURL}
 						handleChange={(e) => {
-							const newScopes = [...redirectURLs];
-							newScopes[index + 1] = e.target.value;
-							setRedirectURLs(newScopes);
+							const newRedirectURLs = [...redirectURLs];
+							newRedirectURLs[index + 1] = e.target.value;
+							setRedirectURLs(newRedirectURLs);
 						}}
 						minLabelWidth={108}
 					/>
 					<DeleteCrossButton
 						onClick={() => setRedirectURLs(redirectURLs.filter((_, i) => i !== index + 1))}
-						label="Delete Scope"
+						label="Delete URL"
 					/>
 				</div>
 			))}
-			<div className="scopes-container__footer">
-				<hr className="scopes-container__divider" />
+			<div className="redirect-urls-container__footer">
+				<hr className="redirect-urls-container__divider" />
 				<button
-					className="scopes-container__add-new"
+					className="redirect-urls-container__add-new"
 					onClick={() => setRedirectURLs([...redirectURLs, ""])}>
 					+ Add new
 				</button>
