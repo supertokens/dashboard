@@ -391,21 +391,23 @@ export const ProviderInfoFormForBoxy = ({
 						tooltip="Select XML or URL"
 					/>
 					<div className="saml-input-type__options">
-						<label>
+						<label className={!hasBoxyAPIKey ? "disabled" : ""}>
 							<input
 								type="radio"
 								value="xml"
 								checked={samlInputType === "xml"}
 								onChange={() => handleSamlInputTypeChange("xml")}
+								disabled={!hasBoxyAPIKey}
 							/>
 							XML
 						</label>
-						<label>
+						<label className={!hasBoxyAPIKey ? "disabled" : ""}>
 							<input
 								type="radio"
 								value="url"
 								checked={samlInputType === "url"}
 								onChange={() => handleSamlInputTypeChange("url")}
+								disabled={!hasBoxyAPIKey}
 							/>
 							URL
 						</label>
@@ -456,6 +458,17 @@ export const ProviderInfoFormForBoxy = ({
 
 				{samlInputType === "manual" && (
 					<>
+						<p className="saml-info-note">
+							Refer to the{" "}
+							<a
+								href="https://supertokens.com/docs/thirdpartyemailpassword/common-customizations/saml/with-boxyhq/what-is-boxyhq"
+								target="_blank"
+								rel="noopener noreferrer">
+								documentation
+							</a>{" "}
+							to learn about Boxy integration and obtaining Client ID and Secret.
+						</p>
+
 						<ThirdPartyProviderInput
 							label="Client ID"
 							tooltip="The client ID for the SAML provider."

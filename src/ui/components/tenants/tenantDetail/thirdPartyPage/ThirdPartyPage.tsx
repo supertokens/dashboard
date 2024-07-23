@@ -96,7 +96,10 @@ const ProviderInfo = ({
 	useEffect(() => {
 		setHasFilledCustomFieldsForProvider(false);
 
-		if (providerId !== undefined && !(isAddingNewProvider && providerHasCustomFields)) {
+		if (
+			providerId !== undefined &&
+			(!(isAddingNewProvider && providerHasCustomFields) || providerId.startsWith("boxy-saml"))
+		) {
 			void fetchProviderInfo(providerId);
 		}
 	}, [providerId]);
@@ -111,6 +114,12 @@ const ProviderInfo = ({
 				providerId={providerId}
 				fetchProviderInfo={fetchProviderInfo}
 				handleGoBack={handleGoBack}
+				currentAdditionalConfig={
+					providerId?.startsWith("boxy-saml")
+						? providerConfigResponse?.clients![0].additionalConfig
+						: undefined
+				}
+				isAddingNewProvider={isAddingNewProvider}
 			/>
 		);
 	}
@@ -122,6 +131,7 @@ const ProviderInfo = ({
 				fetchProviderInfo={fetchProviderInfo}
 				handleGoBack={handleGoBack}
 				currentAdditionalConfig={providerConfigResponse?.clients![0].additionalConfig}
+				isAddingNewProvider={isAddingNewProvider}
 			/>
 		);
 	}
@@ -156,11 +166,13 @@ const ProviderAdditionalConfigForm = ({
 	fetchProviderInfo,
 	handleGoBack,
 	currentAdditionalConfig,
+	isAddingNewProvider,
 }: {
 	providerId: string;
 	fetchProviderInfo: (providerId: string, additionalConfig?: Record<string, string>) => void;
 	handleGoBack: () => void;
 	currentAdditionalConfig?: Record<string, string>;
+	isAddingNewProvider: boolean;
 }) => {
 	const handleContinue = (additionalConfig: Record<string, string>) => {
 		fetchProviderInfo(providerId, additionalConfig);
@@ -195,6 +207,7 @@ const ProviderAdditionalConfigForm = ({
 						handleContinue={handleContinue}
 						handleGoBack={handleGoBack}
 						currentAdditionalConfig={currentAdditionalConfig}
+						isAddingNewProvider={isAddingNewProvider}
 					/>
 				);
 			default:
@@ -220,12 +233,18 @@ type AdditionalConfigFormProps = {
 	handleContinue: (additionalConfig: Record<string, string>) => void;
 	handleGoBack: () => void;
 	currentAdditionalConfig?: Record<string, string>;
+	isAddingNewProvider?: boolean;
 };
 
-const BoxySamlForm = ({ handleContinue, handleGoBack, currentAdditionalConfig }: AdditionalConfigFormProps) => {
+const BoxySamlForm = ({
+	handleContinue,
+	handleGoBack,
+	currentAdditionalConfig,
+	isAddingNewProvider,
+}: AdditionalConfigFormProps) => {
 	const [boxyUrl, setBoxyUrl] = useState("");
 	const [boxyAPIKey, setBoxyAPIKey] = useState("");
-	const [error, setError] = useState<string | null>(null);
+	const [error, setError] = useState<Record<string, string | undefined>>({});
 
 	useEffect(() => {
 		if (currentAdditionalConfig) {
@@ -236,11 +255,13 @@ const BoxySamlForm = ({ handleContinue, handleGoBack, currentAdditionalConfig }:
 
 	const onContinue = () => {
 		if (!isValidHttpUrl(boxyUrl)) {
-			setError("Please enter a valid URL");
+			setError({ boxyURL: "Please enter a valid URL" });
 			return;
 		}
 		handleContinue({ boxyUrl, boxyAPIKey });
 	};
+
+	const isBoxyUrlDisabled = !isAddingNewProvider && currentAdditionalConfig?.boxyURL !== undefined;
 
 	return (
 		<div className="saml-intro-container">
@@ -273,11 +294,12 @@ const BoxySamlForm = ({ handleContinue, handleGoBack, currentAdditionalConfig }:
 					name="boxyURL"
 					value={boxyUrl}
 					forceShowError
-					error={error ?? undefined}
-					disabled={currentAdditionalConfig?.boxyURL !== undefined}
+					error={error.boxyURL}
+					disabled={isBoxyUrlDisabled}
+					isRequired={true}
 					handleChange={(e) => {
 						setBoxyUrl(e.target.value);
-						setError(null);
+						setError((prevError) => ({ ...prevError, boxyURL: undefined }));
 					}}
 				/>
 
@@ -289,10 +311,10 @@ const BoxySamlForm = ({ handleContinue, handleGoBack, currentAdditionalConfig }:
 					name="boxyAPIKey"
 					value={boxyAPIKey}
 					forceShowError
-					error={error ?? undefined}
+					error={error.boxyAPIKey}
 					handleChange={(e) => {
 						setBoxyAPIKey(e.target.value);
-						setError(null);
+						setError((prevError) => ({ ...prevError, boxyAPIKey: undefined }));
 					}}
 				/>
 			</div>

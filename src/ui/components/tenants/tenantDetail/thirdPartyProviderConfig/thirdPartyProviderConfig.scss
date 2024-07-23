@@ -590,10 +590,28 @@
 
 		label {
 			cursor: pointer;
+
+			&.disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
 		}
 
 		input[type="radio"] {
 			margin-right: 10px;
+
+			&:disabled {
+				cursor: not-allowed;
+			}
 		}
 	}
+}
+
+.saml-info-note {
+	font-family: inherit;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 23px;
+	color: var(--color-secondary-text);
+	margin-top: 4px;
 }
