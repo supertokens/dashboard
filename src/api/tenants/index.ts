@@ -272,7 +272,7 @@ export const useCreateOrUpdateThirdPartyProviderService = () => {
 	const createOrUpdateThirdPartyProvider = async (
 		tenantId: string,
 		providerConfig: ProviderConfig
-	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
+	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "BOXY_ERROR"; message: string }> => {
 		const response = await fetchData({
 			url: getApiUrl("/api/thirdparty/config", tenantId),
 			method: "PUT",

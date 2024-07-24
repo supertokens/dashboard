@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.13.0]
+
+-   Adds support for SAML metadata
+
 ## [0.12.0]
 
 -   Adds Multitenancy support to the dashboard

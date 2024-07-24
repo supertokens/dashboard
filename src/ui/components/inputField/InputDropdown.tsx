@@ -99,6 +99,7 @@ const InputDropdown: React.FC<InputDropdownPropTypes> = (props) => {
 					} ${props.size === "small" ? "input-field-small" : ""}`}
 					type="text"
 					ref={inputRef}
+					autoComplete="off"
 				/>
 			</div>
 			{isFocused && (
