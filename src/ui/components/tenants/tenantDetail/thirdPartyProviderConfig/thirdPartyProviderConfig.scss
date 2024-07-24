@@ -586,7 +586,7 @@
 	&__options {
 		margin-top: 10px;
 		display: flex;
-		gap: 10px;
+		gap: 20px;
 
 		label {
 			cursor: pointer;
@@ -598,7 +598,7 @@
 		}
 
 		input[type="radio"] {
-			margin-right: 10px;
+			margin-right: 5px;
 
 			&:disabled {
 				cursor: not-allowed;

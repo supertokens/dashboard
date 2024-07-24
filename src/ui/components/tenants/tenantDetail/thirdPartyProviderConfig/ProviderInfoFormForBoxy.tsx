@@ -421,7 +421,7 @@ export const ProviderInfoFormForBoxy = ({
 								checked={samlInputType === "manual"}
 								onChange={() => handleSamlInputTypeChange("manual")}
 							/>
-							Manual
+							Via Boxy API
 						</label>
 					</div>
 				</div>
