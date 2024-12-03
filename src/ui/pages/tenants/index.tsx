@@ -72,6 +72,11 @@ const TenantList = ({
 		void getTenants();
 	}, []);
 
+	useEffect(() => {
+		// When user changes the search query, we reset the pagination to the first page
+		setCurrentActivePage(1);
+	}, [searchQuery]);
+
 	return (
 		<div className="tenants-container">
 			<h1 className="tenants-title">Tenant Management</h1>
