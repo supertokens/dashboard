@@ -37,6 +37,7 @@ type SearchType = {
 type searchProp = {
 	onSearch: (paginationToken?: string, search?: object) => Promise<void>;
 	loading: boolean;
+	searchRef?: React.RefObject<{ getSearchQuery: () => Record<string, string> }>;
 };
 
 type action = "chn" | "del";
@@ -67,6 +68,40 @@ const tagToImg = (tag: string) => {
 	}
 };
 
+const generateSearchQuery = (searches: SearchType[]) => {
+	const tempQueryMap: Record<string, string> = {};
+	searches.forEach((el) => {
+		let value = el.value.trim();
+
+		if (el.tag === "phone") {
+			try {
+				const parsed = parsePhoneNumber(value);
+
+				if (parsed !== undefined) {
+					value = parsed.format("E.164");
+				}
+			} catch (e) {
+				let temp = value;
+
+				if (!temp.startsWith("+")) {
+					temp = "+" + temp;
+				}
+
+				temp = temp.replace(/[()\s]/g, "");
+				value = temp;
+			}
+		}
+
+		if (el.tag in tempQueryMap) {
+			const temp = tempQueryMap[el.tag] + ";" + value;
+			tempQueryMap[el.tag] = temp;
+		} else {
+			tempQueryMap[el.tag] = value;
+		}
+	});
+	return tempQueryMap;
+};
+
 const Search: React.FC<searchProp> = (props: searchProp) => {
 	const [active, setActive] = useState<boolean>(false);
 	const [searches, setSearches] = useState<SearchType[] | []>([]);
@@ -92,41 +127,19 @@ const Search: React.FC<searchProp> = (props: searchProp) => {
 			if (props.loading) {
 				return;
 			}
-
-			const tempQueryMap: Record<string, string> = {};
-			searches.forEach((el) => {
-				let value = el.value.trim();
-
-				if (el.tag === "phone") {
-					try {
-						const parsed = parsePhoneNumber(value);
-
-						if (parsed !== undefined) {
-							value = parsed.format("E.164");
-						}
-					} catch (e) {
-						let temp = value;
-
-						if (!temp.startsWith("+")) {
-							temp = "+" + temp;
-						}
-
-						temp = temp.replace(/[()\s]/g, "");
-						value = temp;
-					}
-				}
-
-				if (el.tag in tempQueryMap) {
-					const temp = tempQueryMap[el.tag] + ";" + value;
-					tempQueryMap[el.tag] = temp;
-				} else {
-					tempQueryMap[el.tag] = value;
-				}
-			});
+			const tempQueryMap = generateSearchQuery(searches);
 			await props.onSearch(undefined, tempQueryMap);
 		},
 		[searches]
 	);
+
+	useEffect(() => {
+		if (props.searchRef) {
+			props.searchRef.current = {
+				getSearchQuery: () => generateSearchQuery(searches),
+			};
+		}
+	}, [props.searchRef, searches]);
 
 	// useEffect to call everytime searches change
 	useEffect(() => {
