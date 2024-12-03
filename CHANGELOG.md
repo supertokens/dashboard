@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.14.0]
+
+-   Fixes an issue where the delete button would not be visible when there is only one login method
+-   Modifies Modal message when deleting a login method
+-   Fixes search issues on User Management tab
+-   Fixes search issues on Tenant Management tab
+
 ## [0.13.0]
 
 -   Adds support for SAML metadata
