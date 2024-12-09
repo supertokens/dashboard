@@ -134,6 +134,7 @@ type MethodProps = {
 	updateContext: (val: LoginMethod, ind: number) => void;
 	index: number;
 	showUnlink: boolean;
+	showDelete: boolean;
 };
 
 const Methods: React.FC<MethodProps> = ({
@@ -146,6 +147,7 @@ const Methods: React.FC<MethodProps> = ({
 	updateContext,
 	index,
 	showUnlink,
+	showDelete,
 }) => {
 	const { sendUserEmailVerification: sendUserEmailVerificationApi } = useVerifyUserTokenService();
 	const { showModal, showToast } = useContext(PopupContentContext);
@@ -252,6 +254,7 @@ const Methods: React.FC<MethodProps> = ({
 							onDelete={onDeleteCallback}
 							onUnlink={onUnlinkCallback}
 							showUnlink={showUnlink}
+							showDelete={showDelete}
 						/>
 					)}
 					{isEditing && (
@@ -462,6 +465,7 @@ export const LoginMethods: React.FC<LoginMethodProps> = ({ refetchAllData, refet
 					showUnlink={
 						methods.length > 1 || (userDetail.details.isPrimaryUser === true && methods.length === 1)
 					}
+					showDelete={methods.length > 1}
 				/>
 			))}
 		</LayoutPanel>

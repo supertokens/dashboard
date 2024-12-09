@@ -80,6 +80,7 @@ export const UsersList: React.FC<UserListProps> = ({
 	const [isSearch, setIsSearch] = useState<boolean>(false);
 	const [showCreateUserDialog, setShowCreateUserDialog] = useState(false);
 	const [paginationTokenByOffset, setPaginationTokenByOffset] = useState<NextPaginationTokenByOffset>({});
+	const searchRef = useRef<{ getSearchQuery: () => Record<string, string> }>(null);
 
 	const { fetchUsers } = useFetchUsersService();
 	const { fetchCount } = useFetchCount();
@@ -215,7 +216,11 @@ export const UsersList: React.FC<UserListProps> = ({
 	const loadCount = async () => {
 		setLoading(true);
 		const tenantId = getSelectedTenant();
-		const [countResult] = await Promise.all([fetchCount(tenantId).catch(() => undefined), loadUsers()]);
+		const searchQueryMap = searchRef?.current?.getSearchQuery();
+		const [countResult] = await Promise.all([
+			fetchCount(tenantId).catch(() => undefined),
+			loadUsers(undefined, searchQueryMap),
+		]);
 		if (countResult) {
 			setCount(countResult.count);
 		}
@@ -295,6 +300,7 @@ export const UsersList: React.FC<UserListProps> = ({
 					<Search
 						onSearch={loadUsers}
 						loading={loading}
+						searchRef={searchRef}
 					/>
 				)}
 

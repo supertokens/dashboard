@@ -513,10 +513,11 @@ export const UserDeleteConfirmation: FC<UserDeleteConfirmationProps> = ({ user, 
 	return (
 		<div className="user-detail-form">
 			<p>
-				To delete the user, please confirm by typing the {inputType}: <span>{informationToEnter}</span> below
+				To delete the {loginMethod ? "login method" : "user"}, please confirm by typing the {inputType}:{" "}
+				<span>{informationToEnter}</span> below
 			</p>
 			<p>{""}</p>
-			<p>This will also delete any accounts linked to this user</p>
+			{!loginMethod && <p>This will also delete any accounts linked to this user</p>}
 			<div className="user-delete-input-container">
 				<InputField
 					type="text"
@@ -567,7 +568,7 @@ export const getUserDeleteConfirmationProps = (props: UserDeleteConfirmationTrig
 				onConfirmed={onConfirmedDelete}
 			/>
 		),
-		header: <h2>Delete User?</h2>,
+		header: <h2>Delete {loginMethod ? "login method" : "user"}?</h2>,
 		closeCallbackRef: closeConfirmDeleteRef,
 	} as LayoutModalProps;
 };
