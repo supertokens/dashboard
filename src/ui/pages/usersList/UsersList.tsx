@@ -132,7 +132,7 @@ export const UsersList: React.FC<UserListProps> = ({
 				data = await fetchUsers(undefined, undefined, tenantId).catch(() => undefined);
 				setIsSearch(false);
 			} else {
-				data = await fetchUsers({ limit: 1000 }, search, tenantId).catch(() => undefined);
+				data = await fetchUsers({ limit: 500 }, search, tenantId).catch(() => undefined);
 				setIsSearch(true);
 				localSearch = true;
 			}
