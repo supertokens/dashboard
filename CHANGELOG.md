@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+- Adds support for WebAuthn as first factor
+
 ## [0.13.0]
 
 -   Adds support for SAML metadata
