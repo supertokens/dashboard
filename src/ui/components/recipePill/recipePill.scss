@@ -15,6 +15,10 @@
 		color: var(--color-emailpassword-text);
 		background-color: var(--color-emailpassword-bg);
 	}
+	&.webauthn {
+		color: var(--color-webauthn-text);
+		background-color: var(--color-webauthn-bg);
+	}
 	&.multiple {
 		color: var(--color-multiple-login-text);
 		background-color: var(--color-multiple-login-bg);

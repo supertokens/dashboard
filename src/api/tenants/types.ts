@@ -68,6 +68,7 @@ export type UpdateTenant = {
 	emailPasswordEnabled?: boolean;
 	passwordlessEnabled?: boolean;
 	thirdPartyEnabled?: boolean;
+	webauthnEnabled?: boolean;
 	firstFactors?: string[] | null;
 	requiredSecondaryFactors?: string[] | null;
 	coreConfig?: Record<string, unknown>;

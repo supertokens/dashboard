@@ -25,18 +25,27 @@ export type UserPaginationList = HttpApiBaseResponse & {
 export type EmailPasswordRecipeId = "emailpassword";
 export type ThirdPartyRecipeId = "thirdparty";
 export type PasswordlessRecipeId = "passwordless";
+export type WebauthnRecipeId = "webauthn";
 
-export type UserRecipeType = EmailPasswordRecipeId | ThirdPartyRecipeId | PasswordlessRecipeId | "multiple";
+export type UserRecipeType =
+	| EmailPasswordRecipeId
+	| ThirdPartyRecipeId
+	| PasswordlessRecipeId
+	| WebauthnRecipeId
+	| "multiple";
 
 export type LoginMethod = {
 	timeJoined: number;
 	recipeUserId: string;
-	recipeId: EmailPasswordRecipeId | PasswordlessRecipeId | ThirdPartyRecipeId;
+	recipeId: EmailPasswordRecipeId | PasswordlessRecipeId | ThirdPartyRecipeId | WebauthnRecipeId;
 	email?: string;
 	phoneNumber?: string;
 	thirdParty?: {
 		id: string;
 		userId: string;
+	};
+	webauthn?: {
+		credentialIds: string[];
 	};
 	verified: boolean;
 	tenantIds: string[];
@@ -51,6 +60,9 @@ export type User = {
 		id: string;
 		userId: string;
 	}[];
+	webauthn: {
+		credentialIds: string[];
+	};
 	loginMethods: LoginMethod[];
 	firstName?: string;
 	lastName?: string;
