@@ -289,6 +289,10 @@ export const getRecipeNameFromid = (id: UserRecipeType): string => {
 		return "Passwordless";
 	}
 
+	if (id === "webauthn") {
+		return "WebAuthn";
+	}
+
 	return "Third Party";
 };
 
@@ -343,6 +347,9 @@ export const doesTenantHasPasswordlessEnabled = (tenantFirstFactors: string[]): 
 		tenantFirstFactors.includes(FactorIds.LINK_EMAIL) ||
 		tenantFirstFactors.includes(FactorIds.LINK_PHONE)
 	);
+};
+export const doesTenantHasWebauthnEnabled = (tenantFirstFactors: string[]): boolean => {
+	return tenantFirstFactors.includes(FactorIds.WEBAUTHN);
 };
 
 export function usePrevious<T>(value: T) {

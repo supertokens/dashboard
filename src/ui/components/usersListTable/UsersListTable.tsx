@@ -244,6 +244,7 @@ const UserRecipeTypeText: Record<UserRecipeType, string> = {
 	["passwordless"]: "Passwordless",
 	["thirdparty"]: "Third party",
 	["multiple"]: "Multiple",
+	["webauthn"]: "WebAuthn",
 };
 
 // Pagination Section

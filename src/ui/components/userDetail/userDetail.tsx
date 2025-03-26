@@ -97,6 +97,10 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 				matchingTenants = tenants.filter((tenant) => tenant.firstFactors.includes(FactorIds.THIRDPARTY));
 			}
 
+			if (PrimaryLoginMethod.recipeId === "webauthn") {
+				matchingTenants = tenants.filter((tenant) => tenant.firstFactors.includes(FactorIds.WEBAUTHN));
+			}
+
 			if (matchingTenants.length > 0) {
 				tenantId = matchingTenants[0].tenantId;
 			}

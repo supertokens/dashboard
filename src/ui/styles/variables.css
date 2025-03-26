@@ -84,6 +84,8 @@ body {
 	/* Recipe Pill Colors */
 	--color-emailpassword-bg: rgb(221, 252, 247);
 	--color-emailpassword-text: rgb(0, 106, 91);
+	--color-webauthn-bg: rgb(206, 252, 254);
+	--color-webauthn-text: rgb(0, 75, 78);
 	--color-passwordless-bg: rgb(255, 234, 247);
 	--color-passwordless-text: rgb(168, 17, 90);
 	--color-multiple-login-text: rgb(159, 112, 19);

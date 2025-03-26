@@ -32,6 +32,7 @@ const UserRecipeTypeText: Record<UserRecipeType, string> = {
 	["passwordless"]: "Passwordless",
 	["thirdparty"]: "Third party",
 	["multiple"]: "Multiple",
+	["webauthn"]: "WebAuthn",
 };
 
 const ProviderPill = ({ id, userId }: { id: string; userId: string }) => {
@@ -62,6 +63,16 @@ const ProviderPill = ({ id, userId }: { id: string; userId: string }) => {
 				alt="Provider logo"
 			/>{" "}
 			| <CopyText copyVal={userId}>{trim(userId)}</CopyText>
+		</span>
+	);
+};
+
+const WebauthnPill = ({ credentialId }: { credentialId: string }) => {
+	return (
+		<span
+			key={credentialId}
+			className="webauthn-pill">
+			<CopyText copyVal={credentialId}>{credentialId}</CopyText>
 		</span>
 	);
 };
@@ -352,6 +363,28 @@ const Methods: React.FC<MethodProps> = ({
 						</div>
 						<div>
 							Created On: <b>{formatLongDate(loginMethod.timeJoined)}</b>
+						</div>
+					</>
+				)}
+				{loginMethod.recipeId === "webauthn" && (
+					<>
+						<div>
+							Created On: <b>{formatLongDate(loginMethod.timeJoined)}</b>
+						</div>
+						<div>
+							{loginMethod.webauthn && (
+								<>
+									WebAuthn Credential ID:&nbsp;{" "}
+									{loginMethod.webauthn.credentialIds.map((credentialId) => {
+										return (
+											<WebauthnPill
+												key={credentialId}
+												credentialId={credentialId}
+											/>
+										);
+									})}
+								</>
+							)}
 						</div>
 					</>
 				)}

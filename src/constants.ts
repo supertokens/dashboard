@@ -138,6 +138,11 @@ export const FIRST_FACTOR_IDS = [
 		description: "Sign in/up using third party providers (Requires the ThirdParty recipe to be initialized)",
 		id: "thirdparty",
 	},
+	{
+		label: "WebAuthn",
+		description: "Sign in/up using WebAuthn (Requires the WebAuthn recipe to be initialized)",
+		id: "webauthn",
+	},
 ];
 
 export const SECONDARY_FACTOR_IDS = [
@@ -168,4 +173,5 @@ export const FactorIds = {
 	LINK_PHONE: "link-phone",
 	THIRDPARTY: "thirdparty",
 	TOTP: "totp",
+	WEBAUTHN: "webauthn",
 };

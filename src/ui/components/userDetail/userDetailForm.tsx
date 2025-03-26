@@ -41,7 +41,7 @@ type UserDetailChangePasswordFormProps = {
 type UserDetailChangeEmailFormProps = {
 	onEmailChange: (success: boolean) => Promise<void>;
 	userId: string;
-	recipeId: "emailpassword" | "passwordless";
+	recipeId: "emailpassword" | "passwordless" | "webauthn";
 	tenantIds: string[];
 	recipeUserId: string;
 };
@@ -169,6 +169,10 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 
 		if (recipeId === "passwordless") {
 			matchingTenants = tenants.filter((tenant) => doesTenantHasPasswordlessEnabled(tenant.firstFactors));
+		}
+
+		if (recipeId === "webauthn") {
+			matchingTenants = tenants.filter((tenant) => tenant.firstFactors.includes(FactorIds.WEBAUTHN));
 		}
 
 		if (matchingTenants.length > 0) {
@@ -359,7 +363,11 @@ export const LoginMethodUnlinkConfirmation: FC<UserUnlinkConfirmationProps> = ({
 	let informationToEnter = "Confirm";
 	let inputType = "following information";
 
-	if (loginMethod.recipeId === "emailpassword" || loginMethod.recipeId === "thirdparty") {
+	if (
+		loginMethod.recipeId === "emailpassword" ||
+		loginMethod.recipeId === "thirdparty" ||
+		loginMethod.recipeId === "webauthn"
+	) {
 		informationToEnter = loginMethod.email ?? "";
 		inputType = "user's email id";
 	}

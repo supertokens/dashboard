@@ -14,7 +14,7 @@
  */
 
 type RecipePillProps = {
-	recipeId: "emailpassword" | "thirdparty" | "passwordless" | "multiple";
+	recipeId: "emailpassword" | "thirdparty" | "passwordless" | "multiple" | "webauthn";
 	label: string;
 	thirdpartyId?: string;
 };

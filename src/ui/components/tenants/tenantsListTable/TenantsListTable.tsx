@@ -37,6 +37,7 @@ const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
 		emailPassword: tenant.firstFactors.includes(FactorIds.EMAILPASSWORD),
 		passwordless: doesTenantHasPasswordlessEnabled(tenant.firstFactors),
 		thirdParty: tenant.firstFactors.includes(FactorIds.THIRDPARTY),
+		webauthn: tenant.firstFactors.includes(FactorIds.WEBAUTHN),
 	};
 
 	const hasNoLoginMethods = Object.values(loginMethods).every((value) => value === false);
@@ -74,6 +75,12 @@ const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
 				<RecipePill
 					recipeId="thirdparty"
 					label="Third Party"
+				/>
+			)}
+			{loginMethods.webauthn && (
+				<RecipePill
+					recipeId="webauthn"
+					label="WebAuthn"
 				/>
 			)}
 		</div>
