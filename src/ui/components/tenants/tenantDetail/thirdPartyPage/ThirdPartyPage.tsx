@@ -179,40 +179,38 @@ const ProviderAdditionalConfigForm = ({
 	};
 
 	const renderForm = () => {
-		switch (providerId) {
-			case "google-workspaces":
-				return (
-					<GoogleWorkspacesForm
-						handleContinue={handleContinue}
-						handleGoBack={handleGoBack}
-					/>
-				);
-			case "active-directory":
-				return (
-					<ActiveDirectoryForm
-						handleContinue={handleContinue}
-						handleGoBack={handleGoBack}
-					/>
-				);
-			case "okta":
-				return (
-					<OktaForm
-						handleContinue={handleContinue}
-						handleGoBack={handleGoBack}
-					/>
-				);
-			case "boxy-saml":
-				return (
-					<BoxySamlForm
-						handleContinue={handleContinue}
-						handleGoBack={handleGoBack}
-						currentAdditionalConfig={currentAdditionalConfig}
-						isAddingNewProvider={isAddingNewProvider}
-					/>
-				);
-			default:
-				return null;
+		if (providerId?.startsWith("google-workspaces")) {
+			return (
+				<GoogleWorkspacesForm
+					handleContinue={handleContinue}
+					handleGoBack={handleGoBack}
+				/>
+			);
+		} else if (providerId?.startsWith("active-directory")) {
+			return (
+				<ActiveDirectoryForm
+					handleContinue={handleContinue}
+					handleGoBack={handleGoBack}
+				/>
+			);
+		} else if (providerId?.startsWith("okta")) {
+			return (
+				<OktaForm
+					handleContinue={handleContinue}
+					handleGoBack={handleGoBack}
+				/>
+			);
+		} else if (providerId?.startsWith("boxy-saml")) {
+			return (
+				<BoxySamlForm
+					handleContinue={handleContinue}
+					handleGoBack={handleGoBack}
+					currentAdditionalConfig={currentAdditionalConfig}
+					isAddingNewProvider={isAddingNewProvider}
+				/>
+			);
 		}
+		return null;
 	};
 
 	return (
@@ -471,7 +469,7 @@ const GoogleWorkspacesForm = ({ handleContinue, handleGoBack }: AdditionalConfig
 			</div>
 
 			<p className="additional-config-container__note">
-				For example: use "example.com" if you want to allow logins only from that domain. Enter “ * “ if you
+				For example: use "example.com" if you want to allow logins only from that domain. Enter " * " if you
 				want to allow logins for any google workspace domain.
 			</p>
 
