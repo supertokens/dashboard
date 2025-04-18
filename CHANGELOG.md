@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.15.0]
+
+-   Fixes issue with ThirdParty info view
+
 ## [0.14.0]
 
 -   Adds support for WebAuthn as first factor
