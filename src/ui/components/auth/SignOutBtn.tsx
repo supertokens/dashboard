@@ -22,7 +22,10 @@ const SignOutBtn = () => {
 		<Button
 			onClick={logout}
 			size={"2"}
-			variant="ghost">
+			variant="ghost"
+			style={{
+				color: "var(--color-primary)",
+			}}>
 			Logout
 		</Button>
 	);

@@ -15,7 +15,6 @@
 
 import React, { PropsWithChildren } from "react";
 import { getImageUrl } from "../../../utils";
-import { Footer } from "../footer/footer";
 import "./error-boundary.scss";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -51,11 +50,6 @@ export default class ErrorBoundary extends React.Component<Props, State> {
 							</p>
 						</div>
 					</div>
-					<Footer
-						horizontalAlignment="center"
-						verticalAlignment="center"
-						size="normal"
-						colorMode="dark"></Footer>
 				</>
 			);
 		}

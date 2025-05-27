@@ -94,5 +94,5 @@ import "./assets/triangle-down.svg";
 import "./assets/Union-yellow.png";
 import "./assets/Union.png";
 import "./assets/unlink-login-method.png";
-import "./assets/user-managment.svg";
+import "./assets/user-management.svg";
 import "./logo.svg";

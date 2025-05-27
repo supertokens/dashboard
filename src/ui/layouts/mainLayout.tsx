@@ -1,4 +1,3 @@
-import { Footer } from "../components/footer/footer";
 import Header from "../components/header";
 import SideBar from "../components/sidebar";
 
@@ -15,11 +14,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
 			<main className="main-layout-container">
 				<SideBar />
 				<section className="main-content">{children}</section>
-				<Footer
-					colorMode="dark"
-					horizontalAlignment="center"
-					verticalAlignment="center"
-				/>
 			</main>
 		</>
 	);

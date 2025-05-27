@@ -1,11 +1,11 @@
 .main-layout-container {
 	display: block;
+	margin-top: var(--header-height);
 
 	.main-content {
-		margin-top: 44px;
-		margin-left: var(--sidebar-width);
-		padding: 0 20px;
-		min-height: 100vh;
+		margin-left: calc(var(--sidebar-width) + 2 * var(--sidebar-x-margin));
+		padding: var(--main-content-y-padding) var(--main-content-x-padding) 0 var(--main-content-x-padding);
+		min-height: calc(100vh - var(--header-height));
 	}
 }
 

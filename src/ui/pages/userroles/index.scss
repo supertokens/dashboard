@@ -16,7 +16,7 @@
 .userroles-container {
 	max-width: var(--container-width);
 	height: 100%;
-	padding: 72px 0px 0px;
+	padding: 0px 0px;
 	margin: auto;
 
 	.userroles-title {
@@ -42,14 +42,14 @@
 
 @media (max-width: 1024px) {
 	.userroles-container {
-		padding: 72px 40px 48px;
+		padding: 0 40px 48px;
 		max-width: 100%;
 	}
 }
 
 @media (max-width: 480px) {
 	.userroles-container {
-		padding: 72px 18px 48px;
+		padding: 0 18px 48px;
 		max-width: 100%;
 	}
 }

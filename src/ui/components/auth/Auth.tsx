@@ -15,7 +15,6 @@
 
 import React, { useState } from "react";
 import { getImageUrl } from "../../../utils";
-import { Footer, LOGO_ICON_LIGHT } from "../footer/footer";
 import SafeAreaView from "../safeAreaView/SafeAreaView";
 import "./Auth.scss";
 import SignInContentWrapper from "./SignInContentWrapper";
@@ -23,6 +22,7 @@ import SignUpOrResetPassword from "./SignUpOrResetPasswordContent";
 import { type ContentMode } from "./types";
 
 const INITIAL_CONTENT_TO_SHOW: ContentMode = "sign-in";
+export const LOGO_ICON_LIGHT = getImageUrl("ST_full_logo_light_theme.svg");
 
 const Auth: React.FC<{
 	onSuccess: () => void;
@@ -72,11 +72,6 @@ const Auth: React.FC<{
 					{getContentToRender()}
 				</div>
 			</div>
-			<Footer
-				horizontalAlignment="center"
-				size="normal"
-				verticalAlignment="center"
-				colorMode="dark"></Footer>
 		</>
 	);
 };

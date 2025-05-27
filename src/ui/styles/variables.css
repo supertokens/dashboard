@@ -124,8 +124,22 @@ body {
 	--color-popup-item-delete-hover: rgba(222, 35, 61, 0.12);
 	--color-button-outline-hover: rgb(250, 250, 250);
 
+	/* Generic colors */
+	--color-accent-alpha: rgba(0, 37, 158, 0.8);
+	--color-neutral-alpha: rgba(0, 7, 19, 0.62);
+	--color-primary: rgba(28, 100, 242, 1);
+
+	/* Shadows */
+	--shadow-2: 0px 1px 3px 0px rgba(0, 0, 0, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05),
+		0px 1px 4px 0px rgba(0, 0, 61, 0.05);
+
 	/* Sizes */
-	--sidebar-width: 240px;
+	--sidebar-width: 292px;
+	--header-height: 62px;
+	--sidebar-y-margin: 16px;
+	--sidebar-x-margin: 10px;
+	--main-content-y-padding: 40px;
+	--main-content-x-padding: 20px;
 
 	--container-width: 842px;
 

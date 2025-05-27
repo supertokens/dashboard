@@ -16,7 +16,7 @@
 .tenants-container {
 	max-width: var(--container-width);
 	height: 100%;
-	padding: 72px 0px 0px;
+	padding: 0px;
 	margin: auto;
 	margin-bottom: 36px;
 
@@ -36,14 +36,14 @@
 
 @media (max-width: 1024px) {
 	.tenants-container {
-		padding: 72px 40px 48px;
+		padding: 0px 40px 48px;
 		max-width: 100%;
 	}
 }
 
 @media (max-width: 480px) {
 	.tenants-container {
-		padding: 72px 18px 48px;
+		padding: 0px 18px 48px;
 		max-width: 100%;
 	}
 }
