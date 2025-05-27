@@ -13,6 +13,7 @@
  * under the License.
  */
 
+import "@radix-ui/themes/styles.css";
 import "./index.css";
-import "./variables.css";
 import "./uikit.scss";
+import "./variables.css";

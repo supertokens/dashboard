@@ -13,6 +13,7 @@
  * under the License.
  */
 
+import { Theme } from "@radix-ui/themes";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import UsersListPage from "./ui/pages/usersList/UsersList";
 import { getDashboardAppBasePath } from "./utils";
@@ -41,28 +42,34 @@ function App() {
 					<AccessDeniedContextProvider>
 						<TenantsListContextProvider>
 							<AuthWrapper>
-								<Router basename={getDashboardAppBasePath()}>
-									<MainLayout>
-										<Routes>
-											<Route
-												path="/"
-												element={<UsersListPage />}
-											/>
-											<Route
-												path="/roles"
-												element={<UserRolesList />}
-											/>
-											<Route
-												path="/tenants"
-												element={<TenantManagement />}
-											/>
-											<Route
-												path="*"
-												element={<UsersListPage />}
-											/>
-										</Routes>
-									</MainLayout>
-								</Router>
+								<Theme
+									radius="medium"
+									accentColor="indigo"
+									appearance="light">
+									<Router basename={getDashboardAppBasePath()}>
+										<MainLayout>
+											<Routes>
+												<Route
+													path="/"
+													element={<UsersListPage />}
+												/>
+												<Route
+													path="/roles"
+													element={<UserRolesList />}
+												/>
+												<Route
+													path="/tenants"
+													element={<TenantManagement />}
+												/>
+												<Route
+													path="*"
+													element={<UsersListPage />}
+												/>
+											</Routes>
+										</MainLayout>
+									</Router>
+								</Theme>
+
 								<AccessDeniedModal />
 								<ToastNotificationContainer />
 								<LayoutModalContainer />
