@@ -14,15 +14,16 @@
  */
 
 import useAuthService from "../../../api";
-import Button from "../button";
-import "./SignOutBtn.scss";
+import Button from "../radix/button";
+
 const SignOutBtn = () => {
 	const { logout } = useAuthService();
 	return (
 		<Button
-			color="outline"
-			onClick={logout}>
-			Sign Out
+			onClick={logout}
+			size={"2"}
+			variant="ghost">
+			Logout
 		</Button>
 	);
 };
