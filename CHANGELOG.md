@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.14.0]
+
+-   Redesigns the dashboard UI and improves user experience
+
 ## [0.13.0]
 
 -   Adds support for SAML metadata
