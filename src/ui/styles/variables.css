@@ -128,10 +128,16 @@ body {
 	--color-accent-alpha: rgba(0, 37, 158, 0.8);
 	--color-neutral-alpha: rgba(0, 7, 19, 0.62);
 	--color-primary: rgba(28, 100, 242, 1);
+	--color-neutral-9: #8b8d98;
+	--color-neutral-12: rgba(28, 32, 36, 1);
+	--color-accent-9: #3e63dd;
 
 	/* Shadows */
 	--shadow-2: 0px 1px 3px 0px rgba(0, 0, 0, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05),
 		0px 1px 4px 0px rgba(0, 0, 61, 0.05);
+
+	/* Radius */
+	--radius-6: 16px;
 
 	/* Sizes */
 	--sidebar-width: 292px;
