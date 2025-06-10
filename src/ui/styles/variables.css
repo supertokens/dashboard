@@ -125,12 +125,17 @@ body {
 	--color-button-outline-hover: rgb(250, 250, 250);
 
 	/* Generic colors */
-	--color-accent-alpha: rgba(0, 37, 158, 0.8);
-	--color-neutral-alpha: rgba(0, 7, 19, 0.62);
-	--color-primary: rgba(28, 100, 242, 1);
+	--color-accent-alpha: #00259ecc;
+	--color-neutral-alpha: #00071399;
+	--color-primary: #1c64f2;
+	--color-neutral-6: #dddde3;
 	--color-neutral-9: #8b8d98;
-	--color-neutral-12: rgba(28, 32, 36, 1);
+	--color-neutral-12: #1c2024;
+	--color-neutral-11: #60646c;
 	--color-accent-9: #3e63dd;
+	--color-accent-2: #f8faff;
+	--color-gray-9: #f2f2f0;
+	--color-alpha-11: rgba(0, 7, 19, 0.62);
 
 	/* Shadows */
 	--shadow-2: 0px 1px 3px 0px rgba(0, 0, 0, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05),

@@ -45,6 +45,8 @@ import "./assets/eye-stroke.svg";
 import "./assets/eye.svg";
 import "./assets/favicon.ico";
 import "./assets/filter-icon.svg";
+import "./assets/sort-ascending.svg";
+import "./assets/sort-descending.svg";
 import "./assets/form-field-error-icon.svg";
 import "./assets/hamburger-menu.svg";
 import "./assets/help-circle.svg";
