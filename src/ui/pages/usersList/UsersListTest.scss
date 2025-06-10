@@ -13,19 +13,12 @@
  * under the License.
  */
 
-import React from "react";
-import { Callout as RadixCallout } from "@radix-ui/themes";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
+.demo-callout__text {
+	color: var(--color-neutral-12);
+	line-height: 20px;
+}
 
-export default function Callout({ children, ...props }: RadixCallout.RootProps & { children: React.ReactNode }) {
-	return (
-		<RadixCallout.Root
-			variant="soft"
-			{...props}>
-			<RadixCallout.Icon>
-				<InfoCircledIcon color="gray" />
-			</RadixCallout.Icon>
-			<RadixCallout.Text>{children}</RadixCallout.Text>
-		</RadixCallout.Root>
-	);
+.demo-callout__text--highlighted {
+	color: var(--color-accent-9);
+	font-weight: 600;
 }

@@ -15,7 +15,7 @@
 
 import { Theme } from "@radix-ui/themes";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import UsersListPage from "./ui/pages/usersList/UsersList";
+import UsersListPage from "./ui/pages/usersList/UsersListTest";
 import { getDashboardAppBasePath } from "./utils";
 
 // This is to make sure that images are packed in the build folder

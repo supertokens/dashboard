@@ -111,6 +111,10 @@ $container-padding-horizontal: 40;
 	}
 }
 
+.users-list-callout {
+	color: var(--color-neutral-12);
+}
+
 @media (min-width: 1126px) {
 	.users-list {
 		width: var(--container-width);

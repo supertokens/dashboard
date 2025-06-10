@@ -13,19 +13,11 @@
  * under the License.
  */
 
+import { Box } from "@radix-ui/themes";
 import React from "react";
-import { Callout as RadixCallout } from "@radix-ui/themes";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 
-export default function Callout({ children, ...props }: RadixCallout.RootProps & { children: React.ReactNode }) {
-	return (
-		<RadixCallout.Root
-			variant="soft"
-			{...props}>
-			<RadixCallout.Icon>
-				<InfoCircledIcon color="gray" />
-			</RadixCallout.Icon>
-			<RadixCallout.Text>{children}</RadixCallout.Text>
-		</RadixCallout.Root>
-	);
+import "./paper.scss";
+
+export default function Paper({ children }: { children: React.ReactNode }) {
+	return <Box className="paper">{children}</Box>;
 }
