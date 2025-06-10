@@ -130,6 +130,7 @@ body {
 	--color-primary: #1c64f2;
 	--color-neutral-6: #dddde3;
 	--color-neutral-9: #8b8d98;
+	--color-neutral-10: #f9f9f8;
 	--color-neutral-12: #1c2024;
 	--color-neutral-11: #60646c;
 	--color-accent-9: #3e63dd;
@@ -138,10 +139,12 @@ body {
 	--color-alpha-11: rgba(0, 7, 19, 0.62);
 
 	/* Shadows */
+	--shadow-1: 0px 1.5px 2px 0px rgba(0, 0, 0, 0.13) inset;
 	--shadow-2: 0px 1px 3px 0px rgba(0, 0, 0, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05),
 		0px 1px 4px 0px rgba(0, 0, 61, 0.05);
 
 	/* Radius */
+	--radius-4: 12px;
 	--radius-6: 16px;
 
 	/* Sizes */

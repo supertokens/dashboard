@@ -25,6 +25,9 @@ import IconButton from "../../components/radix/iconButton";
 
 import "./UsersListTest.scss";
 import Button from "../../components/radix/button";
+import Loader from "../../components/radix/loader";
+import DashboardError from "../../components/radix/error";
+import { assertNever } from "../../../utils/assertNever";
 
 const connectionURL = "https://try.supertokens.com/appid-demo-dashboard";
 
@@ -271,6 +274,7 @@ const UserListFooter = () => {
 	);
 };
 export default function UsersListPage() {
+	const [state, setState] = useState<"LOADING" | "ERROR" | "SUCCESS">("LOADING");
 	const [tenant, setTenant] = useState("public");
 
 	return (
@@ -281,14 +285,27 @@ export default function UsersListPage() {
 			/>
 			<div className="users-list">
 				<RenderDemoCallout connectionURI={connectionURL} />
-				<Paper>
-					<UserListHeader
-						tenant={tenant}
-						setTenant={setTenant}
-					/>
-					<UserListTable />
-					<UserListFooter />
-				</Paper>
+				{(() => {
+					switch (state) {
+						case "LOADING":
+							return <Loader type="list" />;
+						case "ERROR":
+							return <DashboardError />;
+						case "SUCCESS":
+							return (
+								<Paper>
+									<UserListHeader
+										tenant={tenant}
+										setTenant={setTenant}
+									/>
+									<UserListTable />
+									<UserListFooter />
+								</Paper>
+							);
+						default:
+							assertNever(state);
+					}
+				})()}
 			</div>
 		</PageContainer>
 	);

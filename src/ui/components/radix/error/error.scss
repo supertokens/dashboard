@@ -13,15 +13,24 @@
  * under the License.
  */
 
-import { ButtonProps, Button as RadixButton, Spinner } from "@radix-ui/themes";
+.dashboard-error {
+	box-shadow: var(--shadow-2);
+	border-radius: var(--radius-6);
+	background: #fff;
 
-export default function Button({ isLoading, style, ...props }: ButtonProps & { isLoading?: boolean }) {
-	return (
-		<RadixButton
-			{...props}
-			style={{ cursor: "pointer", ...style }}>
-			{isLoading ? <Spinner /> : null}
-			{props.children}
-		</RadixButton>
-	);
+	&__content {
+		border-radius: var(--radius-4);
+		background: var(--color-neutral-10);
+		box-shadow: var(--shadow-1);
+		border: 1px solid var(--color-neutral-6);
+
+		&__title {
+			color: var(--color-neutral-12);
+			font-weight: 600;
+		}
+
+		&__description {
+			color: var(--color-alpha-11);
+		}
+	}
 }
