@@ -13,6 +13,6 @@
  * under the License.
  */
 
-export function assertNever(value: never): never {
-	throw new Error("Unexpected value: " + value);
-}
+export const generateRandomId = (): number => {
+	return Math.floor(Math.random() * 1000000);
+};

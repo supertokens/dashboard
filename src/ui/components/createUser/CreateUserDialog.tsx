@@ -18,7 +18,7 @@ import "./createUserDialog.scss";
 import { useState } from "react";
 import { PasswordlessContactMethod, Tenant } from "../../../api/tenants/types";
 import { FactorIds } from "../../../constants";
-import { doesTenantHasPasswordlessEnabled } from "../../../utils";
+import { doesTenantHavePasswordlessEnabled } from "../../../utils";
 import Alert from "../alert";
 import Button from "../button";
 import { Dialog, DialogContent, DialogFooter } from "../dialog";
@@ -59,7 +59,7 @@ export default function CreateUserDialog({
 		});
 	}
 
-	if (doesTenantHasPasswordlessEnabled(selectedTenantObject.firstFactors)) {
+	if (doesTenantHavePasswordlessEnabled(selectedTenantObject.firstFactors)) {
 		selectableAuthMethods.push({
 			name: "passwordless",
 			value: "passwordless",

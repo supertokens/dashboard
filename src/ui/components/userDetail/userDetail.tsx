@@ -19,7 +19,7 @@ import { GetUserInfoResult, UpdateUserInformationResponse, useUserService } from
 import useMetadataService from "../../../api/user/metadata";
 import useSessionsForUserService from "../../../api/user/sessions";
 import { FactorIds } from "../../../constants";
-import { doesTenantHasPasswordlessEnabled, getImageUrl, getRecipeNameFromid } from "../../../utils";
+import { doesTenantHavePasswordlessEnabled, getImageUrl, getRecipeNameFromid } from "../../../utils";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { User, UserRecipeType } from "../../pages/usersList/types";
@@ -90,7 +90,7 @@ export const UserDetail: React.FC<UserDetailProps> = (props) => {
 			}
 
 			if (PrimaryLoginMethod.recipeId === "passwordless") {
-				matchingTenants = tenants.filter((tenant) => doesTenantHasPasswordlessEnabled(tenant.firstFactors));
+				matchingTenants = tenants.filter((tenant) => doesTenantHavePasswordlessEnabled(tenant.firstFactors));
 			}
 
 			if (PrimaryLoginMethod.recipeId === "thirdparty") {

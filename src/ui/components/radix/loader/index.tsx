@@ -14,43 +14,62 @@
  */
 
 import { Flex, Skeleton, Spinner } from "@radix-ui/themes";
+import Paper from "../paper";
+import { assertNever } from "@utils/assertNever";
 
-export default function Loader({ type }: { type: "inline" | "list" | "page" }) {
+type LoaderType = "inline" | "list" | "table-with-list" | "page";
+
+const ListSkeleton = () => {
+	return (
+		<Flex
+			direction="column"
+			gap="4">
+			<Skeleton
+				width="100%"
+				height="40px"
+			/>
+			<Skeleton
+				width="100%"
+				height="20px"
+			/>
+			<Skeleton
+				width="100%"
+				height="20px"
+			/>
+			<Skeleton
+				width="100%"
+				height="20px"
+			/>
+			<Skeleton
+				width="100%"
+				height="20px"
+			/>
+			<Skeleton
+				width="70%"
+				height="20px"
+			/>
+		</Flex>
+	);
+};
+
+export default function Loader({ type }: { type: LoaderType }) {
 	switch (type) {
 		case "inline":
-			return <Spinner size="2" />;
-		case "list":
 			return (
-				<Flex
-					direction="column"
-					width="100%"
-					gap="4">
-					<Skeleton
-						width="100%"
-						height="40px"
-					/>
-					<Skeleton
-						width="100%"
-						height="20px"
-					/>
-					<Skeleton
-						width="100%"
-						height="20px"
-					/>
-					<Skeleton
-						width="100%"
-						height="20px"
-					/>
-					<Skeleton
-						width="100%"
-						height="20px"
-					/>
-					<Skeleton
-						width="70%"
-						height="20px"
-					/>
-				</Flex>
+				<Spinner
+					size="2"
+					mx="auto"
+				/>
 			);
+		case "list":
+			return <ListSkeleton />;
+		case "table-with-list":
+			return (
+				<Paper>
+					<ListSkeleton />
+				</Paper>
+			);
+
 		case "page":
 			return (
 				<Flex
@@ -61,5 +80,7 @@ export default function Loader({ type }: { type: "inline" | "list" | "page" }) {
 					<Spinner size="2" />
 				</Flex>
 			);
+		default:
+			assertNever(type);
 	}
 }

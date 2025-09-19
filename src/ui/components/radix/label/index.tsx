@@ -13,6 +13,15 @@
  * under the License.
  */
 
-export function assertNever(value: never): never {
-	throw new Error("Unexpected value: " + value);
+import { Text } from "@radix-ui/themes";
+import "./index.scss";
+
+export default function Label({ title, htmlFor }: { title: string; htmlFor?: string }) {
+	return (
+		<Text
+			className="form-label"
+			htmlFor={htmlFor}>
+			{title}
+		</Text>
+	);
 }

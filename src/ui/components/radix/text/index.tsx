@@ -13,6 +13,26 @@
  * under the License.
  */
 
-export function assertNever(value: never): never {
-	throw new Error("Unexpected value: " + value);
+import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+
+type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
+	error?: string;
+};
+
+export default function TextField({ error, ...props }: TextFieldProps) {
+	return (
+		<Flex
+			direction="column"
+			width="100%">
+			<RadixTextField.Root {...props} />
+			{error && (
+				<Text
+					size="1"
+					color="red"
+					mt="1">
+					{error}
+				</Text>
+			)}
+		</Flex>
+	);
 }

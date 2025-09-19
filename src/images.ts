@@ -98,4 +98,8 @@ import "./assets/Union-yellow.png";
 import "./assets/Union.png";
 import "./assets/unlink-login-method.png";
 import "./assets/user-management.svg";
+import "./assets/permission.svg";
+import "./assets/user.svg";
+import "./assets/cross-2.svg";
+import "./assets/danger.svg";
 import "./logo.svg";

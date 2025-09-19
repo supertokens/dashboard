@@ -18,6 +18,6 @@ import React from "react";
 
 import "./paper.scss";
 
-export default function Paper({ children }: { children: React.ReactNode }) {
-	return <Box className="paper">{children}</Box>;
+export default function Paper({ children, withBackground }: { children: React.ReactNode; withBackground?: boolean }) {
+	return <Box className={`paper ${withBackground ? "paper--with-background" : ""}`}>{children}</Box>;
 }

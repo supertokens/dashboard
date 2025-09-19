@@ -18,7 +18,7 @@ import { Tenant } from "../../../api/tenants/types";
 import { useUserService } from "../../../api/user";
 import usePasswordResetService from "../../../api/user/password/reset";
 import { FactorIds } from "../../../constants";
-import { doesTenantHasPasswordlessEnabled, getImageUrl } from "../../../utils";
+import { doesTenantHavePasswordlessEnabled, getImageUrl } from "../../../utils";
 import { ForbiddenError } from "../../../utils/customErrors";
 import { getTenantsObjectsForIds } from "../../../utils/user";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
@@ -168,7 +168,7 @@ export const UserDetailChangeEmailForm: FC<UserDetailChangeEmailFormProps> = (
 		}
 
 		if (recipeId === "passwordless") {
-			matchingTenants = tenants.filter((tenant) => doesTenantHasPasswordlessEnabled(tenant.firstFactors));
+			matchingTenants = tenants.filter((tenant) => doesTenantHavePasswordlessEnabled(tenant.firstFactors));
 		}
 
 		if (matchingTenants.length > 0) {

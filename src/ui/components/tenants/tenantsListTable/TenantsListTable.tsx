@@ -14,7 +14,7 @@
  */
 import { Tenant } from "../../../../api/tenants/types";
 import { FactorIds } from "../../../../constants";
-import { doesTenantHasPasswordlessEnabled, getImageUrl } from "../../../../utils";
+import { doesTenantHavePasswordlessEnabled, getImageUrl } from "../../../../utils";
 import Pagination from "../../pagination";
 import { RecipePill } from "../../recipePill/RecipePill";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../table";
@@ -35,7 +35,7 @@ type TenantsListTableProps = {
 const TenantLoginMethods = ({ tenant }: { tenant: Tenant }) => {
 	const loginMethods = {
 		emailPassword: tenant.firstFactors.includes(FactorIds.EMAILPASSWORD),
-		passwordless: doesTenantHasPasswordlessEnabled(tenant.firstFactors),
+		passwordless: doesTenantHavePasswordlessEnabled(tenant.firstFactors),
 		thirdParty: tenant.firstFactors.includes(FactorIds.THIRDPARTY),
 	};
 

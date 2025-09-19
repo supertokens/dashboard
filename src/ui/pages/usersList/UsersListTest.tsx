@@ -13,33 +13,38 @@
  * under the License.
  */
 
-import PageContainer from "../../components/radix/pageContainer";
-import PageHeading from "../../components/radix/pageHeading";
-import Callout from "../../components/radix/callout";
-import { getConnectionUri, getImageUrl, isSearchEnabled, isUsingDemoConnectionUri } from "../../../utils";
-import { Box, Flex, Select, Text, TextField } from "@radix-ui/themes";
-import Paper from "../../components/radix/paper";
+import PageContainer from "@components/radix/pageContainer";
+import PageHeading from "@components/radix/pageHeading";
+import Callout from "@components/radix/callout";
+import { getConnectionUri, getImageUrl, isUsingDemoConnectionUri, isSearchEnabled } from "@utils";
+import { Box, Flex, Select, Text } from "@radix-ui/themes";
+import Paper from "@components/radix/paper";
 import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, PlusIcon } from "@radix-ui/react-icons";
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
-import IconButton from "../../components/radix/iconButton";
+import IconButton from "@components/radix/iconButton";
+import Button from "@components/radix/button";
+
+import Loader from "@components/radix/loader";
+import DashboardError from "@components/radix/error";
+import { assertNever } from "@utils/assertNever";
+import { LIST_DEFAULT_LIMIT } from "@components/usersListTable/UsersListTable";
+import { User } from "./types";
+import useFetchUsersService from "@api/users";
+import { useListTenantsService } from "@api/tenants";
+import { useTenantsListContext } from "@contexts/TenantsListContext";
+import useFetchCount from "@api/users/count";
+import { getAuthMode } from "@utils";
+import { localStorageHandler } from "@services/storage";
+import { StorageKeys } from "@constants";
+import { package_version } from "@version";
+import { useAnalyticsService } from "@api/analytics";
+import useFetchSearchTags from "@api/search/searchTags";
+import Search from "@components/search/indexTest";
 
 import "./UsersListTest.scss";
-import Button from "../../components/radix/button";
-import Loader from "../../components/radix/loader";
-import DashboardError from "../../components/radix/error";
-import { assertNever } from "../../../utils/assertNever";
-import { LIST_DEFAULT_LIMIT } from "../../components/usersListTable/UsersListTable";
-import { User } from "./types";
-import useFetchUsersService from "../../../api/users";
-import { useListTenantsService } from "../../../api/tenants";
-import { useTenantsListContext } from "../../contexts/TenantsListContext";
-import useFetchCount from "../../../api/users/count";
-import { getAuthMode } from "../../../utils";
-import { localStorageHandler } from "../../../services/storage";
-import { StorageKeys } from "../../../constants";
-import { package_version } from "../../../version";
-import { useAnalyticsService } from "../../../api/analytics";
-import useFetchSearchTags from "../../../api/search/searchTags";
+import EmptyList from "@components/radix/empty";
+import CreateUserDialogTest from "@components/createUser/CreateUserDialogTest";
+import { Tenant } from "@api/tenants/types";
 
 const RenderDemoCallout = ({ connectionURI }: { connectionURI: string }) => {
 	if (!isUsingDemoConnectionUri(connectionURI)) return null;
@@ -64,35 +69,30 @@ const RenderDemoCallout = ({ connectionURI }: { connectionURI: string }) => {
 	);
 };
 
-const UserListHeader = ({ onTenantChange }: { onTenantChange: () => void }) => {
+const UserListHeader = ({ onTenantChange, loadCount }: { onTenantChange: () => void; loadCount: () => void }) => {
+	const [showCreateUserDialog, setShowCreateUserDialog] = useState(false);
 	const { getSelectedTenant, setSelectedTenant, tenantsListFromStore } = useTenantsListContext();
 	const selectedTenant = getSelectedTenant();
 
 	return (
 		<Flex
 			justify="between"
-			align="center"
 			gap="8"
 			mb="4"
 			className="users-list__header">
 			<Flex
 				flexGrow="1"
 				gap="2"
-				align="center"
 				maxWidth="600px">
 				{isSearchEnabled() && (
-					<TextField.Root
-						placeholder="Search by email, phone, or provider"
-						size="2"
-						variant="surface"
-						className="users-list__header__search">
-						<TextField.Slot>
-							<MagnifyingGlassIcon
-								height="16"
-								width="16"
-							/>
-						</TextField.Slot>
-					</TextField.Root>
+					<Box className="users-list__header__search">
+						<Search
+							onSearch={() => {
+								return Promise.resolve();
+							}}
+							isLoading={false}
+						/>
+					</Box>
 				)}
 
 				<Select.Root
@@ -146,27 +146,25 @@ const UserListHeader = ({ onTenantChange }: { onTenantChange: () => void }) => {
 				</IconButton>
 			</Flex>
 			<Button
+				onClick={() => setShowCreateUserDialog(true)}
 				size="2"
 				variant="solid"
 				className="users-list__header__btn">
 				<PlusIcon />
 				Add User
 			</Button>
+			{showCreateUserDialog && (
+				<CreateUserDialogTest
+					handleClose={() => setShowCreateUserDialog(false)}
+					tenants={tenantsListFromStore ?? []}
+					loadCount={loadCount}
+				/>
+			)}
 		</Flex>
 	);
 };
-
-const UserListItem = ({
-	name,
-	email,
-	timeJoined,
-	isLast,
-}: {
-	name: string;
-	email: string;
-	timeJoined: string;
-	isLast: boolean;
-}) => {
+const UserListItem = ({ user, isLast }: { user: User; isLast: boolean }) => {
+	const { firstName, lastName, emails, timeJoined } = user;
 	return (
 		<Flex
 			align="center"
@@ -180,13 +178,13 @@ const UserListItem = ({
 					className="users-list__table__item__details__name"
 					size="3"
 					weight="medium">
-					{name}
+					{firstName + " " + lastName}
 				</Text>
 				<Text
 					className="users-list__table__item__details__email"
 					size="2"
 					weight="medium">
-					{email}
+					{emails[0]}
 				</Text>
 			</Flex>
 			<Text
@@ -203,36 +201,37 @@ const UserListItem = ({
 	);
 };
 
-const USERS = [
-	{
-		name: "John Smith",
-		email: "john.smith@example.com",
-		timeJoined: "2024-01-15 09:30",
-	},
-	{
-		name: "Sarah Johnson",
-		email: "sarah.j@example.com",
-		timeJoined: "2024-01-14 14:45",
-	},
-	{
-		name: "Michael Chen",
-		email: "m.chen@example.com",
-		timeJoined: "2024-01-13 11:20",
-	},
-	{
-		name: "Emily Brown",
-		email: "emily.brown@example.com",
-		timeJoined: "2024-01-12 16:15",
-	},
-	{
-		name: "David Wilson",
-		email: "d.wilson@example.com",
-		timeJoined: "2024-01-11 10:00",
-	},
-];
+type UserListTableProps = {
+	users: User[];
+	offset: number;
+	count: number;
+	errorOffsets: number[];
+	limit: number;
+	nextPaginationToken: string | undefined;
+	goToNext: (token: string) => void;
+	offsetChange: (offset: number) => void;
+	isLoading: boolean;
+	// onSelect: (user: User) => void;
+	// onChangePasswordCallback: (user: User) => void;
+	// onDeleteCallback: (user: User) => void;
+	// onEmailChanged: () => void;
+	pagination: boolean;
+};
 
-const UserListTable = () => {
+const UserListTable = ({
+	users,
+	offset,
+	count,
+	errorOffsets,
+	limit,
+	nextPaginationToken,
+	goToNext,
+	offsetChange,
+	isLoading,
+	pagination,
+}: UserListTableProps) => {
 	const [sort, setSort] = useState<"asc" | "desc">("desc");
+
 	return (
 		<Box className="users-list__table">
 			<Flex
@@ -256,15 +255,25 @@ const UserListTable = () => {
 					/>
 				</Text>
 			</Flex>
-			<Flex direction="column">
-				{USERS.map((user, index) => (
-					<UserListItem
-						key={user.email}
-						isLast={index === USERS.length - 1}
-						{...user}
-					/>
-				))}
-			</Flex>
+			{users.length === 0 ? (
+				<EmptyList
+					iconUrl="user.svg"
+					title="You don't have any users"
+					description="Once added all users will be found here. If you are using the session management feature of SuperTokens, your users will not appear in this list."
+				/>
+			) : (
+				<>
+					<Flex direction="column">
+						{users.map((user, index) => (
+							<UserListItem
+								key={user.emails[0]}
+								isLast={index === users.length - 1}
+								user={user}
+							/>
+						))}
+					</Flex>
+				</>
+			)}
 		</Box>
 	);
 };
@@ -507,14 +516,28 @@ export default function UsersListPage() {
 				{(() => {
 					switch (pageState) {
 						case "LOADING":
-							return <Loader type="list" />;
+							return <Loader type="table-with-list" />;
 						case "ERROR":
 							return <DashboardError />;
 						case "SUCCESS":
 							return (
 								<Paper>
-									<UserListHeader onTenantChange={() => void loadCount()} />
-									<UserListTable />
+									<UserListHeader
+										onTenantChange={() => void loadCount()}
+										loadCount={loadCount}
+									/>
+									<UserListTable
+										users={users}
+										offset={offset}
+										count={(isSearch ? users.length : count) ?? 0}
+										errorOffsets={errorOffsets}
+										limit={isSearch ? users.length : limit}
+										nextPaginationToken={paginationTokenByOffset[offset + limit]}
+										goToNext={(token) => loadUsers(token)}
+										offsetChange={loadOffset}
+										isLoading={loading}
+										pagination={!isSearch}
+									/>
 									<UserListFooter />
 								</Paper>
 							);

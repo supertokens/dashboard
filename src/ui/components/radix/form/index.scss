@@ -13,6 +13,8 @@
  * under the License.
  */
 
-export function assertNever(value: never): never {
-	throw new Error("Unexpected value: " + value);
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
 }

@@ -26,6 +26,7 @@
 }
 
 .users-list__header {
+	flex-wrap: wrap;
 	&__search {
 		flex-grow: 1;
 		flex-basis: 0;

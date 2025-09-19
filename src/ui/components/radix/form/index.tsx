@@ -13,6 +13,29 @@
  * under the License.
  */
 
-export function assertNever(value: never): never {
-	throw new Error("Unexpected value: " + value);
+import React from "react";
+import "./index.scss";
+import { Flex } from "@radix-ui/themes";
+
+export default function Form({
+	children,
+	...props
+}: { children: React.ReactNode } & React.FormHTMLAttributes<HTMLFormElement>) {
+	return (
+		<form
+			className="form"
+			{...props}>
+			{children}
+		</form>
+	);
 }
+
+Form.Item = function FormItem({ children }: { children: React.ReactNode }) {
+	return (
+		<Flex
+			direction="column"
+			className="form-item">
+			{children}
+		</Flex>
+	);
+};

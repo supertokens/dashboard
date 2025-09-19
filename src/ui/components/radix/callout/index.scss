@@ -13,6 +13,16 @@
  * under the License.
  */
 
-export function assertNever(value: never): never {
-	throw new Error("Unexpected value: " + value);
+.callout {
+	ul {
+		margin-left: 10px;
+	}
+	&--warning {
+		background-color: var(--color-warning-alpha-3) !important;
+		color: var(--color-warning-alpha-11) !important;
+
+		a {
+			color: var(--color-warning-alpha-11) !important;
+		}
+	}
 }

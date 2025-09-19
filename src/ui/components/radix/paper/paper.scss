@@ -2,5 +2,9 @@
 	border-radius: var(--radius-6);
 	background: #fff;
 	box-shadow: var(--shadow-2);
-	padding: 16px 20px;
+	padding: 20px;
+
+	&--with-background {
+		background: var(--color-sand-2);
+	}
 }

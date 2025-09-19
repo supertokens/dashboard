@@ -15,7 +15,7 @@
 
 import { Dialog, Flex } from "@radix-ui/themes";
 import React from "react";
-import { getImageUrl } from "../../../../utils";
+import { getImageUrl } from "@utils";
 
 import "./modal.scss";
 import Button from "../button";
@@ -55,7 +55,7 @@ export function Modal({
 						color="gray"
 						className="modal__close-button">
 						<img
-							src={getImageUrl("close-2.svg")}
+							src={getImageUrl("cross-2.svg")}
 							alt="Close modal"
 							className="img-hover"
 						/>

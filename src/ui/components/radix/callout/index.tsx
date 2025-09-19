@@ -15,16 +15,35 @@
 
 import React from "react";
 import { Callout as RadixCallout } from "@radix-ui/themes";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { ExclamationTriangleIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 
-export default function Callout({ children, ...props }: RadixCallout.RootProps & { children: React.ReactNode }) {
+import "./index.scss";
+
+type CalloutType = "warning" | "info" | "success" | "error";
+
+const getIcon = (type?: CalloutType) => {
+	switch (type) {
+		case "warning":
+			return <ExclamationTriangleIcon className="callout__icon" />;
+		default:
+			return <InfoCircledIcon className="callout__icon" />;
+	}
+};
+
+export default function Callout({
+	children,
+	type = "info",
+	...props
+}: RadixCallout.RootProps & {
+	children: React.ReactNode;
+	type?: CalloutType;
+}) {
 	return (
 		<RadixCallout.Root
 			variant="soft"
+			className={`callout callout--${type}`}
 			{...props}>
-			<RadixCallout.Icon>
-				<InfoCircledIcon color="gray" />
-			</RadixCallout.Icon>
+			<RadixCallout.Icon>{getIcon(type)}</RadixCallout.Icon>
 			<RadixCallout.Text>{children}</RadixCallout.Text>
 		</RadixCallout.Root>
 	);

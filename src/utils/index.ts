@@ -336,7 +336,7 @@ export const isValidHttpUrl = (urlToBeValidated: string) => {
 	// To ensure that the URL is an HTTP URL
 	return url.protocol === "http:" || url.protocol === "https:";
 };
-export const doesTenantHasPasswordlessEnabled = (tenantFirstFactors: string[]): boolean => {
+export const doesTenantHavePasswordlessEnabled = (tenantFirstFactors: string[]): boolean => {
 	return (
 		tenantFirstFactors.includes(FactorIds.OTP_EMAIL) ||
 		tenantFirstFactors.includes(FactorIds.OTP_PHONE) ||

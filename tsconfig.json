@@ -1,26 +1,46 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
-  },
-  "include": [
-    "src"
-  ]
+	"compilerOptions": {
+		"target": "es5",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"noFallthroughCasesInSwitch": true,
+		"module": "esnext",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"baseUrl": "src",
+		"paths": {
+			"@api/*": ["api/*"],
+			"@api": ["api"],
+			"@components/*": ["ui/components/*"],
+			"@components": ["ui/components"],
+			"@pages/*": ["ui/pages/*"],
+			"@pages": ["ui/pages"],
+			"@contexts/*": ["ui/contexts/*"],
+			"@contexts": ["ui/contexts"],
+			"@layouts/*": ["ui/layouts/*"],
+			"@layouts": ["ui/layouts"],
+			"@styles/*": ["ui/styles/*"],
+			"@styles": ["ui/styles"],
+			"@utils/*": ["utils/*"],
+			"@utils": ["utils"],
+			"@services/*": ["services/*"],
+			"@services": ["services"],
+			"@assets/*": ["assets/*"],
+			"@assets": ["assets"],
+			"@constants": ["constants.ts"],
+			"@version": ["version.ts"],
+			"@types": ["types.ts"],
+			"@events/*": ["events/*"],
+			"@events": ["events"]
+		}
+	},
+	"include": ["src"]
 }
