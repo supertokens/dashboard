@@ -14,13 +14,10 @@
  */
 
 import { useContext, useEffect, useState } from "react";
-import { PasswordlessContactMethod } from "../../../api/tenants/types";
-import useCreateUserService, { CreatePasswordlessUserPayload } from "../../../api/user/create";
-import { getApiUrl, getImageUrl } from "../../../utils";
-import { PopupContentContext } from "../../contexts/PopupContentContext";
-import { Dialog, DialogContent, DialogFooter } from "../dialog";
-import InputField from "../inputField/InputField";
-import { PhoneNumberInput } from "../phoneNumber/PhoneNumberInput";
+import { PasswordlessContactMethod } from "@api/tenants/types";
+import useCreateUserService, { CreatePasswordlessUserPayload } from "@api/user/create";
+import { getApiUrl, getImageUrl } from "@utils";
+import { PopupContentContext } from "@contexts/PopupContentContext";
 import { CreateUserDialogStepType } from "./CreateUserDialog";
 import { Modal } from "@components/radix/modal";
 import Form from "@components/radix/form";
@@ -29,6 +26,7 @@ import Label from "@components/radix/label";
 import TextField from "@components/radix/text";
 import { Flex } from "@radix-ui/themes";
 import Button from "@components/radix/button";
+import PhoneNumberInput from "@components/radix/phoneNumberInput";
 
 type CreatePasswordlessUserProps = {
 	tenantId: string;
@@ -207,7 +205,6 @@ export default function CreatePasswordlessUser({
 										}}
 										label="Phone Number"
 										forceShowError
-										hideColon
 									/>
 								</Form.Item>
 							);
@@ -224,7 +221,6 @@ export default function CreatePasswordlessUser({
 											}}
 											label="Phone Number"
 											forceShowError
-											hideColon
 										/>
 									) : (
 										<Form.Item>
