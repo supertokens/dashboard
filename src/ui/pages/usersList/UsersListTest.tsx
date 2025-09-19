@@ -16,7 +16,14 @@
 import PageContainer from "@components/radix/pageContainer";
 import PageHeading from "@components/radix/pageHeading";
 import Callout from "@components/radix/callout";
-import { getConnectionUri, getImageUrl, isUsingDemoConnectionUri, isSearchEnabled } from "@utils";
+import {
+	getConnectionUri,
+	getImageUrl,
+	isUsingDemoConnectionUri,
+	isSearchEnabled,
+	formatLongDate,
+	formatNumber,
+} from "@utils";
 import { Box, Flex, Select, Text } from "@radix-ui/themes";
 import Paper from "@components/radix/paper";
 import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, PlusIcon } from "@radix-ui/react-icons";
@@ -44,7 +51,6 @@ import Search from "@components/search/indexTest";
 import "./UsersListTest.scss";
 import EmptyList from "@components/radix/empty";
 import CreateUserDialogTest from "@components/createUser/CreateUserDialogTest";
-import { Tenant } from "@api/tenants/types";
 
 const RenderDemoCallout = ({ connectionURI }: { connectionURI: string }) => {
 	if (!isUsingDemoConnectionUri(connectionURI)) return null;
@@ -164,7 +170,12 @@ const UserListHeader = ({ onTenantChange, loadCount }: { onTenantChange: () => v
 	);
 };
 const UserListItem = ({ user, isLast }: { user: User; isLast: boolean }) => {
-	const { firstName, lastName, emails, timeJoined } = user;
+	const { firstName, lastName, emails, timeJoined, loginMethods, phoneNumbers } = user;
+	const methodFilter = loginMethods.filter((el) => el.recipeUserId === user.id);
+	const email = methodFilter.length > 0 ? methodFilter[0].email : emails[0];
+	const phone = methodFilter.length > 0 ? methodFilter[0].phoneNumber : phoneNumbers[0];
+	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+
 	return (
 		<Flex
 			align="center"
@@ -174,25 +185,29 @@ const UserListItem = ({ user, isLast }: { user: User; isLast: boolean }) => {
 				className="users-list__table__item__details"
 				direction="column"
 				gap="1">
-				<Text
-					className="users-list__table__item__details__name"
-					size="3"
-					weight="medium">
-					{firstName + " " + lastName}
-				</Text>
+				{name && (
+					<Text
+						className="users-list__table__item__details__name"
+						size="3"
+						weight="medium">
+						{name}
+					</Text>
+				)}
 				<Text
 					className="users-list__table__item__details__email"
 					size="2"
 					weight="medium">
-					{emails[0]}
+					{email || phone}
 				</Text>
 			</Flex>
-			<Text
-				className="users-list__table__item__time-joined"
-				size="2"
-				weight="medium">
-				{timeJoined}
-			</Text>
+			{timeJoined && (
+				<Text
+					className="users-list__table__item__time-joined"
+					size="2"
+					weight="medium">
+					{formatLongDate(timeJoined)}
+				</Text>
+			)}
 			<ChevronRightIcon
 				height={20}
 				width={20}
@@ -201,35 +216,7 @@ const UserListItem = ({ user, isLast }: { user: User; isLast: boolean }) => {
 	);
 };
 
-type UserListTableProps = {
-	users: User[];
-	offset: number;
-	count: number;
-	errorOffsets: number[];
-	limit: number;
-	nextPaginationToken: string | undefined;
-	goToNext: (token: string) => void;
-	offsetChange: (offset: number) => void;
-	isLoading: boolean;
-	// onSelect: (user: User) => void;
-	// onChangePasswordCallback: (user: User) => void;
-	// onDeleteCallback: (user: User) => void;
-	// onEmailChanged: () => void;
-	pagination: boolean;
-};
-
-const UserListTable = ({
-	users,
-	offset,
-	count,
-	errorOffsets,
-	limit,
-	nextPaginationToken,
-	goToNext,
-	offsetChange,
-	isLoading,
-	pagination,
-}: UserListTableProps) => {
+const UserListTable = ({ users }: { users: User[] }) => {
 	const [sort, setSort] = useState<"asc" | "desc">("desc");
 
 	return (
@@ -278,7 +265,38 @@ const UserListTable = ({
 	);
 };
 
-const UserListFooter = () => {
+const UserListFooter = ({
+	count,
+	offset,
+	limit,
+	users,
+	offsetChange,
+	goToNext,
+	nextPaginationToken,
+	isSearch,
+}: {
+	count: number;
+	offset: number;
+	limit: number;
+	users: User[];
+	offsetChange: (offset: number) => void;
+	goToNext: (paginationToken: string) => void;
+	nextPaginationToken: string | undefined;
+	isSearch: boolean;
+}) => {
+	const displayedLength = users.slice(offset, offset + limit).length;
+	const handleNextPagination = () => {
+		return () => {
+			// go to some offset if the next page's records already exist in memory
+			if (offset + limit < users.length) {
+				offsetChange && offsetChange(offset + limit);
+			} else {
+				// load next page from API if it has nextPaginationToken
+				goToNext && nextPaginationToken && goToNext(nextPaginationToken);
+			}
+		};
+	};
+
 	return (
 		<Flex
 			align="center"
@@ -286,25 +304,39 @@ const UserListFooter = () => {
 			gap="3"
 			className="users-list__table__footer"
 			mt="4">
-			<Text
-				size="2"
-				weight="medium">
-				1 - 10 of 54
-			</Text>
-			<Flex gap="3">
-				<IconButton
+			{/* We don't support pagination for search results for now */}
+			{isSearch ? (
+				<Text
 					size="2"
-					variant="soft"
-					color="gray">
-					<ChevronLeftIcon />
-				</IconButton>
-				<IconButton
-					size="2"
-					variant="soft"
-					color="gray">
-					<ChevronRightIcon />
-				</IconButton>
-			</Flex>
+					weight="medium">
+					{users.length + " result" + (users.length > 1 ? "s" : "")}
+				</Text>
+			) : (
+				<>
+					<Text
+						size="2"
+						weight="medium">
+						{formatNumber(offset + 1)} - {formatNumber(Math.min(offset + displayedLength, count))} of{" "}
+						{formatNumber(count)}
+					</Text>
+					<Flex gap="3">
+						<IconButton
+							size="2"
+							variant="soft"
+							color="gray"
+							onClick={() => offsetChange && offsetChange(Math.max(offset - limit, 0))}>
+							<ChevronLeftIcon />
+						</IconButton>
+						<IconButton
+							size="2"
+							variant="soft"
+							color="gray"
+							onClick={handleNextPagination()}>
+							<ChevronRightIcon />
+						</IconButton>
+					</Flex>
+				</>
+			)}
 		</Flex>
 	);
 };
@@ -526,19 +558,17 @@ export default function UsersListPage() {
 										onTenantChange={() => void loadCount()}
 										loadCount={loadCount}
 									/>
-									<UserListTable
-										users={users}
-										offset={offset}
+									<UserListTable users={users} />
+									<UserListFooter
 										count={(isSearch ? users.length : count) ?? 0}
-										errorOffsets={errorOffsets}
+										offset={offset}
 										limit={isSearch ? users.length : limit}
-										nextPaginationToken={paginationTokenByOffset[offset + limit]}
-										goToNext={(token) => loadUsers(token)}
+										users={users}
 										offsetChange={loadOffset}
-										isLoading={loading}
-										pagination={!isSearch}
+										goToNext={loadUsers}
+										nextPaginationToken={paginationTokenByOffset[offset + limit]}
+										isSearch={isSearch}
 									/>
-									<UserListFooter />
 								</Paper>
 							);
 						default:

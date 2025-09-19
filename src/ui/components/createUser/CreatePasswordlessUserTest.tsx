@@ -157,7 +157,7 @@ export default function CreatePasswordlessUser({
 					showSuccessToast("User created successfully!");
 					loadCount();
 					resetForm();
-					window.open(getApiUrl(`?userid=${response.user.id}`), "_blank");
+					window.location.href = getApiUrl(`?userid=${response.user.id}`);
 				}
 			}
 		} catch (_) {

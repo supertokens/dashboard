@@ -66,7 +66,7 @@ export default function CreateEmailPasswordUser({
 		showSuccessToast("User created successfully!");
 		resetForm();
 		loadCount();
-		window.open(getApiUrl(`?userid=${userId}`), "_blank");
+		window.location.href = getApiUrl(`?userid=${userId}`);
 	}
 
 	async function createUser(e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) {
