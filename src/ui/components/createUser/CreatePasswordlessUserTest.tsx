@@ -27,6 +27,7 @@ import TextField from "@components/radix/text";
 import { Flex } from "@radix-ui/themes";
 import Button from "@components/radix/button";
 import PhoneNumberInput from "@components/radix/phoneNumberInput";
+import Paper from "@components/radix/paper";
 
 type CreatePasswordlessUserProps = {
 	tenantId: string;
@@ -173,98 +174,100 @@ export default function CreatePasswordlessUser({
 
 	return (
 		<Modal
-			title="Passwordless sign up"
+			title="Create User"
 			handleClose={onCloseDialog}
 			open={true}>
-			<Form>
-				{(() => {
-					switch (authMethod) {
-						case "EMAIL":
-							return (
-								<Form.Item>
-									<Label
-										title="Email"
-										htmlFor="email"
-									/>
-									<TextField
-										error={formErrorMessage}
-										value={email}
-										onChange={(e) => setEmail(e.currentTarget.value)}
-										name="email"
-									/>
-								</Form.Item>
-							);
-						case "PHONE":
-							return (
-								<Form.Item>
-									<PhoneNumberInput
-										error={formErrorMessage}
-										name="phone"
-										onChange={(value: string | undefined) => {
-											setPhoneNumber(checkUndefined(value));
-										}}
-										label="Phone Number"
-										forceShowError
-									/>
-								</Form.Item>
-							);
-						case "EMAIL_OR_PHONE":
-							return (
-								<Form.Item>
-									{isPhoneNumber ? (
+			<Paper withBackground>
+				<Form>
+					{(() => {
+						switch (authMethod) {
+							case "EMAIL":
+								return (
+									<Form.Item>
+										<Label
+											title="Email"
+											htmlFor="email"
+										/>
+										<TextField
+											error={formErrorMessage}
+											value={email}
+											onChange={(e) => setEmail(e.currentTarget.value)}
+											name="email"
+										/>
+									</Form.Item>
+								);
+							case "PHONE":
+								return (
+									<Form.Item>
 										<PhoneNumberInput
 											error={formErrorMessage}
-											value={emailOrPhone}
 											name="phone"
 											onChange={(value: string | undefined) => {
-												setEmailOrPhone(checkUndefined(value));
+												setPhoneNumber(checkUndefined(value));
 											}}
 											label="Phone Number"
 											forceShowError
 										/>
-									) : (
-										<Form.Item>
-											<Label
-												title="Email or Phone"
-												htmlFor="email-or-phone"
-											/>
-											<TextField
+									</Form.Item>
+								);
+							case "EMAIL_OR_PHONE":
+								return (
+									<Form.Item>
+										{isPhoneNumber ? (
+											<PhoneNumberInput
 												error={formErrorMessage}
 												value={emailOrPhone}
-												onChange={(e) => setEmailOrPhone(e.currentTarget.value)}
-												name="email-or-phone"
+												name="phone"
+												onChange={(value: string | undefined) => {
+													setEmailOrPhone(checkUndefined(value));
+												}}
+												label="Phone Number"
+												forceShowError
 											/>
-										</Form.Item>
-									)}
-								</Form.Item>
-							);
-						case undefined:
-							return null;
-						default:
-							assertNever(authMethod);
-					}
-				})()}
-				<Flex
-					justify="end"
-					gap="4"
-					mt="4">
-					<Button
-						onClick={() => {
-							setCurrentStep("select-auth-method-and-tenant");
-						}}
-						type="button"
-						variant="outline">
-						Go Back
-					</Button>
-					<Button
-						type="submit"
-						onClick={createUser}
-						isLoading={isCreatingUser}
-						disabled={isCreatingUser}>
-						Create
-					</Button>
-				</Flex>
-			</Form>
+										) : (
+											<Form.Item>
+												<Label
+													title="Email or Phone"
+													htmlFor="email-or-phone"
+												/>
+												<TextField
+													error={formErrorMessage}
+													value={emailOrPhone}
+													onChange={(e) => setEmailOrPhone(e.currentTarget.value)}
+													name="email-or-phone"
+												/>
+											</Form.Item>
+										)}
+									</Form.Item>
+								);
+							case undefined:
+								return null;
+							default:
+								assertNever(authMethod);
+						}
+					})()}
+				</Form>
+			</Paper>
+			<Flex
+				justify="end"
+				gap="4"
+				mt="4">
+				<Button
+					onClick={() => {
+						setCurrentStep("select-auth-method-and-tenant");
+					}}
+					type="button"
+					variant="outline">
+					Go Back
+				</Button>
+				<Button
+					type="submit"
+					onClick={createUser}
+					isLoading={isCreatingUser}
+					disabled={isCreatingUser}>
+					Create
+				</Button>
+			</Flex>
 		</Modal>
 	);
 }

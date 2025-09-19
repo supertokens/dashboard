@@ -29,7 +29,7 @@ import { assertNever } from "@utils/assertNever";
 import { doesTenantHavePasswordlessEnabled } from "@utils/index";
 import { useState } from "react";
 import CreatePasswordlessUser from "./CreatePasswordlessUserTest";
-import CreateEmailPasswordUser from "./CreateEmailPasswordUser";
+import CreateEmailPasswordUser from "./CreateEmailPasswordUserTest";
 
 type CreateUserDialogTestProps = {
 	handleClose: () => void;
