@@ -142,5 +142,32 @@ export function useToast() {
 	if (context === undefined) {
 		throw new Error("useToast must be used within a ToastProvider");
 	}
-	return context;
+
+	const showErrorToast = React.useCallback(
+		(title: string, description?: string) => {
+			context.showToast({
+				type: "error",
+				title,
+				description,
+			});
+		},
+		[context]
+	);
+
+	const showSuccessToast = React.useCallback(
+		(title: string, description?: string) => {
+			context.showToast({
+				type: "success",
+				title,
+				description,
+			});
+		},
+		[context]
+	);
+
+	return {
+		...context,
+		showErrorToast,
+		showSuccessToast,
+	};
 }

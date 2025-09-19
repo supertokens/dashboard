@@ -13,10 +13,9 @@
  * under the License.
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useCreateUserService from "@api/user/create";
-import { getApiUrl, getImageUrl } from "@utils";
-import { PopupContentContext } from "@contexts/PopupContentContext";
+import { getApiUrl } from "@utils";
 import { CreateUserDialogStepType } from "./CreateUserDialog";
 import Form from "@components/radix/form";
 import { Modal } from "@components/radix/modal";
@@ -25,6 +24,7 @@ import Label from "@components/radix/label";
 import { Flex } from "@radix-ui/themes";
 import Button from "@components/radix/button";
 import Paper from "@components/radix/paper";
+import { useToast } from "@components/radix/toast";
 
 type CreateEmailPasswordUserProps = {
 	tenantId: string;
@@ -47,59 +47,66 @@ export default function CreateEmailPasswordUser({
 	const [passwordValidationErrorMessage, setPasswordValidationErrorMessage] = useState<string | undefined>(undefined);
 
 	const { createEmailPasswordUser } = useCreateUserService();
-	const { showToast } = useContext(PopupContentContext);
+	const { showErrorToast, showSuccessToast } = useToast();
+
+	function handleEmailValidationError(response: { message: string }): void {
+		setEmailValidationErrorMessage(response.message);
+	}
+
+	function handlePasswordValidationError(response: { message: string }): void {
+		setPasswordValidationErrorMessage(response.message);
+	}
+
+	function resetForm(): void {
+		setEmail("");
+		setPassword("");
+	}
+
+	function handleUserCreationSuccess(userId: string): void {
+		showSuccessToast("User created successfully!");
+		resetForm();
+		loadCount();
+		window.open(getApiUrl(`?userid=${userId}`), "_blank");
+	}
 
 	async function createUser(e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) {
 		e.preventDefault();
 		setIsCreatingUser(true);
+
 		try {
 			// Note: We're intentionally skipping frontend input validation in favor of users' defined custom validators running on the backend.
 
 			const response = await createEmailPasswordUser(tenantId, email, password);
+
+			// Handle email already exists error
 			if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>User with this email already exists in {tenantId} tenant.</>,
-				});
+				showErrorToast(`User with this email already exists in ${tenantId} tenant.`);
 				return;
 			}
 
+			// Handle validation errors
 			if (response.status === "EMAIL_VALIDATION_ERROR") {
-				setEmailValidationErrorMessage(response.message);
+				handleEmailValidationError(response);
 				return;
 			}
 
 			if (response.status === "PASSWORD_VALIDATION_ERROR") {
-				setPasswordValidationErrorMessage(response.message);
+				handlePasswordValidationError(response);
 				return;
 			}
 
+			// Handle feature not enabled error
 			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>Feature not enabled!</>,
-				});
+				showErrorToast("Feature not enabled!");
+				return;
 			}
 
+			// Handle successful creation
 			if (response.status === "OK") {
-				showToast({
-					iconImage: getImageUrl("checkmark-green.svg"),
-					toastType: "success",
-					children: <>User created successfully!</>,
-				});
-				setEmail("");
-				setPassword("");
-				loadCount();
-				window.open(getApiUrl(`?userid=${response.user.id}`), "_blank");
+				handleUserCreationSuccess(response.user.id);
 			}
 		} catch (_) {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children: <>Something went wrong, please try again!</>,
-			});
+			showErrorToast("Something went wrong, please try again!");
 		} finally {
 			setIsCreatingUser(false);
 		}

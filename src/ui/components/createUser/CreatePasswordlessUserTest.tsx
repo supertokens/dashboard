@@ -13,11 +13,10 @@
  * under the License.
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PasswordlessContactMethod } from "@api/tenants/types";
 import useCreateUserService, { CreatePasswordlessUserPayload } from "@api/user/create";
-import { getApiUrl, getImageUrl } from "@utils";
-import { PopupContentContext } from "@contexts/PopupContentContext";
+import { getApiUrl } from "@utils";
 import { CreateUserDialogStepType } from "./CreateUserDialog";
 import { Modal } from "@components/radix/modal";
 import Form from "@components/radix/form";
@@ -28,6 +27,7 @@ import { Flex } from "@radix-ui/themes";
 import Button from "@components/radix/button";
 import PhoneNumberInput from "@components/radix/phoneNumberInput";
 import Paper from "@components/radix/paper";
+import { useToast } from "@components/radix/toast";
 
 type CreatePasswordlessUserProps = {
 	tenantId: string;
@@ -65,100 +65,103 @@ export default function CreatePasswordlessUser({
 	const [isPhoneNumber, setIsPhoneNumber] = useState(false);
 
 	const { createPasswordlessUser } = useCreateUserService();
-	const { showToast } = useContext(PopupContentContext);
+	const { showErrorToast, showSuccessToast } = useToast();
+
+	function buildPayload(): CreatePasswordlessUserPayload | null {
+		const payload: CreatePasswordlessUserPayload = {};
+
+		// Note: We're intentionally skipping frontend input validation in favor of user defined custom validators running on the backend.
+
+		if (authMethod === "EMAIL") {
+			payload.email = email;
+		} else if (authMethod === "PHONE") {
+			payload.phoneNumber = phoneNumber;
+		} else if (authMethod === "EMAIL_OR_PHONE") {
+			if (isNumber(emailOrPhone) === true) {
+				const normalisedPhoneNumber =
+					emailOrPhone.startsWith("+") === false ? "+" + emailOrPhone : emailOrPhone;
+				payload.phoneNumber = normalisedPhoneNumber;
+				setEmailOrPhone(normalisedPhoneNumber);
+				setIsPhoneNumber(true);
+			} else {
+				payload.email = emailOrPhone;
+			}
+		} else {
+			showErrorToast("No matching auth method found!");
+			return null;
+		}
+
+		return payload;
+	}
+
+	function getExistingUserErrorMessage(): string {
+		if (authMethod === "EMAIL") {
+			return "User with this email already exists!";
+		} else if (authMethod === "PHONE") {
+			return "User with this phone number already exists!";
+		} else {
+			return isNumber(emailOrPhone) === false
+				? "User with this email already exists!"
+				: "User with this phone number already exists!";
+		}
+	}
+
+	function handleValidationError(response: { status: string; message: string }): void {
+		if (
+			authMethod === "EMAIL_OR_PHONE" &&
+			response.status === "EMAIL_VALIDATION_ERROR" &&
+			isNumber(emailOrPhone) === false
+		) {
+			setFormErrorMessage("Please enter a valid email or phone number.");
+		} else {
+			setFormErrorMessage(response.message);
+		}
+	}
+
+	function resetForm(): void {
+		setEmail("");
+		setPhoneNumber("");
+		setEmailOrPhone("");
+	}
 
 	async function createUser(e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) {
 		e.preventDefault();
-
 		setIsCreatingUser(true);
 		setFormErrorMessage(undefined);
+
 		try {
-			const payload: CreatePasswordlessUserPayload = {};
-
-			// Note: We're intentionally skipping frontend input validation in favor of user defined custom validators running on the backend.
-
-			if (authMethod === "EMAIL") {
-				payload.email = email;
-			} else if (authMethod === "PHONE") {
-				payload.phoneNumber = phoneNumber;
-			} else if (authMethod === "EMAIL_OR_PHONE") {
-				if (isNumber(emailOrPhone) === true) {
-					const normalisedPhoneNumber =
-						emailOrPhone.startsWith("+") === false ? "+" + emailOrPhone : emailOrPhone;
-					payload.phoneNumber = normalisedPhoneNumber;
-					setEmailOrPhone(normalisedPhoneNumber);
-					setIsPhoneNumber(true);
-				} else {
-					payload.email = emailOrPhone;
-				}
-			} else {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>No matching auth method found!</>,
-				});
+			const payload = buildPayload();
+			if (!payload) {
 				return;
 			}
+
 			const response = await createPasswordlessUser(tenantId, payload);
 
+			// Handle validation errors
 			if (response.status === "EMAIL_VALIDATION_ERROR" || response.status === "PHONE_VALIDATION_ERROR") {
-				if (
-					authMethod === "EMAIL_OR_PHONE" &&
-					response.status === "EMAIL_VALIDATION_ERROR" &&
-					isNumber(emailOrPhone) === false
-				) {
-					setFormErrorMessage("Please enter a valid email or phone number.");
-					return;
-				}
-				setFormErrorMessage(response.message);
+				handleValidationError(response);
 				return;
 			}
 
+			// Handle feature not enabled error
 			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>Feature not enabled!</>,
-				});
+				showErrorToast("Feature not enabled!");
+				return;
 			}
 
+			// Handle successful response
 			if (response.status === "OK") {
 				if (response.createdNewRecipeUser === false) {
-					let message = "";
-					if (authMethod === "EMAIL") {
-						message = "User with this email already exists!";
-					} else if (authMethod === "PHONE") {
-						message = "User with this phone number already exists!";
-					} else {
-						message =
-							isNumber(emailOrPhone) === false
-								? "User with this email already exists!"
-								: "User with this phone number already exists!";
-					}
-					showToast({
-						iconImage: getImageUrl("form-field-error-icon.svg"),
-						toastType: "error",
-						children: <>{message}</>,
-					});
+					showErrorToast(getExistingUserErrorMessage());
 				} else {
-					showToast({
-						iconImage: getImageUrl("checkmark-green.svg"),
-						toastType: "success",
-						children: <>User created successfully!</>,
-					});
+					showSuccessToast("User created successfully!");
 					loadCount();
-					setEmail("");
-					setPhoneNumber("");
-					setEmailOrPhone("");
+					resetForm();
 					window.open(getApiUrl(`?userid=${response.user.id}`), "_blank");
 				}
 			}
 		} catch (_) {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children: <>Something went wrong, please try again!</>,
-			});
+			showErrorToast("Something went wrong, please try again!");
 		} finally {
 			setIsCreatingUser(false);
 		}
@@ -263,7 +266,6 @@ export default function CreatePasswordlessUser({
 				<Button
 					type="submit"
 					onClick={createUser}
-					isLoading={isCreatingUser}
 					disabled={isCreatingUser}>
 					Create
 				</Button>
