@@ -13,27 +13,25 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+export const maskText = (text: string, mask = "*", visibleLength = 4) => {
+	if (text.length <= visibleLength) {
+		return text;
+	}
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
+	const start = text.slice(0, visibleLength);
+	const maskLength = text.length - visibleLength;
+	const maskedPortion = mask.repeat(maskLength);
+
+	return start + maskedPortion;
 };
 
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
-	return (
-		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
-		</Flex>
-	);
-}
+export const copyToClipboard = async (text: string, onSuccess: () => void, onError: () => void): Promise<boolean> => {
+	try {
+		await navigator.clipboard.writeText(text);
+		onSuccess();
+		return true;
+	} catch (err) {
+		onError();
+		return false;
+	}
+};

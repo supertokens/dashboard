@@ -1,6 +1,7 @@
 .main-layout-container {
 	display: block;
 	margin-top: var(--header-height);
+	background: var(--color-sand-3);
 
 	.main-content {
 		margin-left: calc(var(--sidebar-width) + 2 * var(--sidebar-x-margin));

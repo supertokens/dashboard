@@ -13,27 +13,19 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+import { Badge, BadgeProps } from "@radix-ui/themes";
+import "./index.scss";
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
-};
-
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
+export default function Crystal({ children, ...props }: BadgeProps) {
 	return (
-		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
-		</Flex>
+		<Badge
+			radius="full"
+			color="gray"
+			size="2"
+			variant="soft"
+			className="crystal"
+			{...props}>
+			{children}
+		</Badge>
 	);
 }

@@ -13,27 +13,27 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+import { Flex, Switch, Text } from "@radix-ui/themes";
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
-};
-
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
+import "./index.scss";
+export default function SwitchBox({ label }: { label: string }) {
 	return (
 		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
+			className="switch-box"
+			gap="4"
+			align="center"
+			px="4"
+			py="2">
+			<Text
+				size="2"
+				weight="regular"
+				className="switch-box__label">
+				{label}
+			</Text>
+			<Switch
+				size="1"
+				className="switch-box__switch"
+			/>
 		</Flex>
 	);
 }

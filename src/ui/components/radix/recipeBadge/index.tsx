@@ -13,27 +13,22 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+import { Badge, BadgeProps } from "@radix-ui/themes";
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
+import "./index.scss";
+
+type RecipeBadgeProps = BadgeProps & {
+	recipeType: "emailpassword" | "passwordless" | "thirdparty";
 };
 
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
+export default function RecipeBadge({ children, recipeType, ...props }: RecipeBadgeProps) {
 	return (
-		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
-		</Flex>
+		<Badge
+			radius="full"
+			size="1"
+			className={`recipe-badge recipe-badge--${recipeType}`}
+			{...props}>
+			{children}
+		</Badge>
 	);
 }

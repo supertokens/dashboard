@@ -13,27 +13,13 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+.item-value {
+	color: var(--color-neutral-12);
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
-};
-
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
-	return (
-		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
-		</Flex>
-	);
+	&--bold {
+		font-weight: 600;
+	}
 }

@@ -13,27 +13,15 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+import { Box, BoxProps } from "@radix-ui/themes";
+import "./index.scss";
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
-};
-
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
+export default function ItemContainer({ children, ...props }: { children: React.ReactNode } & BoxProps) {
 	return (
-		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
-		</Flex>
+		<Box
+			className="item-container"
+			{...props}>
+			{children}
+		</Box>
 	);
 }

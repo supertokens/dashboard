@@ -13,27 +13,29 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+.user-detail {
+	&__name-badge.rt-Badge {
+		color: #fff;
+		text-align: center;
+		font-size: 16px;
+		font-style: normal;
+		font-weight: 500;
+		line-height: 24px;
+		width: 40px;
+		height: 40px;
+		text-transform: uppercase;
+	}
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
-};
+	&__name-text.rt-Text {
+		color: var(--color-neutral-12);
+		font-size: 28px;
+		font-style: normal;
+		font-weight: 700;
+		line-height: 36px;
+	}
 
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
-	return (
-		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
-		</Flex>
-	);
+	&__user-id-container.rt-Flex {
+		border-radius: 0 0 16px 16px;
+		background: var(--color-sand-2);
+	}
 }

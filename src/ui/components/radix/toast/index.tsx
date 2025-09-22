@@ -15,10 +15,10 @@
 
 import React, { createContext } from "react";
 import * as Toast from "@radix-ui/react-toast";
-import { CheckCircledIcon, Cross2Icon, ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { Flex, Text } from "@radix-ui/themes";
+import { Cross2Icon } from "@radix-ui/react-icons";
 
 import "./index.scss";
+import { getImageUrl } from "@utils/index";
 
 interface ToastMessageProps {
 	title: string;
@@ -33,58 +33,42 @@ export default function ToastMessage({ title, description, open, setOpen, type }
 
 	const icon =
 		type === "error" ? (
-			<ExclamationTriangleIcon
-				width={20}
-				height={20}
-				color="red"
+			<img
+				alt="error"
+				src={getImageUrl("error-icon.svg")}
+				className="toast__icon"
 			/>
 		) : (
-			<CheckCircledIcon
-				width={20}
-				height={20}
-				color="green"
+			<img
+				alt="success"
+				src={getImageUrl("success-icon.svg")}
+				className="toast__icon"
 			/>
 		);
 
 	return (
 		<Toast.Provider
 			swipeDirection="right"
-			duration={5000}>
+			duration={500000}>
 			<Toast.Root
 				className={toastClass}
 				open={open}
 				onOpenChange={setOpen}>
-				<Flex
-					justify="between"
-					align="center"
-					width="100%">
-					<Flex
-						direction="column"
-						gap="2">
-						<Flex
-							align="center"
-							gap="2">
-							{icon}
-							<Text weight="medium">{title}</Text>
-						</Flex>
-						{description && (
-							<Text
-								size="2"
-								color="gray">
-								{description}
-							</Text>
-						)}
-					</Flex>
+				<div className="toast__content">
+					<div className="toast__icon-container">{icon}</div>
+					<div className="toast__text-content">
+						<div className="toast__title">{title}</div>
+						{description && <div className="toast__description">{description}</div>}
+					</div>
 					<Toast.Close
 						className="toast__close"
 						aria-label="Close">
 						<Cross2Icon
-							width={20}
-							height={20}
-							color="gray"
+							width={16}
+							height={16}
 						/>
 					</Toast.Close>
-				</Flex>
+				</div>
 			</Toast.Root>
 			<Toast.Viewport className="toast__viewport" />
 		</Toast.Provider>

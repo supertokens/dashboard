@@ -66,10 +66,6 @@ function App() {
 														element={<TenantManagement />}
 													/>
 													<Route
-														path="/custom"
-														element={<UsersListPage2 />}
-													/>
-													<Route
 														path="*"
 														element={<UsersListPage />}
 													/>

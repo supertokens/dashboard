@@ -43,6 +43,7 @@ export type PhoneNumberInputProps = {
 	disabled?: boolean;
 	label?: string;
 	name?: string;
+	className?: string;
 };
 
 export type PhoneNumberCountrySelectProps = {
@@ -251,7 +252,7 @@ const PhoneNumberTextField: FC<PhoneNumberTextFieldProps> = forwardRef(
 PhoneNumberTextField.displayName = "PhoneNumberTextField";
 
 export default function PhoneNumberInput(props: PhoneNumberInputProps) {
-	const { onChange, value, error, forceShowError, disabled, label, name } = props;
+	const { onChange, value, error, forceShowError, disabled, label, name, className } = props;
 	const [isTouched, setIsTouched] = useState(false);
 
 	// call the `onChange` and set form as touched
@@ -265,6 +266,7 @@ export default function PhoneNumberInput(props: PhoneNumberInputProps) {
 
 	return (
 		<Flex
+			className={className}
 			direction="column"
 			width="100%"
 			style={{

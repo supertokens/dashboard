@@ -13,11 +13,25 @@
  * under the License.
  */
 
-import { Box } from "@radix-ui/themes";
+import { Box, BoxProps } from "@radix-ui/themes";
 import React from "react";
 
 import "./paper.scss";
 
-export default function Paper({ children, withBackground }: { children: React.ReactNode; withBackground?: boolean }) {
-	return <Box className={`paper ${withBackground ? "paper--with-background" : ""}`}>{children}</Box>;
+export default function Paper({
+	children,
+	withBackground,
+	withBorder,
+	className,
+	...props
+}: { children: React.ReactNode; withBackground?: boolean; withBorder?: boolean } & BoxProps) {
+	return (
+		<Box
+			className={`paper ${className} ${withBackground ? "paper--with-background" : ""} ${
+				withBorder ? "paper--with-border" : ""
+			}`}
+			{...props}>
+			{children}
+		</Box>
+	);
 }

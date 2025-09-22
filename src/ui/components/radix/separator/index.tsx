@@ -12,28 +12,17 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+import React from "react";
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+import { Separator as RadixSeparator } from "@radix-ui/themes";
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
-};
+import "./index.scss";
 
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
+export default function Separator(props: React.ComponentProps<typeof RadixSeparator> & { fullWidth?: boolean }) {
 	return (
-		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
-		</Flex>
+		<RadixSeparator
+			className={`separator  ${props.fullWidth ? "separator--full-width" : ""}`}
+			{...props}
+		/>
 	);
 }

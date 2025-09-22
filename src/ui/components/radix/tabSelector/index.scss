@@ -13,27 +13,35 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+.tab-selector {
+	&__header {
+		border-radius: 12px 12px 0px 0px;
+		border: 1px solid var(--color-neutral-alpha-8);
+		border-bottom: 0 !important;
+	}
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
-};
+	&__tab {
+		background: transparent !important;
+		height: 45px !important;
+		border-radius: 0 !important;
 
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
-	return (
-		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
-		</Flex>
-	);
+		&--selected {
+			border-bottom: 2px solid var(--color-accent-9) !important;
+		}
+	}
+
+	&__tab-text {
+		color: var(--color-neutral-12);
+		font-size: 14px;
+		font-weight: 500;
+
+		&--selected {
+			color: var(--color-accent-11);
+		}
+	}
+
+	&__content {
+		border-radius: 0px 0px 8px 8px;
+		border: 1px solid var(--color-neutral-8);
+	}
 }

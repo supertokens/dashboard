@@ -102,4 +102,6 @@ import "./assets/permission.svg";
 import "./assets/user.svg";
 import "./assets/cross-2.svg";
 import "./assets/danger.svg";
+import "./assets/success-icon.svg";
+import "./assets/error-icon.svg";
 import "./logo.svg";

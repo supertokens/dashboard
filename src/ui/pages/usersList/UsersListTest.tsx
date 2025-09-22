@@ -51,6 +51,8 @@ import Search from "@components/search/indexTest";
 import "./UsersListTest.scss";
 import EmptyList from "@components/radix/empty";
 import CreateUserDialogTest from "@components/createUser/CreateUserDialogTest";
+import { useLocation, useSearchParams } from "react-router-dom";
+import UserDetailTest from "@components/userDetail/userDetailTest";
 
 const RenderDemoCallout = ({ connectionURI }: { connectionURI: string }) => {
 	if (!isUsingDemoConnectionUri(connectionURI)) return null;
@@ -347,7 +349,7 @@ type UserListPropsReloadRef = MutableRefObject<(() => Promise<void>) | undefined
 let isAnalyticsFired = false;
 const limit = LIST_DEFAULT_LIMIT;
 
-export default function UsersListPage() {
+function UsersListPage() {
 	const [pageState, setPageState] = useState<"LOADING" | "ERROR" | "SUCCESS">("LOADING");
 	const [count, setCount] = useState<number>();
 	const [users, setUsers] = useState<User[]>([]);
@@ -578,4 +580,14 @@ export default function UsersListPage() {
 			</div>
 		</PageContainer>
 	);
+}
+
+export default function UserViewRouter() {
+	const [searchParams] = useSearchParams();
+	const userId = searchParams.get("userid");
+
+	if (userId) {
+		return <UserDetailTest userId={userId} />;
+	}
+	return <UsersListPage />;
 }

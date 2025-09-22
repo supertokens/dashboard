@@ -13,27 +13,24 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+.login-methods {
+	&__header {
+		background: var(--color-sand-2);
 
-type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
-	error?: string;
-	fullWidth?: boolean;
-};
+		&__select {
+			min-width: 200px !important;
+		}
+	}
+}
 
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
-	return (
-		<Flex
-			direction="column"
-			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
-			{error && (
-				<Text
-					size="1"
-					color="red"
-					mt="1">
-					{error}
-				</Text>
-			)}
-		</Flex>
-	);
+.login-method {
+	&__item-label {
+		flex-shrink: 0;
+	}
+	&__phone-number-input {
+		width: fit-content !important;
+		min-width: 300px;
+		max-width: 500px;
+		margin-right: 8px;
+	}
 }
