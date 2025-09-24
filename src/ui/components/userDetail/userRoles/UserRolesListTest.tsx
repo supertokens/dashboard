@@ -34,7 +34,6 @@ import DeleteRoleModal from "@components/radix/modals/deleteRole";
 
 const RolesHeader = () => {
 	const [openRevokeAllSessionModal, setOpenRevokeAllSessionModal] = useState(false);
-	const roles: string[] = [];
 	return (
 		<Box width="100%">
 			<Flex

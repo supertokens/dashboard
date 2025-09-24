@@ -25,7 +25,6 @@ import { assertNever } from "@utils/assertNever";
 import Loader from "@components/radix/loader";
 import DashboardError from "@components/radix/error";
 import EmptyList from "@components/radix/empty";
-import { getImageUrl } from "@utils/index";
 
 export default function AssignRoleModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
 	const [rolesListState, setRolesListState] = useState<"LOADING" | "SUCCESS" | "EMPTY" | "ERROR">("EMPTY");

@@ -48,6 +48,7 @@ import Sessions from "./userDetailSessionListTest";
 import EditUserModal from "@components/radix/modals/editUser";
 import DeleteUserModal from "@components/radix/modals/deleteUser";
 import Roles from "./userRoles/UserRolesListTest";
+import MetaData from "./userMetaDataSectionTest";
 
 const getFirstLetter = (name: string | undefined) => {
 	return `${name?.[0] || ""}`;
@@ -118,7 +119,7 @@ const UserNameCard = ({ user }: { user: User }) => {
 };
 
 const UserDetailContent = ({ user }: { user: User }) => {
-	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("roles");
+	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("metadata");
 	const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
 	const handleTabChange = (tab: UserDetailTab) => {
 		setSelectedTab(tab);
@@ -187,7 +188,7 @@ const UserDetailContent = ({ user }: { user: User }) => {
 							case "roles":
 								return <Roles />;
 							case "metadata":
-								return <div>Metadata</div>;
+								return <MetaData />;
 						}
 					})()}
 				</TabSelector>
