@@ -18,10 +18,11 @@ import { ExclamationTriangleIcon, ReloadIcon } from "@radix-ui/react-icons";
 import Button from "../button";
 import "./error.scss";
 
-export default function DashboardError() {
+export default function DashboardError({ withBackground = true }: { withBackground?: boolean }) {
 	return (
 		<Box
-			className="dashboard-error"
+			className={`dashboard-error ${withBackground ? "dashboard-error--with-background" : ""}`}
+			width="100%"
 			p="4">
 			<Flex
 				direction="column"

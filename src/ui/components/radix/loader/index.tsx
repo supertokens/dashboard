@@ -23,6 +23,7 @@ const ListSkeleton = () => {
 	return (
 		<Flex
 			direction="column"
+			width="100%"
 			gap="4">
 			<Skeleton
 				width="100%"
@@ -65,7 +66,7 @@ export default function Loader({ type }: { type: LoaderType }) {
 			return <ListSkeleton />;
 		case "table-with-list":
 			return (
-				<Paper>
+				<Paper width="100%">
 					<ListSkeleton />
 				</Paper>
 			);

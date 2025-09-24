@@ -15,26 +15,47 @@
 
 import React from "react";
 import "./index.scss";
-import { Flex } from "@radix-ui/themes";
+import { Flex, FlexProps } from "@radix-ui/themes";
 
 export default function Form({
 	children,
+	className,
 	...props
-}: { children: React.ReactNode } & React.FormHTMLAttributes<HTMLFormElement>) {
+}: {
+	children: React.ReactNode;
+	className?: string;
+	onSubmit?: React.FormHTMLAttributes<HTMLFormElement>["onSubmit"];
+} & React.FormHTMLAttributes<HTMLFormElement>) {
 	return (
 		<form
-			className="form"
+			onSubmit={(e) => {
+				e.preventDefault();
+				props.onSubmit?.(e);
+			}}
+			className={`form ${className}`}
 			{...props}>
 			{children}
 		</form>
 	);
 }
 
-Form.Item = function FormItem({ children }: { children: React.ReactNode }) {
+Form.Item = function FormItem({ children, ...props }: { children: React.ReactNode } & FlexProps) {
 	return (
 		<Flex
 			direction="column"
-			className="form-item">
+			className="form-item"
+			{...props}>
+			{children}
+		</Flex>
+	);
+};
+
+Form.Paper = function FormPaper({ children, className, ...props }: { children: React.ReactNode } & FlexProps) {
+	return (
+		<Flex
+			direction="column"
+			className={`form-paper ${className}`}
+			{...props}>
 			{children}
 		</Flex>
 	);

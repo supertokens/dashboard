@@ -13,16 +13,48 @@
  * under the License.
  */
 
-.form {
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
-}
-
-.form-paper {
-	border-radius: var(--radius-5);
-	border: 1px solid var(--color-neutral-6);
+.session-list {
+	border-radius: var(--radius-max-4);
+	border: 1px solid var(--color-neutral-8);
 	background: var(--color-sand-2);
-	box-shadow: var(--shadow-1);
-	padding: 20px 14px;
+
+	&__header {
+		&__session-handle {
+			width: calc(45% - 16px);
+			margin-right: 16px;
+		}
+		&__created-at {
+			width: 20%;
+		}
+		&__expires-at {
+			width: 20%;
+		}
+		&__action {
+			width: 15%;
+		}
+		border-bottom: 1px solid var(--color-neutral-alpha-8);
+	}
+
+	&__item {
+		&__session-handle {
+			width: calc(45% - 16px);
+			margin-right: 16px;
+			&__copy-box {
+				max-width: 90%;
+			}
+		}
+		&__created-at {
+			width: 20%;
+		}
+		&__expires-at {
+			width: 20%;
+		}
+		&__action {
+			width: 15%;
+		}
+		&:last-child {
+			border-bottom: none;
+		}
+		border-bottom: 1px solid var(--color-neutral-alpha-8);
+	}
 }

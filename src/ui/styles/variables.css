@@ -125,6 +125,7 @@ body {
 	--color-button-outline-hover: rgb(250, 250, 250);
 
 	/* Generic colors */
+	--color-neutral-1: #fcfcfd;
 	--color-neutral-6: #dddde3;
 	--color-neutral-7: #d3d4db;
 	--color-neutral-8: #b9bbc6;
@@ -139,6 +140,10 @@ body {
 	--color-neutral-alpha-11: rgba(0, 7, 19, 0.62);
 	--color-neutral-alpha-12: rgba(0, 5, 9, 0.89);
 
+	--color-error-11: #c62a2f;
+
+	--color-success-9: #30a46c;
+
 	--color-accent-2: #f8faff;
 	--color-accent-4: #e6edfe;
 	--color-accent-6: #c6d4f9;
@@ -149,7 +154,7 @@ body {
 	--color-sand-2: #f9f9f8;
 	--color-sand-3: #f2f2f0;
 	--color-sand-4: #ebebe9;
-	--color-success-9: #30a46c;
+
 	--color-success-alpha-7: rgba(0, 140, 61, 0.43);
 	--color-warning-alpha-3: rgba(255, 191, 1, 0.19);
 	--color-warning-alpha-11: rgba(120, 50, 0, 0.81);
@@ -160,6 +165,7 @@ body {
 	--color-slate-alpha-4: rgba(2, 2, 52, 0.08);
 	--color-teal-9: #12a594;
 	--color-plum-9: #ab4aba;
+	--color-red-9: #e5484d;
 
 	/* Shadows */
 	--shadow-1: 0px 1.5px 2px 0px rgba(0, 0, 0, 0.13) inset;
@@ -169,6 +175,7 @@ body {
 	/* Radius */
 	--radius-4: 12px;
 	--radius-6: 16px;
+	--radius-max-4: 8px;
 
 	/* Sizes */
 	--sidebar-width: 292px;

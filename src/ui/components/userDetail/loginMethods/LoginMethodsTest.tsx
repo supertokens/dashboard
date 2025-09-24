@@ -28,6 +28,8 @@ import Select from "@components/radix/select";
 import { NOOP } from "@utils/noop";
 
 import "./loginMethodsTest.scss";
+import { useState } from "react";
+import ChangePasswordModal from "@components/radix/modals/changePassword";
 
 const LoginMethodHeader = () => {
 	return (
@@ -102,13 +104,15 @@ const LoginMethodPhoneRow = () => {
 };
 
 const LoginMethodActions = () => {
+	const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
 	return (
 		<Flex
 			align="center"
 			gap="2">
 			<Button
 				size="2"
-				variant="outline">
+				variant="outline"
+				onClick={() => setOpenChangePasswordModal(true)}>
 				Change Password
 			</Button>
 			<Button
@@ -125,6 +129,10 @@ const LoginMethodActions = () => {
 				<CheckCircledIcon />
 				Set Verified
 			</Button>
+			<ChangePasswordModal
+				open={openChangePasswordModal}
+				handleClose={() => setOpenChangePasswordModal(false)}
+			/>
 		</Flex>
 	);
 };

@@ -13,19 +13,53 @@
  * under the License.
  */
 
-import { Flex, Text, TextField as RadixTextField } from "@radix-ui/themes";
+import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { Flex, Text, TextField as RadixTextField, IconButton } from "@radix-ui/themes";
+import { useState } from "react";
+
+import "./index.scss";
 
 type TextFieldProps = React.ComponentProps<typeof RadixTextField.Root> & {
 	error?: string;
 	fullWidth?: boolean;
 };
 
-export default function TextField({ error, fullWidth = true, ...props }: TextFieldProps) {
+export default function TextField({ error, fullWidth = true, children, ...props }: TextFieldProps) {
+	const [showPassword, setShowPassword] = useState(false);
+
+	const PasswordToggleButton = () => (
+		<IconButton
+			onClick={() => setShowPassword(!showPassword)}
+			color="gray"
+			variant="soft"
+			className="password-button">
+			{showPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+		</IconButton>
+	);
+
+	const PasswordSlot = () => (
+		<RadixTextField.Slot
+			side="right"
+			pr="1">
+			<PasswordToggleButton />
+		</RadixTextField.Slot>
+	);
+
+	const getInputType = () => {
+		if (props.type !== "password") return props.type;
+		return showPassword ? "text" : "password";
+	};
+
 	return (
 		<Flex
 			direction="column"
 			{...(fullWidth && { width: "100%" })}>
-			<RadixTextField.Root {...props} />
+			<RadixTextField.Root
+				{...props}
+				type={getInputType()}>
+				{children}
+				{props.type === "password" && <PasswordSlot />}
+			</RadixTextField.Root>
 			{error && (
 				<Text
 					size="1"

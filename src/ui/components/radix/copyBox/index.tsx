@@ -15,7 +15,7 @@
 
 import { useState } from "react";
 import { CopyIcon, EyeNoneIcon, EyeOpenIcon } from "@radix-ui/react-icons";
-import { Flex, Text } from "@radix-ui/themes";
+import { Flex, FlexProps, Text } from "@radix-ui/themes";
 import { useToast } from "../toast";
 import { copyToClipboard, maskText } from "@utils/copyToClipboard";
 import IconButton from "../iconButton";
@@ -27,12 +27,13 @@ export default function CopyBox({
 	name,
 	masked = false,
 	active = false,
+	...props
 }: {
 	text: string;
 	name: string;
 	masked?: boolean;
 	active?: boolean;
-}) {
+} & FlexProps) {
 	const { showSuccessToast, showErrorToast } = useToast();
 	const [isVisible, setIsVisible] = useState(!masked);
 
@@ -57,7 +58,8 @@ export default function CopyBox({
 		<Flex
 			align="center"
 			gap="4"
-			className="copy-box">
+			className="copy-box"
+			{...props}>
 			<Flex
 				align="center"
 				gap="4"

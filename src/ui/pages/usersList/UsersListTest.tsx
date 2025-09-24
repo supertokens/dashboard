@@ -26,7 +26,7 @@ import {
 } from "@utils";
 import { Box, Flex, Select, Text } from "@radix-ui/themes";
 import Paper from "@components/radix/paper";
-import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, PlusIcon } from "@radix-ui/react-icons";
+import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "@radix-ui/react-icons";
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
 import IconButton from "@components/radix/iconButton";
 import Button from "@components/radix/button";
@@ -51,7 +51,7 @@ import Search from "@components/search/indexTest";
 import "./UsersListTest.scss";
 import EmptyList from "@components/radix/empty";
 import CreateUserDialogTest from "@components/createUser/CreateUserDialogTest";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import UserDetailTest from "@components/userDetail/userDetailTest";
 
 const RenderDemoCallout = ({ connectionURI }: { connectionURI: string }) => {

@@ -21,11 +21,14 @@ export default function ItemLabel({
 	children,
 	bold = false,
 	className,
+	required = false,
 	...props
-}: { children: React.ReactNode; bold?: boolean } & TextProps) {
+}: { children: React.ReactNode; bold?: boolean; required?: boolean } & TextProps) {
 	return (
 		<Text
-			className={`item-label ${className} ${bold ? "item-label--bold" : ""}`}
+			className={`item-label ${className} ${bold ? "item-label--bold" : ""} ${
+				required ? "item-label--required" : ""
+			}`}
 			{...props}>
 			{children}
 		</Text>

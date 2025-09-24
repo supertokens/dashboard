@@ -44,6 +44,9 @@ import CopyBox from "@components/radix/copyBox";
 import TabSelector from "@components/radix/tabSelector";
 import LoginMethods from "./loginMethods/LoginMethodsTest";
 import Separator from "@components/radix/separator";
+import Sessions from "./userDetailSessionListTest";
+import EditUserModal from "@components/radix/modals/editUser";
+import DeleteUserModal from "@components/radix/modals/deleteUser";
 
 const getFirstLetter = (name: string | undefined) => {
 	return `${name?.[0] || ""}`;
@@ -72,6 +75,7 @@ const userDetailTabs: { name: string; value: UserDetailTab }[] = [
 const UserNameCard = ({ user }: { user: User }) => {
 	const { firstName, lastName } = user;
 	const userNameSet = !!(firstName && lastName);
+	const [openEditUserModal, setOpenEditUserModal] = useState(false);
 
 	return (
 		<Flex
@@ -96,15 +100,25 @@ const UserNameCard = ({ user }: { user: User }) => {
 			)}
 			<IconButton
 				variant="soft"
-				color="gray">
+				color="gray"
+				onClick={() => {
+					setOpenEditUserModal(true);
+				}}>
 				<Pencil1Icon />
 			</IconButton>
+			<EditUserModal
+				open={openEditUserModal}
+				handleClose={() => {
+					setOpenEditUserModal(false);
+				}}
+			/>
 		</Flex>
 	);
 };
 
 const UserDetailContent = ({ user }: { user: User }) => {
 	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("login-methods");
+	const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
 	const handleTabChange = (tab: UserDetailTab) => {
 		setSelectedTab(tab);
 	};
@@ -121,10 +135,19 @@ const UserDetailContent = ({ user }: { user: User }) => {
 					<Button
 						color="red"
 						size="2"
-						variant="soft">
+						variant="soft"
+						onClick={() => {
+							setOpenDeleteUserModal(true);
+						}}>
 						<TrashIcon />
 						Delete User
 					</Button>
+					<DeleteUserModal
+						open={openDeleteUserModal}
+						handleClose={() => {
+							setOpenDeleteUserModal(false);
+						}}
+					/>
 				</Flex>
 				<Separator fullWidth />
 				<Flex
@@ -159,7 +182,7 @@ const UserDetailContent = ({ user }: { user: User }) => {
 							case "login-methods":
 								return <LoginMethods />;
 							case "sessions":
-								return <div>Sessions</div>;
+								return <Sessions />;
 							case "roles":
 								return <div>Roles</div>;
 							case "metadata":

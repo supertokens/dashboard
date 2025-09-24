@@ -23,4 +23,11 @@
 		font-weight: 600;
 		color: var(--color-neutral-alpha-12);
 	}
+
+	&--required {
+		&::after {
+			content: "*";
+			color: var(--color-error-11);
+		}
+	}
 }

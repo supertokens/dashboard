@@ -18,10 +18,13 @@ import { Separator as RadixSeparator } from "@radix-ui/themes";
 
 import "./index.scss";
 
-export default function Separator(props: React.ComponentProps<typeof RadixSeparator> & { fullWidth?: boolean }) {
+export default function Separator({
+	fullWidth = false,
+	...props
+}: React.ComponentProps<typeof RadixSeparator> & { fullWidth?: boolean }) {
 	return (
 		<RadixSeparator
-			className={`separator  ${props.fullWidth ? "separator--full-width" : ""}`}
+			className={`separator  ${fullWidth ? "separator--full-width" : ""}`}
 			{...props}
 		/>
 	);
