@@ -13,54 +13,44 @@
  * under the License.
  */
 
-.sessions {
+.roles {
 	&__header {
 		background: var(--color-sand-2);
+		&__select {
+			min-width: 200px !important;
+		}
 	}
 }
 
-.session-list {
-	border-radius: var(--radius-max-4);
-	border: 1px solid var(--color-neutral-8);
-	background: var(--color-sand-2);
-
-	&__header {
-		&__session-handle {
-			width: calc(45% - 16px);
-			margin-right: 16px;
-		}
-		&__created-at {
-			width: 20%;
-		}
-		&__expires-at {
-			width: 20%;
-		}
-		&__action {
-			width: 15%;
-		}
-		border-bottom: 1px solid var(--color-neutral-alpha-8);
+.roles-list {
+	&__callout {
+		width: 100%;
+		color: var(--color-neutral-12) !important;
 	}
-
-	&__item {
-		&__session-handle {
-			width: calc(45% - 16px);
-			margin-right: 16px;
-			&__copy-box {
-				max-width: 90%;
-			}
+	&__header {
+		border-bottom: 1px solid var(--color-neutral-8);
+		&__role {
+			width: 40%;
 		}
-		&__created-at {
-			width: 20%;
-		}
-		&__expires-at {
-			width: 20%;
+		&__permission {
+			width: 40%;
 		}
 		&__action {
-			width: 15%;
+			width: 20%;
 		}
-		&:last-child {
-			border-bottom: none;
+	}
+	&__body {
+		&__item:not(:last-child) {
+			border-bottom: 1px solid var(--color-neutral-8);
 		}
-		border-bottom: 1px solid var(--color-neutral-alpha-8);
+		&__role {
+			width: 40%;
+		}
+		&__permission {
+			width: 40%;
+		}
+		&__action {
+			width: 20%;
+		}
 	}
 }

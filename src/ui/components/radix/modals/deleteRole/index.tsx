@@ -16,29 +16,24 @@
 import { Modal } from "@components/radix/modal";
 import Form from "@components/radix/form";
 import { Flex, Text } from "@radix-ui/themes";
-import TextField from "@components/radix/text";
 import Button from "@components/radix/button";
 
 import "./index.scss";
 
-export default function DeleteUserModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
+export default function DeleteRoleModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
 	return (
 		<Modal
-			title="Delete User"
+			title="Delete Role"
 			open={open}
 			handleClose={handleClose}>
-			<Form className="delete-user-modal">
+			<Form className="delete-role-modal">
 				<Form.Paper>
 					<Text
 						size="2"
-						className="delete-user-modal__disclaimer">
-						To delete the user, please confirm by typing the user's email:
-						<span>"robert.hernandez@example.com"</span> below. This will also delete any accounts linked to
-						this user.
+						className="delete-role-modal__disclaimer">
+						Are you certain you want to delete role <span>"user"</span> for this user? This action is
+						irreversible.
 					</Text>
-					<Form.Item mt="4">
-						<TextField placeholder="robert.hernandez@example.com" />
-					</Form.Item>
 				</Form.Paper>
 				<Flex
 					justify="end"

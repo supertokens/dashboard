@@ -104,4 +104,5 @@ import "./assets/cross-2.svg";
 import "./assets/danger.svg";
 import "./assets/success-icon.svg";
 import "./assets/error-icon.svg";
+import "./assets/key-shield.svg";
 import "./logo.svg";

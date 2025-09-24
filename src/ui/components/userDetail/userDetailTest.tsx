@@ -47,6 +47,7 @@ import Separator from "@components/radix/separator";
 import Sessions from "./userDetailSessionListTest";
 import EditUserModal from "@components/radix/modals/editUser";
 import DeleteUserModal from "@components/radix/modals/deleteUser";
+import Roles from "./userRoles/UserRolesListTest";
 
 const getFirstLetter = (name: string | undefined) => {
 	return `${name?.[0] || ""}`;
@@ -117,7 +118,7 @@ const UserNameCard = ({ user }: { user: User }) => {
 };
 
 const UserDetailContent = ({ user }: { user: User }) => {
-	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("login-methods");
+	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("roles");
 	const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
 	const handleTabChange = (tab: UserDetailTab) => {
 		setSelectedTab(tab);
@@ -184,7 +185,7 @@ const UserDetailContent = ({ user }: { user: User }) => {
 							case "sessions":
 								return <Sessions />;
 							case "roles":
-								return <div>Roles</div>;
+								return <Roles />;
 							case "metadata":
 								return <div>Metadata</div>;
 						}

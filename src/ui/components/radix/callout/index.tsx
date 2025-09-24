@@ -33,15 +33,17 @@ const getIcon = (type?: CalloutType) => {
 export default function Callout({
 	children,
 	type = "info",
+	className,
 	...props
 }: RadixCallout.RootProps & {
 	children: React.ReactNode;
 	type?: CalloutType;
-}) {
+	className?: string;
+} & RadixCallout.RootProps) {
 	return (
 		<RadixCallout.Root
 			variant="soft"
-			className={`callout callout--${type}`}
+			className={`callout callout--${type} ${className}`}
 			{...props}>
 			<RadixCallout.Icon>{getIcon(type)}</RadixCallout.Icon>
 			<RadixCallout.Text>{children}</RadixCallout.Text>
