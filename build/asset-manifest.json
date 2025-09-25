@@ -31,6 +31,7 @@
     "static/media/checkmark-green.svg": "/static/media/checkmark-green.svg",
     "static/media/roles-and-permissions.svg": "/static/media/roles-and-permissions.svg",
     "static/media/plus.svg": "/static/media/plus.svg",
+    "static/media/permissions.svg": "/static/media/permissions.svg",
     "static/media/permission.svg": "/static/media/permission.svg",
     "static/media/close-inactive.svg": "/static/media/close-inactive.svg",
     "static/media/close-active.svg": "/static/media/close-active.svg",

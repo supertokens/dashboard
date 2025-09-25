@@ -13,16 +13,12 @@
  * under the License.
  */
 
-.form {
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
-}
-
-.form-paper {
-	border-radius: var(--radius-5);
-	border: 1px solid var(--color-neutral-6);
-	background: var(--color-sand-2);
-	box-shadow: var(--box-shadow-1);
-	padding: 20px 14px;
+.delete-permission-modal {
+	&__disclaimer {
+		color: var(--color-neutral-11);
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 20px;
+	}
 }

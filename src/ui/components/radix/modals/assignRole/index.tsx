@@ -15,7 +15,7 @@
 
 import { Modal } from "@components/radix/modal";
 import Form from "@components/radix/form";
-import { Box, Button, CheckboxGroup, Flex, Text, TextField } from "@radix-ui/themes";
+import { Box, Button, Flex, Text, TextField } from "@radix-ui/themes";
 import ItemLabel from "@components/radix/itemLabel";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
@@ -25,6 +25,7 @@ import { assertNever } from "@utils/assertNever";
 import Loader from "@components/radix/loader";
 import DashboardError from "@components/radix/error";
 import EmptyList from "@components/radix/empty";
+import CheckboxGroup from "../../checkboxGroup";
 
 export default function AssignRoleModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
 	const [rolesListState, setRolesListState] = useState<"LOADING" | "SUCCESS" | "EMPTY" | "ERROR">("EMPTY");
@@ -82,7 +83,6 @@ export default function AssignRoleModal({ open, handleClose }: { open: boolean; 
 								case "SUCCESS":
 									return (
 										<Flex className="assign-role-modal__list">
-											{/* false positive lint error */}
 											<CheckboxGroup.Root
 												defaultValue={["1"]}
 												name="example"

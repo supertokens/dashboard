@@ -15,7 +15,7 @@
 
 .dashboard-error {
 	&--with-background {
-		box-shadow: var(--shadow-2);
+		box-shadow: var(--box-shadow-2);
 		border-radius: var(--radius-6);
 		background: #fff;
 	}
@@ -24,7 +24,7 @@
 .dashboard-error__content {
 	border-radius: var(--radius-4);
 	background: var(--color-neutral-10);
-	box-shadow: var(--shadow-1);
+	box-shadow: var(--box-shadow-1);
 	border: 1px solid var(--color-neutral-6);
 
 	&__title {

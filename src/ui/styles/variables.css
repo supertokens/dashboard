@@ -139,6 +139,7 @@ body {
 	--color-neutral-alpha-8: rgba(0, 8, 47, 0.28);
 	--color-neutral-alpha-11: rgba(0, 7, 19, 0.62);
 	--color-neutral-alpha-12: rgba(0, 5, 9, 0.89);
+	--color-neutral-alpha-9: rgba(0, 4, 29, 0.46);
 
 	--color-error-11: #c62a2f;
 
@@ -150,9 +151,13 @@ body {
 	--color-accent-9: #3e63dd;
 	--color-accent-11: #3451b2;
 	--color-accent-alpha: #00259ecc;
-	--color-accent-alpha-8: rgba(1, 52, 219, 0.45);
 	--color-accent-alpha-4: rgba(2, 73, 245, 0.1);
+	--color-accent-alpha-3: rgba(1, 68, 255, 0.06);
+	--color-accent-alpha-2: rgba(1, 68, 255, 0.02);
+	--color-accent-alpha-8: rgba(1, 52, 219, 0.45);
+	--color-accent-alpha-11: rgba(0, 37, 158, 0.8);
 	--color-accent-12: #101d46;
+	--color-sand-1: #fcfcfb;
 	--color-sand-2: #f9f9f8;
 	--color-sand-3: #f2f2f0;
 	--color-sand-4: #ebebe9;
@@ -170,8 +175,8 @@ body {
 	--color-red-9: #e5484d;
 
 	/* Shadows */
-	--shadow-1: 0px 1.5px 2px 0px rgba(0, 0, 0, 0.13) inset;
-	--shadow-2: 0px 1px 3px 0px rgba(0, 0, 0, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05),
+	--box-shadow-1: 0 1.5px 2px 0 rgba(0, 0, 0, 0.13) inset;
+	--box-shadow-2: 0px 1px 3px 0px rgba(0, 0, 0, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05),
 		0px 1px 4px 0px rgba(0, 0, 61, 0.05);
 
 	/* Radius */

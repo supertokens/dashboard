@@ -13,16 +13,26 @@
  * under the License.
  */
 
-.form {
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
-}
+import Form from "@components/radix/form";
+import { Modal } from "@components/radix/modal";
+import { Text } from "@radix-ui/themes";
 
-.form-paper {
-	border-radius: var(--radius-5);
-	border: 1px solid var(--color-neutral-6);
-	background: var(--color-sand-2);
-	box-shadow: var(--box-shadow-1);
-	padding: 20px 14px;
+import "./index.scss";
+
+export default function RemoveAccessModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
+	return (
+		<Modal
+			title="Remove Access"
+			open={open}
+			handleClose={handleClose}>
+			<Form.Paper
+				className="remove-access-modal__paper"
+				gap="3">
+				<Text className="remove-access-modal__text">
+					Are you sure you want to access of the user <span>"John Williams"</span> to the role? This action is
+					irreversible.
+				</Text>
+			</Form.Paper>
+		</Modal>
+	);
 }

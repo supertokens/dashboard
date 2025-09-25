@@ -13,16 +13,27 @@
  * under the License.
  */
 
-.form {
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
-}
+import { Modal } from "@components/radix/modal";
+import { AssignPermission } from "@components/radix/assignPermission";
+import { Flex } from "@radix-ui/themes";
+import Button from "@components/radix/button";
+import Form from "@components/radix/form";
 
-.form-paper {
-	border-radius: var(--radius-5);
-	border: 1px solid var(--color-neutral-6);
-	background: var(--color-sand-2);
-	box-shadow: var(--box-shadow-1);
-	padding: 20px 14px;
+export default function AddPermissionModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
+	return (
+		<Modal
+			title="Add Permission"
+			open={open}
+			handleClose={handleClose}
+			size="lg">
+			<Form>
+				<AssignPermission />
+				<Flex
+					justify="end"
+					mt="4">
+					<Button size="3">Done</Button>
+				</Flex>
+			</Form>
+		</Modal>
+	);
 }

@@ -12,17 +12,3 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-
-.form {
-	display: flex;
-	flex-direction: column;
-	gap: 14px;
-}
-
-.form-paper {
-	border-radius: var(--radius-5);
-	border: 1px solid var(--color-neutral-6);
-	background: var(--color-sand-2);
-	box-shadow: var(--box-shadow-1);
-	padding: 20px 14px;
-}

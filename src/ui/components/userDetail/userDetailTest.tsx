@@ -119,7 +119,7 @@ const UserNameCard = ({ user }: { user: User }) => {
 };
 
 const UserDetailContent = ({ user }: { user: User }) => {
-	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("metadata");
+	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("login-methods");
 	const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
 	const handleTabChange = (tab: UserDetailTab) => {
 		setSelectedTab(tab);
@@ -189,6 +189,8 @@ const UserDetailContent = ({ user }: { user: User }) => {
 								return <Roles />;
 							case "metadata":
 								return <MetaData />;
+							default:
+								return assertNever(selectedTab);
 						}
 					})()}
 				</TabSelector>

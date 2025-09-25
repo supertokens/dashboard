@@ -13,48 +13,37 @@
  * under the License.
  */
 
+import { Modal } from "@components/radix/modal";
+import Form from "@components/radix/form";
 import { Flex, Text } from "@radix-ui/themes";
-import { getImageUrl } from "../../../../utils";
+import Button from "@components/radix/button";
 
 import "./index.scss";
-import { ReactNode } from "react";
 
-export default function EmptyList({
-	iconUrl,
-	title,
-	description,
-}: {
-	iconUrl: string;
-	title: ReactNode;
-	description: ReactNode;
-}) {
+export default function DeletePermissionModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
 	return (
-		<Flex className="empty-list">
-			<Flex
-				direction="column"
-				justify="center"
-				align="center"
-				className="empty-list__content">
-				<img
-					src={getImageUrl(iconUrl)}
-					alt="empty"
-					className="empty-list__icon"
-				/>
-				<Text
-					className="empty-list__title"
-					size="3"
-					weight="medium"
-					mt="2"
-					mb="4">
-					{title}
-				</Text>
-				<Text
-					className="empty-list__description"
-					size="2"
-					weight="medium">
-					{description}
-				</Text>
-			</Flex>
-		</Flex>
+		<Modal
+			title="Delete Permission"
+			open={open}
+			handleClose={handleClose}>
+			<Form className="delete-permission-modal">
+				<Form.Paper>
+					<Text
+						size="2"
+						className="delete-permission-modal__disclaimer">
+						Are you sure you want to delete selected permission(s)? This action is irreversible.
+					</Text>
+				</Form.Paper>
+				<Flex
+					justify="end"
+					mt="4">
+					<Button
+						color="red"
+						size="3">
+						Delete
+					</Button>
+				</Flex>
+			</Form>
+		</Modal>
 	);
 }

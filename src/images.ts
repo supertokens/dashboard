@@ -105,4 +105,5 @@ import "./assets/danger.svg";
 import "./assets/success-icon.svg";
 import "./assets/error-icon.svg";
 import "./assets/key-shield.svg";
+import "./assets/permissions.svg";
 import "./logo.svg";

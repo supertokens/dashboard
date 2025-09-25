@@ -33,7 +33,8 @@ import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
 import MainLayout from "./ui/layouts/mainLayout";
 import TenantManagement from "./ui/pages/tenants";
 import UserRolesList from "./ui/pages/userroles";
-import { UserRolesAndPermissions } from "./ui/pages/userroles/indexTest";
+import UserRolesAndPermissions from "./ui/pages/userroles/indexTest";
+import UserRolesAndPermissions2 from "./ui/pages/userroles";
 import { ToastProvider } from "@components/radix/toast";
 
 function App() {

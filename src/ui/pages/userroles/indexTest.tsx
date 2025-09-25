@@ -21,7 +21,6 @@ import { useContext, useEffect } from "react";
 import { PopupContentContext } from "../../contexts/PopupContentContext";
 import { useState } from "react";
 import useRolesService from "../../../api/userroles/role";
-import { getImageUrl } from "../../../utils";
 import Loader from "../../components/radix/loader";
 import { assertNever } from "../../../utils/assertNever";
 import { Badge, Box, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
@@ -30,8 +29,9 @@ import Button from "../../components/radix/button";
 
 import "./indexTest.scss";
 import EmptyList from "../../components/radix/empty";
-import { Link } from "react-router-dom";
-import { Modal } from "../../components/radix/modal";
+import CreateNewRoleModal from "@components/radix/modals/createNewRole";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import RoleDetails from "@components/userroles/components/roleDetails";
 
 export const USER_ROLES_PAGINATION_LIMIT = 10;
 
@@ -42,6 +42,7 @@ type RoleWithOrWithoutPermissions = {
 };
 
 const UserRolesAndPermissionsHeader = () => {
+	const [addNewRoleModalOpen, setAddNewRoleModalOpen] = useState(false);
 	return (
 		<Flex
 			justify="between"
@@ -70,10 +71,15 @@ const UserRolesAndPermissionsHeader = () => {
 			<Button
 				size="2"
 				variant="solid"
-				className="user-roles-and-permissions-list__header__btn">
+				className="user-roles-and-permissions-list__header__btn"
+				onClick={() => setAddNewRoleModalOpen(true)}>
 				<PlusIcon />
 				Add Role
 			</Button>
+			<CreateNewRoleModal
+				handleClose={() => setAddNewRoleModalOpen(false)}
+				open={addNewRoleModalOpen}
+			/>
 		</Flex>
 	);
 };
@@ -118,10 +124,14 @@ const UserRolesAndPermissionsItem = ({
 	permissions: undefined | string[];
 	isLast: boolean;
 }) => {
+	const navigate = useNavigate();
 	return (
 		<Flex
 			align="center"
 			width="100%"
+			onClick={() => {
+				navigate(`/roles?roleid=${role}`);
+			}}
 			className={`user-roles-and-permissions-list__table__item ${
 				isLast ? "user-roles-and-permissions-list__table__item--last" : ""
 			}`}>
@@ -236,7 +246,7 @@ const UserRolesAndPermissionsTable = ({
 						description="Once added, all created user roles will be found here"
 					/>
 				) : (
-					rolesAndPermissions.map(({ role, permissions }, index) => (
+					ROLES_AND_PERMISSIONS.map(({ role, permissions }, index) => (
 						<UserRolesAndPermissionsItem
 							key={role}
 							role={role}
@@ -250,21 +260,8 @@ const UserRolesAndPermissionsTable = ({
 	);
 };
 
-const CreateNewRoleModal = ({ handleClose }: { handleClose: () => void }) => {
-	return (
-		<Modal
-			open={true}
-			handleClose={handleClose}
-			size="sm"
-			title="Add New Role">
-			<div>Create New Role</div>
-		</Modal>
-	);
-};
-
-export function UserRolesAndPermissions() {
+function UserRolesAndPermissions() {
 	const [pageState, setPageState] = useState<"LOADING" | "ERROR" | "SUCCESS">("LOADING");
-	const [modalState, setModalState] = useState<"CREATE_NEW_ROLE" | null>(null);
 	//	boolean to check whether the roles and permissions recipe is enabled or not.
 	const [isFeatureEnabled, setIsFeatureEnabled] = useState<boolean | null>(null);
 
@@ -353,14 +350,16 @@ export function UserRolesAndPermissions() {
 					}
 				})()}
 			</div>
-			{(() => {
-				switch (modalState) {
-					case "CREATE_NEW_ROLE":
-						return <CreateNewRoleModal handleClose={() => setModalState(null)} />;
-					default:
-						return null;
-				}
-			})()}
 		</PageContainer>
 	);
+}
+
+export default function UserViewRouter() {
+	const [searchParams] = useSearchParams();
+	const roleId = searchParams.get("roleid");
+
+	if (roleId) {
+		return <RoleDetails roleId={roleId} />;
+	}
+	return <UserRolesAndPermissions />;
 }

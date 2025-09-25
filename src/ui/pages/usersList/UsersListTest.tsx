@@ -51,7 +51,7 @@ import Search from "@components/search/indexTest";
 import "./UsersListTest.scss";
 import EmptyList from "@components/radix/empty";
 import CreateUserDialogTest from "@components/createUser/CreateUserDialogTest";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import UserDetailTest from "@components/userDetail/userDetailTest";
 
 const RenderDemoCallout = ({ connectionURI }: { connectionURI: string }) => {
@@ -177,12 +177,15 @@ const UserListItem = ({ user, isLast }: { user: User; isLast: boolean }) => {
 	const email = methodFilter.length > 0 ? methodFilter[0].email : emails[0];
 	const phone = methodFilter.length > 0 ? methodFilter[0].phoneNumber : phoneNumbers[0];
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
-
+	const navigate = useNavigate();
 	return (
 		<Flex
 			align="center"
 			width="100%"
-			className={`users-list__table__item ${isLast ? "users-list__table__item--last" : ""}`}>
+			className={`users-list__table__item ${isLast ? "users-list__table__item--last" : ""}`}
+			onClick={() => {
+				navigate(`/?userid=${user.id}`);
+			}}>
 			<Flex
 				className="users-list__table__item__details"
 				direction="column"
