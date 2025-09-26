@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { Flex, Text } from "@radix-ui/themes";
+import { Flex, FlexProps, Text } from "@radix-ui/themes";
 import Button from "../button";
 
 import "./index.scss";
@@ -62,3 +62,18 @@ export default function TabSelector({
 		</Flex>
 	);
 }
+
+const TabContentHeadingContainer = ({ children, className, ...props }: { children: React.ReactNode } & FlexProps) => {
+	return (
+		<Flex
+			py="3"
+			px="4"
+			width="100%"
+			className={`tab-selector__content-heading ${className}`}
+			{...props}>
+			{children}
+		</Flex>
+	);
+};
+
+TabSelector.ContentHeading = TabContentHeadingContainer;

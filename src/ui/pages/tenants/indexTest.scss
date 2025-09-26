@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,23 +13,12 @@
  * under the License.
  */
 
-.users-list__demo-callout {
-	&__text {
-		color: var(--color-neutral-12);
-		line-height: 20px;
-
-		&--highlighted {
-			color: var(--color-accent-9);
-			font-weight: 600;
-		}
-	}
-}
-
-.users-list__header {
+.tenants-list__header {
 	flex-wrap: wrap;
 	&__search {
 		flex-grow: 1;
 		flex-basis: 0;
+		max-width: 400px;
 	}
 
 	&__select {
@@ -46,7 +35,7 @@
 	}
 }
 
-.users-list__table {
+.tenants-list__table {
 	border: solid var(--color-neutral-8) 1px;
 	border-radius: 12px;
 
@@ -59,13 +48,13 @@
 		background-color: var(--color-sand-3);
 		padding: 0 20px;
 		color: var(--color-neutral-11);
-		&__user {
-			width: 60%;
+		&__tenant-id {
+			width: 40%;
 			display: inline-block;
 		}
 
-		&__time-joined {
-			width: 40%;
+		&__login-methods {
+			width: 55%;
 			display: inline-flex;
 			align-items: center;
 			gap: 4px;
@@ -75,19 +64,18 @@
 		padding: 16px 20px;
 		border-bottom: solid var(--color-neutral-8) 1px;
 
-		&__details {
-			width: 60%;
-			&__name {
-				color: var(--color-neutral-12);
-			}
-			&__email {
-				color: var(--color-alpha-11);
-			}
+		&__tenant-id {
+			width: 40%;
+			color: var(--color-neutral-12);
 		}
 
-		&__time-joined {
-			color: var(--color-neutral-11);
-			width: 35%;
+		&__login-methods {
+			width: 55%;
+			&__badge {
+				background: var(--color-neutral-alpha-3) !important;
+				color: var(--color-neutral-alpha-11) !important;
+				font-weight: 600 !important;
+			}
 		}
 		&:hover {
 			background-color: var(--color-accent-2);

@@ -106,4 +106,6 @@ import "./assets/success-icon.svg";
 import "./assets/error-icon.svg";
 import "./assets/key-shield.svg";
 import "./assets/permissions.svg";
+import "./assets/tenant.svg";
+import "./assets/shield.svg";
 import "./logo.svg";

@@ -32,6 +32,7 @@ import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
 import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
 import MainLayout from "./ui/layouts/mainLayout";
 import TenantManagement from "./ui/pages/tenants";
+import TenantManagementTest from "./ui/pages/tenants/indexTest";
 import UserRolesList from "./ui/pages/userroles";
 import UserRolesAndPermissions from "./ui/pages/userroles/indexTest";
 import UserRolesAndPermissions2 from "./ui/pages/userroles";
@@ -64,7 +65,7 @@ function App() {
 													/>
 													<Route
 														path="/tenants"
-														element={<TenantManagement />}
+														element={<TenantManagementTest />}
 													/>
 													<Route
 														path="*"

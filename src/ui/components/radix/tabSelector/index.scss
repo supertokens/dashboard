@@ -14,16 +14,20 @@
  */
 
 .tab-selector {
+	border-radius: var(--radius-6);
+	background: #fff;
+	box-shadow: var(--box-shadow-2);
+
 	&__header {
 		border-radius: 12px 12px 0px 0px;
-		border: 1px solid var(--color-neutral-alpha-8);
-		border-bottom: 0 !important;
+		border-bottom: solid 1px var(--color-neutral-alpha-8);
 	}
 
 	&__tab {
 		background: transparent !important;
-		height: 45px !important;
 		border-radius: 0 !important;
+		height: 45px !important;
+		padding: 0px 16px !important;
 
 		&--selected {
 			border-bottom: 2px solid var(--color-accent-9) !important;
@@ -42,6 +46,10 @@
 
 	&__content {
 		border-radius: 0px 0px 8px 8px;
-		border: 1px solid var(--color-neutral-8);
+	}
+
+	&__content-heading {
+		border-bottom: 1px solid var(--color-neutral-6);
+		background: var(--color-sand-2);
 	}
 }

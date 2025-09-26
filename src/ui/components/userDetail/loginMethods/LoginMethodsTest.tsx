@@ -30,6 +30,7 @@ import { NOOP } from "@utils/noop";
 import "./loginMethodsTest.scss";
 import { useState } from "react";
 import ChangePasswordModal from "@components/radix/modals/changePassword";
+import TabSelector from "@components/radix/tabSelector";
 
 const LoginMethodHeader = () => {
 	return (
@@ -141,8 +142,7 @@ const LoginMethod = () => {
 	return (
 		<Paper
 			p="0"
-			my="4"
-			mx="3"
+			m="4"
 			className="login-method"
 			withBackground>
 			<LoginMethodHeader />
@@ -170,24 +170,25 @@ const LoginMethod = () => {
 export default function LoginMethods() {
 	return (
 		<Box width="100%">
-			<Flex
-				className="login-methods__header"
-				justify="between"
-				align="center"
-				p="3">
-				<Subtitle>Login methods associated with the user</Subtitle>
-				<Flex align="center">
-					<ItemLabel mr="2">Select tenant:</ItemLabel>
-					<Select
-						items={[]}
-						onValueChange={NOOP}
-						selectedValue={""}
-						triggerClassName="login-methods__header__select"
-					/>
+			<TabSelector.ContentHeading>
+				<Flex
+					className="login-methods__header"
+					justify="between"
+					align="center"
+					width="100%">
+					<Subtitle>Login methods associated with the user</Subtitle>
+					<Flex align="center">
+						<ItemLabel mr="2">Select tenant:</ItemLabel>
+						<Select
+							items={[]}
+							onValueChange={NOOP}
+							selectedValue={""}
+							triggerClassName="login-methods__header__select"
+						/>
+					</Flex>
 				</Flex>
-			</Flex>
+			</TabSelector.ContentHeading>
 
-			<Separator fullWidth />
 			<LoginMethod />
 		</Box>
 	);

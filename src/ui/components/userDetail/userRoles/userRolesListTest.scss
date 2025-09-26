@@ -23,6 +23,8 @@
 }
 
 .roles-list {
+	border: solid 1px var(--color-neutral-8);
+	border-radius: var(--radius-max-4);
 	&__callout {
 		width: 100%;
 		color: var(--color-neutral-12) !important;

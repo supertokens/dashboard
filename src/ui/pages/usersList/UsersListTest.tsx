@@ -48,11 +48,12 @@ import { useAnalyticsService } from "@api/analytics";
 import useFetchSearchTags from "@api/search/searchTags";
 import Search from "@components/search/indexTest";
 
-import "./UsersListTest.scss";
 import EmptyList from "@components/radix/empty";
 import CreateUserDialogTest from "@components/createUser/CreateUserDialogTest";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import UserDetailTest from "@components/userDetail/userDetailTest";
+
+import "./UsersListTest.scss";
 
 const RenderDemoCallout = ({ connectionURI }: { connectionURI: string }) => {
 	if (!isUsingDemoConnectionUri(connectionURI)) return null;
@@ -99,6 +100,7 @@ const UserListHeader = ({ onTenantChange, loadCount }: { onTenantChange: () => v
 								return Promise.resolve();
 							}}
 							isLoading={false}
+							placeholder="Search User"
 						/>
 					</Box>
 				)}
@@ -171,7 +173,7 @@ const UserListHeader = ({ onTenantChange, loadCount }: { onTenantChange: () => v
 		</Flex>
 	);
 };
-const UserListItem = ({ user, isLast }: { user: User; isLast: boolean }) => {
+const UserListItem = ({ user }: { user: User }) => {
 	const { firstName, lastName, emails, timeJoined, loginMethods, phoneNumbers } = user;
 	const methodFilter = loginMethods.filter((el) => el.recipeUserId === user.id);
 	const email = methodFilter.length > 0 ? methodFilter[0].email : emails[0];
@@ -182,7 +184,7 @@ const UserListItem = ({ user, isLast }: { user: User; isLast: boolean }) => {
 		<Flex
 			align="center"
 			width="100%"
-			className={`users-list__table__item ${isLast ? "users-list__table__item--last" : ""}`}
+			className="users-list__table__item "
 			onClick={() => {
 				navigate(`/?userid=${user.id}`);
 			}}>
@@ -214,8 +216,8 @@ const UserListItem = ({ user, isLast }: { user: User; isLast: boolean }) => {
 				</Text>
 			)}
 			<ChevronRightIcon
-				height={20}
-				width={20}
+				height={16}
+				width={16}
 			/>
 		</Flex>
 	);
@@ -256,10 +258,9 @@ const UserListTable = ({ users }: { users: User[] }) => {
 			) : (
 				<>
 					<Flex direction="column">
-						{users.map((user, index) => (
+						{users.map((user) => (
 							<UserListItem
 								key={user.emails[0]}
-								isLast={index === users.length - 1}
 								user={user}
 							/>
 						))}

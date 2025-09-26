@@ -174,27 +174,25 @@ const UserDetailContent = ({ user }: { user: User }) => {
 				</Flex>
 			</ItemContainer>
 
-			<ItemContainer>
-				<TabSelector
-					tabs={userDetailTabs}
-					onTabChange={(tab) => handleTabChange(tab as UserDetailTab)}
-					selectedTab={selectedTab}>
-					{(() => {
-						switch (selectedTab) {
-							case "login-methods":
-								return <LoginMethods />;
-							case "sessions":
-								return <Sessions />;
-							case "roles":
-								return <Roles />;
-							case "metadata":
-								return <MetaData />;
-							default:
-								return assertNever(selectedTab);
-						}
-					})()}
-				</TabSelector>
-			</ItemContainer>
+			<TabSelector
+				tabs={userDetailTabs}
+				onTabChange={(tab) => handleTabChange(tab as UserDetailTab)}
+				selectedTab={selectedTab}>
+				{(() => {
+					switch (selectedTab) {
+						case "login-methods":
+							return <LoginMethods />;
+						case "sessions":
+							return <Sessions />;
+						case "roles":
+							return <Roles />;
+						case "metadata":
+							return <MetaData />;
+						default:
+							return assertNever(selectedTab);
+					}
+				})()}
+			</TabSelector>
 		</Box>
 	);
 };

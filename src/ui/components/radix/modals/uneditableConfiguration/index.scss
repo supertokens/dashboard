@@ -13,25 +13,8 @@
  * under the License.
  */
 
-.login-methods {
-	&__header {
-		&__select {
-			min-width: 200px !important;
-		}
-	}
-}
-
-.login-method {
-	border-radius: var(--radius-max-4);
-	border: 1px solid var(--color-neutral-8);
-	background: var(--color-sand-2);
-	&__item-label {
-		flex-shrink: 0;
-	}
-	&__phone-number-input {
-		width: fit-content !important;
-		min-width: 300px;
-		max-width: 500px;
-		margin-right: 8px;
+.uneditable-configuration-modal {
+	&__text {
+		color: var(--color-neutral-11);
 	}
 }
