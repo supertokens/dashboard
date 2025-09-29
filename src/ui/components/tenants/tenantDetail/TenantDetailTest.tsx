@@ -33,6 +33,7 @@ import { LoginMethods } from "./loginMethods";
 import { SecondaryFactors } from "./secondaryFactors";
 import DeleteTenantModal from "@components/radix/modals/deleteTenant";
 import CoreConfiguration from "./coreConfiguration";
+import { Providers } from "./providers";
 
 type TenantDetailTab = "login-methods" | "Secondary Factors" | "Providers" | "Core Configuration";
 const tenantDetailTabs: { name: string; value: TenantDetailTab }[] = [
@@ -56,7 +57,7 @@ const tenantDetailTabs: { name: string; value: TenantDetailTab }[] = [
 
 const TenantDetailContent = () => {
 	const [deleteTenantModalOpen, setDeleteTenantModalOpen] = useState(false);
-	const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("Core Configuration");
+	const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("login-methods");
 	const navigate = useNavigate();
 	const handleTabChange = (tab: TenantDetailTab) => {
 		setSelectedTab(tab);
@@ -122,7 +123,7 @@ const TenantDetailContent = () => {
 						case "Secondary Factors":
 							return <SecondaryFactors />;
 						case "Providers":
-							return <div>Providers</div>;
+							return <Providers />;
 						case "Core Configuration":
 							return <CoreConfiguration />;
 						default:

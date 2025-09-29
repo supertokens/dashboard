@@ -44,6 +44,7 @@ export default function EditConfigurationPropertyModal({
 					className="edit-configuration-property-modal__heading">
 					<ItemLabel
 						size="2"
+						mr="2"
 						weight="medium"
 						className="edit-configuration-property-modal__heading__label">
 						Property Name:
