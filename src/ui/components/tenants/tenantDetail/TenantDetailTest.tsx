@@ -13,25 +13,25 @@
  * under the License.
  */
 
-import Button from "@components/radix/button";
-import ItemDetailHeader from "@components/radix/itemDetailsHeading";
-import PageContainer from "@components/radix/pageContainer";
+import Button from "@shared/components/button";
+import ItemDetailHeader from "@shared/components/itemDetailsHeading";
+import PageContainer from "@shared/components/pageContainer";
 import { EyeOpenIcon, TrashIcon } from "@radix-ui/react-icons";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { assertNever } from "@utils/assertNever";
-import DashboardError from "@components/radix/error";
-import Loader from "@components/radix/loader";
+import DashboardError from "@shared/components/error";
+import Loader from "@shared/components/loader";
 
-import TabSelector from "@components/radix/tabSelector";
-import ItemContainer from "@components/radix/itemContainer";
-import Separator from "@components/radix/separator";
-import ItemLabel from "@components/radix/itemLabel";
-import Crystal from "@components/radix/crystal";
+import TabSelector from "@shared/components/tabSelector";
+import ItemContainer from "@shared/components/itemContainer";
+import Separator from "@shared/components/separator";
+import ItemLabel from "@shared/components/itemLabel";
+import Crystal from "@shared/components/crystal";
 import { LoginMethods } from "./loginMethods";
 import { SecondaryFactors } from "./secondaryFactors";
-import DeleteTenantModal from "@components/radix/modals/deleteTenant";
+import DeleteTenantModal from "@shared/components/modals/deleteTenant";
 import CoreConfiguration from "./coreConfiguration";
 import { Providers } from "./providers";
 

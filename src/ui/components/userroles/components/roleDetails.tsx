@@ -13,19 +13,19 @@
  * under the License.
  */
 
-import Button from "@components/radix/button";
-import ItemContainer from "@components/radix/itemContainer";
+import Button from "@shared/components/button";
+import ItemContainer from "@shared/components/itemContainer";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { useState } from "react";
-import DeleteUserModal from "@components/radix/modals/deleteUser";
-import TabSelector from "@components/radix/tabSelector";
+import DeleteUserModal from "@shared/components/modals/deleteUser";
+import TabSelector from "@shared/components/tabSelector";
 import { assertNever } from "@utils/assertNever";
 import { useNavigate } from "react-router-dom";
-import PageContainer from "@components/radix/pageContainer";
-import ItemDetailHeader from "@components/radix/itemDetailsHeading";
-import DashboardError from "@components/radix/error";
-import Loader from "@components/radix/loader";
+import PageContainer from "@shared/components/pageContainer";
+import ItemDetailHeader from "@shared/components/itemDetailsHeading";
+import DashboardError from "@shared/components/error";
+import Loader from "@shared/components/loader";
 import Permissions from "./permissions";
 import ManageAccess from "./manageAccess";
 

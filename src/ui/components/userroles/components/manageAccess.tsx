@@ -15,18 +15,18 @@
 
 import { useState } from "react";
 import { Flex, IconButton, Text } from "@radix-ui/themes";
-import Loader from "@components/radix/loader";
+import Loader from "@shared/components/loader";
 import { assertNever } from "@utils/assertNever";
-import DashboardError from "@components/radix/error";
-import ItemLabel from "@components/radix/itemLabel";
+import DashboardError from "@shared/components/error";
+import ItemLabel from "@shared/components/itemLabel";
 
 import "./manageAccess.scss";
-import EmptyList from "@components/radix/empty";
-import Paper from "@components/radix/paper";
+import EmptyList from "@shared/components/empty";
+import Paper from "@shared/components/paper";
 import { User } from "@pages/usersList/types";
-import Button from "@components/radix/button";
+import Button from "@shared/components/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import RemoveAccessModal from "@components/radix/modals/removeAccess";
+import RemoveAccessModal from "@shared/components/modals/removeAccess";
 
 const ManageAccessHeader = () => {
 	return (

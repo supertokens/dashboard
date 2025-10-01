@@ -13,25 +13,25 @@
  * under the License.
  */
 
-import PageContainer from "@components/radix/pageContainer";
-import PageHeading from "@components/radix/pageHeading";
+import PageContainer from "@shared/components/pageContainer";
+import PageHeading from "@shared/components/pageHeading";
 import { Badge, Box, Flex, Text } from "@radix-ui/themes";
-import Paper from "@components/radix/paper";
+import Paper from "@shared/components/paper";
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
-import IconButton from "@components/radix/iconButton";
-import Button from "@components/radix/button";
-import Loader from "@components/radix/loader";
-import DashboardError from "@components/radix/error";
+import IconButton from "@shared/components/iconButton";
+import Button from "@shared/components/button";
+import Loader from "@shared/components/loader";
+import DashboardError from "@shared/components/error";
 import { assertNever } from "@utils/assertNever";
 import { isSearchEnabled } from "@utils";
-import Search from "@components/search/indexTest";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Tenant } from "@api/tenants/types";
-import TenantDetailTest from "@components/tenants/tenantDetail/TenantDetailTest";
-import EmptyList from "@components/radix/empty";
+import EmptyList from "@shared/components/empty";
 
 import "./indexTest.scss";
+import Search from "@shared/components/search";
+import TenantDetailTest from "@components/tenants/tenantDetail/TenantDetailTest";
 
 const TenantListHeader = () => {
 	return (

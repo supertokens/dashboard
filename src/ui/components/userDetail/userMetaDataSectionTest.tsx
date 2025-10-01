@@ -13,11 +13,11 @@
  * under the License.
  */
 
-import Button from "@components/radix/button";
-import DashboardError from "@components/radix/error";
-import ItemLabel from "@components/radix/itemLabel";
-import Loader from "@components/radix/loader";
-import Separator from "@components/radix/separator";
+import Button from "@shared/components/button";
+import DashboardError from "@shared/components/error";
+import ItemLabel from "@shared/components/itemLabel";
+import Loader from "@shared/components/loader";
+import Separator from "@shared/components/separator";
 import { Box, Flex, TextArea } from "@radix-ui/themes";
 import { assertNever } from "@utils/assertNever";
 import { useState } from "react";

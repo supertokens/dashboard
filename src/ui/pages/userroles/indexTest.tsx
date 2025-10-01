@@ -13,23 +13,23 @@
  * under the License.
  */
 
-import Paper from "../../components/radix/paper";
-import DashboardError from "../../components/radix/error";
-import PageContainer from "../../components/radix/pageContainer";
-import PageHeading from "../../components/radix/pageHeading";
+import Paper from "@shared/components/paper";
+import DashboardError from "@shared/components/error";
+import PageContainer from "@shared/components/pageContainer";
+import PageHeading from "@shared/components/pageHeading";
 import { useContext, useEffect } from "react";
-import { PopupContentContext } from "../../contexts/PopupContentContext";
+import { PopupContentContext } from "@contexts/PopupContentContext";
 import { useState } from "react";
-import useRolesService from "../../../api/userroles/role";
-import Loader from "../../components/radix/loader";
-import { assertNever } from "../../../utils/assertNever";
+import useRolesService from "@api/userroles/role";
+import Loader from "@shared/components/loader";
+import { assertNever } from "@utils/assertNever";
 import { Badge, Box, Flex, IconButton, Text, TextField } from "@radix-ui/themes";
 import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, PlusIcon } from "@radix-ui/react-icons";
-import Button from "../../components/radix/button";
+import Button from "@shared/components/button";
 
 import "./indexTest.scss";
-import EmptyList from "../../components/radix/empty";
-import CreateNewRoleModal from "@components/radix/modals/createNewRole";
+import EmptyList from "@shared/components/empty";
+import CreateNewRoleModal from "@shared/components/modals/createNewRole";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import RoleDetails from "@components/userroles/components/roleDetails";
 

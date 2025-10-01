@@ -298,6 +298,8 @@ module.exports = function (webpackEnv) {
 				// Path aliases
 				"@api": path.resolve(paths.appSrc, "api"),
 				"@components": path.resolve(paths.appSrc, "ui/components"),
+				"@features": path.resolve(paths.appSrc, "features"),
+				"@shared": path.resolve(paths.appSrc, "shared"),
 				"@pages": path.resolve(paths.appSrc, "ui/pages"),
 				"@contexts": path.resolve(paths.appSrc, "ui/contexts"),
 				"@layouts": path.resolve(paths.appSrc, "ui/layouts"),

@@ -13,8 +13,8 @@
  * under the License.
  */
 
-import useAuthService from "../../../api";
-import Button from "../radix/button";
+import useAuthService from "@api";
+import Button from "@shared/components/button";
 
 const SignOutBtn = () => {
 	const { logout } = useAuthService();

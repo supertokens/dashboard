@@ -16,21 +16,21 @@
 import { useState } from "react";
 import "./userRolesListTest.scss";
 import { Box, Flex } from "@radix-ui/themes";
-import Loader from "@components/radix/loader";
+import Loader from "@shared/components/loader";
 import { assertNever } from "@utils/assertNever";
-import DashboardError from "@components/radix/error";
-import ItemLabel from "@components/radix/itemLabel";
-import Separator from "@components/radix/separator";
-import Button from "@components/radix/button";
+import DashboardError from "@shared/components/error";
+import ItemLabel from "@shared/components/itemLabel";
+import Separator from "@shared/components/separator";
+import Button from "@shared/components/button";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
-import Select from "@components/radix/select";
+import Select from "@shared/components/select";
 import { NOOP } from "@utils/noop";
-import AssignRoleModal from "@components/radix/modals/assignRole";
-import Callout from "@components/radix/callout";
-import Paper from "@components/radix/paper";
-import Crystal from "@components/radix/crystal";
-import IconButton from "@components/radix/iconButton";
-import DeleteRoleModal from "@components/radix/modals/deleteRole";
+import AssignRoleModal from "@shared/components/modals/assignRole";
+import Callout from "@shared/components/callout";
+import Paper from "@shared/components/paper";
+import Crystal from "@shared/components/crystal";
+import IconButton from "@shared/components/iconButton";
+import DeleteRoleModal from "@shared/components/modals/deleteRole";
 
 const RolesHeader = () => {
 	const [openRevokeAllSessionModal, setOpenRevokeAllSessionModal] = useState(false);

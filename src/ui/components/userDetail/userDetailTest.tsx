@@ -14,11 +14,11 @@
  */
 
 import useUserService, { GetUserInfoResult, UpdateUserInformationResponse } from "@api/user";
-import Button from "@components/radix/button";
-import IconButton from "@components/radix/iconButton";
-import ItemContainer from "@components/radix/itemContainer";
-import ItemDetailHeader from "@components/radix/itemDetailsHeading";
-import PageContainer from "@components/radix/pageContainer";
+import Button from "@shared/components/button";
+import IconButton from "@shared/components/iconButton";
+import ItemContainer from "@shared/components/itemContainer";
+import ItemDetailHeader from "@shared/components/itemDetailsHeading";
+import PageContainer from "@shared/components/pageContainer";
 import { User } from "@pages/usersList/types";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { Badge, Box, Em, Flex, Text } from "@radix-ui/themes";
@@ -28,27 +28,27 @@ import { useNavigate } from "react-router-dom";
 import { SessionInfo } from "./types";
 import useMetadataService from "@api/user/metadata";
 import useSessionsForUserService from "@api/user/sessions";
-import { useToast } from "@components/radix/toast";
+import { useToast } from "@shared/components/toast";
 import { Tenant } from "@api/tenants/types";
 import { getTenantsObjectsForIds } from "@utils/user";
 import { FactorIds } from "@constants";
 import { assertNever } from "@utils/assertNever";
-import DashboardError from "@components/radix/error";
-import Loader from "@components/radix/loader";
-import EmptyList from "@components/radix/empty";
-import Paper from "@components/radix/paper";
+import Loader from "@shared/components/loader";
+import EmptyList from "@shared/components/empty";
+import Paper from "@shared/components/paper";
 
 import "./userDetailTest.scss";
-import ItemLabel from "@components/radix/itemLabel";
-import CopyBox from "@components/radix/copyBox";
-import TabSelector from "@components/radix/tabSelector";
+import ItemLabel from "@shared/components/itemLabel";
+import CopyBox from "@shared/components/copyBox";
+import TabSelector from "@shared/components/tabSelector";
 import LoginMethods from "./loginMethods/LoginMethodsTest";
-import Separator from "@components/radix/separator";
+import Separator from "@shared/components/separator";
 import Sessions from "./userDetailSessionListTest";
-import EditUserModal from "@components/radix/modals/editUser";
-import DeleteUserModal from "@components/radix/modals/deleteUser";
+import EditUserModal from "@shared/components/modals/editUser";
+import DeleteUserModal from "@shared/components/modals/deleteUser";
 import Roles from "./userRoles/UserRolesListTest";
 import MetaData from "./userMetaDataSectionTest";
+import DashboardError from "@shared/components/error";
 
 const getFirstLetter = (name: string | undefined) => {
 	return `${name?.[0] || ""}`;

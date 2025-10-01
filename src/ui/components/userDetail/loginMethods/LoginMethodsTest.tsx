@@ -13,24 +13,24 @@
  * under the License.
  */
 
-import Button from "@components/radix/button";
-import IconButton from "@components/radix/iconButton";
-import ItemLabel from "@components/radix/itemLabel";
-import Paper from "@components/radix/paper";
-import Separator from "@components/radix/separator";
-import Subtitle from "@components/radix/subtitle";
+import Button from "@shared/components/button";
+import IconButton from "@shared/components/iconButton";
+import ItemLabel from "@shared/components/itemLabel";
+import Paper from "@shared/components/paper";
+import Separator from "@shared/components/separator";
+import Subtitle from "@shared/components/subtitle";
 import { CheckCircledIcon, EnvelopeClosedIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { Box, Flex } from "@radix-ui/themes";
-import PhoneNumberInput from "@components/radix/phoneNumberInput";
-import ItemValue from "@components/radix/itemValue";
+import PhoneNumberInput from "@shared/components/phoneNumberInput";
+import ItemValue from "@shared/components/itemValue";
 
-import Select from "@components/radix/select";
+import Select from "@shared/components/select";
 import { NOOP } from "@utils/noop";
 
 import "./loginMethodsTest.scss";
 import { useState } from "react";
-import ChangePasswordModal from "@components/radix/modals/changePassword";
-import TabSelector from "@components/radix/tabSelector";
+import ChangePasswordModal from "@shared/components/modals/changePassword";
+import TabSelector from "@shared/components/tabSelector";
 
 const LoginMethodHeader = () => {
 	return (

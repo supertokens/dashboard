@@ -13,13 +13,13 @@
  * under the License.
  */
 
-import TabSelector from "@components/radix/tabSelector";
+import TabSelector from "@shared/components/tabSelector";
 import { Badge, Callout, Flex, Switch, Text } from "@radix-ui/themes";
-import ItemLabel from "@components/radix/itemLabel";
+import ItemLabel from "@shared/components/itemLabel";
+
+import { getImageUrl } from "@utils";
 
 import "./loginMethods.scss";
-import { useState } from "react";
-import { getImageUrl } from "@utils/index";
 
 const LOGIN_METHODS = [
 	{

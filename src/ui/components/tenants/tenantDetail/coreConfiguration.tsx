@@ -13,19 +13,19 @@
  * under the License.
  */
 
-import ItemLabel from "@components/radix/itemLabel";
-import TabSelector from "@components/radix/tabSelector";
+import ItemLabel from "@shared/components/itemLabel";
+import TabSelector from "@shared/components/tabSelector";
 import { Badge, Flex, IconButton, Text } from "@radix-ui/themes";
-import Loader from "@components/radix/loader";
-import DashboardError from "@components/radix/error";
+import Loader from "@shared/components/loader";
+import DashboardError from "@shared/components/error";
 import { assertNever } from "@utils/assertNever";
 import { useState } from "react";
-import Paper from "@components/radix/paper";
+import Paper from "@shared/components/paper";
 import { InfoCircledIcon, Pencil1Icon, QuestionMarkIcon } from "@radix-ui/react-icons";
 
 import "./coreConfiguration.scss";
-import UneditableConfigurationModal from "@components/radix/modals/uneditableConfiguration";
-import EditConfigurationPropertyModal from "@components/radix/modals/editConfigurationProperty";
+import UneditableConfigurationModal from "@shared/components/modals/uneditableConfiguration";
+import EditConfigurationPropertyModal from "@shared/components/modals/editConfigurationProperty";
 
 const CoreConfigurationTable = () => {
 	const [isUneditableConfigurationModalOpen, setIsUneditableConfigurationModalOpen] = useState(false);

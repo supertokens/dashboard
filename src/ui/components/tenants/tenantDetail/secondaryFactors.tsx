@@ -13,9 +13,9 @@
  * under the License.
  */
 
-import TabSelector from "@components/radix/tabSelector";
+import TabSelector from "@shared/components/tabSelector";
 import { Badge, Flex, Switch, Text } from "@radix-ui/themes";
-import ItemLabel from "@components/radix/itemLabel";
+import ItemLabel from "@shared/components/itemLabel";
 
 import "./secondaryFactors.scss";
 import { getImageUrl } from "@utils/index";

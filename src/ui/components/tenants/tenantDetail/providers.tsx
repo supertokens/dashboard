@@ -13,12 +13,12 @@
  * under the License.
  */
 
-import Button from "@components/radix/button";
-import DashboardError from "@components/radix/error";
-import ItemLabel from "@components/radix/itemLabel";
-import Loader from "@components/radix/loader";
-import AddNewProviderModal from "@components/radix/modals/addNewProvider";
-import TabSelector from "@components/radix/tabSelector";
+import Button from "@shared/components/button";
+import DashboardError from "@shared/components/error";
+import ItemLabel from "@shared/components/itemLabel";
+import Loader from "@shared/components/loader";
+import AddNewProviderModal from "@shared/components/modals/addNewProvider";
+import TabSelector from "@shared/components/tabSelector";
 import {
 	Cross1Icon,
 	InfoCircledIcon,
@@ -46,8 +46,8 @@ import { useState } from "react";
 
 import "./providers.scss";
 import { NOOP } from "@utils/noop";
-import IconButton from "@components/radix/iconButton";
-import DeleteProviderConfigModal from "@components/radix/modals/deleteProviderConfig";
+import IconButton from "@shared/components/iconButton";
+import DeleteProviderConfigModal from "@shared/components/modals/deleteProviderConfig";
 
 const ProviderConfigSeparator = ({ ...props }: FlexProps) => {
 	return (

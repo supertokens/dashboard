@@ -14,17 +14,17 @@
  */
 
 import { useState } from "react";
-import Button from "@components/radix/button";
-import EmptyList from "@components/radix/empty";
-import IconButton from "@components/radix/iconButton";
-import ItemLabel from "@components/radix/itemLabel";
-import Paper from "@components/radix/paper";
+import Button from "@shared/components/button";
+import EmptyList from "@shared/components/empty";
+import IconButton from "@shared/components/iconButton";
+import ItemLabel from "@shared/components/itemLabel";
+import Paper from "@shared/components/paper";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { Badge, Checkbox, Flex, Text } from "@radix-ui/themes";
-import AddPermissionModal from "@components/radix/modals/addPermission";
-import DeletePermissionModal from "@components/radix/modals/deletePermission";
-import Loader from "@components/radix/loader";
-import DashboardError from "@components/radix/error";
+import AddPermissionModal from "@shared/components/modals/addPermission";
+import DeletePermissionModal from "@shared/components/modals/deletePermission";
+import Loader from "@shared/components/loader";
+import DashboardError from "@shared/components/error";
 import { assertNever } from "@utils/assertNever";
 
 import "./permissions.scss";

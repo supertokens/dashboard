@@ -15,7 +15,7 @@
 
 import { Theme } from "@radix-ui/themes";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import UsersListPage from "./ui/pages/usersList/UsersListTest";
+
 import UsersListPage2 from "./ui/pages/usersList/UsersList";
 import { getDashboardAppBasePath } from "./utils";
 
@@ -36,7 +36,8 @@ import TenantManagementTest from "./ui/pages/tenants/indexTest";
 import UserRolesList from "./ui/pages/userroles";
 import UserRolesAndPermissions from "./ui/pages/userroles/indexTest";
 import UserRolesAndPermissions2 from "./ui/pages/userroles";
-import { ToastProvider } from "@components/radix/toast";
+import { UserManagement } from "@features/users/page";
+import { ToastProvider } from "@shared/components/toast";
 
 function App() {
 	return (
@@ -57,7 +58,7 @@ function App() {
 												<Routes>
 													<Route
 														path="/"
-														element={<UsersListPage />}
+														element={<UserManagement />}
 													/>
 													<Route
 														path="/roles"
@@ -69,7 +70,7 @@ function App() {
 													/>
 													<Route
 														path="*"
-														element={<UsersListPage />}
+														element={<UserManagement />}
 													/>
 												</Routes>
 											</MainLayout>

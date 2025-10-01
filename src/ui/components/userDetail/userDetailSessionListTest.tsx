@@ -13,24 +13,24 @@
  * under the License.
  */
 import { Box, Flex, IconButton, Text } from "@radix-ui/themes";
-import ItemLabel from "@components/radix/itemLabel";
-import Separator from "@components/radix/separator";
+import ItemLabel from "@shared/components/itemLabel";
+import Separator from "@shared/components/separator";
 
-import Crystal from "@components/radix/crystal";
-import Button from "@components/radix/button";
+import Crystal from "@shared/components/crystal";
+import Button from "@shared/components/button";
 import { useState } from "react";
-import Loader from "@components/radix/loader";
-import DashboardError from "@components/radix/error";
-import EmptyList from "@components/radix/empty";
+import Loader from "@shared/components/loader";
+import DashboardError from "@shared/components/error";
+import EmptyList from "@shared/components/empty";
 
 import "./userDetailSessionListTest.scss";
 import { assertNever } from "@utils/assertNever";
-import CopyBox from "@components/radix/copyBox";
+import CopyBox from "@shared/components/copyBox";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import { formatNumber } from "@utils/index";
+import { formatNumber } from "@utils";
 import { NOOP } from "@utils/noop";
-import RevokeSessionModal from "@components/radix/modals/revokeSession";
-import RevokeAllSessionsModal from "@components/radix/modals/revokeAllSessions";
+import RevokeSessionModal from "@shared/components/modals/revokeSession";
+import RevokeAllSessionsModal from "@shared/components/modals/revokeAllSessions";
 
 const SessionHeader = () => {
 	const [openRevokeAllSessionModal, setOpenRevokeAllSessionModal] = useState(false);
