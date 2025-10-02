@@ -38,53 +38,57 @@ import UserRolesAndPermissions from "./ui/pages/userroles/indexTest";
 import UserRolesAndPermissions2 from "./ui/pages/userroles";
 import { UserManagement } from "@features/users/page";
 import { ToastProvider } from "@shared/components/toast";
+import { QueryProvider } from "./shared/providers/QueryProvider";
+import { ROUTES } from "@shared/navigation";
 
 function App() {
 	return (
 		<>
 			<SafeAreaView />
 			<ErrorBoundary>
-				<PopupContentContextProvider>
-					<AccessDeniedContextProvider>
-						<TenantsListContextProvider>
-							<AuthWrapper>
-								<Theme
-									radius="medium"
-									accentColor="indigo"
-									appearance="light">
-									<ToastProvider>
-										<Router basename={getDashboardAppBasePath()}>
-											<MainLayout>
-												<Routes>
-													<Route
-														path="/"
-														element={<UserManagement />}
-													/>
-													<Route
-														path="/roles"
-														element={<UserRolesAndPermissions />}
-													/>
-													<Route
-														path="/tenants"
-														element={<TenantManagementTest />}
-													/>
-													<Route
-														path="*"
-														element={<UserManagement />}
-													/>
-												</Routes>
-											</MainLayout>
-										</Router>
-									</ToastProvider>
-								</Theme>
+				<QueryProvider>
+					<PopupContentContextProvider>
+						<AccessDeniedContextProvider>
+							<TenantsListContextProvider>
+								<AuthWrapper>
+									<Theme
+										radius="medium"
+										accentColor="indigo"
+										appearance="light">
+										<ToastProvider>
+											<Router basename={getDashboardAppBasePath()}>
+												<MainLayout>
+													<Routes>
+														<Route
+															path={ROUTES.USERS}
+															element={<UserManagement />}
+														/>
+														<Route
+															path={ROUTES.ROLES}
+															element={<UserRolesAndPermissions />}
+														/>
+														<Route
+															path={ROUTES.TENANTS}
+															element={<TenantManagementTest />}
+														/>
+														<Route
+															path="*"
+															element={<UserManagement />}
+														/>
+													</Routes>
+												</MainLayout>
+											</Router>
+										</ToastProvider>
+									</Theme>
 
-								<AccessDeniedModal />
-								<ToastNotificationContainer />
-								<LayoutModalContainer />
-							</AuthWrapper>
-						</TenantsListContextProvider>
-					</AccessDeniedContextProvider>
-				</PopupContentContextProvider>
+									<AccessDeniedModal />
+									<ToastNotificationContainer />
+									<LayoutModalContainer />
+								</AuthWrapper>
+							</TenantsListContextProvider>
+						</AccessDeniedContextProvider>
+					</PopupContentContextProvider>
+				</QueryProvider>
 			</ErrorBoundary>
 		</>
 	);

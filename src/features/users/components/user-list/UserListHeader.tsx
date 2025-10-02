@@ -13,27 +13,26 @@
  * under the License.
  */
 
-import { useTenantsListContext } from "@contexts/TenantsListContext";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Box, Flex, IconButton, Select, Text } from "@radix-ui/themes";
 import { useState } from "react";
 import { getImageUrl, isSearchEnabled } from "@shared/utils";
-import Search from "@shared/components/search";
+import { Search, SearchCriteria } from "@shared/components/search";
 import Button from "@shared/components/button";
 
 import styles from "./UserListHeader.module.scss";
 import { CreateUserModal } from "@shared/components/modals/create-user";
+import { useTenants } from "@features/tenants/hooks/useTenants";
+import { NOOP } from "@utils/noop";
 
-export const UserListHeader = ({
-	onTenantChange,
-	loadCount,
-}: {
-	onTenantChange: () => void;
-	loadCount: () => void;
-}) => {
-	const [showCreateUserDialog, setShowCreateUserDialog] = useState(false);
-	const { getSelectedTenant, setSelectedTenant, tenantsListFromStore } = useTenantsListContext();
-	const selectedTenant = getSelectedTenant();
+interface UserListHeaderProps {
+	readonly onSearch: (criteria: SearchCriteria | null) => void;
+	readonly currentSearchCriteria?: SearchCriteria | null;
+}
+
+export const UserListHeader = ({ onSearch, currentSearchCriteria }: UserListHeaderProps) => {
+	const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+	const { selectedTenant, setSelectedTenant, tenants } = useTenants();
 
 	return (
 		<Flex
@@ -48,11 +47,9 @@ export const UserListHeader = ({
 				{isSearchEnabled() && (
 					<Box className={styles["user-list__header__search"]}>
 						<Search
-							onSearch={() => {
-								return Promise.resolve();
-							}}
-							isLoading={false}
+							onSearch={onSearch}
 							placeholder="Search User"
+							initialCriteria={currentSearchCriteria}
 						/>
 					</Box>
 				)}
@@ -62,7 +59,6 @@ export const UserListHeader = ({
 					value={selectedTenant}
 					onValueChange={(value) => {
 						setSelectedTenant(value);
-						onTenantChange();
 					}}>
 					<Select.Trigger
 						variant="surface"
@@ -85,9 +81,9 @@ export const UserListHeader = ({
 							</Text>
 						</Flex>
 					</Select.Trigger>
-					{tenantsListFromStore && (
+					{tenants && (
 						<Select.Content position="popper">
-							{tenantsListFromStore.map((tenant) => (
+							{tenants.map((tenant) => (
 								<Select.Item
 									key={tenant.tenantId}
 									value={tenant.tenantId}>
@@ -108,17 +104,17 @@ export const UserListHeader = ({
 				</IconButton>
 			</Flex>
 			<Button
-				onClick={() => setShowCreateUserDialog(true)}
+				onClick={() => setShowCreateUserModal(true)}
 				size="2"
 				variant="solid">
 				<PlusIcon />
 				Add User
 			</Button>
-			{showCreateUserDialog && (
+			{showCreateUserModal && (
 				<CreateUserModal
-					handleClose={() => setShowCreateUserDialog(false)}
-					tenants={tenantsListFromStore ?? []}
-					loadCount={loadCount}
+					handleClose={() => setShowCreateUserModal(false)}
+					tenants={tenants ?? []}
+					loadCount={NOOP}
 				/>
 			)}
 		</Flex>

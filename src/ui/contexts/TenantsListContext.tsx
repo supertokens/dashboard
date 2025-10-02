@@ -14,7 +14,7 @@
  */
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { Tenant } from "../../api/tenants/types";
-import { getSelectedTenantId, setSelectedTenantId } from "../../utils";
+import { getSelectedTenantIdFromLocalStorage, setSelectedTenantIdToLocalStorage } from "../../utils";
 
 type TenantsListContextType = {
 	tenantsListFromStore: Tenant[] | undefined;
@@ -39,11 +39,11 @@ export const TenantsListContextProvider: React.FC<PropsWithChildren> = ({ childr
 		tenantsListFromStore,
 		setTenantsListToStore,
 		setSelectedTenant: (tenantId: string) => {
-			setSelectedTenantId(tenantId);
+			setSelectedTenantIdToLocalStorage(tenantId);
 			setSelectedTenant(tenantId);
 		},
 		getSelectedTenant: () => {
-			return getSelectedTenantId();
+			return getSelectedTenantIdFromLocalStorage();
 		},
 	};
 

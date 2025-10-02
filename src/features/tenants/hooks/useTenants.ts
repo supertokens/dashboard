@@ -15,12 +15,38 @@
 
 import { useListTenantsService } from "@api/tenants";
 import { useQuery } from "@tanstack/react-query";
-import { getSelectedTenantId, setSelectedTenantId } from "@utils";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { create } from "zustand";
+import { getSelectedTenantIdFromLocalStorage, setSelectedTenantIdToLocalStorage } from "@utils";
+
+const TENANTS_QUERY_KEY = "tenants";
+const TENANTS_STALE_TIME = 5 * 60 * 1000; // 5 minutes
+
+interface TenantStore {
+	selectedTenant: string | undefined;
+	setSelectedTenant: (tenantId: string) => void;
+	initializeTenant: () => void;
+}
+
+const useTenantStore = create<TenantStore>((set) => ({
+	selectedTenant: undefined,
+
+	setSelectedTenant: (tenantId: string) => {
+		setSelectedTenantIdToLocalStorage(tenantId);
+		set({ selectedTenant: tenantId });
+	},
+
+	initializeTenant: () => {
+		const storedTenant = getSelectedTenantIdFromLocalStorage();
+		if (storedTenant) {
+			set({ selectedTenant: storedTenant });
+		}
+	},
+}));
 
 export const useTenants = () => {
 	const { fetchTenants } = useListTenantsService();
-	const [selectedTenant, setSelectedTenantState] = useState<string | undefined>(getSelectedTenantId());
+	const { selectedTenant, setSelectedTenant, initializeTenant } = useTenantStore();
 
 	const {
 		data: tenantsResponse,
@@ -28,42 +54,36 @@ export const useTenants = () => {
 		error,
 		refetch: refetchTenants,
 	} = useQuery({
-		queryKey: ["tenants"],
+		queryKey: [TENANTS_QUERY_KEY],
 		queryFn: fetchTenants,
-		staleTime: 5 * 60 * 1000,
-		refetchOnWindowFocus: true,
+		staleTime: TENANTS_STALE_TIME,
+		refetchOnWindowFocus: false,
 	});
 
 	const tenants = tenantsResponse?.tenants;
 
-	// Auto-select first tenant if none selected and tenants are available
+	useEffect(() => {
+		initializeTenant();
+	}, [initializeTenant]);
+
 	useEffect(() => {
 		if (tenants && tenants.length > 0 && !selectedTenant) {
 			const firstTenant = tenants[0].tenantId;
-			setSelectedTenantId(firstTenant);
-			setSelectedTenantState(firstTenant);
+			setSelectedTenant(firstTenant);
 		}
-	}, [tenants, selectedTenant]);
+	}, [tenants, selectedTenant, setSelectedTenant]);
 
-	// Validate selected tenant still exists in the list
 	useEffect(() => {
 		if (tenants && selectedTenant) {
 			const tenantExists = tenants.some((t) => t.tenantId === selectedTenant);
 			if (!tenantExists) {
-				// Selected tenant no longer exists, fall back to first tenant
 				const firstTenant = tenants[0]?.tenantId;
 				if (firstTenant) {
-					setSelectedTenantId(firstTenant);
-					setSelectedTenantState(firstTenant);
+					setSelectedTenant(firstTenant);
 				}
 			}
 		}
-	}, [tenants, selectedTenant]);
-
-	const setSelectedTenant = (tenantId: string) => {
-		setSelectedTenantId(tenantId);
-		setSelectedTenantState(tenantId);
-	};
+	}, [tenants, selectedTenant, setSelectedTenant]);
 
 	const getSelectedTenant = () => {
 		return selectedTenant;

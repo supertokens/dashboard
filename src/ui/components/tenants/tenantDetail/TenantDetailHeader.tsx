@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { getDashboardAppBasePath, setSelectedTenantId } from "../../../../utils";
+import { getDashboardAppBasePath, setSelectedTenantIdToLocalStorage } from "../../../../utils";
 import Button from "../../button";
 import { useTenantDetailContext } from "./TenantDetailContext";
 
@@ -30,7 +30,7 @@ export const TenantDetailHeader = ({ onlyShowTenantId = false }: { onlyShowTenan
 	const { tenantInfo } = useTenantDetailContext();
 
 	const handleSeeUsers = () => {
-		setSelectedTenantId(tenantInfo.tenantId);
+		setSelectedTenantIdToLocalStorage(tenantInfo.tenantId);
 		window.open(getDashboardAppBasePath(), "_blank");
 	};
 

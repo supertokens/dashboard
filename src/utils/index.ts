@@ -297,11 +297,11 @@ export const getAuthMode = (): "api-key" | "email-password" => {
 	return (window as any).authMode; // for now, either "api-key" or "email-password"
 };
 
-export const setSelectedTenantId = (tenantId: string) => {
+export const setSelectedTenantIdToLocalStorage = (tenantId: string) => {
 	localStorageHandler.setItem(StorageKeys.TENANT_ID, tenantId);
 };
 
-export const getSelectedTenantId = (): string | undefined => {
+export const getSelectedTenantIdFromLocalStorage = (): string | undefined => {
 	return localStorageHandler.getItem(StorageKeys.TENANT_ID);
 };
 

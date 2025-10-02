@@ -22,7 +22,16 @@ import { UserListItem } from "./UserListItem";
 
 import styles from "./UserListTable.module.scss";
 
-export const UserListTable = ({ users }: { users: User[] }) => {
+const getEmptyListDetails = (isSearch: boolean) => {
+	return {
+		title: isSearch ? "No users found" : "You don't have any users",
+		description: isSearch
+			? "Try adjusting your search criteria to find what you're looking for"
+			: "Once added all users will be found here. If you are using the session management feature of SuperTokens, your users will not appear in this list.",
+	};
+};
+
+export const UserListTable = ({ users, isSearch }: { users: User[]; isSearch: boolean }) => {
 	const [sort, setSort] = useState<"asc" | "desc">("desc");
 
 	return (
@@ -51,15 +60,15 @@ export const UserListTable = ({ users }: { users: User[] }) => {
 			{users.length === 0 ? (
 				<EmptyList
 					iconUrl="user.svg"
-					title="You don't have any users"
-					description="Once added all users will be found here. If you are using the session management feature of SuperTokens, your users will not appear in this list."
+					title={getEmptyListDetails(isSearch).title}
+					description={getEmptyListDetails(isSearch).description}
 				/>
 			) : (
 				<>
 					<Flex direction="column">
 						{users.map((user) => (
 							<UserListItem
-								key={user.emails[0]}
+								key={user.id}
 								user={user}
 							/>
 						))}

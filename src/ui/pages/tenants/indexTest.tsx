@@ -28,10 +28,10 @@ import { isSearchEnabled } from "@utils";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Tenant } from "@api/tenants/types";
 import EmptyList from "@shared/components/empty";
+import TenantDetailTest from "@components/tenants/tenantDetail/TenantDetailTest";
 
 import "./indexTest.scss";
 import Search from "@shared/components/search";
-import TenantDetailTest from "@components/tenants/tenantDetail/TenantDetailTest";
 
 const TenantListHeader = () => {
 	return (
@@ -49,7 +49,6 @@ const TenantListHeader = () => {
 							onSearch={() => {
 								return Promise.resolve();
 							}}
-							isLoading={false}
 							placeholder="Search Tenant"
 						/>
 					</Box>

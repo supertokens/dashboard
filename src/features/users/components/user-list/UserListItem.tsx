@@ -16,8 +16,8 @@
 import { User } from "@features/users/types";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Flex, Text } from "@radix-ui/themes";
-import { useNavigate } from "react-router-dom";
 import { formatLongDate } from "@shared/utils";
+import { useNavigationHelpers } from "@shared/navigation";
 
 import styles from "./UserListItem.module.scss";
 
@@ -27,14 +27,15 @@ export const UserListItem = ({ user }: { user: User }) => {
 	const email = methodFilter.length > 0 ? methodFilter[0].email : emails[0];
 	const phone = methodFilter.length > 0 ? methodFilter[0].phoneNumber : phoneNumbers[0];
 	const name = `${firstName ?? ""} ${lastName ?? ""}`.trim();
-	const navigate = useNavigate();
+	const { goToUserDetail } = useNavigationHelpers();
+
 	return (
 		<Flex
 			align="center"
 			width="100%"
 			className={styles["user-list__item"]}
 			onClick={() => {
-				navigate(`/?userid=${user.id}`);
+				goToUserDetail(user.id);
 			}}>
 			<Flex
 				className={styles["user-list__item__details"]}
