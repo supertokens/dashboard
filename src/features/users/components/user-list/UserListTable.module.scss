@@ -17,6 +17,11 @@
 	border: solid var(--color-neutral-8) 1px;
 	border-radius: 12px;
 
+	&__body {
+		height: 450px;
+		overflow-y: auto;
+	}
+
 	&__header {
 		border-bottom: solid var(--color-neutral-8) 1px;
 		width: 100%;

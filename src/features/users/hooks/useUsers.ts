@@ -60,7 +60,7 @@ interface UseUsersListOptions {
 	readonly searchCriteria?: UserSearchCriteria | null;
 }
 
-const PAGE_SIZE = 1; // Users per page
+const PAGE_SIZE = 10; // Users per page
 
 export const useUsersList = (options: UseUsersListOptions = {}) => {
 	const { tenantId, searchCriteria } = options;
