@@ -20,35 +20,29 @@ import { formatNumber } from "@shared/utils";
 
 export const UserListFooter = ({
 	count,
-	offset,
-	limit,
 	users,
-	offsetChange,
+	currentPage,
+	pageSize,
+	goToPrevious,
 	goToNext,
-	nextPaginationToken,
+	hasPreviousPage,
+	hasNextPage,
+	isFetchingNextPage,
 	isSearch,
 }: {
 	count: number;
-	offset: number;
-	limit: number;
 	users: User[];
-	offsetChange: (offset: number) => void;
-	goToNext: (paginationToken: string) => void;
-	nextPaginationToken: string | undefined;
+	currentPage: number;
+	pageSize: number;
+	goToPrevious: () => void;
+	goToNext: () => void;
+	hasPreviousPage: boolean;
+	hasNextPage: boolean;
+	isFetchingNextPage: boolean;
 	isSearch: boolean;
 }) => {
-	const displayedLength = users.slice(offset, offset + limit).length;
-	const handleNextPagination = () => {
-		return () => {
-			// go to some offset if the next page's records already exist in memory
-			if (offset + limit < users.length) {
-				offsetChange && offsetChange(offset + limit);
-			} else {
-				// load next page from API if it has nextPaginationToken
-				goToNext && nextPaginationToken && goToNext(nextPaginationToken);
-			}
-		};
-	};
+	const startIndex = (currentPage - 1) * pageSize + 1;
+	const endIndex = Math.min(currentPage * pageSize, isSearch ? users.length : count);
 
 	return (
 		<Flex
@@ -61,32 +55,37 @@ export const UserListFooter = ({
 				<Text
 					size="2"
 					weight="medium">
-					{users.length + " result" + (users.length > 1 ? "s" : "")}
+					{users.length === 0 ? "No results found" : `${users.length} result${users.length === 1 ? "" : "s"}`}
 				</Text>
 			) : (
 				<>
 					<Text
 						size="2"
 						weight="medium">
-						{formatNumber(offset + 1)} - {formatNumber(Math.min(offset + displayedLength, count))} of{" "}
-						{formatNumber(count)}
+						{count === 0
+							? "No users found"
+							: `${formatNumber(startIndex)} - ${formatNumber(endIndex)} of ${formatNumber(count)}`}
 					</Text>
-					<Flex gap="3">
-						<IconButton
-							size="2"
-							variant="soft"
-							color="gray"
-							onClick={() => offsetChange && offsetChange(Math.max(offset - limit, 0))}>
-							<ChevronLeftIcon />
-						</IconButton>
-						<IconButton
-							size="2"
-							variant="soft"
-							color="gray"
-							onClick={handleNextPagination()}>
-							<ChevronRightIcon />
-						</IconButton>
-					</Flex>
+					{count > 0 && (
+						<Flex gap="3">
+							<IconButton
+								size="2"
+								variant="soft"
+								color="gray"
+								disabled={!hasPreviousPage || isFetchingNextPage}
+								onClick={goToPrevious}>
+								<ChevronLeftIcon />
+							</IconButton>
+							<IconButton
+								size="2"
+								variant="soft"
+								color="gray"
+								disabled={!hasNextPage || isFetchingNextPage}
+								onClick={goToNext}>
+								<ChevronRightIcon />
+							</IconButton>
+						</Flex>
+					)}
 				</>
 			)}
 		</Flex>

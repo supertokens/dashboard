@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getConnectionUri } from "@utils";
 
 // Components
@@ -46,10 +46,13 @@ export function UsersList() {
 		isLoading,
 		error,
 		isSearchActive,
+		currentPage,
+		pageSize,
 		hasNextPage,
-		fetchNextPage,
+		hasPreviousPage,
 		isFetchingNextPage,
-		refetch: refetchUsers,
+		goToNextPage,
+		goToPreviousPage,
 	} = useUsersList({
 		tenantId: selectedTenant,
 		searchCriteria,
@@ -61,16 +64,6 @@ export function UsersList() {
 	useEffect(() => {
 		void fireOneTimeEvent(selectedTenant);
 	}, [fireOneTimeEvent, selectedTenant]);
-
-	const handleLoadMore = useCallback(async () => {
-		if (hasNextPage && !isFetchingNextPage && fetchNextPage) {
-			await fetchNextPage();
-		}
-	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-	const handleOffsetChange = useCallback(async () => {
-		await refetchUsers();
-	}, [refetchUsers]);
 
 	const viewState = useMemo(() => {
 		if (error) return "ERROR";
@@ -107,12 +100,14 @@ export function UsersList() {
 
 									<UserListFooter
 										count={totalCount}
-										offset={0}
-										limit={users.length}
 										users={[...users]}
-										offsetChange={handleOffsetChange}
-										goToNext={handleLoadMore}
-										nextPaginationToken={hasNextPage ? "has-more" : undefined}
+										currentPage={currentPage}
+										pageSize={pageSize}
+										goToPrevious={goToPreviousPage}
+										goToNext={goToNextPage}
+										hasPreviousPage={hasPreviousPage}
+										hasNextPage={hasNextPage}
+										isFetchingNextPage={isFetchingNextPage}
 										isSearch={isSearchActive}
 									/>
 								</Paper>

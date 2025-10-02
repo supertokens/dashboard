@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useCallback, useMemo, useEffect } from "react";
+import { useCallback, useMemo, useEffect, useState } from "react";
 import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useFetchUsersService } from "@api/users";
 import useFetchCount from "@api/users/count";
@@ -60,9 +60,12 @@ interface UseUsersListOptions {
 	readonly searchCriteria?: UserSearchCriteria | null;
 }
 
+const PAGE_SIZE = 1; // Users per page
+
 export const useUsersList = (options: UseUsersListOptions = {}) => {
 	const { tenantId, searchCriteria } = options;
 	const queryClient = useQueryClient();
+	const [currentPage, setCurrentPage] = useState(1);
 
 	const { fetchUsers } = useFetchUsersService();
 	const { fetchCount } = useFetchCount();
@@ -96,7 +99,11 @@ export const useUsersList = (options: UseUsersListOptions = {}) => {
 	const infiniteQuery = useInfiniteQuery({
 		queryKey: queryKeys.users.infinite(tenantId),
 		queryFn: ({ pageParam }: { pageParam: string | null }) => {
-			return fetchUsers(pageParam ? { paginationToken: pageParam } : undefined, undefined, tenantId);
+			return fetchUsers(
+				pageParam ? { paginationToken: pageParam, limit: PAGE_SIZE } : { limit: PAGE_SIZE },
+				undefined,
+				tenantId
+			);
 		},
 		getNextPageParam: (lastPage: UserPaginationList | undefined) => lastPage?.nextPaginationToken || null,
 		initialPageParam: null as string | null,
@@ -129,13 +136,15 @@ export const useUsersList = (options: UseUsersListOptions = {}) => {
 	}, [infiniteQuery.data]);
 
 	// Get final users list
-	const users = isSearchActive ? searchQuery.data?.users || [] : paginatedUsers;
+	const users = useMemo(() => {
+		return isSearchActive ? searchQuery.data?.users || [] : paginatedUsers;
+	}, [isSearchActive, searchQuery.data?.users, paginatedUsers]);
+
 	const totalCount = isSearchActive ? users.length : countQuery.data?.count ?? 0;
 	const isLoading = isSearchActive
 		? searchQuery.isLoading
 		: infiniteQuery.isLoading || countQuery.isLoading || tagsQuery.isLoading;
 	const error = searchQuery.error || infiniteQuery.error || countQuery.error || tagsQuery.error;
-	const hasNextPage = !isSearchActive && infiniteQuery.hasNextPage;
 
 	const refetch = useCallback(async () => {
 		// Always refetch tags
@@ -158,16 +167,68 @@ export const useUsersList = (options: UseUsersListOptions = {}) => {
 		]);
 	}, [queryClient]);
 
+	// Pagination functions
+	const goToNextPage = useCallback(() => {
+		const nextPage = currentPage + 1;
+		const nextPageStartIndex = (nextPage - 1) * PAGE_SIZE;
+
+		// Check if we need to fetch more data
+		if (nextPageStartIndex >= users.length && infiniteQuery.hasNextPage) {
+			void infiniteQuery.fetchNextPage();
+		}
+
+		setCurrentPage(nextPage);
+	}, [currentPage, users.length, infiniteQuery]);
+
+	const goToPreviousPage = useCallback(() => {
+		if (currentPage > 1) {
+			setCurrentPage((prev) => prev - 1);
+		}
+	}, [currentPage]);
+
+	// Calculate current page users for display
+	const currentPageUsers = useMemo(() => {
+		if (isSearchActive) return users;
+
+		const startIndex = (currentPage - 1) * PAGE_SIZE;
+		const endIndex = startIndex + PAGE_SIZE;
+		return users.slice(startIndex, endIndex);
+	}, [users, currentPage, isSearchActive]);
+
+	const hasPreviousPage = currentPage > 1;
+	const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+	// Calculate if there's a next page
+	const hasNextPageCalc = useMemo(() => {
+		if (isSearchActive) return false;
+
+		const nextPageStartIndex = currentPage * PAGE_SIZE;
+
+		// If we have data for the next page already loaded, there's a next page
+		if (nextPageStartIndex < users.length) return true;
+
+		// If we don't have data but React Query can fetch more, there's a next page
+		if (infiniteQuery.hasNextPage) return true;
+
+		// No next page available
+		return false;
+	}, [isSearchActive, currentPage, users.length, infiniteQuery.hasNextPage]);
+
 	return {
-		users,
+		users: currentPageUsers,
 		totalCount,
 		availableTags: tagsQuery.data || [],
 		isLoading,
 		isSearchActive: !!isSearchActive,
 		error,
-		hasNextPage,
+		currentPage,
+		pageSize: PAGE_SIZE,
+		totalPages,
+		hasNextPage: hasNextPageCalc,
+		hasPreviousPage,
 		isFetchingNextPage: infiniteQuery.isFetchingNextPage,
-		fetchNextPage: infiniteQuery.fetchNextPage,
+		goToNextPage,
+		goToPreviousPage,
 		refetch,
 		invalidateQueries,
 	};
