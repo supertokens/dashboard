@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -15,26 +15,39 @@
 
 import { useState } from "react";
 import { Box, Flex } from "@radix-ui/themes";
+import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
+
 import Loader from "@shared/components/loader";
-import { assertNever } from "@utils/assertNever";
 import DashboardError from "@shared/components/error";
 import ItemLabel from "@shared/components/itemLabel";
 import Separator from "@shared/components/separator";
 import Button from "@shared/components/button";
-import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import Select from "@shared/components/select";
-import { NOOP } from "@utils/noop";
-import AssignRoleModal from "@shared/components/modals/assignRole";
 import Callout from "@shared/components/callout";
 import Paper from "@shared/components/paper";
 import Crystal from "@shared/components/crystal";
 import IconButton from "@shared/components/iconButton";
-import DeleteRoleModal from "@shared/components/modals/deleteRole";
+
+import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { AssignRoleModal, RemoveRoleModal } from "../modals";
 
 import styles from "./Roles.module.scss";
 
-const RolesHeader = () => {
-	const [openRevokeAllSessionModal, setOpenRevokeAllSessionModal] = useState(false);
+interface RolesHeaderProps {
+	readonly userId: string;
+	readonly selectedTenantId: string;
+	readonly onTenantChange: (tenantId: string) => void;
+}
+
+const RolesHeader = ({ userId, selectedTenantId, onTenantChange }: RolesHeaderProps) => {
+	const { tenants } = useUserDetails({ userId, selectedTenantId });
+	const [openAssignRoleModal, setOpenAssignRoleModal] = useState(false);
+
+	const tenantItems = tenants.map((tenant) => ({
+		label: tenant.tenantId === "public" ? "Public" : tenant.tenantId,
+		value: tenant.tenantId,
+	}));
+
 	return (
 		<Box width="100%">
 			<Flex
@@ -46,34 +59,58 @@ const RolesHeader = () => {
 				<Flex align="center">
 					<ItemLabel mr="2">All roles assigned to the user for tenant: </ItemLabel>
 					<Select
-						items={[]}
-						onValueChange={NOOP}
-						selectedValue={""}
+						items={tenantItems}
+						onValueChange={onTenantChange}
+						selectedValue={selectedTenantId || ""}
 						triggerClassName={styles["roles__header__select"]}
 					/>
 				</Flex>
 				<Button
 					size="2"
-					onClick={() => setOpenRevokeAllSessionModal(true)}>
+					onClick={() => setOpenAssignRoleModal(true)}>
 					<PlusIcon />
-					Assign Role{" "}
+					Assign Role
 				</Button>
 			</Flex>
 			<AssignRoleModal
-				open={openRevokeAllSessionModal}
-				handleClose={() => setOpenRevokeAllSessionModal(false)}
+				open={openAssignRoleModal}
+				handleClose={() => setOpenAssignRoleModal(false)}
+				userId={userId}
+				selectedTenantId={selectedTenantId}
 			/>
-
 			<Separator fullWidth />
 		</Box>
 	);
 };
 
-const RolesList = () => {
-	const roles: string[] = ["test", "test2", "test3"];
-	const [openDeleteRoleModal, setOpenDeleteRoleModal] = useState(false);
+interface RolesListProps {
+	readonly userId: string;
+	readonly selectedTenantId: string;
+}
 
-	if (roles.length === 0) {
+const RolesList = ({ userId, selectedTenantId }: RolesListProps) => {
+	const { roles } = useUserDetails({ userId, selectedTenantId });
+	const [openRemoveRoleModal, setOpenRemoveRoleModal] = useState(false);
+	const [selectedRole, setSelectedRole] = useState<string>("");
+
+	const handleRemoveClick = (role: string) => {
+		setSelectedRole(role);
+		setOpenRemoveRoleModal(true);
+	};
+
+	if (!roles || roles.status === "FEATURE_NOT_ENABLED_ERROR") {
+		return (
+			<Flex p="4">
+				<Callout
+					className={styles["roles-list__callout"]}
+					type="info">
+					User roles feature is not enabled.
+				</Callout>
+			</Flex>
+		);
+	}
+
+	if (roles.status === "OK" && roles.roles.length === 0) {
 		return (
 			<Flex p="4">
 				<Callout
@@ -83,6 +120,10 @@ const RolesList = () => {
 				</Callout>
 			</Flex>
 		);
+	}
+
+	if (roles.status !== "OK") {
+		return null;
 	}
 
 	return (
@@ -102,7 +143,7 @@ const RolesList = () => {
 				<Flex
 					className={styles["roles-list__body"]}
 					direction="column">
-					{roles.map((role) => (
+					{roles.roles.map((role) => (
 						<Flex
 							key={role}
 							align="center"
@@ -113,8 +154,7 @@ const RolesList = () => {
 								align="center"
 								gap="2"
 								className={styles["roles-list__body__permission"]}>
-								<Crystal>Read</Crystal>
-								<Crystal>Write</Crystal>
+								<Crystal>No permissions data</Crystal>
 							</Flex>
 
 							<Flex
@@ -125,46 +165,64 @@ const RolesList = () => {
 									variant="soft"
 									size="2"
 									color="red"
-									onClick={() => setOpenDeleteRoleModal(true)}>
+									onClick={() => handleRemoveClick(role)}>
 									<TrashIcon />
 								</IconButton>
 							</Flex>
-							<DeleteRoleModal
-								open={openDeleteRoleModal}
-								handleClose={() => setOpenDeleteRoleModal(false)}
-							/>
 						</Flex>
 					))}
 				</Flex>
 			</Paper>
+			<RemoveRoleModal
+				open={openRemoveRoleModal}
+				handleClose={() => setOpenRemoveRoleModal(false)}
+				role={selectedRole}
+				userIdProp={userId}
+				selectedTenantId={selectedTenantId}
+			/>
 		</Flex>
 	);
 };
 
-export default function Roles() {
-	const [state] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
+interface RolesProps {
+	readonly userId: string;
+}
 
-	switch (state) {
-		case "LOADING":
-			return (
-				<Flex
-					width="100%"
-					p="3">
-					<Loader type="list" />
-				</Flex>
-			);
-		case "SUCCESS":
-			return (
-				<Flex
-					width="100%"
-					direction="column">
-					<RolesHeader />
-					<RolesList />
-				</Flex>
-			);
-		case "ERROR":
-			return <DashboardError withBackground={false} />;
-		default:
-			assertNever(state);
+export default function Roles({ userId }: RolesProps) {
+	const [selectedTenantId, setSelectedTenantId] = useState<string>("public");
+	const { isLoading, error } = useUserDetails({ userId, selectedTenantId });
+
+	const handleTenantChange = (tenantId: string) => {
+		setSelectedTenantId(tenantId);
+	};
+
+	if (isLoading) {
+		return (
+			<Flex
+				width="100%"
+				p="3">
+				<Loader type="list" />
+			</Flex>
+		);
 	}
+
+	if (error) {
+		return <DashboardError withBackground={false} />;
+	}
+
+	return (
+		<Flex
+			width="100%"
+			direction="column">
+			<RolesHeader
+				userId={userId}
+				selectedTenantId={selectedTenantId}
+				onTenantChange={handleTenantChange}
+			/>
+			<RolesList
+				userId={userId}
+				selectedTenantId={selectedTenantId}
+			/>
+		</Flex>
+	);
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -12,29 +12,34 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+
+import { useState } from "react";
 import { Box, Flex, IconButton, Text } from "@radix-ui/themes";
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+
 import ItemLabel from "@shared/components/itemLabel";
 import Separator from "@shared/components/separator";
-
 import Crystal from "@shared/components/crystal";
 import Button from "@shared/components/button";
-import { useState } from "react";
 import Loader from "@shared/components/loader";
 import DashboardError from "@shared/components/error";
 import EmptyList from "@shared/components/empty";
-
-import { assertNever } from "@utils/assertNever";
 import CopyBox from "@shared/components/copyBox";
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+
 import { formatNumber } from "@utils";
-import { NOOP } from "@utils/noop";
-import RevokeSessionModal from "@shared/components/modals/revokeSession";
-import RevokeAllSessionsModal from "@shared/components/modals/revokeAllSessions";
+import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { RevokeSessionModal, RevokeAllSessionsModal } from "../modals";
 
 import styles from "./Sessions.module.scss";
 
-const SessionHeader = () => {
+interface SessionHeaderProps {
+	readonly userId: string;
+}
+
+const SessionHeader = ({ userId }: SessionHeaderProps) => {
+	const { sessions } = useUserDetails({ userId });
 	const [openRevokeAllSessionModal, setOpenRevokeAllSessionModal] = useState(false);
+
 	return (
 		<Box width="100%">
 			<Flex
@@ -45,29 +50,41 @@ const SessionHeader = () => {
 				py="3">
 				<Flex align="center">
 					<ItemLabel mr="2">Sessions:</ItemLabel>
-					<Crystal>12</Crystal>
+					<Crystal>{sessions.length}</Crystal>
 				</Flex>
 				<Button
 					size="2"
 					color="red"
-					onClick={() => setOpenRevokeAllSessionModal(true)}>
+					onClick={() => setOpenRevokeAllSessionModal(true)}
+					disabled={sessions.length === 0}>
 					Revoke All Sessions
 				</Button>
 			</Flex>
 			<RevokeAllSessionsModal
 				open={openRevokeAllSessionModal}
 				handleClose={() => setOpenRevokeAllSessionModal(false)}
+				userId={userId}
 			/>
-
 			<Separator fullWidth />
 		</Box>
 	);
 };
 
-const SessionList = () => {
+interface SessionListProps {
+	readonly userId: string;
+}
+
+const SessionList = ({ userId }: SessionListProps) => {
+	const { sessions } = useUserDetails({ userId });
 	const [openRevokeSessionModal, setOpenRevokeSessionModal] = useState(false);
-	const list = [1];
-	if (list.length === 0) {
+	const [selectedSessionHandle, setSelectedSessionHandle] = useState<string>("");
+
+	const handleRevokeClick = (sessionHandle: string) => {
+		setSelectedSessionHandle(sessionHandle);
+		setOpenRevokeSessionModal(true);
+	};
+
+	if (sessions.length === 0) {
 		return (
 			<EmptyList
 				iconUrl="user.svg"
@@ -76,6 +93,7 @@ const SessionList = () => {
 			/>
 		);
 	}
+
 	return (
 		<Flex
 			direction="column"
@@ -89,41 +107,84 @@ const SessionList = () => {
 				<ItemLabel className={styles["session-list__header__expires-at"]}>Expires At</ItemLabel>
 				<ItemLabel className={styles["session-list__header__action"]}>Action</ItemLabel>
 			</Flex>
-			{[1, 2, 3].map((_, index) => (
-				<Flex
-					key={index}
-					className={styles["session-list__item"]}
-					align="center"
-					p="3">
-					<Box className={styles["session-list__item__session-handle"]}>
-						<CopyBox
-							text="dfg76sd76f87u6sd87dffzdx...87zxv566zx66c"
-							name="Session Handle"
-							className={styles["session-list__item__session-handle__copy-box"]}
-						/>
-					</Box>
+			{sessions.map((session) => {
+				const createdDate = new Date(session.timeCreated);
+				const timeUntilExpiry = Math.max(0, session.expiry - Date.now());
+				const hoursUntilExpiry = Math.floor(timeUntilExpiry / (1000 * 60 * 60));
+				const minutesUntilExpiry = Math.floor((timeUntilExpiry % (1000 * 60 * 60)) / (1000 * 60));
+				const secondsUntilExpiry = Math.floor((timeUntilExpiry % (1000 * 60)) / 1000);
 
-					<ItemLabel className={styles["session-list__item__created-at"]}>4th May 2025</ItemLabel>
-					<ItemLabel className={styles["session-list__item__expires-at"]}>10h 22m 8s</ItemLabel>
-					<Button
-						size="2"
-						color="red"
-						variant="outline"
-						className={styles["session-list__item__action"]}
-						onClick={() => setOpenRevokeSessionModal(true)}>
-						Revoke
-					</Button>
-				</Flex>
-			))}
+				return (
+					<Flex
+						key={session.sessionHandle}
+						className={styles["session-list__item"]}
+						align="center"
+						p="3">
+						<Box className={styles["session-list__item__session-handle"]}>
+							<CopyBox
+								text={session.sessionHandle}
+								name="Session Handle"
+								className={styles["session-list__item__session-handle__copy-box"]}
+							/>
+						</Box>
+
+						<ItemLabel className={styles["session-list__item__created-at"]}>
+							{createdDate.toLocaleDateString()}
+						</ItemLabel>
+						<ItemLabel className={styles["session-list__item__expires-at"]}>
+							{timeUntilExpiry > 0
+								? `${hoursUntilExpiry}h ${minutesUntilExpiry}m ${secondsUntilExpiry}s`
+								: "Expired"}
+						</ItemLabel>
+						<Button
+							size="2"
+							color="red"
+							variant="outline"
+							className={styles["session-list__item__action"]}
+							onClick={() => handleRevokeClick(session.sessionHandle)}>
+							Revoke
+						</Button>
+					</Flex>
+				);
+			})}
 			<RevokeSessionModal
 				open={openRevokeSessionModal}
 				handleClose={() => setOpenRevokeSessionModal(false)}
+				sessionHandle={selectedSessionHandle}
+				userId={userId}
 			/>
 		</Flex>
 	);
 };
 
-const SessionListFooter = () => {
+interface SessionListFooterProps {
+	readonly userId: string;
+}
+
+const SessionListFooter = ({ userId }: SessionListFooterProps) => {
+	const { sessions } = useUserDetails({ userId });
+	const [currentPage, setCurrentPage] = useState(1);
+	const pageSize = 10;
+	const totalPages = Math.ceil(sessions.length / pageSize);
+	const startIndex = (currentPage - 1) * pageSize + 1;
+	const endIndex = Math.min(currentPage * pageSize, sessions.length);
+
+	const handlePreviousPage = () => {
+		if (currentPage > 1) {
+			setCurrentPage(currentPage - 1);
+		}
+	};
+
+	const handleNextPage = () => {
+		if (currentPage < totalPages) {
+			setCurrentPage(currentPage + 1);
+		}
+	};
+
+	if (sessions.length === 0) {
+		return null;
+	}
+
 	return (
 		<Flex
 			align="center"
@@ -134,21 +195,23 @@ const SessionListFooter = () => {
 			<Text
 				size="2"
 				weight="medium">
-				{1} - {10} of {formatNumber(100)}
+				{startIndex} - {endIndex} of {formatNumber(sessions.length)}
 			</Text>
 			<Flex gap="3">
 				<IconButton
 					size="2"
 					variant="soft"
 					color="gray"
-					onClick={NOOP}>
+					onClick={handlePreviousPage}
+					disabled={currentPage === 1}>
 					<ChevronLeftIcon />
 				</IconButton>
 				<IconButton
 					size="2"
 					variant="soft"
 					color="gray"
-					onClick={NOOP}>
+					onClick={handleNextPage}
+					disabled={currentPage === totalPages}>
 					<ChevronRightIcon />
 				</IconButton>
 			</Flex>
@@ -156,31 +219,34 @@ const SessionListFooter = () => {
 	);
 };
 
-export default function Sessions() {
-	const [state] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
+interface SessionsProps {
+	readonly userId: string;
+}
 
-	switch (state) {
-		case "LOADING":
-			return (
-				<Flex
-					width="100%"
-					p="3">
-					<Loader type="list" />
-				</Flex>
-			);
-		case "SUCCESS":
-			return (
-				<Flex
-					width="100%"
-					direction="column">
-					<SessionHeader />
-					<SessionList />
-					<SessionListFooter />
-				</Flex>
-			);
-		case "ERROR":
-			return <DashboardError withBackground={false} />;
-		default:
-			assertNever(state);
+export default function Sessions({ userId }: SessionsProps) {
+	const { isLoading, error } = useUserDetails({ userId });
+
+	if (isLoading) {
+		return (
+			<Flex
+				width="100%"
+				p="3">
+				<Loader type="list" />
+			</Flex>
+		);
 	}
+
+	if (error) {
+		return <DashboardError withBackground={false} />;
+	}
+
+	return (
+		<Flex
+			width="100%"
+			direction="column">
+			<SessionHeader userId={userId} />
+			<SessionList userId={userId} />
+			<SessionListFooter userId={userId} />
+		</Flex>
+	);
 }

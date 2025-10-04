@@ -58,3 +58,9 @@ export type UserFeatureStatus = {
 	lastName: boolean;
 	emailVerification: boolean;
 };
+
+export type SessionInfo = {
+	sessionHandle: string;
+	timeCreated: number;
+	expiry: number;
+};

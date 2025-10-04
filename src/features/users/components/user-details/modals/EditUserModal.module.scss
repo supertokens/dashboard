@@ -1,0 +1,23 @@
+.edit-user-modal {
+	&__paper {
+		background: var(--accent-2);
+		border-radius: var(--radius-3);
+	}
+
+	&__footer {
+		border-top: 1px solid var(--gray-6);
+		background: var(--gray-1);
+		border-radius: 0 0 var(--radius-3) var(--radius-3);
+	}
+
+	&__tooltip {
+		cursor: help;
+
+		&-text {
+			color: var(--gray-11);
+			font-size: var(--font-size-2);
+			line-height: var(--line-height-2);
+			max-width: 300px;
+		}
+	}
+}

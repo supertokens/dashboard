@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,41 +13,34 @@
  * under the License.
  */
 
-import useUserService, { GetUserInfoResult, UpdateUserInformationResponse } from "@api/user";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
+import { Badge, Box, Em, Flex, Text } from "@radix-ui/themes";
+
 import Button from "@shared/components/button";
 import IconButton from "@shared/components/iconButton";
 import ItemContainer from "@shared/components/itemContainer";
 import ItemDetailHeader from "@shared/components/itemDetailsHeading";
 import PageContainer from "@shared/components/pageContainer";
-import { User } from "@pages/usersList/types";
-import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
-import { Badge, Box, Em, Flex, Text } from "@radix-ui/themes";
-import { doesTenantHavePasswordlessEnabled } from "@utils/index";
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { SessionInfo } from "../../../../ui/components/userDetail/types";
-import useMetadataService from "@api/user/metadata";
-import useSessionsForUserService from "@api/user/sessions";
-import { useToast } from "@shared/components/toast";
-import { Tenant } from "@api/tenants/types";
-import { getTenantsObjectsForIds } from "@utils/user";
-import { FactorIds } from "@constants";
-import { assertNever } from "@utils/assertNever";
-import Loader from "@shared/components/loader";
-import EmptyList from "@shared/components/empty";
-import Paper from "@shared/components/paper";
-
 import ItemLabel from "@shared/components/itemLabel";
 import CopyBox from "@shared/components/copyBox";
 import TabSelector from "@shared/components/tabSelector";
 import Separator from "@shared/components/separator";
+import Loader from "@shared/components/loader";
+import EmptyList from "@shared/components/empty";
+import Paper from "@shared/components/paper";
+import DashboardError from "@shared/components/error";
+
+import { assertNever } from "@utils/assertNever";
+import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { User } from "@features/users/types";
+
 import Sessions from "./sessions/Sessions";
-import EditUserModal from "@shared/components/modals/editUser";
-import DeleteUserModal from "@shared/components/modals/deleteUser";
 import Roles from "./roles/Roles";
 import MetaData from "./metadata/MetaData";
-import DashboardError from "@shared/components/error";
 import LoginMethods from "./login-methods/LoginMethods";
+import { EditUserModal, DeleteUserModal } from "./modals";
 
 import styles from "./UserDetails.module.scss";
 
@@ -75,10 +68,14 @@ const userDetailTabs: { name: string; value: UserDetailTab }[] = [
 	},
 ];
 
-const UserNameCard = ({ user }: { user: User }) => {
+interface UserNameCardProps {
+	readonly user: User;
+	readonly onEditClick: () => void;
+}
+
+const UserNameCard = ({ user, onEditClick }: UserNameCardProps) => {
 	const { firstName, lastName } = user;
 	const userNameSet = !!(firstName && lastName);
-	const [openEditUserModal, setOpenEditUserModal] = useState(false);
 
 	return (
 		<Flex
@@ -104,27 +101,27 @@ const UserNameCard = ({ user }: { user: User }) => {
 			<IconButton
 				variant="soft"
 				color="gray"
-				onClick={() => {
-					setOpenEditUserModal(true);
-				}}>
+				onClick={onEditClick}>
 				<Pencil1Icon />
 			</IconButton>
-			<EditUserModal
-				open={openEditUserModal}
-				handleClose={() => {
-					setOpenEditUserModal(false);
-				}}
-			/>
 		</Flex>
 	);
 };
 
-const UserDetailContent = ({ user }: { user: User }) => {
+interface UserDetailContentProps {
+	readonly user: User;
+	readonly userId: string;
+	readonly onDeleteClick: () => void;
+	readonly onEditClick: () => void;
+}
+
+const UserDetailContent = ({ user, userId, onDeleteClick, onEditClick }: UserDetailContentProps) => {
 	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("login-methods");
-	const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
+
 	const handleTabChange = (tab: UserDetailTab) => {
 		setSelectedTab(tab);
 	};
+
 	return (
 		<Box width={"100%"}>
 			<ItemContainer
@@ -134,23 +131,18 @@ const UserDetailContent = ({ user }: { user: User }) => {
 					align="center"
 					justify="between"
 					p="4">
-					<UserNameCard user={user} />
+					<UserNameCard
+						user={user}
+						onEditClick={onEditClick}
+					/>
 					<Button
 						color="red"
 						size="2"
 						variant="soft"
-						onClick={() => {
-							setOpenDeleteUserModal(true);
-						}}>
+						onClick={onDeleteClick}>
 						<TrashIcon />
 						Delete User
 					</Button>
-					<DeleteUserModal
-						open={openDeleteUserModal}
-						handleClose={() => {
-							setOpenDeleteUserModal(false);
-						}}
-					/>
 				</Flex>
 				<Separator fullWidth />
 				<Flex
@@ -170,8 +162,7 @@ const UserDetailContent = ({ user }: { user: User }) => {
 						orientation="vertical"
 						mx="5"
 					/>
-
-					<ItemLabel mr="2">29th March, 12:03 am</ItemLabel>
+					<ItemLabel mr="2">{new Date(user.timeJoined).toLocaleDateString()}</ItemLabel>
 				</Flex>
 			</ItemContainer>
 
@@ -184,11 +175,11 @@ const UserDetailContent = ({ user }: { user: User }) => {
 						case "login-methods":
 							return <LoginMethods />;
 						case "sessions":
-							return <Sessions />;
+							return <Sessions userId={userId} />;
 						case "roles":
-							return <Roles />;
+							return <Roles userId={userId} />;
 						case "metadata":
-							return <MetaData />;
+							return <MetaData userId={userId} />;
 						default:
 							return assertNever(selectedTab);
 					}
@@ -198,132 +189,28 @@ const UserDetailContent = ({ user }: { user: User }) => {
 	);
 };
 
-export default function UserDetailTest({ userId }: { userId: string }) {
-	const navigate = useNavigate();
-	const [userDetail, setUserDetail] = useState<GetUserInfoResult | undefined>(undefined);
-	const [sessionList, setSessionList] = useState<SessionInfo[] | undefined>(undefined);
-	const [userMetaData, setUserMetaData] = useState<string | undefined>(undefined);
-	const [shouldShowLoadingOverlay, setShowLoadingOverlay] = useState<boolean>(false);
-	const [isLoading, setIsLoading] = useState(false);
-	const [state, setState] = useState<"LOADING" | "IDLE" | "ERROR">("LOADING");
+interface UserDetailsProps {
+	readonly userId: string;
+}
 
-	const { getUser, updateUserInformation } = useUserService();
-	const { getUserMetaData } = useMetadataService();
-	const { getSessionsForUser } = useSessionsForUserService();
-	const { showToast, showErrorToast, showSuccessToast } = useToast();
+export default function UserDetails({ userId }: UserDetailsProps) {
+	const navigate = useNavigate();
+	const [openEditUserModal, setOpenEditUserModal] = useState(false);
+	const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
+
+	const { userDetails, isLoading, error } = useUserDetails({ userId });
 
 	const handleBackToItemList = () => {
-		navigate("/");
+		navigate("/users");
 	};
 
-	const loadUserDetail = useCallback(async () => {
-		const userDetailsResponse = await getUser(userId);
-		const parsedResponse = JSON.parse(JSON.stringify(userDetailsResponse));
-		setUserDetail(parsedResponse);
-	}, []);
-
-	const updateUser = useCallback(
-		async (
-			userId: string,
-			data: User,
-			tenantListFromStore: Tenant[] | undefined
-		): Promise<
-			| UpdateUserInformationResponse
-			| {
-					status: "NO_API_CALLED";
-			  }
-		> => {
-			let tenantId: string | undefined;
-			const tenants: Tenant[] = getTenantsObjectsForIds(tenantListFromStore ?? [], data.tenantIds);
-			let matchingTenants: Tenant[] = [];
-
-			const PrimaryLoginMethod = data.loginMethods.filter((el) => el.recipeUserId === data.id)[0];
-
-			if (PrimaryLoginMethod.recipeId === "emailpassword") {
-				matchingTenants = tenants.filter((tenant) => tenant.firstFactors.includes(FactorIds.EMAILPASSWORD));
-			}
-
-			if (PrimaryLoginMethod.recipeId === "passwordless") {
-				matchingTenants = tenants.filter((tenant) => doesTenantHavePasswordlessEnabled(tenant.firstFactors));
-			}
-
-			if (PrimaryLoginMethod.recipeId === "thirdparty") {
-				matchingTenants = tenants.filter((tenant) => tenant.firstFactors.includes(FactorIds.THIRDPARTY));
-			}
-
-			if (matchingTenants.length > 0) {
-				tenantId = matchingTenants[0].tenantId;
-			}
-
-			if (tenantId === undefined) {
-				setShowLoadingOverlay(false);
-				showToast({
-					title: "Operation not allowed",
-					type: "error",
-					description: `User does not belong to a tenant that has the ${PrimaryLoginMethod.recipeId} recipe enabled`,
-				});
-				return {
-					status: "NO_API_CALLED",
-				};
-			}
-
-			const userInfoResponse = await updateUserInformation({
-				userId,
-				recipeId: PrimaryLoginMethod.recipeId,
-				recipeUserId: PrimaryLoginMethod.recipeUserId,
-				email: PrimaryLoginMethod.email,
-				phone: PrimaryLoginMethod.recipeId === "passwordless" ? PrimaryLoginMethod.phoneNumber : "",
-				firstName: data.firstName,
-				lastName: data.lastName,
-				tenantId,
-			});
-			if (userInfoResponse.status === "OK") {
-				showSuccessToast("User information updated successfully");
-			} else {
-				showErrorToast("Failed to update user information");
-			}
-
-			return userInfoResponse;
-		},
-		[]
-	);
-
-	const fetchUserMetaData = useCallback(async () => {
-		const metaDataResponse = await getUserMetaData(userId);
-		if (metaDataResponse === "FEATURE_NOT_ENABLED_ERROR") {
-			setUserMetaData("Feature Not Enabled");
-		} else if (metaDataResponse !== undefined) {
-			setUserMetaData(JSON.stringify(metaDataResponse));
-		} else {
-			setUserMetaData("{}");
-		}
-	}, []);
-
-	const fetchSession = useCallback(async () => {
-		let response = await getSessionsForUser(userId);
-
-		if (response === undefined) {
-			response = [];
-		}
-
-		setSessionList(response);
-	}, []);
-
-	const fetchData = async () => {
-		setState("LOADING");
-		try {
-			await loadUserDetail();
-			await fetchUserMetaData();
-			await fetchSession();
-			setState("IDLE");
-		} catch (e) {
-			setState("ERROR");
-		}
+	const handleEditClick = () => {
+		setOpenEditUserModal(true);
 	};
 
-	useEffect(() => {
-		void fetchData();
-	}, []);
+	const handleDeleteClick = () => {
+		setOpenDeleteUserModal(true);
+	};
 
 	return (
 		<PageContainer>
@@ -338,40 +225,62 @@ export default function UserDetailTest({ userId }: { userId: string }) {
 				/>
 
 				{(() => {
-					switch (state) {
-						case "ERROR":
-							return <DashboardError />;
-						case "IDLE":
-							if (!userDetail) return null;
-							switch (userDetail.status) {
-								case "OK":
-									return <UserDetailContent user={userDetail.user} />;
-								case "NO_USER_FOUND_ERROR":
-									return (
-										<Paper withBackground>
-											<EmptyList
-												iconUrl="user.svg"
-												title="User not found"
-												description="We couldn't locate this user in our system. They may have been deleted or you might not have permission to view their details."
-											/>
-										</Paper>
-									);
-								case "RECIPE_NOT_INITIALISED":
-									return (
-										<EmptyList
-											iconUrl="user.svg"
-											title="Recipe not initialised"
-											description="The required authentication recipes have not been initialized in your SuperTokens configuration. Please refer to our documentation for instructions on enabling and configuring recipes."
-										/>
-									);
-								default:
-									return assertNever(userDetail);
-							}
+					if (isLoading) {
+						return <Loader type="table-with-list" />;
+					}
 
-						case "LOADING":
-							return <Loader type="table-with-list" />;
+					if (error) {
+						return <DashboardError />;
+					}
+
+					if (!userDetails) {
+						return null;
+					}
+
+					switch (userDetails.status) {
+						case "OK":
+							return (
+								<>
+									<UserDetailContent
+										user={userDetails.user}
+										userId={userId}
+										onDeleteClick={handleDeleteClick}
+										onEditClick={handleEditClick}
+									/>
+
+									{/* Modals */}
+									<EditUserModal
+										open={openEditUserModal}
+										handleClose={() => setOpenEditUserModal(false)}
+										userId={userId}
+									/>
+									<DeleteUserModal
+										open={openDeleteUserModal}
+										handleClose={() => setOpenDeleteUserModal(false)}
+										userId={userId}
+									/>
+								</>
+							);
+						case "NO_USER_FOUND_ERROR":
+							return (
+								<Paper withBackground>
+									<EmptyList
+										iconUrl="user.svg"
+										title="User not found"
+										description="We couldn't locate this user in our system. They may have been deleted or you might not have permission to view their details."
+									/>
+								</Paper>
+							);
+						case "RECIPE_NOT_INITIALISED":
+							return (
+								<EmptyList
+									iconUrl="user.svg"
+									title="Recipe not initialised"
+									description="The required authentication recipes have not been initialized in your SuperTokens configuration. Please refer to our documentation for instructions on enabling and configuring recipes."
+								/>
+							);
 						default:
-							assertNever(state);
+							return assertNever(userDetails);
 					}
 				})()}
 			</Flex>
