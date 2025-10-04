@@ -13,30 +13,36 @@
  * under the License.
  */
 
+// React imports
 import { useEffect, useMemo, useState } from "react";
-import { getConnectionUri } from "@utils";
 
-// Components
-import { UserListFooter } from "./UserListFooter";
-import { UserListTable } from "./UserListTable";
-import { DemoCallout } from "@shared/components/demo-callout";
-import { UserListHeader } from "./UserListHeader";
-import PageContainer from "@shared/components/pageContainer";
-import PageHeading from "@shared/components/pageHeading";
-import Loader from "@shared/components/loader";
-import DashboardError from "@shared/components/error";
-import Paper from "@shared/components/paper";
+// Types
+import type { UserSearchCriteria } from "@features/users/types/queries";
 
 // Hooks
 import { useUsersList } from "@features/users/hooks/useUsers";
 import { useAnalytics } from "@features/analytics/hooks/useAnalytics";
 import { useTenants } from "@features/tenants/hooks/useTenants";
 
-import { UserSearchCriteria } from "@features/users/types/queries";
+// Components
+import { UserListFooter } from "./UserListFooter";
+import { UserListTable } from "./UserListTable";
+import { UserListHeader } from "./UserListHeader";
+import { DemoCallout } from "@shared/components/demo-callout";
+import PageContainer from "@shared/components/pageContainer";
+import PageHeading from "@shared/components/pageHeading";
+import Loader from "@shared/components/loader";
+import DashboardError from "@shared/components/error";
+import Paper from "@shared/components/paper";
+
+// Utils
+import { getConnectionUri } from "@utils";
 import { assertNever } from "@utils/assertNever";
+import { CreateUserModal } from "../create-user/CreateUserModal";
 
 export function UsersList() {
 	const [searchCriteria, setSearchCriteria] = useState<UserSearchCriteria | null>(null);
+	const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
 	const { selectedTenant } = useTenants();
 
@@ -91,6 +97,7 @@ export function UsersList() {
 									<UserListHeader
 										onSearch={setSearchCriteria}
 										currentSearchCriteria={searchCriteria}
+										onCreateUserButtonClick={() => setIsCreateUserModalOpen(true)}
 									/>
 
 									<UserListTable
@@ -116,6 +123,7 @@ export function UsersList() {
 							assertNever(viewState);
 					}
 				})()}
+				{isCreateUserModalOpen && <CreateUserModal handleClose={() => setIsCreateUserModalOpen(false)} />}
 			</div>
 		</PageContainer>
 	);

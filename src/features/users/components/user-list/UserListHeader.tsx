@@ -14,24 +14,24 @@
  */
 
 import { PlusIcon } from "@radix-ui/react-icons";
-import { Box, Flex, IconButton, Select, Text } from "@radix-ui/themes";
-import { useState } from "react";
-import { getImageUrl, isSearchEnabled } from "@shared/utils";
+
+import { Box, Flex, Select, Text } from "@radix-ui/themes";
 import { Search, SearchCriteria } from "@shared/components/search";
 import Button from "@shared/components/button";
 
-import styles from "./UserListHeader.module.scss";
-import { CreateUserModal } from "@shared/components/modals/create-user";
 import { useTenants } from "@features/tenants/hooks/useTenants";
-import { NOOP } from "@utils/noop";
+
+import { isSearchEnabled } from "@shared/utils";
+
+import styles from "./UserListHeader.module.scss";
 
 interface UserListHeaderProps {
 	readonly onSearch: (criteria: SearchCriteria | null) => void;
 	readonly currentSearchCriteria?: SearchCriteria | null;
+	readonly onCreateUserButtonClick: () => void;
 }
 
-export const UserListHeader = ({ onSearch, currentSearchCriteria }: UserListHeaderProps) => {
-	const [showCreateUserModal, setShowCreateUserModal] = useState(false);
+export const UserListHeader = ({ onSearch, currentSearchCriteria, onCreateUserButtonClick }: UserListHeaderProps) => {
 	const { selectedTenant, setSelectedTenant, tenants } = useTenants();
 
 	return (
@@ -93,30 +93,14 @@ export const UserListHeader = ({ onSearch, currentSearchCriteria }: UserListHead
 						</Select.Content>
 					)}
 				</Select.Root>
-				<IconButton
-					size="2"
-					variant="soft"
-					color="gray">
-					<img
-						src={getImageUrl("filter-icon.svg")}
-						alt="filter-icon"
-					/>
-				</IconButton>
 			</Flex>
 			<Button
-				onClick={() => setShowCreateUserModal(true)}
+				onClick={onCreateUserButtonClick}
 				size="2"
 				variant="solid">
 				<PlusIcon />
 				Add User
 			</Button>
-			{showCreateUserModal && (
-				<CreateUserModal
-					handleClose={() => setShowCreateUserModal(false)}
-					tenants={tenants ?? []}
-					loadCount={NOOP}
-				/>
-			)}
 		</Flex>
 	);
 };

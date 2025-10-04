@@ -14,111 +14,59 @@
  */
 
 import { useEffect, useState } from "react";
-import useCreateUserService from "@api/user/create";
-import { getApiUrl } from "@utils";
-import Form from "@shared/components/form";
+
+import { CreateUserDialogStepType } from "./CreateUserModal";
+import { useCreateEmailPasswordUser } from "@features/users/hooks/useCreateEmailPasswordUser";
+import { useTenants } from "@features/tenants/hooks/useTenants";
+import { useNavigationHelpers } from "@shared/navigation";
+
 import { Modal } from "@shared/components/modal";
+import Form from "@shared/components/form";
 import TextField from "@shared/components/text";
 import Label from "@shared/components/label";
-import { Flex } from "@radix-ui/themes";
 import Button from "@shared/components/button";
 import Paper from "@shared/components/paper";
-import { useToast } from "@shared/components/toast";
-import { CreateUserDialogStepType } from "@shared/components/modals/create-user";
 
-type CreateEmailPasswordUserProps = {
-	tenantId: string;
+import { Flex } from "@radix-ui/themes";
+
+interface CreateEmailPasswordUserState {
+	email: string;
+	password: string;
+}
+
+interface CreateEmailPasswordUserProps {
 	onCloseDialog: () => void;
-	loadCount: () => void;
 	setCurrentStep: (step: CreateUserDialogStepType) => void;
-};
+}
 
-export default function CreateEmailPasswordUser({
-	tenantId,
-	onCloseDialog,
-	setCurrentStep,
-	loadCount,
-}: CreateEmailPasswordUserProps) {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [isCreatingUser, setIsCreatingUser] = useState(false);
+export default function CreateEmailPasswordUser({ onCloseDialog, setCurrentStep }: CreateEmailPasswordUserProps) {
+	const [formState, setFormState] = useState<CreateEmailPasswordUserState>({
+		email: "",
+		password: "",
+	});
 
-	const [emailValidationErrorMessage, setEmailValidationErrorMessage] = useState<string | undefined>(undefined);
-	const [passwordValidationErrorMessage, setPasswordValidationErrorMessage] = useState<string | undefined>(undefined);
+	const { selectedTenant } = useTenants();
+	const { goToUserDetail } = useNavigationHelpers();
 
-	const { createEmailPasswordUser } = useCreateUserService();
-	const { showErrorToast, showSuccessToast } = useToast();
+	const { isCreating, emailError, passwordError, createUser, clearErrors } = useCreateEmailPasswordUser({
+		tenantId: selectedTenant || "",
+		onSuccess: (userId) => {
+			goToUserDetail(userId);
+		},
+	});
 
-	function handleEmailValidationError(response: { message: string }): void {
-		setEmailValidationErrorMessage(response.message);
-	}
+	const updateFormState = (updates: Partial<CreateEmailPasswordUserState>) => {
+		setFormState((prev) => ({ ...prev, ...updates }));
+	};
 
-	function handlePasswordValidationError(response: { message: string }): void {
-		setPasswordValidationErrorMessage(response.message);
-	}
-
-	function resetForm(): void {
-		setEmail("");
-		setPassword("");
-	}
-
-	function handleUserCreationSuccess(userId: string): void {
-		showSuccessToast("User created successfully!");
-		resetForm();
-		loadCount();
-		window.location.href = getApiUrl(`?userid=${userId}`);
-	}
-
-	async function createUser(e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) => {
 		e.preventDefault();
-		setIsCreatingUser(true);
-
-		try {
-			// Note: We're intentionally skipping frontend input validation in favor of users' defined custom validators running on the backend.
-
-			const response = await createEmailPasswordUser(tenantId, email, password);
-
-			// Handle email already exists error
-			if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
-				showErrorToast(`User with this email already exists in ${tenantId} tenant.`);
-				return;
-			}
-
-			// Handle validation errors
-			if (response.status === "EMAIL_VALIDATION_ERROR") {
-				handleEmailValidationError(response);
-				return;
-			}
-
-			if (response.status === "PASSWORD_VALIDATION_ERROR") {
-				handlePasswordValidationError(response);
-				return;
-			}
-
-			// Handle feature not enabled error
-			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showErrorToast("Feature not enabled!");
-				return;
-			}
-
-			// Handle successful creation
-			if (response.status === "OK") {
-				handleUserCreationSuccess(response.user.id);
-			}
-		} catch (_) {
-			showErrorToast("Something went wrong, please try again!");
-		} finally {
-			setIsCreatingUser(false);
-		}
-	}
+		await createUser(formState);
+	};
 
 	useEffect(() => {
-		setEmailValidationErrorMessage(undefined);
-	}, [email]);
-
-	useEffect(() => {
-		setPasswordValidationErrorMessage(undefined);
-	}, [password]);
+		clearErrors();
+	}, [formState.email, formState.password, clearErrors]);
 
 	return (
 		<Modal
@@ -126,7 +74,6 @@ export default function CreateEmailPasswordUser({
 			handleClose={onCloseDialog}
 			open={true}>
 			<Paper withBackground>
-				{" "}
 				<Form>
 					<Form.Item>
 						<Label
@@ -134,9 +81,9 @@ export default function CreateEmailPasswordUser({
 							htmlFor="email"
 						/>
 						<TextField
-							value={email}
-							onChange={(e) => setEmail(e.currentTarget.value)}
-							error={emailValidationErrorMessage}
+							value={formState.email}
+							onChange={(e) => updateFormState({ email: e.currentTarget.value })}
+							error={emailError}
 						/>
 					</Form.Item>
 					<Form.Item>
@@ -145,10 +92,10 @@ export default function CreateEmailPasswordUser({
 							htmlFor="password"
 						/>
 						<TextField
-							value={password}
-							onChange={(e) => setPassword(e.currentTarget.value)}
+							value={formState.password}
+							onChange={(e) => updateFormState({ password: e.currentTarget.value })}
 							type="password"
-							error={passwordValidationErrorMessage}
+							error={passwordError}
 						/>
 					</Form.Item>
 				</Form>
@@ -167,9 +114,8 @@ export default function CreateEmailPasswordUser({
 				</Button>
 				<Button
 					type="submit"
-					onClick={createUser}
-					isLoading={isCreatingUser}
-					disabled={isCreatingUser}>
+					onClick={handleSubmit}
+					disabled={isCreating}>
 					Create
 				</Button>
 			</Flex>

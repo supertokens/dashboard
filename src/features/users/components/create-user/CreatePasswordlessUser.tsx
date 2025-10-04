@@ -14,166 +14,159 @@
  */
 
 import { useEffect, useState } from "react";
+
 import { PasswordlessContactMethod } from "@api/tenants/types";
-import useCreateUserService, { CreatePasswordlessUserPayload } from "@api/user/create";
-import { getApiUrl } from "@utils";
+import { useCreatePasswordlessUser } from "@features/users/hooks/useCreatePasswordlessUser";
+import { CreateUserDialogStepType } from "./CreateUserModal";
+import { assertNever } from "@utils/assertNever";
+import { useNavigationHelpers } from "@shared/navigation";
+import { useTenants } from "@features/tenants/hooks/useTenants";
+import { FactorIds } from "@shared/constants";
+
 import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
-import { assertNever } from "@utils/assertNever";
 import Label from "@shared/components/label";
 import TextField from "@shared/components/text";
-import { Flex } from "@radix-ui/themes";
 import Button from "@shared/components/button";
 import PhoneNumberInput from "@shared/components/phoneNumberInput";
 import Paper from "@shared/components/paper";
-import { useToast } from "@shared/components/toast";
-import { CreateUserDialogStepType } from "@shared/components/modals/create-user";
 
-type CreatePasswordlessUserProps = {
-	tenantId: string;
-	authMethod: PasswordlessContactMethod | undefined;
-	onCloseDialog: () => void;
-	setCurrentStep: (step: CreateUserDialogStepType) => void;
-	loadCount: () => void;
-};
+import { Flex } from "@radix-ui/themes";
 
-function isNumber(value: string): boolean {
-	const trimmedString = value.replaceAll(/\s/g, "").trim();
-
-	// added this check since parsing a empty string to a number returns 0.
-	if (trimmedString.length < 1) {
-		return false;
-	}
-
-	return isNaN(Number(trimmedString)) === false;
+interface CreatePasswordlessUserState {
+	email: string;
+	phoneNumber: string;
+	emailOrPhone: string;
 }
 
-export default function CreatePasswordlessUser({
-	tenantId,
-	authMethod,
-	onCloseDialog,
-	setCurrentStep,
-	loadCount,
-}: CreatePasswordlessUserProps) {
-	const [email, setEmail] = useState("");
-	const [phoneNumber, setPhoneNumber] = useState("");
-	const [emailOrPhone, setEmailOrPhone] = useState("");
+interface CreatePasswordlessUserProps {
+	onCloseDialog: () => void;
+	setCurrentStep: (step: CreateUserDialogStepType) => void;
+}
 
-	const [formErrorMessage, setFormErrorMessage] = useState<string | undefined>(undefined);
+export default function CreatePasswordlessUser({ onCloseDialog, setCurrentStep }: CreatePasswordlessUserProps) {
+	const [formState, setFormState] = useState<CreatePasswordlessUserState>({
+		email: "",
+		phoneNumber: "",
+		emailOrPhone: "",
+	});
 
-	const [isCreatingUser, setIsCreatingUser] = useState(false);
-	const [isPhoneNumber, setIsPhoneNumber] = useState(false);
+	const { goToUserDetail } = useNavigationHelpers();
+	const { selectedTenant, tenants } = useTenants();
 
-	const { createPasswordlessUser } = useCreateUserService();
-	const { showErrorToast, showSuccessToast } = useToast();
+	const selectedTenantObject = tenants?.find((tenant) => tenant.tenantId === selectedTenant);
+	const authMethod: PasswordlessContactMethod | undefined = (() => {
+		if (!selectedTenantObject) return undefined;
 
-	function buildPayload(): CreatePasswordlessUserPayload | null {
-		const payload: CreatePasswordlessUserPayload = {};
+		const pwlessEmailEnabled =
+			selectedTenantObject.firstFactors.includes(FactorIds.OTP_EMAIL) ||
+			selectedTenantObject.firstFactors.includes(FactorIds.LINK_EMAIL);
+		const pwlessPhoneEnabled =
+			selectedTenantObject.firstFactors.includes(FactorIds.OTP_PHONE) ||
+			selectedTenantObject.firstFactors.includes(FactorIds.LINK_PHONE);
 
-		// Note: We're intentionally skipping frontend input validation in favor of user defined custom validators running on the backend.
-
-		if (authMethod === "EMAIL") {
-			payload.email = email;
-		} else if (authMethod === "PHONE") {
-			payload.phoneNumber = phoneNumber;
-		} else if (authMethod === "EMAIL_OR_PHONE") {
-			if (isNumber(emailOrPhone) === true) {
-				const normalisedPhoneNumber =
-					emailOrPhone.startsWith("+") === false ? "+" + emailOrPhone : emailOrPhone;
-				payload.phoneNumber = normalisedPhoneNumber;
-				setEmailOrPhone(normalisedPhoneNumber);
-				setIsPhoneNumber(true);
-			} else {
-				payload.email = emailOrPhone;
-			}
-		} else {
-			showErrorToast("No matching auth method found!");
-			return null;
+		if (pwlessEmailEnabled) {
+			return pwlessPhoneEnabled ? "EMAIL_OR_PHONE" : "EMAIL";
+		} else if (pwlessPhoneEnabled) {
+			return "PHONE";
 		}
+		return undefined;
+	})();
 
-		return payload;
-	}
+	const { isCreating, formError, showPhoneInput, createUser, clearError } = useCreatePasswordlessUser({
+		tenantId: selectedTenant || "",
+		authMethod,
+		onSuccess: (userId) => {
+			goToUserDetail(userId);
+		},
+	});
 
-	function getExistingUserErrorMessage(): string {
-		if (authMethod === "EMAIL") {
-			return "User with this email already exists!";
-		} else if (authMethod === "PHONE") {
-			return "User with this phone number already exists!";
-		} else {
-			return isNumber(emailOrPhone) === false
-				? "User with this email already exists!"
-				: "User with this phone number already exists!";
-		}
-	}
+	const updateFormState = (updates: Partial<CreatePasswordlessUserState>) => {
+		setFormState((prev) => ({ ...prev, ...updates }));
+	};
 
-	function handleValidationError(response: { status: string; message: string }): void {
-		if (
-			authMethod === "EMAIL_OR_PHONE" &&
-			response.status === "EMAIL_VALIDATION_ERROR" &&
-			isNumber(emailOrPhone) === false
-		) {
-			setFormErrorMessage("Please enter a valid email or phone number.");
-		} else {
-			setFormErrorMessage(response.message);
-		}
-	}
-
-	function resetForm(): void {
-		setEmail("");
-		setPhoneNumber("");
-		setEmailOrPhone("");
-	}
-
-	async function createUser(e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement | HTMLButtonElement>) => {
 		e.preventDefault();
-		setIsCreatingUser(true);
-		setFormErrorMessage(undefined);
+		await createUser(formState);
+	};
 
-		try {
-			const payload = buildPayload();
-			if (!payload) {
-				return;
-			}
-
-			const response = await createPasswordlessUser(tenantId, payload);
-
-			// Handle validation errors
-			if (response.status === "EMAIL_VALIDATION_ERROR" || response.status === "PHONE_VALIDATION_ERROR") {
-				handleValidationError(response);
-				return;
-			}
-
-			// Handle feature not enabled error
-			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showErrorToast("Feature not enabled!");
-				return;
-			}
-
-			// Handle successful response
-			if (response.status === "OK") {
-				if (response.createdNewRecipeUser === false) {
-					showErrorToast(getExistingUserErrorMessage());
-				} else {
-					showSuccessToast("User created successfully!");
-					loadCount();
-					resetForm();
-					window.location.href = getApiUrl(`?userid=${response.user.id}`);
-				}
-			}
-		} catch (_) {
-			showErrorToast("Something went wrong, please try again!");
-		} finally {
-			setIsCreatingUser(false);
-		}
-	}
-
-	function checkUndefined(value: string | undefined) {
+	const checkUndefined = (value: string | undefined) => {
 		return value !== undefined ? value : "";
-	}
+	};
 
 	useEffect(() => {
-		setFormErrorMessage(undefined);
-	}, [email, phoneNumber, emailOrPhone]);
+		clearError();
+	}, [formState.email, formState.phoneNumber, formState.emailOrPhone, clearError]);
+
+	const renderAuthMethodForm = () => {
+		switch (authMethod) {
+			case "EMAIL":
+				return (
+					<Form.Item>
+						<Label
+							title="Email"
+							htmlFor="email"
+						/>
+						<TextField
+							error={formError}
+							value={formState.email}
+							onChange={(e) => updateFormState({ email: e.currentTarget.value })}
+							name="email"
+							placeholder="Enter email address"
+						/>
+					</Form.Item>
+				);
+			case "PHONE":
+				return (
+					<Form.Item>
+						<PhoneNumberInput
+							error={formError}
+							name="phone"
+							onChange={(value: string | undefined) => {
+								updateFormState({ phoneNumber: checkUndefined(value) });
+							}}
+							label="Phone Number"
+							forceShowError
+						/>
+					</Form.Item>
+				);
+			case "EMAIL_OR_PHONE":
+				return (
+					<Form.Item>
+						{showPhoneInput ? (
+							<PhoneNumberInput
+								error={formError}
+								value={formState.emailOrPhone}
+								name="phone"
+								onChange={(value: string | undefined) => {
+									updateFormState({ emailOrPhone: checkUndefined(value) });
+								}}
+								label="Phone Number"
+								forceShowError
+							/>
+						) : (
+							<Form.Item>
+								<Label
+									title="Email or Phone"
+									htmlFor="email-or-phone"
+								/>
+								<TextField
+									error={formError}
+									value={formState.emailOrPhone}
+									onChange={(e) => updateFormState({ emailOrPhone: e.currentTarget.value })}
+									name="email-or-phone"
+									placeholder="Enter email address or phone number"
+								/>
+							</Form.Item>
+						)}
+					</Form.Item>
+				);
+			case undefined:
+				return null;
+			default:
+				return assertNever(authMethod);
+		}
+	};
 
 	return (
 		<Modal
@@ -181,75 +174,7 @@ export default function CreatePasswordlessUser({
 			handleClose={onCloseDialog}
 			open={true}>
 			<Paper withBackground>
-				<Form>
-					{(() => {
-						switch (authMethod) {
-							case "EMAIL":
-								return (
-									<Form.Item>
-										<Label
-											title="Email"
-											htmlFor="email"
-										/>
-										<TextField
-											error={formErrorMessage}
-											value={email}
-											onChange={(e) => setEmail(e.currentTarget.value)}
-											name="email"
-										/>
-									</Form.Item>
-								);
-							case "PHONE":
-								return (
-									<Form.Item>
-										<PhoneNumberInput
-											error={formErrorMessage}
-											name="phone"
-											onChange={(value: string | undefined) => {
-												setPhoneNumber(checkUndefined(value));
-											}}
-											label="Phone Number"
-											forceShowError
-										/>
-									</Form.Item>
-								);
-							case "EMAIL_OR_PHONE":
-								return (
-									<Form.Item>
-										{isPhoneNumber ? (
-											<PhoneNumberInput
-												error={formErrorMessage}
-												value={emailOrPhone}
-												name="phone"
-												onChange={(value: string | undefined) => {
-													setEmailOrPhone(checkUndefined(value));
-												}}
-												label="Phone Number"
-												forceShowError
-											/>
-										) : (
-											<Form.Item>
-												<Label
-													title="Email or Phone"
-													htmlFor="email-or-phone"
-												/>
-												<TextField
-													error={formErrorMessage}
-													value={emailOrPhone}
-													onChange={(e) => setEmailOrPhone(e.currentTarget.value)}
-													name="email-or-phone"
-												/>
-											</Form.Item>
-										)}
-									</Form.Item>
-								);
-							case undefined:
-								return null;
-							default:
-								assertNever(authMethod);
-						}
-					})()}
-				</Form>
+				<Form>{renderAuthMethodForm()}</Form>
 			</Paper>
 			<Flex
 				justify="end"
@@ -265,8 +190,8 @@ export default function CreatePasswordlessUser({
 				</Button>
 				<Button
 					type="submit"
-					onClick={createUser}
-					disabled={isCreatingUser}>
+					onClick={handleSubmit}
+					disabled={isCreating}>
 					Create
 				</Button>
 			</Flex>

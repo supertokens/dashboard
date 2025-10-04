@@ -63,7 +63,7 @@ export const UserListFooter = ({
 						size="2"
 						weight="medium">
 						{count === 0
-							? "No users found"
+							? null
 							: `${formatNumber(startIndex)} - ${formatNumber(endIndex)} of ${formatNumber(count)}`}
 					</Text>
 					{count > 0 && (
