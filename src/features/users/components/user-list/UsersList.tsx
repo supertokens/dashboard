@@ -13,18 +13,14 @@
  * under the License.
  */
 
-// React imports
 import { useEffect, useMemo, useState } from "react";
 
-// Types
 import type { UserSearchCriteria } from "@features/users/types/queries";
 
-// Hooks
 import { useUsersList } from "@features/users/hooks/useUsers";
 import { useAnalytics } from "@features/analytics/hooks/useAnalytics";
 import { useTenants } from "@features/tenants/hooks/useTenants";
 
-// Components
 import { UserListFooter } from "./UserListFooter";
 import { UserListTable } from "./UserListTable";
 import { UserListHeader } from "./UserListHeader";
@@ -35,7 +31,6 @@ import Loader from "@shared/components/loader";
 import DashboardError from "@shared/components/error";
 import Paper from "@shared/components/paper";
 
-// Utils
 import { getConnectionUri } from "@utils";
 import { assertNever } from "@utils/assertNever";
 import { CreateUserModal } from "../create-user/CreateUserModal";

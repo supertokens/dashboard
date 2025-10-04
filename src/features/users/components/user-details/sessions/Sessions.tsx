@@ -27,7 +27,7 @@ import EmptyList from "@shared/components/empty";
 import CopyBox from "@shared/components/copyBox";
 
 import { formatNumber } from "@utils";
-import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { useSessions } from "@features/users/hooks/useSessions";
 import { RevokeSessionModal, RevokeAllSessionsModal } from "../modals";
 
 import styles from "./Sessions.module.scss";
@@ -37,7 +37,7 @@ interface SessionHeaderProps {
 }
 
 const SessionHeader = ({ userId }: SessionHeaderProps) => {
-	const { sessions } = useUserDetails({ userId });
+	const { sessions } = useSessions(userId);
 	const [openRevokeAllSessionModal, setOpenRevokeAllSessionModal] = useState(false);
 
 	return (
@@ -75,7 +75,7 @@ interface SessionListProps {
 }
 
 const SessionList = ({ userId }: SessionListProps) => {
-	const { sessions } = useUserDetails({ userId });
+	const { sessions } = useSessions(userId);
 	const [openRevokeSessionModal, setOpenRevokeSessionModal] = useState(false);
 	const [selectedSessionHandle, setSelectedSessionHandle] = useState<string>("");
 
@@ -162,7 +162,7 @@ interface SessionListFooterProps {
 }
 
 const SessionListFooter = ({ userId }: SessionListFooterProps) => {
-	const { sessions } = useUserDetails({ userId });
+	const { sessions } = useSessions(userId);
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 10;
 	const totalPages = Math.ceil(sessions.length / pageSize);
@@ -224,7 +224,7 @@ interface SessionsProps {
 }
 
 export default function Sessions({ userId }: SessionsProps) {
-	const { isLoading, error } = useUserDetails({ userId });
+	const { isLoading, error } = useSessions(userId);
 
 	if (isLoading) {
 		return (

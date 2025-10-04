@@ -24,7 +24,7 @@ import Select from "@shared/components/select";
 import { useToast } from "@shared/components/toast";
 import { useRolesService } from "@api/userroles/role";
 
-import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { useRoles } from "@features/users/hooks/useRoles";
 
 import styles from "./AssignRoleModal.module.scss";
 
@@ -36,7 +36,7 @@ interface AssignRoleModalProps {
 }
 
 export default function AssignRoleModal({ open, handleClose, userId, selectedTenantId }: AssignRoleModalProps) {
-	const { addRole, isAddingRole } = useUserDetails({ userId, selectedTenantId });
+	const { addRole, isAddingRole } = useRoles(userId, selectedTenantId);
 	const { showSuccessToast, showErrorToast } = useToast();
 	const { getRoles } = useRolesService();
 

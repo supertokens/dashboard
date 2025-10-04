@@ -28,7 +28,8 @@ import Paper from "@shared/components/paper";
 import Crystal from "@shared/components/crystal";
 import IconButton from "@shared/components/iconButton";
 
-import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { useRoles } from "@features/users/hooks/useRoles";
+import { useTenants } from "@features/users/hooks/useTenants";
 import { AssignRoleModal, RemoveRoleModal } from "../modals";
 
 import styles from "./Roles.module.scss";
@@ -40,7 +41,7 @@ interface RolesHeaderProps {
 }
 
 const RolesHeader = ({ userId, selectedTenantId, onTenantChange }: RolesHeaderProps) => {
-	const { tenants } = useUserDetails({ userId, selectedTenantId });
+	const { tenants } = useTenants();
 	const [openAssignRoleModal, setOpenAssignRoleModal] = useState(false);
 
 	const tenantItems = tenants.map((tenant) => ({
@@ -89,7 +90,7 @@ interface RolesListProps {
 }
 
 const RolesList = ({ userId, selectedTenantId }: RolesListProps) => {
-	const { roles } = useUserDetails({ userId, selectedTenantId });
+	const { roles } = useRoles(userId, selectedTenantId);
 	const [openRemoveRoleModal, setOpenRemoveRoleModal] = useState(false);
 	const [selectedRole, setSelectedRole] = useState<string>("");
 
@@ -190,7 +191,7 @@ interface RolesProps {
 
 export default function Roles({ userId }: RolesProps) {
 	const [selectedTenantId, setSelectedTenantId] = useState<string>("public");
-	const { isLoading, error } = useUserDetails({ userId, selectedTenantId });
+	const { isLoading, error } = useRoles(userId, selectedTenantId);
 
 	const handleTenantChange = (tenantId: string) => {
 		setSelectedTenantId(tenantId);

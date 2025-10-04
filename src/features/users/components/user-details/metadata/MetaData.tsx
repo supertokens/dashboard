@@ -24,7 +24,7 @@ import Loader from "@shared/components/loader";
 import Separator from "@shared/components/separator";
 import { useToast } from "@shared/components/toast";
 
-import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { useMetadata } from "@features/users/hooks/useMetadata";
 
 import styles from "./MetaData.module.scss";
 
@@ -112,7 +112,7 @@ interface MetaDataProps {
 }
 
 export default function MetaData({ userId }: MetaDataProps) {
-	const { metadata, updateMetadata, isUpdatingMetadata, isLoading, error } = useUserDetails({ userId });
+	const { metadata, updateMetadata, isUpdatingMetadata, isLoading, error } = useMetadata(userId);
 	const { showSuccessToast, showErrorToast } = useToast();
 
 	const [isEditing, setIsEditing] = useState<boolean>(false);

@@ -20,7 +20,7 @@ import Button from "@shared/components/button";
 import { Modal } from "@shared/components/modal";
 import { useToast } from "@shared/components/toast";
 
-import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { useRoles } from "@features/users/hooks/useRoles";
 
 import styles from "./RemoveRoleModal.module.scss";
 
@@ -39,7 +39,7 @@ export default function RemoveRoleModal({
 	userIdProp,
 	selectedTenantId,
 }: RemoveRoleModalProps) {
-	const { removeRole, isRemovingRole } = useUserDetails({ userId: userIdProp, selectedTenantId });
+	const { removeRole, isRemovingRole } = useRoles(userIdProp, selectedTenantId);
 	const { showSuccessToast, showErrorToast } = useToast();
 
 	const [isRemoving, setIsRemoving] = useState(false);

@@ -14,41 +14,35 @@
  */
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { Badge, Box, Em, Flex, Text } from "@radix-ui/themes";
 
 import Button from "@shared/components/button";
 import IconButton from "@shared/components/iconButton";
 import ItemContainer from "@shared/components/itemContainer";
-import ItemDetailHeader from "@shared/components/itemDetailsHeading";
-import PageContainer from "@shared/components/pageContainer";
 import ItemLabel from "@shared/components/itemLabel";
 import CopyBox from "@shared/components/copyBox";
 import TabSelector from "@shared/components/tabSelector";
 import Separator from "@shared/components/separator";
-import Loader from "@shared/components/loader";
-import EmptyList from "@shared/components/empty";
-import Paper from "@shared/components/paper";
-import DashboardError from "@shared/components/error";
 
 import { assertNever } from "@utils/assertNever";
-import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { formatLongDate } from "@shared/utils";
+import { getFirstLetter } from "@shared/utils/getFirstLetter";
+
 import { User } from "@features/users/types";
 
 import Sessions from "./sessions/Sessions";
 import Roles from "./roles/Roles";
 import MetaData from "./metadata/MetaData";
 import LoginMethods from "./login-methods/LoginMethods";
-import { EditUserModal, DeleteUserModal } from "./modals";
 
 import styles from "./UserDetails.module.scss";
-
-const getFirstLetter = (name: string | undefined) => {
-	return `${name?.[0] || ""}`;
-};
+import EditUserModal from "./modals/EditUserModal";
+import DeleteUserModal from "./modals/DeleteUserModal";
 
 type UserDetailTab = "login-methods" | "sessions" | "roles" | "metadata";
+
 const userDetailTabs: { name: string; value: UserDetailTab }[] = [
 	{
 		name: "Login Methods",
@@ -70,10 +64,10 @@ const userDetailTabs: { name: string; value: UserDetailTab }[] = [
 
 interface UserNameCardProps {
 	readonly user: User;
-	readonly onEditClick: () => void;
+	readonly onEditNameClick: () => void;
 }
 
-const UserNameCard = ({ user, onEditClick }: UserNameCardProps) => {
+const UserNameCard = ({ user, onEditNameClick }: UserNameCardProps) => {
 	const { firstName, lastName } = user;
 	const userNameSet = !!(firstName && lastName);
 
@@ -101,7 +95,7 @@ const UserNameCard = ({ user, onEditClick }: UserNameCardProps) => {
 			<IconButton
 				variant="soft"
 				color="gray"
-				onClick={onEditClick}>
+				onClick={onEditNameClick}>
 				<Pencil1Icon />
 			</IconButton>
 		</Flex>
@@ -110,12 +104,12 @@ const UserNameCard = ({ user, onEditClick }: UserNameCardProps) => {
 
 interface UserDetailContentProps {
 	readonly user: User;
-	readonly userId: string;
-	readonly onDeleteClick: () => void;
-	readonly onEditClick: () => void;
 }
 
-const UserDetailContent = ({ user, userId, onDeleteClick, onEditClick }: UserDetailContentProps) => {
+export function UserDetailContent({ user }: UserDetailContentProps) {
+	const [openEditUserModal, setOpenEditUserModal] = useState(false);
+	const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
+
 	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("login-methods");
 
 	const handleTabChange = (tab: UserDetailTab) => {
@@ -133,13 +127,13 @@ const UserDetailContent = ({ user, userId, onDeleteClick, onEditClick }: UserDet
 					p="4">
 					<UserNameCard
 						user={user}
-						onEditClick={onEditClick}
+						onEditNameClick={() => setOpenEditUserModal(true)}
 					/>
 					<Button
 						color="red"
 						size="2"
 						variant="soft"
-						onClick={onDeleteClick}>
+						onClick={() => setOpenDeleteUserModal(true)}>
 						<TrashIcon />
 						Delete User
 					</Button>
@@ -162,8 +156,22 @@ const UserDetailContent = ({ user, userId, onDeleteClick, onEditClick }: UserDet
 						orientation="vertical"
 						mx="5"
 					/>
-					<ItemLabel mr="2">{new Date(user.timeJoined).toLocaleDateString()}</ItemLabel>
+					<ItemLabel mr="2">{formatLongDate(user.timeJoined)}</ItemLabel>
 				</Flex>
+				{openEditUserModal && (
+					<EditUserModal
+						open={openEditUserModal}
+						handleClose={() => setOpenEditUserModal(false)}
+						userId={user.id}
+					/>
+				)}
+				{openDeleteUserModal && (
+					<DeleteUserModal
+						open={openDeleteUserModal}
+						handleClose={() => setOpenDeleteUserModal(false)}
+						userId={user.id}
+					/>
+				)}
 			</ItemContainer>
 
 			<TabSelector
@@ -175,115 +183,16 @@ const UserDetailContent = ({ user, userId, onDeleteClick, onEditClick }: UserDet
 						case "login-methods":
 							return <LoginMethods />;
 						case "sessions":
-							return <Sessions userId={userId} />;
+							return <Sessions userId={user.id} />;
 						case "roles":
-							return <Roles userId={userId} />;
+							return <Roles userId={user.id} />;
 						case "metadata":
-							return <MetaData userId={userId} />;
+							return <MetaData userId={user.id} />;
 						default:
 							return assertNever(selectedTab);
 					}
 				})()}
 			</TabSelector>
 		</Box>
-	);
-};
-
-interface UserDetailsProps {
-	readonly userId: string;
-}
-
-export default function UserDetails({ userId }: UserDetailsProps) {
-	const navigate = useNavigate();
-	const [openEditUserModal, setOpenEditUserModal] = useState(false);
-	const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
-
-	const { userDetails, isLoading, error } = useUserDetails({ userId });
-
-	const handleBackToItemList = () => {
-		navigate("/users");
-	};
-
-	const handleEditClick = () => {
-		setOpenEditUserModal(true);
-	};
-
-	const handleDeleteClick = () => {
-		setOpenDeleteUserModal(true);
-	};
-
-	return (
-		<PageContainer>
-			<Flex
-				gap="4"
-				direction="column">
-				<ItemDetailHeader
-					handleBackToItemList={handleBackToItemList}
-					backToTitle="Back to User Management"
-					breadcrumbParent="User Management"
-					breadcrumbChild="User Details"
-				/>
-
-				{(() => {
-					if (isLoading) {
-						return <Loader type="table-with-list" />;
-					}
-
-					if (error) {
-						return <DashboardError />;
-					}
-
-					if (!userDetails) {
-						return null;
-					}
-
-					switch (userDetails.status) {
-						case "OK":
-							return (
-								<>
-									<UserDetailContent
-										user={userDetails.user}
-										userId={userId}
-										onDeleteClick={handleDeleteClick}
-										onEditClick={handleEditClick}
-									/>
-
-									{/* Modals */}
-									<EditUserModal
-										open={openEditUserModal}
-										handleClose={() => setOpenEditUserModal(false)}
-										userId={userId}
-									/>
-									<DeleteUserModal
-										open={openDeleteUserModal}
-										handleClose={() => setOpenDeleteUserModal(false)}
-										userId={userId}
-									/>
-								</>
-							);
-						case "NO_USER_FOUND_ERROR":
-							return (
-								<Paper withBackground>
-									<EmptyList
-										iconUrl="user.svg"
-										title="User not found"
-										description="We couldn't locate this user in our system. They may have been deleted or you might not have permission to view their details."
-									/>
-								</Paper>
-							);
-						case "RECIPE_NOT_INITIALISED":
-							return (
-								<EmptyList
-									iconUrl="user.svg"
-									title="Recipe not initialised"
-									description="The required authentication recipes have not been initialized in your SuperTokens configuration. Please refer to our documentation for instructions on enabling and configuring recipes."
-								/>
-							);
-						default:
-							return assertNever(userDetails);
-					}
-				})()}
-			</Flex>
-		</PageContainer>
 	);
 }

@@ -22,7 +22,7 @@ import { Modal } from "@shared/components/modal";
 import { useToast } from "@shared/components/toast";
 import useDeleteUserService from "@api/user/delete";
 
-import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { useUser } from "@features/users/hooks/useUser";
 
 import styles from "./DeleteUserModal.module.scss";
 
@@ -34,7 +34,7 @@ interface DeleteUserModalProps {
 
 export default function DeleteUserModal({ open, handleClose, userId }: DeleteUserModalProps) {
 	const navigate = useNavigate();
-	const { userDetails } = useUserDetails({ userId });
+	const { userDetails } = useUser(userId);
 	const { showSuccessToast, showErrorToast } = useToast();
 	const { deleteUser } = useDeleteUserService();
 

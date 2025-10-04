@@ -20,7 +20,7 @@ import Button from "@shared/components/button";
 import { Modal } from "@shared/components/modal";
 import { useToast } from "@shared/components/toast";
 
-import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { useSessions } from "@features/users/hooks/useSessions";
 
 import styles from "./RevokeSessionModal.module.scss";
 
@@ -32,7 +32,7 @@ interface RevokeSessionModalProps {
 }
 
 export default function RevokeSessionModal({ open, handleClose, sessionHandle, userId }: RevokeSessionModalProps) {
-	const { deleteSessions, isDeletingSessions } = useUserDetails({ userId });
+	const { deleteSessions, isDeletingSessions } = useSessions(userId);
 	const { showSuccessToast, showErrorToast } = useToast();
 
 	const [isRevoking, setIsRevoking] = useState(false);

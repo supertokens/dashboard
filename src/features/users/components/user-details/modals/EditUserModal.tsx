@@ -25,7 +25,8 @@ import { Modal } from "@shared/components/modal";
 import TextField from "@shared/components/text";
 import { useToast } from "@shared/components/toast";
 
-import { useUserDetails } from "@features/users/hooks/useUserDetails";
+import { useUser } from "@features/users/hooks/useUser";
+import { useTenants } from "@features/users/hooks/useTenants";
 import { User } from "@features/users/types";
 
 import styles from "./EditUserModal.module.scss";
@@ -48,7 +49,8 @@ const TooltipContent = () => {
 };
 
 export default function EditUserModal({ open, handleClose, userId }: EditUserModalProps) {
-	const { userDetails, tenants, updateUser, isUpdatingUser } = useUserDetails({ userId });
+	const { userDetails, updateUser, isUpdatingUser } = useUser(userId);
+	const { tenants } = useTenants();
 	const { showSuccessToast, showErrorToast } = useToast();
 
 	const [firstName, setFirstName] = useState("");
