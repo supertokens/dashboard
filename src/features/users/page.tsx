@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import UserDetailTest from "@components/userDetail/userDetailTest";
+import UserDetailTest from "@features/users/components/user-details/userDetail";
 import { useSearchParams } from "react-router-dom";
 import { UsersList } from "./components/user-list/UsersList";
 

@@ -14,7 +14,7 @@
  */
 
 import { useState } from "react";
-import "./userRolesListTest.scss";
+import styles from "./userRolesList.module.scss";
 import { Box, Flex } from "@radix-ui/themes";
 import Loader from "@shared/components/loader";
 import { assertNever } from "@utils/assertNever";
@@ -37,7 +37,7 @@ const RolesHeader = () => {
 	return (
 		<Box width="100%">
 			<Flex
-				className="roles__header"
+				className={styles["roles__header"]}
 				justify="between"
 				align="center"
 				px="4"
@@ -48,7 +48,7 @@ const RolesHeader = () => {
 						items={[]}
 						onValueChange={NOOP}
 						selectedValue={""}
-						triggerClassName="roles__header__select"
+						triggerClassName={styles["roles__header__select"]}
 					/>
 				</Flex>
 				<Button
@@ -76,7 +76,7 @@ const RolesList = () => {
 		return (
 			<Flex p="4">
 				<Callout
-					className="roles-list__callout"
+					className={styles["roles-list__callout"]}
 					type="info">
 					This user currently has no roles assigned.
 				</Callout>
@@ -89,35 +89,35 @@ const RolesList = () => {
 			<Paper
 				p="0"
 				width="100%"
-				className="roles-list">
+				className={styles["roles-list"]}>
 				<Flex
-					className="roles-list__header"
+					className={styles["roles-list__header"]}
 					align="center"
 					p="3">
-					<ItemLabel className="roles-list__header__role">Roles</ItemLabel>
-					<ItemLabel className="roles-list__header__permission">Permissions</ItemLabel>
-					<ItemLabel className="roles-list__header__action">{""}</ItemLabel>
+					<ItemLabel className={styles["roles-list__header__role"]}>Roles</ItemLabel>
+					<ItemLabel className={styles["roles-list__header__permission"]}>Permissions</ItemLabel>
+					<ItemLabel className={styles["roles-list__header__action"]}>{""}</ItemLabel>
 				</Flex>
 				<Flex
-					className="roles-list__body"
+					className={styles["roles-list__body"]}
 					direction="column">
 					{roles.map((role) => (
 						<Flex
 							key={role}
 							align="center"
 							p="3"
-							className="roles-list__body__item">
-							<ItemLabel className="roles-list__body__role">{role}</ItemLabel>
+							className={styles["roles-list__body__item"]}>
+							<ItemLabel className={styles["roles-list__body__role"]}>{role}</ItemLabel>
 							<Flex
 								align="center"
 								gap="2"
-								className="roles-list__body__permission">
+								className={styles["roles-list__body__permission"]}>
 								<Crystal>Read</Crystal>
 								<Crystal>Write</Crystal>
 							</Flex>
 
 							<Flex
-								className="roles-list__body__action"
+								className={styles["roles-list__body__action"]}
 								justify="end"
 								align="center">
 								<IconButton

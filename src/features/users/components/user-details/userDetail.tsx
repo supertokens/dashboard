@@ -25,7 +25,7 @@ import { Badge, Box, Em, Flex, Text } from "@radix-ui/themes";
 import { doesTenantHavePasswordlessEnabled } from "@utils/index";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SessionInfo } from "./types";
+import { SessionInfo } from "../../../../ui/components/userDetail/types";
 import useMetadataService from "@api/user/metadata";
 import useSessionsForUserService from "@api/user/sessions";
 import { useToast } from "@shared/components/toast";
@@ -37,17 +37,17 @@ import Loader from "@shared/components/loader";
 import EmptyList from "@shared/components/empty";
 import Paper from "@shared/components/paper";
 
-import "./userDetailTest.scss";
+import styles from "./userDetail.module.scss";
 import ItemLabel from "@shared/components/itemLabel";
 import CopyBox from "@shared/components/copyBox";
 import TabSelector from "@shared/components/tabSelector";
-import LoginMethods from "./loginMethods/LoginMethodsTest";
+import LoginMethods from "../../../../ui/components/userDetail/loginMethods/LoginMethodsTest";
 import Separator from "@shared/components/separator";
-import Sessions from "./userDetailSessionListTest";
+import Sessions from "./sessions/userDetailSessionListTest";
 import EditUserModal from "@shared/components/modals/editUser";
 import DeleteUserModal from "@shared/components/modals/deleteUser";
-import Roles from "./userRoles/UserRolesListTest";
-import MetaData from "./userMetaDataSectionTest";
+import Roles from "./roles/UserRolesList";
+import MetaData from "./metadata/userMetaDataSection";
 import DashboardError from "@shared/components/error";
 
 const getFirstLetter = (name: string | undefined) => {
@@ -90,10 +90,10 @@ const UserNameCard = ({ user }: { user: User }) => {
 					<Badge
 						variant="solid"
 						size="3"
-						className="user-detail__name-badge">
+						className={styles["user-detail__name-badge"]}>
 						{`${getFirstLetter(firstName)}${getFirstLetter(lastName)}`}
 					</Badge>
-					<Text className="user-detail__name-text">{`${firstName || ""} ${lastName || ""}`}</Text>
+					<Text className={styles["user-detail__name-text"]}>{`${firstName || ""} ${lastName || ""}`}</Text>
 				</Flex>
 			) : (
 				<Em>
@@ -153,7 +153,7 @@ const UserDetailContent = ({ user }: { user: User }) => {
 				</Flex>
 				<Separator fullWidth />
 				<Flex
-					className="user-detail__user-id-container"
+					className={styles["user-detail__user-id-container"]}
 					align="center"
 					px="4"
 					py="3">

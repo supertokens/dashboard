@@ -19,7 +19,7 @@ import ItemLabel from "@shared/components/itemLabel";
 
 import { getImageUrl } from "@utils";
 
-import "./loginMethods.scss";
+import styles from "./loginMethods.module.scss";
 
 const LOGIN_METHODS = [
 	{
@@ -60,23 +60,23 @@ export const LoginMethods = () => {
 		<Flex
 			width="100%"
 			direction="column"
-			className="login-methods">
+			className={styles["login-methods"]}>
 			<TabSelector.ContentHeading>
 				<ItemLabel>The login methods you wish to activate for the tenant</ItemLabel>
 			</TabSelector.ContentHeading>
 			<Flex
-				className="login-methods__content"
+				className={styles["login-methods__content"]}
 				width="100%"
 				p="4"
 				gap="3">
 				<Flex
-					className="login-methods__content__main"
+					className={styles["login-methods__content__main"]}
 					direction="column">
 					{LOGIN_METHODS.map((method) => (
 						<Flex
 							justify="between"
 							key={method.id}
-							className="login-methods__content__main__item"
+							className={styles["login-methods__content__main__item"]}
 							align="center"
 							mx="4"
 							py="4">
@@ -86,30 +86,30 @@ export const LoginMethods = () => {
 								<Text
 									size="2"
 									weight="medium"
-									className="login-methods__content__main__item__name">
+									className={styles["login-methods__content__main__item__name"]}>
 									{method.name}
 								</Text>
 								<Text
 									size="2"
 									weight="regular"
-									className="login-methods__content__main__item__description">
+									className={styles["login-methods__content__main__item__description"]}>
 									{method.description}
 								</Text>
 							</Flex>
 							<Switch
 								size="2"
 								variant="classic"
-								className="login-methods__content__main__method__switch"
+								className={styles["login-methods__content__main__method__switch"]}
 							/>
 						</Flex>
 					))}
 				</Flex>
-				<Flex className="login-methods__content__preview">
+				<Flex className={styles["login-methods__content__preview"]}>
 					<Badge
 						size="1"
 						variant="solid"
 						radius="small"
-						className="login-methods__content__preview__badge">
+						className={styles["login-methods__content__preview__badge"]}>
 						Preview
 					</Badge>
 					{selectedMethods.length === 0 && (
@@ -118,7 +118,7 @@ export const LoginMethods = () => {
 							direction="column"
 							justify="center"
 							align="center"
-							className="login-methods__content__preview__empty">
+							className={styles["login-methods__content__preview__empty"]}>
 							<img
 								src={getImageUrl("shield.svg")}
 								alt="Shield"
@@ -128,7 +128,7 @@ export const LoginMethods = () => {
 							<Text
 								size="1"
 								weight="regular"
-								className="login-methods__content__preview__empty__text">
+								className={styles["login-methods__content__preview__empty__text"]}>
 								Select login methods to see preview
 							</Text>
 						</Flex>
@@ -136,17 +136,17 @@ export const LoginMethods = () => {
 				</Flex>
 			</Flex>
 			<Flex
-				className="login-methods__footer"
+				className={styles["login-methods__footer"]}
 				px="4"
 				pb="4"
 				width="100%">
 				<Callout.Root
 					color="green"
 					size="1"
-					className="login-methods__footer__callout">
+					className={styles["login-methods__footer__callout"]}>
 					<Text
 						size="2"
-						className="login-methods__footer__callout__text">
+						className={styles["login-methods__footer__callout__text"]}>
 						<span>2 login methods enabled:</span> Users will be able to sign up using any of the selected
 						methods
 					</Text>

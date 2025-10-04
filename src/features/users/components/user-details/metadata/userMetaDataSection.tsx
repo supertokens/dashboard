@@ -22,7 +22,7 @@ import { Box, Flex, TextArea } from "@radix-ui/themes";
 import { assertNever } from "@utils/assertNever";
 import { useState } from "react";
 
-import "./userMetaDataSectionTest.scss";
+import styles from "./userMetaDataSection.module.scss";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 
 const MetaDataHeader = ({
@@ -35,7 +35,7 @@ const MetaDataHeader = ({
 	return (
 		<Box width="100%">
 			<Flex
-				className="metadata__header"
+				className={styles["metadata__header"]}
 				justify="between"
 				align="center"
 				px="4"
@@ -76,9 +76,11 @@ const MetaDataContent = ({ isEditing }: { isEditing: boolean }) => {
 	return (
 		<Flex
 			p="4"
-			className="metadata__content">
+			className={styles["metadata__content"]}>
 			<TextArea
-				className={`metadata__content__textarea ${!isEditing ? "metadata__content__textarea--active" : ""}`}
+				className={`${styles["metadata__content__textarea"]} ${
+					!isEditing ? styles["metadata__content__textarea--active"] : ""
+				}`}
 			/>
 		</Flex>
 	);

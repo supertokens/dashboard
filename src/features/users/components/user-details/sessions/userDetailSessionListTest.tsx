@@ -23,7 +23,7 @@ import Loader from "@shared/components/loader";
 import DashboardError from "@shared/components/error";
 import EmptyList from "@shared/components/empty";
 
-import "./userDetailSessionListTest.scss";
+import styles from "./userDetailSessionList.module.scss";
 import { assertNever } from "@utils/assertNever";
 import CopyBox from "@shared/components/copyBox";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
@@ -37,7 +37,7 @@ const SessionHeader = () => {
 	return (
 		<Box width="100%">
 			<Flex
-				className="sessions__header"
+				className={styles["sessions__header"]}
 				justify="between"
 				align="center"
 				px="4"
@@ -78,37 +78,37 @@ const SessionList = () => {
 	return (
 		<Flex
 			direction="column"
-			className="session-list"
+			className={styles["session-list"]}
 			m="4">
 			<Flex
-				className="session-list__header"
+				className={styles["session-list__header"]}
 				p="3">
-				<ItemLabel className="session-list__header__session-handle">Session Handle</ItemLabel>
-				<ItemLabel className="session-list__header__created-at">Created At</ItemLabel>
-				<ItemLabel className="session-list__header__expires-at">Expires At</ItemLabel>
-				<ItemLabel className="session-list__header__action">Action</ItemLabel>
+				<ItemLabel className={styles["session-list__header__session-handle"]}>Session Handle</ItemLabel>
+				<ItemLabel className={styles["session-list__header__created-at"]}>Created At</ItemLabel>
+				<ItemLabel className={styles["session-list__header__expires-at"]}>Expires At</ItemLabel>
+				<ItemLabel className={styles["session-list__header__action"]}>Action</ItemLabel>
 			</Flex>
 			{[1, 2, 3].map((_, index) => (
 				<Flex
 					key={index}
-					className="session-list__item"
+					className={styles["session-list__item"]}
 					align="center"
 					p="3">
-					<Box className="session-list__item__session-handle">
+					<Box className={styles["session-list__item__session-handle"]}>
 						<CopyBox
 							text="dfg76sd76f87u6sd87dffzdx...87zxv566zx66c"
 							name="Session Handle"
-							className="session-list__item__session-handle__copy-box"
+							className={styles["session-list__item__session-handle__copy-box"]}
 						/>
 					</Box>
 
-					<ItemLabel className="session-list__item__created-at">4th May 2025</ItemLabel>
-					<ItemLabel className="session-list__item__expires-at">10h 22m 8s</ItemLabel>
+					<ItemLabel className={styles["session-list__item__created-at"]}>4th May 2025</ItemLabel>
+					<ItemLabel className={styles["session-list__item__expires-at"]}>10h 22m 8s</ItemLabel>
 					<Button
 						size="2"
 						color="red"
 						variant="outline"
-						className="session-list__item__action"
+						className={styles["session-list__item__action"]}
 						onClick={() => setOpenRevokeSessionModal(true)}>
 						Revoke
 					</Button>
