@@ -37,9 +37,10 @@ import Roles from "./roles/Roles";
 import MetaData from "./metadata/MetaData";
 import LoginMethods from "./login-methods/LoginMethods";
 
-import styles from "./UserDetails.module.scss";
-import EditUserModal from "./modals/EditUserModal";
+import EditUserModal from "./modals/EditUserNameModal";
 import DeleteUserModal from "./modals/DeleteUserModal";
+
+import styles from "./UserDetails.module.scss";
 
 type UserDetailTab = "login-methods" | "sessions" | "roles" | "metadata";
 
@@ -78,10 +79,11 @@ const UserNameCard = ({ user, onEditNameClick }: UserNameCardProps) => {
 			{userNameSet ? (
 				<Flex
 					align="center"
-					gap="4">
+					gap="2">
 					<Badge
 						variant="solid"
 						size="3"
+						radius="large"
 						className={styles["user-detail__name-badge"]}>
 						{`${getFirstLetter(firstName)}${getFirstLetter(lastName)}`}
 					</Badge>
@@ -95,6 +97,7 @@ const UserNameCard = ({ user, onEditNameClick }: UserNameCardProps) => {
 			<IconButton
 				variant="soft"
 				color="gray"
+				size="1"
 				onClick={onEditNameClick}>
 				<Pencil1Icon />
 			</IconButton>
@@ -181,7 +184,7 @@ export function UserDetailContent({ user }: UserDetailContentProps) {
 				{(() => {
 					switch (selectedTab) {
 						case "login-methods":
-							return <LoginMethods />;
+							return <LoginMethods userId={user.id} />;
 						case "sessions":
 							return <Sessions userId={user.id} />;
 						case "roles":

@@ -17,5 +17,5 @@ export { useUser } from "./useUser";
 export { useSessions } from "./useSessions";
 export { useMetadata } from "./useMetadata";
 export { useRoles } from "./useRoles";
-export { useTenants } from "./useTenants";
+export { useLoginMethods } from "./useLoginMethods";
 export { useUsersList } from "./useUsers";

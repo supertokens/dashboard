@@ -26,10 +26,10 @@ import TextField from "@shared/components/text";
 import { useToast } from "@shared/components/toast";
 
 import { useUser } from "@features/users/hooks/useUser";
-import { useTenants } from "@features/users/hooks/useTenants";
+import { useTenants } from "@features/tenants/hooks/useTenants";
 import { User } from "@features/users/types";
 
-import styles from "./EditUserModal.module.scss";
+import styles from "./EditUserNameModal.module.scss";
 
 interface EditUserModalProps {
 	readonly open: boolean;
@@ -56,13 +56,12 @@ export default function EditUserModal({ open, handleClose, userId }: EditUserMod
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 
-	// Update local state when userDetails changes
 	useEffect(() => {
-		if (userDetails?.status === "OK") {
+		if (open && userDetails?.status === "OK") {
 			setFirstName(userDetails.user.firstName || "");
 			setLastName(userDetails.user.lastName || "");
 		}
-	}, [userDetails]);
+	}, [open, userDetails]);
 
 	const handleSave = async () => {
 		if (userDetails?.status !== "OK") return;
@@ -77,7 +76,7 @@ export default function EditUserModal({ open, handleClose, userId }: EditUserMod
 			await updateUser({
 				userId: userDetails.user.id,
 				user: updatedUser,
-				tenants,
+				tenants: tenants || [],
 			});
 
 			showSuccessToast("User information updated successfully");
@@ -98,7 +97,7 @@ export default function EditUserModal({ open, handleClose, userId }: EditUserMod
 			open={open}
 			handleClose={handleClose}
 			title="Edit User Information"
-			size="sm">
+			size="md">
 			<Form className={styles["edit-user-modal"]}>
 				<Form.Paper className={styles["edit-user-modal__paper"]}>
 					<Flex
@@ -107,14 +106,14 @@ export default function EditUserModal({ open, handleClose, userId }: EditUserMod
 						direction="column"
 						gap="3">
 						<Form.Item>
-							<ItemLabel>First Name:</ItemLabel>
+							<ItemLabel mb="2">First Name:</ItemLabel>
 							<TextField
 								value={firstName}
 								onChange={(e) => setFirstName(e.target.value)}
 							/>
 						</Form.Item>
 						<Form.Item>
-							<ItemLabel>Last Name:</ItemLabel>
+							<ItemLabel mb="2">Last Name:</ItemLabel>
 							<TextField
 								value={lastName}
 								onChange={(e) => setLastName(e.target.value)}
@@ -145,7 +144,8 @@ export default function EditUserModal({ open, handleClose, userId }: EditUserMod
 					<Button
 						size="3"
 						onClick={handleSave}
-						loading={isUpdatingUser}>
+						loading={isUpdatingUser}
+						disabled={!firstName || !lastName}>
 						Save
 					</Button>
 				</Flex>

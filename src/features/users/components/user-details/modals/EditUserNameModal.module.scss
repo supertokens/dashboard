@@ -1,0 +1,25 @@
+.edit-user-modal {
+	&__paper {
+		box-shadow: none;
+		padding: 0;
+	}
+
+	&__footer {
+		border-radius: 0 0 12px 12px;
+		border-top: 1px solid var(--color-neutral-6);
+		background: var(--color-sand-3);
+	}
+
+	&__tooltip {
+		cursor: help;
+
+		&-text {
+			font-size: 12px;
+			line-height: 16px;
+			color: var(--color-neutral-1);
+			font-style: normal;
+			font-weight: 400;
+			letter-spacing: 0.04px;
+		}
+	}
+}

@@ -13,32 +13,7 @@
  * under the License.
  */
 
-import { useQuery } from "@tanstack/react-query";
-
-import { useListTenantsService } from "@api/tenants";
-
-const QUERY_KEY = "tenants";
-const STALE_TIME = 5 * 60 * 1000; // 5 minutes
-
-export const queryKeys = {
-	tenants: () => [QUERY_KEY] as const,
-};
-
-export const useTenants = () => {
-	const { fetchTenants } = useListTenantsService();
-
-	const tenantsQuery = useQuery({
-		queryKey: queryKeys.tenants(),
-		queryFn: () => fetchTenants(),
-		staleTime: STALE_TIME,
-		select: (data) => data?.tenants || [],
-		retry: false,
-	});
-
-	return {
-		tenants: tenantsQuery.data || [],
-		isLoading: tenantsQuery.isLoading,
-		error: tenantsQuery.error,
-		refetch: tenantsQuery.refetch,
-	};
-};
+export { default as LoginMethods } from "./LoginMethods";
+export { default as LoginMethodCard } from "./LoginMethodCard";
+export { default as LoginMethodContent } from "./LoginMethodContent";
+export { default as LoginMethodHeader } from "./LoginMethodHeader";

@@ -29,7 +29,7 @@ import Crystal from "@shared/components/crystal";
 import IconButton from "@shared/components/iconButton";
 
 import { useRoles } from "@features/users/hooks/useRoles";
-import { useTenants } from "@features/users/hooks/useTenants";
+import { useTenants } from "@features/tenants/hooks/useTenants";
 import { AssignRoleModal, RemoveRoleModal } from "../modals";
 
 import styles from "./Roles.module.scss";
@@ -44,10 +44,11 @@ const RolesHeader = ({ userId, selectedTenantId, onTenantChange }: RolesHeaderPr
 	const { tenants } = useTenants();
 	const [openAssignRoleModal, setOpenAssignRoleModal] = useState(false);
 
-	const tenantItems = tenants.map((tenant) => ({
-		label: tenant.tenantId === "public" ? "Public" : tenant.tenantId,
-		value: tenant.tenantId,
-	}));
+	const tenantItems =
+		tenants?.map((tenant) => ({
+			label: tenant.tenantId === "public" ? "Public" : tenant.tenantId,
+			value: tenant.tenantId,
+		})) || [];
 
 	return (
 		<Box width="100%">

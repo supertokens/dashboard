@@ -14,27 +14,27 @@
  */
 
 .user-detail {
-	&__name-badge.rt-Badge {
-		color: #fff;
-		text-align: center;
-		font-size: 16px;
-		font-style: normal;
-		font-weight: 500;
-		line-height: 24px;
-		width: 40px;
-		height: 40px;
+	&__name-badge {
+		color: #fff !important;
+		font-size: 16px !important;
+		font-weight: 500 !important;
+		line-height: 24px !important;
+		width: 40px !important;
+		height: 40px !important;
 		text-transform: uppercase;
+		color: #fff;
 	}
 
-	&__name-text.rt-Text {
+	&__name-text {
 		color: var(--color-neutral-12);
-		font-size: 28px;
+		font-size: 20px;
 		font-style: normal;
 		font-weight: 700;
-		line-height: 36px;
+		line-height: 28px;
+		letter-spacing: -0.08px;
 	}
 
-	&__user-id-container.rt-Flex {
+	&__user-id-container {
 		border-radius: 0 0 16px 16px;
 		background: var(--color-sand-2);
 	}

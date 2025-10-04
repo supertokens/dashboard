@@ -13,9 +13,13 @@
  * under the License.
  */
 
-export { default as EditUserModal } from "./EditUserModal";
+export { default as EditUserModal } from "./EditUserNameModal";
 export { default as DeleteUserModal } from "./DeleteUserModal";
 export { default as RevokeSessionModal } from "./RevokeSessionModal";
 export { default as RevokeAllSessionsModal } from "./RevokeAllSessionsModal";
 export { default as AssignRoleModal } from "./AssignRoleModal";
 export { default as RemoveRoleModal } from "./RemoveRoleModal";
+export { default as ChangePasswordModal } from "./ChangePasswordModal";
+export { default as DeleteLoginMethodModal } from "./DeleteLoginMethodModal";
+export { default as UnlinkLoginMethodModal } from "./UnlinkLoginMethodModal";
+export { default as EditLoginMethodModal } from "./EditLoginMethodModal";

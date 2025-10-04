@@ -13,14 +13,17 @@
  * under the License.
  */
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Flex, Text } from "@radix-ui/themes";
 
 import Button from "@shared/components/button";
+import Form from "@shared/components/form";
 import { Modal } from "@shared/components/modal";
+import TextField from "@shared/components/text";
 import { useToast } from "@shared/components/toast";
+
 import useDeleteUserService from "@api/user/delete";
+import { useNavigationHelpers } from "@shared/navigation";
 
 import { useUser } from "@features/users/hooks/useUser";
 
@@ -33,23 +36,29 @@ interface DeleteUserModalProps {
 }
 
 export default function DeleteUserModal({ open, handleClose, userId }: DeleteUserModalProps) {
-	const navigate = useNavigate();
 	const { userDetails } = useUser(userId);
 	const { showSuccessToast, showErrorToast } = useToast();
 	const { deleteUser } = useDeleteUserService();
+	const { goToUsersList } = useNavigationHelpers();
 
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [userDisplayNameInput, setFormUserDisplayNameInput] = useState("");
+
+	useEffect(() => {
+		if (open) {
+			setFormUserDisplayNameInput("");
+		}
+	}, [open]);
 
 	const handleDelete = async () => {
 		if (userDetails?.status !== "OK") return;
-
 		try {
 			setIsDeleting(true);
 			const result = await deleteUser(userDetails.user.id, true);
 
 			if (result && result.status === "OK") {
 				showSuccessToast("User deleted successfully");
-				navigate("/users"); // Navigate back to users list
+				goToUsersList();
 			} else {
 				showErrorToast("Failed to delete user");
 			}
@@ -72,36 +81,52 @@ export default function DeleteUserModal({ open, handleClose, userId }: DeleteUse
 
 	return (
 		<Modal
+			title="Delete User"
 			open={open}
 			handleClose={handleClose}
-			title="Delete User"
-			size="sm">
-			<div className={styles["delete-user-modal"]}>
-				<Text className={styles["delete-user-modal__description"]}>
-					Are you sure you want to delete <strong>{userDisplayName}</strong>? This action cannot be undone.
-				</Text>
-
+			size="md">
+			<Form className={styles["delete-user-modal"]}>
+				<Form.Paper>
+					<Text
+						size="2"
+						className={styles["delete-user-modal__disclaimer"]}>
+						You are about to delete <strong>{userDisplayName}</strong>.
+					</Text>
+					<Text
+						size="2"
+						className={styles["delete-user-modal__disclaimer"]}
+						mt="2">
+						This will permanently delete this user and all accounts linked to them. This action{" "}
+						<strong>cannot be undone</strong>.
+					</Text>
+					<Text
+						size="2"
+						className={styles["delete-user-modal__disclaimer"]}
+						mt="3">
+						To confirm, type{" "}
+						<strong className={styles["delete-user-modal__identifier"]}>{userDisplayName}</strong> below:
+					</Text>
+					<Form.Item mt="3">
+						<TextField
+							placeholder={`Type "${userDisplayName}" to confirm`}
+							value={userDisplayNameInput}
+							onChange={(e) => setFormUserDisplayNameInput(e.target.value)}
+						/>
+					</Form.Item>
+				</Form.Paper>
 				<Flex
 					justify="end"
-					gap="3"
-					mt="5">
+					mt="4">
 					<Button
-						size="3"
-						variant="outline"
-						color="gray"
-						onClick={handleClose}
-						disabled={isDeleting}>
-						Cancel
-					</Button>
-					<Button
-						size="3"
 						color="red"
+						size="3"
 						onClick={handleDelete}
-						loading={isDeleting}>
-						Delete User
+						loading={isDeleting}
+						disabled={userDisplayNameInput !== userDisplayName}>
+						Delete
 					</Button>
 				</Flex>
-			</div>
+			</Form>
 		</Modal>
 	);
 }
