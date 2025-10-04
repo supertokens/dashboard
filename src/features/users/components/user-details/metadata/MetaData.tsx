@@ -22,7 +22,7 @@ import { Box, Flex, TextArea } from "@radix-ui/themes";
 import { assertNever } from "@utils/assertNever";
 import { useState } from "react";
 
-import styles from "./userMetaDataSection.module.scss";
+import styles from "./MetaData.module.scss";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 
 const MetaDataHeader = ({

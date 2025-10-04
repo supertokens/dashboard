@@ -23,7 +23,6 @@ import Loader from "@shared/components/loader";
 import DashboardError from "@shared/components/error";
 import EmptyList from "@shared/components/empty";
 
-import styles from "./userDetailSessionList.module.scss";
 import { assertNever } from "@utils/assertNever";
 import CopyBox from "@shared/components/copyBox";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
@@ -31,6 +30,8 @@ import { formatNumber } from "@utils";
 import { NOOP } from "@utils/noop";
 import RevokeSessionModal from "@shared/components/modals/revokeSession";
 import RevokeAllSessionsModal from "@shared/components/modals/revokeAllSessions";
+
+import styles from "./Sessions.module.scss";
 
 const SessionHeader = () => {
 	const [openRevokeAllSessionModal, setOpenRevokeAllSessionModal] = useState(false);

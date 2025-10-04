@@ -28,6 +28,7 @@ import Shimmer from "../../shimmer";
 import AssignRolesDialog from "../../userroles/components/dialogs/AssignRoles";
 import DeleteUserRoleDialog from "../../userroles/components/dialogs/DeleteUserRole";
 import { useUserDetailContext } from "../context/UserDetailContext";
+
 import "./userRolesList.scss";
 
 export default function UserRolesList() {

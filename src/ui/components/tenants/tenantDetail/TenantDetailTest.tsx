@@ -29,7 +29,7 @@ import ItemContainer from "@shared/components/itemContainer";
 import Separator from "@shared/components/separator";
 import ItemLabel from "@shared/components/itemLabel";
 import Crystal from "@shared/components/crystal";
-import { LoginMethods } from "../../../../features/users/components/user-details/login-methods/loginMethods";
+import { LoginMethods } from "./LoginMethods";
 import { SecondaryFactors } from "./secondaryFactors";
 import DeleteTenantModal from "@shared/components/modals/deleteTenant";
 import CoreConfiguration from "./coreConfiguration";

@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -14,57 +14,24 @@
  */
 
 .login-methods {
-	&__content {
-		&__main {
-			width: 100%;
-			flex-basis: 60%;
-			border-radius: var(--radius-max-4);
-			border: 1px solid var(--color-neutral-8);
-			background: var(--color-sand-1);
-			&__item {
-				border-bottom: 1px solid var(--color-gray-200);
-				&__name {
-					color: var(--color-neutral-12);
-				}
-				&__description {
-					color: var(--color-neutral-11);
-				}
-			}
-		}
-		&__preview {
-			flex-basis: 40%;
-			border-radius: var(--radius-4);
-			border: 1px solid var(--color-accent-11, #3451b2);
-			background: var(--color-accent-3, #f0f4ff);
-			position: relative;
-
-			&__badge {
-				position: absolute;
-				top: 0;
-				left: 50%;
-				transform: translate(-50%);
-				border-top-left-radius: 0 !important;
-				border-top-right-radius: 0 !important;
-			}
-			&__empty {
-				width: 100%;
-				height: 100%;
-				&__text {
-					color: var(--color-accent-9);
-				}
-			}
+	&__header {
+		&__select {
+			min-width: 200px !important;
 		}
 	}
+}
 
-	&__footer {
-		&__callout {
-			width: 100%;
-			&__text {
-				font-weight: 400;
-				span {
-					font-weight: 600;
-				}
-			}
-		}
+.login-method {
+	border-radius: var(--radius-max-4);
+	border: 1px solid var(--color-neutral-8);
+	background: var(--color-sand-2);
+	&__item-label {
+		flex-shrink: 0;
+	}
+	&__phone-number-input {
+		width: fit-content !important;
+		min-width: 300px;
+		max-width: 500px;
+		margin-right: 8px;
 	}
 }

@@ -37,18 +37,19 @@ import Loader from "@shared/components/loader";
 import EmptyList from "@shared/components/empty";
 import Paper from "@shared/components/paper";
 
-import styles from "./userDetail.module.scss";
 import ItemLabel from "@shared/components/itemLabel";
 import CopyBox from "@shared/components/copyBox";
 import TabSelector from "@shared/components/tabSelector";
-import LoginMethods from "../../../../ui/components/userDetail/loginMethods/LoginMethodsTest";
 import Separator from "@shared/components/separator";
-import Sessions from "./sessions/userDetailSessionListTest";
+import Sessions from "./sessions/Sessions";
 import EditUserModal from "@shared/components/modals/editUser";
 import DeleteUserModal from "@shared/components/modals/deleteUser";
-import Roles from "./roles/UserRolesList";
-import MetaData from "./metadata/userMetaDataSection";
+import Roles from "./roles/Roles";
+import MetaData from "./metadata/MetaData";
 import DashboardError from "@shared/components/error";
+import LoginMethods from "./login-methods/LoginMethods";
+
+import styles from "./UserDetails.module.scss";
 
 const getFirstLetter = (name: string | undefined) => {
 	return `${name?.[0] || ""}`;

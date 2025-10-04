@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import UserDetailTest from "@features/users/components/user-details/userDetail";
+import UserDetails from "@features/users/components/user-details/UserDetails";
 import { useSearchParams } from "react-router-dom";
 import { UsersList } from "./components/user-list/UsersList";
 
@@ -26,5 +26,5 @@ export function UserManagement() {
 	const [searchParams] = useSearchParams();
 	const userId = searchParams.get("userid");
 
-	return userId ? <UserDetailTest userId={userId} /> : <UsersList />;
+	return userId ? <UserDetails userId={userId} /> : <UsersList />;
 }

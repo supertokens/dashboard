@@ -14,7 +14,6 @@
  */
 
 import { useState } from "react";
-import styles from "./userRolesList.module.scss";
 import { Box, Flex } from "@radix-ui/themes";
 import Loader from "@shared/components/loader";
 import { assertNever } from "@utils/assertNever";
@@ -31,6 +30,8 @@ import Paper from "@shared/components/paper";
 import Crystal from "@shared/components/crystal";
 import IconButton from "@shared/components/iconButton";
 import DeleteRoleModal from "@shared/components/modals/deleteRole";
+
+import styles from "./Roles.module.scss";
 
 const RolesHeader = () => {
 	const [openRevokeAllSessionModal, setOpenRevokeAllSessionModal] = useState(false);
