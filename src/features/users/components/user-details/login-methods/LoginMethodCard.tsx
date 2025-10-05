@@ -18,7 +18,7 @@ import { useState } from "react";
 import Paper from "@shared/components/paper";
 import Separator from "@shared/components/separator";
 
-import { LoginMethod } from "@features/users/types";
+import { LoginMethod, User } from "@features/users/types";
 import { DeleteLoginMethodModal, UnlinkLoginMethodModal, EditLoginMethodModal } from "../modals";
 
 import LoginMethodHeader from "./LoginMethodHeader";
@@ -29,13 +29,16 @@ import styles from "./LoginMethodCard.module.scss";
 interface LoginMethodCardProps {
 	readonly loginMethod: LoginMethod;
 	readonly userId: string;
-	readonly showUnlink: boolean;
+	readonly user: User;
 }
 
-export default function LoginMethodCard({ loginMethod, userId, showUnlink }: LoginMethodCardProps) {
+export default function LoginMethodCard({ loginMethod, userId, user }: LoginMethodCardProps) {
 	const [openEditModal, setOpenEditModal] = useState(false);
 	const [openDeleteModal, setOpenDeleteModal] = useState(false);
 	const [openUnlinkModal, setOpenUnlinkModal] = useState(false);
+
+	// VERIFY
+	const showUnlink = user.loginMethods.length > 1 || (user.isPrimaryUser && user.loginMethods.length === 1);
 
 	return (
 		<Paper

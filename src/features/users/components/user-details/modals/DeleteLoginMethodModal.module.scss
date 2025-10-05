@@ -1,6 +1,19 @@
 .delete-login-method-modal {
 	&__description {
-		line-height: 1.6;
-		color: var(--gray-11);
+		color: var(--color-neutral-11);
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 20px;
+
+		strong {
+			color: var(--color-error-11);
+		}
+	}
+
+	&__identifier {
+		color: var(--color-error-11);
+		font-size: 14px;
+		border-radius: 4px;
 	}
 }

@@ -120,19 +120,26 @@ export default function LoginMethods({ userId }: LoginMethodsProps) {
 							</>
 						);
 					case "SUCCESS":
+						if (!user) {
+							return <DashboardError withBackground={false} />;
+						}
 						return (
 							<>
 								{renderHeader()}
-								<Box className={styles["login-methods__list"]}>
+								<Flex
+									direction="column"
+									width="100%"
+									gap="3"
+									className={styles["login-methods__list"]}>
 									{loginMethods.map((loginMethod, index) => (
 										<LoginMethodCard
 											key={`${loginMethod.recipeUserId}-${index}`}
 											loginMethod={loginMethod}
 											userId={userId}
-											showUnlink={user !== null && user.loginMethods.length > 1}
+											user={user}
 										/>
 									))}
-								</Box>
+								</Flex>
 							</>
 						);
 					default:

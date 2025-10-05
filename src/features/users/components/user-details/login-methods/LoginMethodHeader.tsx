@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { TrashIcon } from "@radix-ui/react-icons";
+import { ExitIcon, TrashIcon } from "@radix-ui/react-icons";
 import { Flex } from "@radix-ui/themes";
 
 import Button from "@shared/components/button";
@@ -40,7 +40,7 @@ export default function LoginMethodHeader({ loginMethod, onDelete, onUnlink, sho
 			case "passwordless":
 				return "Passwordless";
 			case "thirdparty":
-				return `Third Party - ${loginMethod.thirdParty?.id || ""}`;
+				return `Third Party  ${loginMethod.thirdParty?.id ? `- ${loginMethod.thirdParty?.id}` : ""}`;
 			default:
 				return "";
 		}
@@ -54,25 +54,15 @@ export default function LoginMethodHeader({ loginMethod, onDelete, onUnlink, sho
 			py="3">
 			<Flex
 				align="center"
-				gap="2">
-				<ItemLabel
-					mr="2"
-					bold>
-					{getRecipeName()}
-				</ItemLabel>
-				<Separator
-					orientation="vertical"
-					mx="2"
-				/>
+				gap="3">
+				<ItemLabel bold>{getRecipeName()}</ItemLabel>
+				<Separator orientation="vertical" />
 				<ItemLabel
 					color="purple"
 					bold>
 					{loginMethod.tenantIds[0] === "public" ? "Public" : loginMethod.tenantIds[0]}
 				</ItemLabel>
-				<Separator
-					orientation="vertical"
-					mx="2"
-				/>
+				<Separator orientation="vertical" />
 				<ItemLabel>{formatLongDate(loginMethod.timeJoined)}</ItemLabel>
 			</Flex>
 			<Flex
@@ -82,9 +72,8 @@ export default function LoginMethodHeader({ loginMethod, onDelete, onUnlink, sho
 					<Button
 						size="2"
 						variant="soft"
-						color="orange"
 						onClick={onUnlink}>
-						Unlink
+						<ExitIcon /> Unlink
 					</Button>
 				)}
 				<IconButton

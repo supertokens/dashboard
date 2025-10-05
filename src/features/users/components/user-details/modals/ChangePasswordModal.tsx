@@ -13,8 +13,8 @@
  * under the License.
  */
 
-import { useState } from "react";
-import { Flex } from "@radix-ui/themes";
+import { useState, useEffect } from "react";
+import { Flex, Text } from "@radix-ui/themes";
 
 import Button from "@shared/components/button";
 import Form from "@shared/components/form";
@@ -24,6 +24,8 @@ import TextField from "@shared/components/text";
 import { useToast } from "@shared/components/toast";
 
 import { useLoginMethods } from "@features/users/hooks/useLoginMethods";
+import { useTenants } from "@features/tenants/hooks/useTenants";
+import { FactorIds } from "@shared/constants";
 
 import styles from "./ChangePasswordModal.module.scss";
 
@@ -32,7 +34,7 @@ interface ChangePasswordModalProps {
 	readonly handleClose: () => void;
 	readonly recipeUserId: string;
 	readonly userId: string;
-	readonly tenantId?: string;
+	readonly tenantIds: string[];
 }
 
 export default function ChangePasswordModal({
@@ -40,43 +42,75 @@ export default function ChangePasswordModal({
 	handleClose,
 	recipeUserId,
 	userId,
-	tenantId,
+	tenantIds,
 }: ChangePasswordModalProps) {
 	const { changePassword, isChangingPassword } = useLoginMethods(userId);
 	const { showSuccessToast, showErrorToast } = useToast();
+	const { tenants } = useTenants();
 
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
-	const [error, setError] = useState("");
+	const [newPasswordError, setNewPasswordError] = useState("");
+	const [confirmPasswordError, setConfirmPasswordError] = useState("");
+	const [noValidTenantError, setNoValidTenantError] = useState(false);
+
+	const clearForm = () => {
+		setNewPassword("");
+		setConfirmPassword("");
+		setNewPasswordError("");
+		setConfirmPasswordError("");
+		setNoValidTenantError(false);
+	};
+
+	useEffect(() => {
+		if (open) {
+			clearForm();
+		}
+	}, [open]);
 
 	const handleChangePassword = async () => {
-		setError("");
+		setNewPasswordError("");
+		setConfirmPasswordError("");
+		setNoValidTenantError(false);
 
-		if (!newPassword || !confirmPassword) {
-			setError("Please fill in all fields");
+		let hasError = false;
+
+		if (!newPassword) {
+			setNewPasswordError("Password is required");
+			hasError = true;
+		}
+
+		if (!confirmPassword) {
+			setConfirmPasswordError("Please confirm your password");
+			hasError = true;
+		} else if (newPassword && newPassword !== confirmPassword) {
+			setConfirmPasswordError("Passwords do not match");
+			hasError = true;
+		}
+
+		if (hasError) {
 			return;
 		}
 
-		if (newPassword !== confirmPassword) {
-			setError("Passwords do not match");
+		// Check if user belongs to a tenant with emailpassword enabled
+		const userTenants = tenants?.filter((tenant) => tenantIds.includes(tenant.tenantId)) || [];
+		const matchingTenants = userTenants.filter((tenant) => tenant.firstFactors.includes(FactorIds.EMAILPASSWORD));
+
+		if (matchingTenants.length === 0) {
+			setNoValidTenantError(true);
 			return;
 		}
 
-		if (newPassword.length < 8) {
-			setError("Password must be at least 8 characters long");
-			return;
-		}
+		const tenantIdToUse = matchingTenants[0].tenantId;
 
 		try {
-			const response = await changePassword({ recipeUserId, newPassword, tenantId });
+			const response = await changePassword({ recipeUserId, newPassword, tenantId: tenantIdToUse });
 
 			if (response.status === "OK") {
 				showSuccessToast("Password updated successfully");
 				handleClose();
-				setNewPassword("");
-				setConfirmPassword("");
 			} else if (response.status === "INVALID_PASSWORD_ERROR") {
-				setError(response.error);
+				setNewPasswordError(response.error);
 			}
 		} catch (err) {
 			showErrorToast("Failed to update password");
@@ -91,29 +125,47 @@ export default function ChangePasswordModal({
 			size="sm">
 			<Form className={styles["change-password-modal"]}>
 				<Form.Paper>
-					<Form.Item mb="2">
-						<ItemLabel required>New Password:</ItemLabel>
+					{noValidTenantError && (
+						<Form.Item mb="3">
+							<Text
+								size="2"
+								className={styles["change-password-modal__error"]}>
+								User does not belong to a tenant that has the emailpassword recipe enabled.
+							</Text>
+						</Form.Item>
+					)}
+					<Form.Item mb="3">
+						<ItemLabel
+							mb="1"
+							required>
+							New Password:
+						</ItemLabel>
 						<TextField
 							type="password"
 							value={newPassword}
-							onChange={(e) => setNewPassword(e.target.value)}
-							error={error && !newPassword ? error : undefined}
+							onChange={(e) => {
+								setNewPassword(e.target.value);
+								setNewPasswordError("");
+							}}
+							error={newPasswordError || undefined}
 						/>
 					</Form.Item>
 					<Form.Item>
-						<ItemLabel required>Confirm New Password:</ItemLabel>
+						<ItemLabel
+							mb="1"
+							required>
+							Confirm New Password:
+						</ItemLabel>
 						<TextField
 							type="password"
 							value={confirmPassword}
-							onChange={(e) => setConfirmPassword(e.target.value)}
-							error={error && !confirmPassword ? error : undefined}
+							onChange={(e) => {
+								setConfirmPassword(e.target.value);
+								setConfirmPasswordError("");
+							}}
+							error={confirmPasswordError || undefined}
 						/>
 					</Form.Item>
-					{error && (
-						<Form.Item mt="2">
-							<div className={styles["change-password-modal__error"]}>{error}</div>
-						</Form.Item>
-					)}
 				</Form.Paper>
 				<Flex
 					justify="end"
