@@ -13,23 +13,21 @@
  * under the License.
  */
 
-import { useState } from "react";
+import { CopyIcon } from "@radix-ui/react-icons";
+import { Box, Flex } from "@radix-ui/themes";
 
-import { CheckCircledIcon, CopyIcon, CrossCircledIcon, EnvelopeClosedIcon } from "@radix-ui/react-icons";
-import { Box, Flex, IconButton, Tooltip } from "@radix-ui/themes";
-
-import Button from "@shared/components/button";
-import CopyBox from "@shared/components/copyBox";
 import ItemLabel from "@shared/components/itemLabel";
 import ItemValue from "@shared/components/itemValue";
 import Separator from "@shared/components/separator";
 import { useToast } from "@shared/components/toast";
+import { copyToClipboard } from "@shared/utils/copyToClipboard";
 
-import { useLoginMethods } from "@features/users/hooks/useLoginMethods";
 import { LoginMethod } from "@features/users/types";
 
+import EmailField from "./EmailField";
+import EmailVerificationActions from "./EmailVerificationActions";
+import { useEmailVerification } from "./useEmailVerification";
 import styles from "./ThirdPartyLoginMethodContent.module.scss";
-import { copyToClipboard } from "@shared/utils/copyToClipboard";
 
 interface ThirdPartyLoginMethodContentProps {
 	readonly loginMethod: LoginMethod;
@@ -38,61 +36,12 @@ interface ThirdPartyLoginMethodContentProps {
 
 export default function ThirdPartyLoginMethodContent({ loginMethod, userId }: ThirdPartyLoginMethodContentProps) {
 	const { showSuccessToast, showErrorToast } = useToast();
-	const { sendVerificationEmail, toggleEmailVerification, getUserEmailVerificationStatus } = useLoginMethods(userId);
-
-	const [isSendingEmail, setIsSendingEmail] = useState(false);
-
-	const handleSendVerificationEmail = async () => {
-		try {
-			setIsSendingEmail(true);
-			const status = await getUserEmailVerificationStatus(loginMethod.recipeUserId);
-
-			if (status.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showErrorToast("Email verification feature is not enabled");
-				return;
-			}
-
-			const success = await sendVerificationEmail({
-				recipeUserId: loginMethod.recipeUserId,
-				tenantId: loginMethod.tenantIds[0],
-			});
-
-			if (success) {
-				showSuccessToast("Verification email sent successfully");
-			} else {
-				showErrorToast("Failed to send verification email");
-			}
-		} catch (err) {
-			showErrorToast("Failed to send verification email");
-		} finally {
-			setIsSendingEmail(false);
-		}
-	};
-
-	const handleToggleVerification = async () => {
-		try {
-			const status = await getUserEmailVerificationStatus(loginMethod.recipeUserId);
-
-			if (status.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showErrorToast("Email verification feature is not enabled");
-				return;
-			}
-
-			const success = await toggleEmailVerification({
-				recipeUserId: loginMethod.recipeUserId,
-				isVerified: !loginMethod.verified,
-				tenantId: loginMethod.tenantIds[0],
-			});
-
-			if (success) {
-				showSuccessToast(`Email ${!loginMethod.verified ? "verified" : "unverified"} successfully`);
-			} else {
-				showErrorToast("Failed to update verification status");
-			}
-		} catch (err) {
-			showErrorToast("Failed to update verification status");
-		}
-	};
+	const { isSendingEmail, handleSendVerificationEmail, handleToggleVerification } = useEmailVerification({
+		userId,
+		recipeUserId: loginMethod.recipeUserId,
+		tenantId: loginMethod.tenantIds[0],
+		isVerified: loginMethod.verified,
+	});
 
 	return (
 		<Box
@@ -101,31 +50,19 @@ export default function ThirdPartyLoginMethodContent({ loginMethod, userId }: Th
 			{/* Email */}
 			{loginMethod.email && (
 				<>
-					<Flex
-						align="center"
-						gap="2"
-						mb="4">
-						<ItemLabel className={styles["third-party-login-method-content__item-label"]}>Email:</ItemLabel>
-						<ItemValue>{loginMethod.email}</ItemValue>
-						{loginMethod.verified && (
-							<Tooltip content="Verified email">
-								<IconButton
-									size="1"
-									variant="soft"
-									color="green"
-									ml="2">
-									<CheckCircledIcon />
-								</IconButton>
-							</Tooltip>
-						)}
-					</Flex>
-
-					<Separator
-						my="4"
-						fullWidth
+					<EmailField
+						email={loginMethod.email}
+						isVerified={loginMethod.verified}
+						className={styles["third-party-login-method-content__item-label"]}
 					/>
 				</>
 			)}
+			{loginMethod.email && loginMethod.thirdParty?.userId ? (
+				<Separator
+					my="4"
+					fullWidth
+				/>
+			) : null}
 
 			{/* Provider Info */}
 			{loginMethod.thirdParty?.userId && (
@@ -156,28 +93,12 @@ export default function ThirdPartyLoginMethodContent({ loginMethod, userId }: Th
 						my="4"
 						fullWidth
 					/>
-					<Flex
-						gap="2"
-						wrap="wrap">
-						<Button
-							size="2"
-							variant="outline"
-							color="gray"
-							onClick={handleSendVerificationEmail}
-							loading={isSendingEmail}
-							disabled={loginMethod.verified}>
-							<EnvelopeClosedIcon />
-							Send Verification Mail
-						</Button>
-						<Button
-							size="2"
-							variant="outline"
-							color={loginMethod.verified ? "gray" : "green"}
-							onClick={handleToggleVerification}>
-							{loginMethod.verified ? <CrossCircledIcon /> : <CheckCircledIcon />}
-							{loginMethod.verified ? "Set Unverified" : "Set Verified"}
-						</Button>
-					</Flex>
+					<EmailVerificationActions
+						isVerified={loginMethod.verified}
+						isSendingEmail={isSendingEmail}
+						onSendVerificationEmail={handleSendVerificationEmail}
+						onToggleVerification={handleToggleVerification}
+					/>
 				</>
 			)}
 		</Box>

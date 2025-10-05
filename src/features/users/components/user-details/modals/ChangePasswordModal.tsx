@@ -173,7 +173,8 @@ export default function ChangePasswordModal({
 					<Button
 						size="3"
 						onClick={handleChangePassword}
-						loading={isChangingPassword}>
+						loading={isChangingPassword}
+						disabled={!newPassword || !confirmPassword}>
 						Update Password
 					</Button>
 				</Flex>

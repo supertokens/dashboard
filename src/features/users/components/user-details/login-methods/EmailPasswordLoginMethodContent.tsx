@@ -15,19 +15,17 @@
 
 import { useState } from "react";
 
-import { CheckCircledIcon, CrossCircledIcon, EnvelopeClosedIcon, Pencil1Icon } from "@radix-ui/react-icons";
-import { Box, Flex, IconButton, Tooltip } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 
 import Button from "@shared/components/button";
-import ItemLabel from "@shared/components/itemLabel";
-import ItemValue from "@shared/components/itemValue";
 import Separator from "@shared/components/separator";
-import { useToast } from "@shared/components/toast";
 
-import { useLoginMethods } from "@features/users/hooks/useLoginMethods";
 import { LoginMethod } from "@features/users/types";
 import { ChangePasswordModal } from "../modals";
 
+import EmailField from "./EmailField";
+import EmailVerificationActions from "./EmailVerificationActions";
+import { useEmailVerification } from "./useEmailVerification";
 import styles from "./EmailPasswordLoginMethodContent.module.scss";
 
 interface EmailPasswordLoginMethodContentProps {
@@ -41,91 +39,26 @@ export default function EmailPasswordLoginMethodContent({
 	userId,
 	onEditClick,
 }: EmailPasswordLoginMethodContentProps) {
-	const { showSuccessToast, showErrorToast } = useToast();
-	const { sendVerificationEmail, toggleEmailVerification, getUserEmailVerificationStatus } = useLoginMethods(userId);
-
 	const [openChangePasswordModal, setOpenChangePasswordModal] = useState(false);
-	const [isSendingEmail, setIsSendingEmail] = useState(false);
-
-	const handleSendVerificationEmail = async () => {
-		try {
-			setIsSendingEmail(true);
-			const status = await getUserEmailVerificationStatus(loginMethod.recipeUserId);
-
-			if (status.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showErrorToast("Email verification feature is not enabled");
-				return;
-			}
-
-			const success = await sendVerificationEmail({
-				recipeUserId: loginMethod.recipeUserId,
-				tenantId: loginMethod.tenantIds[0],
-			});
-
-			if (success) {
-				showSuccessToast("Verification email sent successfully");
-			} else {
-				showErrorToast("Failed to send verification email");
-			}
-		} catch (err) {
-			showErrorToast("Failed to send verification email");
-		} finally {
-			setIsSendingEmail(false);
-		}
-	};
-
-	const handleToggleVerification = async () => {
-		try {
-			const status = await getUserEmailVerificationStatus(loginMethod.recipeUserId);
-
-			if (status.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showErrorToast("Email verification feature is not enabled");
-				return;
-			}
-
-			const success = await toggleEmailVerification({
-				recipeUserId: loginMethod.recipeUserId,
-				isVerified: !loginMethod.verified,
-				tenantId: loginMethod.tenantIds[0],
-			});
-
-			if (success) {
-				showSuccessToast(`Email ${!loginMethod.verified ? "verified" : "unverified"} successfully`);
-			} else {
-				showErrorToast("Failed to update verification status");
-			}
-		} catch (err) {
-			showErrorToast("Failed to update verification status");
-		}
-	};
+	const { isSendingEmail, handleSendVerificationEmail, handleToggleVerification } = useEmailVerification({
+		userId,
+		recipeUserId: loginMethod.recipeUserId,
+		tenantId: loginMethod.tenantIds[0],
+		isVerified: loginMethod.verified,
+	});
 
 	return (
 		<Box
 			p="4"
 			className={styles["email-password-login-method-content"]}>
 			{/* Email */}
-			<Flex
-				align="center"
-				gap="2"
-				mb="4">
-				<ItemLabel className={styles["email-password-login-method-content__item-label"]}>Email:</ItemLabel>
-				<ItemValue>{loginMethod.email}</ItemValue>
-				<Pencil1Icon
-					onClick={onEditClick}
-					style={{ cursor: "pointer" }}
-				/>
-				{loginMethod.verified && (
-					<Tooltip content="Verified email">
-						<IconButton
-							size="1"
-							variant="soft"
-							color="green"
-							ml="2">
-							<CheckCircledIcon />
-						</IconButton>
-					</Tooltip>
-				)}
-			</Flex>
+			<EmailField
+				email={loginMethod.email || ""}
+				isVerified={loginMethod.verified}
+				showEditIcon
+				onEditClick={onEditClick}
+				className={styles["email-password-login-method-content__item-label"]}
+			/>
 
 			<Separator
 				my="4"
@@ -142,24 +75,12 @@ export default function EmailPasswordLoginMethodContent({
 					onClick={() => setOpenChangePasswordModal(true)}>
 					Change Password
 				</Button>
-				<Button
-					size="2"
-					variant="outline"
-					color="gray"
-					onClick={handleSendVerificationEmail}
-					loading={isSendingEmail}
-					disabled={loginMethod.verified}>
-					<EnvelopeClosedIcon />
-					Send Verification Mail
-				</Button>
-				<Button
-					size="2"
-					variant="outline"
-					color={loginMethod.verified ? "gray" : "green"}
-					onClick={handleToggleVerification}>
-					{loginMethod.verified ? <CrossCircledIcon /> : <CheckCircledIcon />}
-					{loginMethod.verified ? "Set Unverified" : "Set Verified"}
-				</Button>
+				<EmailVerificationActions
+					isVerified={loginMethod.verified}
+					isSendingEmail={isSendingEmail}
+					onSendVerificationEmail={handleSendVerificationEmail}
+					onToggleVerification={handleToggleVerification}
+				/>
 			</Flex>
 
 			<ChangePasswordModal

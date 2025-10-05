@@ -84,30 +84,21 @@ export default function EditLoginMethodModal({ open, handleClose, loginMethod, u
 		}
 	};
 
-	const getRecipeName = () => {
-		switch (loginMethod.recipeId) {
-			case "emailpassword":
-				return "Email Password";
-			case "passwordless":
-				return "Passwordless";
-			case "thirdparty":
-				return `Third Party - ${loginMethod.thirdParty?.id || ""}`;
-			default:
-				return "";
-		}
-	};
-
 	return (
 		<Modal
-			title={`Edit ${getRecipeName()} Login Method`}
+			title={"Edit Login Method"}
 			open={open}
 			handleClose={handleClose}
-			size="sm">
+			size="md">
 			<Form className={styles["edit-login-method-modal"]}>
 				<Form.Paper>
 					{loginMethod.email && loginMethod.recipeId !== "thirdparty" && (
 						<Form.Item mb="3">
-							<ItemLabel required>Email:</ItemLabel>
+							<ItemLabel
+								mb="2"
+								required>
+								Email:
+							</ItemLabel>
 							<TextField
 								type="email"
 								value={editedEmail}
@@ -120,7 +111,7 @@ export default function EditLoginMethodModal({ open, handleClose, loginMethod, u
 
 					{loginMethod.recipeId === "passwordless" && (
 						<Form.Item>
-							<ItemLabel>Phone Number:</ItemLabel>
+							<ItemLabel mb="2">Phone Number:</ItemLabel>
 							<PhoneNumberInput
 								value={editedPhone}
 								onChange={setEditedPhone}
@@ -138,16 +129,7 @@ export default function EditLoginMethodModal({ open, handleClose, loginMethod, u
 				</Form.Paper>
 				<Flex
 					justify="end"
-					mt="4"
-					gap="3">
-					<Button
-						size="3"
-						variant="outline"
-						color="gray"
-						onClick={handleClose}
-						disabled={isUpdatingLoginMethod}>
-						Cancel
-					</Button>
+					mt="4">
 					<Button
 						size="3"
 						onClick={handleSave}

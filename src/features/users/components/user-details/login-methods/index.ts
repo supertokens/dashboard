@@ -20,3 +20,6 @@ export { default as LoginMethodHeader } from "./LoginMethodHeader";
 export { default as EmailPasswordLoginMethodContent } from "./EmailPasswordLoginMethodContent";
 export { default as PasswordlessLoginMethodContent } from "./PasswordlessLoginMethodContent";
 export { default as ThirdPartyLoginMethodContent } from "./ThirdPartyLoginMethodContent";
+export { default as EmailField } from "./EmailField";
+export { default as EmailVerificationActions } from "./EmailVerificationActions";
+export { useEmailVerification } from "./useEmailVerification";
