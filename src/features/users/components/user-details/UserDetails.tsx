@@ -113,7 +113,7 @@ export function UserDetailContent({ user }: UserDetailContentProps) {
 	const [openEditUserModal, setOpenEditUserModal] = useState(false);
 	const [openDeleteUserModal, setOpenDeleteUserModal] = useState(false);
 
-	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("login-methods");
+	const [selectedTab, setSelectedTab] = useState<UserDetailTab>("metadata");
 
 	const handleTabChange = (tab: UserDetailTab) => {
 		setSelectedTab(tab);

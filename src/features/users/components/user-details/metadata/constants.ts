@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,20 +13,4 @@
  * under the License.
  */
 
-.metadata__header {
-	background: var(--color-sand-2);
-}
-
-.metadata__content {
-	&__textarea {
-		min-height: 100px !important;
-		width: 100%;
-		border-radius: var(--radius-max-4) !important;
-		border: 1px solid var(--color-sand-4) !important;
-
-		&--active {
-			border: 1px solid var(--color-accent-alpha-8) !important;
-			background: var(--color-accent-12) !important;
-		}
-	}
-}
+export const METADATA_NOT_ENABLED_TEXT = "Feature Not Enabled";

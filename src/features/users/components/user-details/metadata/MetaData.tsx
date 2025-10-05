@@ -14,98 +14,19 @@
  */
 
 import { useState, useEffect } from "react";
-import { Box, Flex, TextArea } from "@radix-ui/themes";
-import { Pencil1Icon } from "@radix-ui/react-icons";
+import { Flex } from "@radix-ui/themes";
+import HighlightJS from "highlight.js";
+import TSHighlight from "highlight.js/lib/languages/typescript";
+import "highlight.js/scss/an-old-hope.scss";
 
-import Button from "@shared/components/button";
 import DashboardError from "@shared/components/error";
-import ItemLabel from "@shared/components/itemLabel";
 import Loader from "@shared/components/loader";
-import Separator from "@shared/components/separator";
 import { useToast } from "@shared/components/toast";
 
 import { useMetadata } from "@features/users/hooks/useMetadata";
 
-import styles from "./MetaData.module.scss";
-
-interface MetaDataHeaderProps {
-	readonly isEditing: boolean;
-	readonly setIsEditing: (isEditing: boolean) => void;
-	readonly onSave: () => void;
-	readonly isLoading: boolean;
-}
-
-const MetaDataHeader = ({ isEditing, setIsEditing, onSave, isLoading }: MetaDataHeaderProps) => {
-	return (
-		<Box width="100%">
-			<Flex
-				className={styles["metadata__header"]}
-				justify="between"
-				align="center"
-				px="4"
-				py="3">
-				<Flex
-					align="center"
-					justify="between"
-					width="100%">
-					<ItemLabel mr="2">User metadata details </ItemLabel>
-					{!isEditing ? (
-						<Button
-							size="2"
-							onClick={() => setIsEditing(true)}>
-							<Pencil1Icon /> Edit
-						</Button>
-					) : (
-						<Flex
-							align="center"
-							gap="2">
-							<Button
-								variant="outline"
-								color="gray"
-								size="2"
-								onClick={() => setIsEditing(false)}
-								disabled={isLoading}>
-								Cancel
-							</Button>
-							<Button
-								size="2"
-								onClick={onSave}
-								loading={isLoading}>
-								Save
-							</Button>
-						</Flex>
-					)}
-				</Flex>
-			</Flex>
-			<Separator fullWidth />
-		</Box>
-	);
-};
-
-interface MetaDataContentProps {
-	readonly isEditing: boolean;
-	readonly value: string;
-	readonly onChange: (value: string) => void;
-}
-
-const MetaDataContent = ({ isEditing, value, onChange }: MetaDataContentProps) => {
-	return (
-		<Flex
-			p="4"
-			className={styles["metadata__content"]}>
-			<TextArea
-				value={value}
-				onChange={(e) => onChange(e.target.value)}
-				readOnly={!isEditing}
-				className={`${styles["metadata__content__textarea"]} ${
-					!isEditing ? styles["metadata__content__textarea--active"] : ""
-				}`}
-				rows={15}
-				placeholder="Enter user metadata as JSON..."
-			/>
-		</Flex>
-	);
-};
+import MetaDataHeader from "./MetaDataHeader";
+import MetaDataContent from "./MetaDataContent";
 
 interface MetaDataProps {
 	readonly userId: string;
@@ -117,31 +38,66 @@ export default function MetaData({ userId }: MetaDataProps) {
 
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 	const [editedMetadata, setEditedMetadata] = useState<string>("");
+	const [validationError, setValidationError] = useState<string | undefined>(undefined);
 
-	// Initialize edited metadata when metadata loads
 	useEffect(() => {
-		if (metadata && metadata !== "Feature Not Enabled") {
-			setEditedMetadata(metadata);
-		} else if (metadata === "Feature Not Enabled") {
+		HighlightJS.registerLanguage("typescript", TSHighlight);
+		HighlightJS.initHighlightingOnLoad();
+	}, []);
+
+	useEffect(() => {
+		if (!metadata) {
 			setEditedMetadata("");
-		} else {
-			setEditedMetadata("{}");
+			return;
+		}
+
+		try {
+			const formatted = JSON.stringify(JSON.parse(metadata), null, 4);
+			setEditedMetadata(formatted);
+		} catch {
+			setEditedMetadata(metadata);
 		}
 	}, [metadata]);
 
+	const handleEdit = () => {
+		setIsEditing(true);
+	};
+
+	const handleCancel = () => {
+		setIsEditing(false);
+		setValidationError(undefined);
+
+		if (!metadata) {
+			setEditedMetadata("");
+			return;
+		}
+
+		try {
+			const formatted = JSON.stringify(JSON.parse(metadata), null, 4);
+			setEditedMetadata(formatted);
+		} catch {
+			setEditedMetadata(metadata);
+		}
+	};
+
 	const handleSave = async () => {
 		try {
-			// Validate JSON
-			JSON.parse(editedMetadata || "{}");
+			try {
+				JSON.parse(editedMetadata || "{}");
+			} catch {
+				setValidationError("User meta data must be a valid JSON object");
+				return;
+			}
 
+			setValidationError(undefined);
 			await updateMetadata({ userId, metadata: editedMetadata || "{}" });
 			showSuccessToast("Metadata updated successfully");
 			setIsEditing(false);
 		} catch (error) {
 			if (error instanceof SyntaxError) {
-				showErrorToast("Invalid JSON format. Please check your metadata.");
+				setValidationError("User meta data must be a valid JSON object");
 			} else {
-				showErrorToast("Failed to update metadata");
+				showErrorToast("Could not update user meta data");
 			}
 		}
 	};
@@ -166,7 +122,8 @@ export default function MetaData({ userId }: MetaDataProps) {
 			direction="column">
 			<MetaDataHeader
 				isEditing={isEditing}
-				setIsEditing={setIsEditing}
+				onEdit={handleEdit}
+				onCancel={handleCancel}
 				onSave={handleSave}
 				isLoading={isUpdatingMetadata}
 			/>
@@ -174,6 +131,8 @@ export default function MetaData({ userId }: MetaDataProps) {
 				isEditing={isEditing}
 				value={editedMetadata}
 				onChange={setEditedMetadata}
+				error={validationError}
+				metadata={metadata}
 			/>
 		</Flex>
 	);

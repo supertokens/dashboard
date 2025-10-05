@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,12 +13,7 @@
  * under the License.
  */
 
-.revoke-session-modal {
-	&__text {
-		color: var(--color-neutral-11);
-		font-size: 14px;
-		font-style: normal;
-		font-weight: 400;
-		line-height: 20px;
-	}
-}
+export { default } from "./MetaData";
+export { default as MetaDataHeader } from "./MetaDataHeader";
+export { default as MetaDataContent } from "./MetaDataContent";
+export * from "./constants";

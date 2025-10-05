@@ -18,7 +18,6 @@ import ItemContainer from "@shared/components/itemContainer";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { useState } from "react";
-import DeleteUserModal from "@shared/components/modals/deleteUser";
 import TabSelector from "@shared/components/tabSelector";
 import { assertNever } from "@utils/assertNever";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +27,7 @@ import DashboardError from "@shared/components/error";
 import Loader from "@shared/components/loader";
 import Permissions from "./permissions";
 import ManageAccess from "./manageAccess";
+import DeleteRoleModal from "@shared/components/modals/deleteRole";
 
 type RoleDetailTab = "permissions" | "manage-access";
 const roleDetailTabs: { name: string; value: RoleDetailTab }[] = [
@@ -71,7 +71,7 @@ const RoleDetailContent = () => {
 						<TrashIcon />
 						Delete Role
 					</Button>
-					<DeleteUserModal
+					<DeleteRoleModal
 						open={openDeleteUserModal}
 						handleClose={() => {
 							setOpenDeleteUserModal(false);

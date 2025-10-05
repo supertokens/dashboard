@@ -30,7 +30,23 @@ export const useMetadata = (userId: string) => {
 
 	const metadataQuery = useQuery({
 		queryKey: queryKeys.metadata(userId),
-		queryFn: () => getUserMetaData(userId),
+		queryFn: async () => {
+			const data = await getUserMetaData(userId);
+
+			if (data === "FEATURE_NOT_ENABLED_ERROR") {
+				return "Feature Not Enabled";
+			}
+
+			if (data === undefined) {
+				return undefined;
+			}
+
+			if (typeof data === "string") {
+				return data;
+			}
+
+			return JSON.stringify(data);
+		},
 		staleTime: STALE_TIME,
 		enabled: !!userId,
 		retry: false,
