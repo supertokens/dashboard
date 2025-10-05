@@ -13,8 +13,7 @@
  * under the License.
  */
 
-// Main Sessions container styles
-// Individual component styles are in their respective module files:
-// - SessionHeader.module.scss
-// - SessionList.module.scss
-// - SessionListFooter.module.scss
+export { default } from "./Sessions";
+export { default as SessionHeader } from "./SessionHeader";
+export { default as SessionList } from "./SessionList";
+export { default as SessionListFooter } from "./SessionListFooter";

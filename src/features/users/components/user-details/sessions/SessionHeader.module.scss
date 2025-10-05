@@ -13,8 +13,6 @@
  * under the License.
  */
 
-// Main Sessions container styles
-// Individual component styles are in their respective module files:
-// - SessionHeader.module.scss
-// - SessionList.module.scss
-// - SessionListFooter.module.scss
+.session-header {
+	background: var(--color-sand-2);
+}

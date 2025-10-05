@@ -22,6 +22,8 @@ import { useToast } from "@shared/components/toast";
 
 import { useSessions } from "@features/users/hooks/useSessions";
 
+import Form from "@shared/components/form";
+
 import styles from "./RevokeSessionModal.module.scss";
 
 interface RevokeSessionModalProps {
@@ -54,36 +56,27 @@ export default function RevokeSessionModal({ open, handleClose, sessionHandle, u
 
 	return (
 		<Modal
-			open={open}
-			handleClose={handleClose}
 			title="Revoke Session"
-			size="sm">
-			<div className={styles["revoke-session-modal"]}>
-				<Text className={styles["revoke-session-modal__description"]}>
-					Are you sure you want to revoke this session? The user will be logged out immediately.
+			open={open}
+			handleClose={handleClose}>
+			<Form.Paper
+				className={styles["revoke-session-modal__paper"]}
+				gap="3">
+				<Text className={styles["revoke-session-modal__text"]}>
+					Are you certain you want to revoke the selected session? This action is irreversible.
 				</Text>
-
-				<Flex
-					justify="end"
-					gap="3"
-					mt="5">
-					<Button
-						size="3"
-						variant="outline"
-						color="gray"
-						onClick={handleClose}
-						disabled={isRevoking || isDeletingSessions}>
-						Cancel
-					</Button>
-					<Button
-						size="3"
-						color="red"
-						onClick={handleRevoke}
-						loading={isRevoking || isDeletingSessions}>
-						Revoke Session
-					</Button>
-				</Flex>
-			</div>
+			</Form.Paper>
+			<Flex
+				justify="end"
+				mt="4">
+				<Button
+					size="3"
+					color="red"
+					onClick={handleRevoke}
+					loading={isRevoking || isDeletingSessions}>
+					Revoke
+				</Button>
+			</Flex>
 		</Modal>
 	);
 }

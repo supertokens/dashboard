@@ -1,8 +1,9 @@
 .revoke-all-sessions-modal {
 	&__description {
-		color: var(--gray-11);
-		font-size: var(--font-size-3);
-		line-height: var(--line-height-3);
-		margin-bottom: var(--space-4);
+		color: var(--color-neutral-11);
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 20px;
 	}
 }

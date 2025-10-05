@@ -23,6 +23,7 @@ import { useToast } from "@shared/components/toast";
 import { useSessions } from "@features/users/hooks/useSessions";
 
 import styles from "./RevokeAllSessionsModal.module.scss";
+import Form from "@shared/components/form";
 
 interface RevokeAllSessionsModalProps {
 	readonly open: boolean;
@@ -37,7 +38,7 @@ export default function RevokeAllSessionsModal({ open, handleClose, userId }: Re
 	const [isRevoking, setIsRevoking] = useState(false);
 
 	const handleRevokeAll = async () => {
-		if (sessions.length === 0) return;
+		if (!sessions || sessions.length === 0) return;
 
 		try {
 			setIsRevoking(true);
@@ -54,37 +55,27 @@ export default function RevokeAllSessionsModal({ open, handleClose, userId }: Re
 
 	return (
 		<Modal
-			open={open}
-			handleClose={handleClose}
 			title="Revoke All Sessions"
-			size="sm">
-			<div className={styles["revoke-all-sessions-modal"]}>
+			open={open}
+			handleClose={handleClose}>
+			<Form.Paper
+				className={styles["revoke-all-sessions-modal__paper"]}
+				gap="3">
 				<Text className={styles["revoke-all-sessions-modal__description"]}>
-					Are you sure you want to revoke all {sessions.length} active session
-					{sessions.length === 1 ? "" : "s"}? The user will be logged out of all devices immediately.
+					Are you sure you want to revoke all sessions for this user?. This action is irreversible.
 				</Text>
-
-				<Flex
-					justify="end"
-					gap="3"
-					mt="5">
-					<Button
-						size="3"
-						variant="outline"
-						color="gray"
-						onClick={handleClose}
-						disabled={isRevoking || isDeletingSessions}>
-						Cancel
-					</Button>
-					<Button
-						size="3"
-						color="red"
-						onClick={handleRevokeAll}
-						loading={isRevoking || isDeletingSessions}>
-						Revoke All Sessions
-					</Button>
-				</Flex>
-			</div>
+			</Form.Paper>
+			<Flex
+				justify="end"
+				mt="4">
+				<Button
+					size="3"
+					color="red"
+					onClick={handleRevokeAll}
+					loading={isRevoking || isDeletingSessions}>
+					Revoke
+				</Button>
+			</Flex>
 		</Modal>
 	);
 }
