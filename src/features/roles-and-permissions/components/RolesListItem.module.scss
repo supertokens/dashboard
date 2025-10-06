@@ -13,35 +13,38 @@
  * under the License.
  */
 
-import { useNavigate } from "react-router-dom";
-import { ROUTES } from "./routes";
+.item {
+	padding: 24px 20px;
 
-export const useNavigationHelpers = () => {
-	const navigate = useNavigate();
+	&__role {
+		width: 40%;
+		color: var(--color-neutral-12);
+	}
 
-	return {
-		goToUserDetail: (userId: string) => {
-			navigate(`${ROUTES.USERS}?userid=${userId}`, { replace: true });
-		},
+	&__permissions {
+		width: 55%;
+		overflow-x: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
 
-		goToTenantDetail: (tenantId: string) => {
-			navigate(`${ROUTES.TENANTS}?tenantId=${tenantId}`);
-		},
+		&__badge {
+			padding: 6px 16px !important;
+			font-weight: 600 !important;
+			font-size: 14px !important;
+		}
+	}
 
-		goToUsersList: () => {
-			navigate(ROUTES.USERS);
-		},
+	&:not(:last-child) {
+		border-bottom: 1px solid var(--color-neutral-6);
+	}
 
-		goToTenantsList: () => {
-			navigate(ROUTES.TENANTS);
-		},
+	&:last-child {
+		border-bottom-right-radius: 12px;
+		border-bottom-left-radius: 12px;
+	}
 
-		goToRoles: () => {
-			navigate(ROUTES.ROLES);
-		},
-
-		goToRoleDetails: (roleId: string) => {
-			navigate(`${ROUTES.ROLES}?roleid=${roleId}`);
-		},
-	};
-};
+	&:hover {
+		background-color: var(--color-accent-2);
+		cursor: pointer;
+	}
+}

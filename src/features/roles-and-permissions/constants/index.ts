@@ -13,35 +13,16 @@
  * under the License.
  */
 
-import { useNavigate } from "react-router-dom";
-import { ROUTES } from "./routes";
+export const ROLES_PAGINATION_LIMIT = 10;
 
-export const useNavigationHelpers = () => {
-	const navigate = useNavigate();
+export const QUERY_KEYS = {
+	ROLES: "roles",
+	ROLE_DETAILS: "role-details",
+	ROLE_PERMISSIONS: "role-permissions",
+	ROLE_USERS: "role-users",
+} as const;
 
-	return {
-		goToUserDetail: (userId: string) => {
-			navigate(`${ROUTES.USERS}?userid=${userId}`, { replace: true });
-		},
-
-		goToTenantDetail: (tenantId: string) => {
-			navigate(`${ROUTES.TENANTS}?tenantId=${tenantId}`);
-		},
-
-		goToUsersList: () => {
-			navigate(ROUTES.USERS);
-		},
-
-		goToTenantsList: () => {
-			navigate(ROUTES.TENANTS);
-		},
-
-		goToRoles: () => {
-			navigate(ROUTES.ROLES);
-		},
-
-		goToRoleDetails: (roleId: string) => {
-			navigate(`${ROUTES.ROLES}?roleid=${roleId}`);
-		},
-	};
-};
+export const STALE_TIME = {
+	ROLES: 60 * 1000, // 1 minute
+	ROLE_DETAILS: 30 * 1000, // 30 seconds
+} as const;

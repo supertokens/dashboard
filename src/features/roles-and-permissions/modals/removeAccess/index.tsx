@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,13 +13,22 @@
  * under the License.
  */
 
+import { Flex, Text } from "@radix-ui/themes";
+
 import Form from "@shared/components/form";
 import { Modal } from "@shared/components/modal";
-import { Text } from "@radix-ui/themes";
+import Button from "@shared/components/button";
 
-import "./index.scss";
+import "./index.module.scss";
 
-export default function RemoveAccessModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
+interface RemoveAccessModalProps {
+	open: boolean;
+	handleClose: () => void;
+	onConfirmRemove: () => Promise<void>;
+	isRemoving: boolean;
+}
+
+export default function RemoveAccessModal({ open, handleClose, onConfirmRemove, isRemoving }: RemoveAccessModalProps) {
 	return (
 		<Modal
 			title="Remove Access"
@@ -29,10 +38,29 @@ export default function RemoveAccessModal({ open, handleClose }: { open: boolean
 				className="remove-access-modal__paper"
 				gap="3">
 				<Text className="remove-access-modal__text">
-					Are you sure you want to access of the user <span>"John Williams"</span> to the role? This action is
-					irreversible.
+					Are you sure you want to remove access for this user? This action is irreversible.
 				</Text>
 			</Form.Paper>
+			<Flex
+				justify="end"
+				mt="4"
+				gap="3">
+				<Button
+					size="3"
+					variant="outline"
+					color="gray"
+					onClick={handleClose}
+					disabled={isRemoving}>
+					Cancel
+				</Button>
+				<Button
+					color="red"
+					size="3"
+					onClick={onConfirmRemove}
+					disabled={isRemoving}>
+					{isRemoving ? "Removing..." : "Remove"}
+				</Button>
+			</Flex>
 		</Modal>
 	);
 }

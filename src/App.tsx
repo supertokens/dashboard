@@ -34,12 +34,12 @@ import MainLayout from "./ui/layouts/mainLayout";
 import TenantManagement from "./ui/pages/tenants";
 import TenantManagementTest from "./ui/pages/tenants/indexTest";
 import UserRolesList from "./ui/pages/userroles";
-import UserRolesAndPermissions from "./ui/pages/userroles/indexTest";
 import UserRolesAndPermissions2 from "./ui/pages/userroles";
-import { UserManagement } from "@features/users/page";
+import { UserManagement } from "@features/users/Page";
 import { ToastProvider } from "@shared/components/toast";
 import { QueryProvider } from "./shared/providers/QueryProvider";
 import { ROUTES } from "@shared/navigation";
+import RolesAndPermissions from "@features/roles-and-permissions/Page";
 
 function App() {
 	return (
@@ -65,7 +65,8 @@ function App() {
 														/>
 														<Route
 															path={ROUTES.ROLES}
-															element={<UserRolesAndPermissions2 />}
+															element={<RolesAndPermissions />}
+															// element={<UserRolesAndPermissions2 />}
 														/>
 														<Route
 															path={ROUTES.TENANTS}

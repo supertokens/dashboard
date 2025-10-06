@@ -13,35 +13,19 @@
  * under the License.
  */
 
-import { useNavigate } from "react-router-dom";
-import { ROUTES } from "./routes";
+import { useSearchParams } from "react-router-dom";
 
-export const useNavigationHelpers = () => {
-	const navigate = useNavigate();
+import RoleDetails from "./roles-details/RoleDetails";
+import RolesList from "./components/RolesList";
 
-	return {
-		goToUserDetail: (userId: string) => {
-			navigate(`${ROUTES.USERS}?userid=${userId}`, { replace: true });
-		},
+/**
+ * This is the main component for the roles and permissions page.
+ * It renders the role-detail page if a roleid search param is provided in the URL,
+ * otherwise it renders the roles-list page.
+ */
+export default function RolesAndPermissions() {
+	const [searchParams] = useSearchParams();
+	const roleId = searchParams.get("roleid");
 
-		goToTenantDetail: (tenantId: string) => {
-			navigate(`${ROUTES.TENANTS}?tenantId=${tenantId}`);
-		},
-
-		goToUsersList: () => {
-			navigate(ROUTES.USERS);
-		},
-
-		goToTenantsList: () => {
-			navigate(ROUTES.TENANTS);
-		},
-
-		goToRoles: () => {
-			navigate(ROUTES.ROLES);
-		},
-
-		goToRoleDetails: (roleId: string) => {
-			navigate(`${ROUTES.ROLES}?roleid=${roleId}`);
-		},
-	};
-};
+	return !roleId ? <RolesList /> : <RoleDetails roleId={roleId} />;
+}

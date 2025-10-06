@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,14 +13,31 @@
  * under the License.
  */
 
+import { Flex, Text } from "@radix-ui/themes";
+
 import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
-import { Flex, Text } from "@radix-ui/themes";
 import Button from "@shared/components/button";
 
-import "./index.scss";
+import "./index.module.scss";
 
-export default function DeletePermissionModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
+interface DeletePermissionModalProps {
+	open: boolean;
+	handleClose: () => void;
+	roleId: string;
+	selectedPermissions: string[];
+	onDeletePermissions: () => Promise<void>;
+	isDeleting: boolean;
+}
+
+export default function DeletePermissionModal({
+	open,
+	handleClose,
+	roleId,
+	selectedPermissions,
+	onDeletePermissions,
+	isDeleting,
+}: DeletePermissionModalProps) {
 	return (
 		<Modal
 			title="Delete Permission"
@@ -31,16 +48,31 @@ export default function DeletePermissionModal({ open, handleClose }: { open: boo
 					<Text
 						size="2"
 						className="delete-permission-modal__disclaimer">
-						Are you sure you want to delete selected permission(s)? This action is irreversible.
+						Are you sure you want to delete{" "}
+						{selectedPermissions.length === 1
+							? "this permission"
+							: `these ${selectedPermissions.length} permissions`}
+						? This action is irreversible.
 					</Text>
 				</Form.Paper>
 				<Flex
 					justify="end"
-					mt="4">
+					mt="4"
+					gap="3">
+					<Button
+						size="3"
+						variant="outline"
+						color="gray"
+						onClick={handleClose}
+						disabled={isDeleting}>
+						Cancel
+					</Button>
 					<Button
 						color="red"
-						size="3">
-						Delete
+						size="3"
+						onClick={onDeletePermissions}
+						disabled={isDeleting}>
+						{isDeleting ? "Deleting..." : "Delete"}
 					</Button>
 				</Flex>
 			</Form>

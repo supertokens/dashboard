@@ -13,35 +13,9 @@
  * under the License.
  */
 
-import { useNavigate } from "react-router-dom";
-import { ROUTES } from "./routes";
-
-export const useNavigationHelpers = () => {
-	const navigate = useNavigate();
-
-	return {
-		goToUserDetail: (userId: string) => {
-			navigate(`${ROUTES.USERS}?userid=${userId}`, { replace: true });
-		},
-
-		goToTenantDetail: (tenantId: string) => {
-			navigate(`${ROUTES.TENANTS}?tenantId=${tenantId}`);
-		},
-
-		goToUsersList: () => {
-			navigate(ROUTES.USERS);
-		},
-
-		goToTenantsList: () => {
-			navigate(ROUTES.TENANTS);
-		},
-
-		goToRoles: () => {
-			navigate(ROUTES.ROLES);
-		},
-
-		goToRoleDetails: (roleId: string) => {
-			navigate(`${ROUTES.ROLES}?roleid=${roleId}`);
-		},
-	};
-};
+.header {
+	&__search {
+		flex-grow: 1;
+		max-width: 400px;
+	}
+}
