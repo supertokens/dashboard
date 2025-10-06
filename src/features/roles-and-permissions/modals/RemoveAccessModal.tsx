@@ -19,7 +19,7 @@ import Form from "@shared/components/form";
 import { Modal } from "@shared/components/modal";
 import Button from "@shared/components/button";
 
-import "./index.module.scss";
+import "./RemoveAccessModal.module.scss";
 
 interface RemoveAccessModalProps {
 	open: boolean;

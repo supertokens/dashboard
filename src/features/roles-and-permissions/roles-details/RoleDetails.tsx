@@ -31,7 +31,7 @@ import { getImageUrl } from "@utils/index";
 
 import Permissions from "./Permissions";
 import ManageAccess from "./ManageAccess";
-import DeleteRoleModal from "../modals/deleteRole";
+import DeleteRoleModal from "../modals/DeleteRoleModal";
 import { useRoleDetails } from "../hooks";
 
 type RoleDetailTab = "permissions" | "manage-access";

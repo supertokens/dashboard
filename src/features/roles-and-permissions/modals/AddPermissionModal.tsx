@@ -21,7 +21,7 @@ import { AssignPermission } from "@shared/components/assignPermission";
 import Button from "@shared/components/button";
 import Form from "@shared/components/form";
 
-import { useRolesList } from "../../hooks";
+import { useRolesList } from "../hooks";
 
 interface AddPermissionModalProps {
 	open: boolean;

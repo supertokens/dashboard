@@ -22,9 +22,9 @@ import Button from "@shared/components/button";
 import { PopupContentContext } from "@contexts/PopupContentContext";
 import { getImageUrl } from "@utils/index";
 
-import { useRoleDetails } from "../../hooks";
+import { useRoleDetails } from "../hooks";
 
-import "./index.module.scss";
+import "./DeleteRoleModal.module.scss";
 
 interface DeleteRoleModalProps {
 	open: boolean;

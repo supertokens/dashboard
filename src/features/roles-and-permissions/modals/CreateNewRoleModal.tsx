@@ -22,7 +22,7 @@ import ItemLabel from "@shared/components/itemLabel";
 import Button from "@shared/components/button";
 import { AssignPermission } from "@shared/components/assignPermission";
 
-import { useRolesList } from "../../hooks";
+import { useRolesList } from "../hooks";
 
 interface CreateNewRoleModalProps {
 	handleClose: () => void;

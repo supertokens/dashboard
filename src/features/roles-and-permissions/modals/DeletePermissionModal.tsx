@@ -19,7 +19,7 @@ import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
 import Button from "@shared/components/button";
 
-import "./index.module.scss";
+import "./DeletePermissionModal.module.scss";
 
 interface DeletePermissionModalProps {
 	open: boolean;

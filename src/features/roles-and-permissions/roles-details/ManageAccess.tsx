@@ -13,174 +13,22 @@
  * under the License.
  */
 
-import { useContext, useMemo, useState } from "react";
-import { Flex, IconButton, Text } from "@radix-ui/themes";
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { useMemo, useState } from "react";
+import { Flex } from "@radix-ui/themes";
 
 import Loader from "@shared/components/loader";
 import DashboardError from "@shared/components/error";
-import ItemLabel from "@shared/components/itemLabel";
-import EmptyList from "@shared/components/empty";
-import Paper from "@shared/components/paper";
-import Button from "@shared/components/button";
-import { PopupContentContext } from "@contexts/PopupContentContext";
+import { useToast } from "@shared/components/toast";
 import { assertNever } from "@utils/assertNever";
-import { getImageUrl } from "@utils/index";
-import { User } from "@features/users/types";
 
-import RemoveAccessModal from "../modals/removeAccess";
+import RemoveAccessModal from "../modals/RemoveAccessModal";
 import { useRoleUsers } from "../hooks";
-
-import "./ManageAccess.module.scss";
-
-const ManageAccessHeader = () => {
-	return (
-		<Flex
-			className="manage-access__header"
-			px="3"
-			py="4">
-			<ItemLabel>List of users who have access to this role</ItemLabel>
-		</Flex>
-	);
-};
-
-interface ManageAccessFooterProps {
-	currentPage: number;
-	totalCount: number;
-	pageSize: number;
-	hasNextPage: boolean;
-	hasPreviousPage: boolean;
-	onNextPage: () => void;
-	onPreviousPage: () => void;
-}
-
-const ManageAccessFooter = ({
-	currentPage,
-	totalCount,
-	pageSize,
-	hasNextPage,
-	hasPreviousPage,
-	onNextPage,
-	onPreviousPage,
-}: ManageAccessFooterProps) => {
-	const startIndex = (currentPage - 1) * pageSize + 1;
-	const endIndex = Math.min(currentPage * pageSize, totalCount);
-
-	return (
-		<Flex
-			align="center"
-			justify="end"
-			gap="3"
-			px="3"
-			my="4">
-			<Text
-				size="2"
-				weight="medium">
-				{totalCount > 0 ? `${startIndex} - ${endIndex} of ${totalCount}` : "0 of 0"}
-			</Text>
-			<Flex gap="3">
-				<IconButton
-					size="2"
-					variant="soft"
-					color="gray"
-					disabled={!hasPreviousPage}
-					onClick={onPreviousPage}>
-					<ChevronLeftIcon />
-				</IconButton>
-				<IconButton
-					size="2"
-					variant="soft"
-					color="gray"
-					disabled={!hasNextPage}
-					onClick={onNextPage}>
-					<ChevronRightIcon />
-				</IconButton>
-			</Flex>
-		</Flex>
-	);
-};
-
-interface ManageAccessTableProps {
-	users: User[];
-	onRemoveUser: (userId: string) => void;
-}
-
-const ManageAccessTable = ({ users, onRemoveUser }: ManageAccessTableProps) => {
-	if (users.length === 0) {
-		return (
-			<Flex
-				px="3"
-				py="4"
-				justify="center"
-				align="center"
-				width="100%">
-				<EmptyList
-					iconUrl="user.svg"
-					title="No users assigned"
-					description="This role has not been assigned to any user yet"
-				/>
-			</Flex>
-		);
-	}
-
-	return (
-		<Paper
-			className="manage-access__table"
-			withBorder={true}
-			mx="3"
-			my="4"
-			p="0">
-			<Flex
-				direction="column"
-				className="manage-access__table__items">
-				{users.map((user) => (
-					<Flex
-						align="center"
-						key={user.id}
-						justify="between"
-						className="manage-access__table__item"
-						p="3">
-						<Flex
-							direction="column"
-							gap="1">
-							<Text
-								size="3"
-								weight="medium">
-								{user.firstName} {user.lastName}
-							</Text>
-							{user.emails[0] && (
-								<Text
-									size="2"
-									weight="medium"
-									color="gray">
-									{user.emails[0]}
-								</Text>
-							)}
-							{user.phoneNumbers[0] && (
-								<Text
-									size="2"
-									weight="medium"
-									color="gray">
-									{user.phoneNumbers[0]}
-								</Text>
-							)}
-						</Flex>
-						<Button
-							size="2"
-							variant="outline"
-							color="gray"
-							onClick={() => onRemoveUser(user.id)}>
-							Remove
-						</Button>
-					</Flex>
-				))}
-			</Flex>
-		</Paper>
-	);
-};
+import ManageAccessHeader from "./ManageAccessHeader";
+import ManageAccessFooter from "./ManageAccessFooter";
+import ManageAccessTable from "./ManageAccessTable";
 
 export default function ManageAccess({ roleId }: { roleId: string }) {
-	const { showToast } = useContext(PopupContentContext);
+	const { showSuccessToast, showErrorToast } = useToast();
 	const {
 		users,
 		isLoading,
@@ -217,29 +65,17 @@ export default function ManageAccess({ roleId }: { roleId: string }) {
 			}
 
 			if (response.status === "OK") {
-				showToast({
-					iconImage: getImageUrl("checkmark-green.svg"),
-					toastType: "success",
-					children: <>User role removed successfully!</>,
-				});
+				showSuccessToast("User role removed successfully!");
 				setOpenRemoveAccessModal(false);
 				setSelectedUserId(null);
 				await refetch();
 			} else if (response.status === "UNKNOWN_ROLE_ERROR") {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>Role not found</>,
-				});
+				showErrorToast("Role not found");
 			} else {
 				throw new Error("Failed to remove user role");
 			}
 		} catch {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children: <>Something went wrong. Please try again!</>,
-			});
+			showErrorToast("Something went wrong. Please try again!");
 		}
 	};
 

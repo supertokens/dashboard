@@ -23,7 +23,7 @@ import Loader from "@shared/components/loader";
 import { assertNever } from "@utils/assertNever";
 import { useToast } from "@shared/components/toast";
 
-import CreateNewRoleModal from "../modals/createNewRole";
+import CreateNewRoleModal from "../modals/CreateNewRoleModal";
 import RolesListHeader from "./RolesListHeader";
 import RolesListFooter from "./RolesListFooter";
 import RolesListTable from "./RolesListTable";
