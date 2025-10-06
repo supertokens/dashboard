@@ -65,7 +65,7 @@ function App() {
 														/>
 														<Route
 															path={ROUTES.ROLES}
-															element={<UserRolesAndPermissions />}
+															element={<UserRolesAndPermissions2 />}
 														/>
 														<Route
 															path={ROUTES.TENANTS}

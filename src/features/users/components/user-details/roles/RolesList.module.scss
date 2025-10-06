@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,44 +13,26 @@
  * under the License.
  */
 
-.roles {
-	&__header {
-		background: var(--color-sand-2);
-		&__select {
-			min-width: 200px !important;
-		}
-	}
-}
-
 .roles-list {
 	border: solid 1px var(--color-neutral-8);
 	border-radius: var(--radius-max-4);
+
 	&__callout {
 		width: 100%;
 		color: var(--color-neutral-12) !important;
 	}
+
 	&__header {
 		border-bottom: 1px solid var(--color-neutral-8);
+
 		&__role {
 			width: 40%;
 		}
+
 		&__permission {
 			width: 40%;
 		}
-		&__action {
-			width: 20%;
-		}
-	}
-	&__body {
-		&__item:not(:last-child) {
-			border-bottom: 1px solid var(--color-neutral-8);
-		}
-		&__role {
-			width: 40%;
-		}
-		&__permission {
-			width: 40%;
-		}
+
 		&__action {
 			width: 20%;
 		}

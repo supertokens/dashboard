@@ -22,6 +22,8 @@ import { useToast } from "@shared/components/toast";
 
 import { useRoles } from "@features/users/hooks/useRoles";
 
+import Form from "@shared/components/form";
+
 import styles from "./RemoveRoleModal.module.scss";
 
 interface RemoveRoleModalProps {
@@ -46,7 +48,6 @@ export default function RemoveRoleModal({
 
 	const handleRemove = async () => {
 		if (!role || !selectedTenantId) return;
-
 		try {
 			setIsRemoving(true);
 			const response = await removeRole({
@@ -70,36 +71,30 @@ export default function RemoveRoleModal({
 
 	return (
 		<Modal
+			title="Delete Role"
 			open={open}
-			handleClose={handleClose}
-			title="Remove Role"
-			size="sm">
-			<div className={styles["remove-role-modal"]}>
-				<Text className={styles["remove-role-modal__description"]}>
-					Are you sure you want to remove the role <strong>{role}</strong> from this user?
-				</Text>
-
+			handleClose={handleClose}>
+			<Form className="delete-role-modal">
+				<Form.Paper>
+					<Text
+						size="2"
+						className={styles["delete-role-modal__disclaimer"]}>
+						Are you sure you want to remove the role <span>"{role}"</span> from this user? This action
+						cannot be undone.
+					</Text>
+				</Form.Paper>
 				<Flex
 					justify="end"
-					gap="3"
-					mt="5">
+					mt="4">
 					<Button
-						size="3"
-						variant="outline"
-						color="gray"
-						onClick={handleClose}
-						disabled={isRemoving || isRemovingRole}>
-						Cancel
-					</Button>
-					<Button
-						size="3"
 						color="red"
+						size="3"
 						onClick={handleRemove}
 						loading={isRemoving || isRemovingRole}>
-						Remove Role
+						Delete
 					</Button>
 				</Flex>
-			</div>
+			</Form>
 		</Modal>
 	);
 }
