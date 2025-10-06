@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,25 +13,31 @@
  * under the License.
  */
 
+import { Flex, Text } from "@radix-ui/themes";
+
 import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
-import { Flex, Text } from "@radix-ui/themes";
 import Button from "@shared/components/button";
 
-import "./index.scss";
+import styles from "./DeleteProviderConfigModal.module.scss";
 
-export default function DeleteProviderConfigModal({ open, handleClose }: { open: boolean; handleClose: () => void }) {
+interface DeleteProviderConfigModalProps {
+	open: boolean;
+	handleClose: () => void;
+}
+
+export default function DeleteProviderConfigModal({ open, handleClose }: DeleteProviderConfigModalProps) {
 	return (
 		<Modal
 			title="Delete Provider"
 			size="md"
 			open={open}
 			handleClose={handleClose}>
-			<Form className="delete-role-modal">
+			<Form className={styles["delete-provider-config-modal"]}>
 				<Form.Paper>
 					<Text
 						size="2"
-						className="delete-provider-config-modal__disclaimer">
+						className={styles["delete-provider-config-modal__disclaimer"]}>
 						Are you certain you want to delete this provider? This action is irreversible.
 					</Text>
 				</Form.Paper>

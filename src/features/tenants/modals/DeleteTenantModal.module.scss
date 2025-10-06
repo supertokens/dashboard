@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,23 +13,17 @@
  * under the License.
  */
 
-.edit-user-modal {
-	&__footer {
-		border-radius: 0 0 12px 12px;
-		border-top: 1px solid var(--color-neutral-6);
-		background: var(--color-sand-3);
-	}
-
-	&__paper {
-		box-shadow: none;
-		padding: 0;
-	}
-	&__tooltip-text {
-		font-size: 12px;
-		line-height: 16px;
-		color: var(--color-neutral-1);
+.delete-tenant-modal {
+	&__disclaimer {
+		color: var(--color-neutral-11);
+		font-size: 14px;
 		font-style: normal;
 		font-weight: 400;
-		letter-spacing: 0.04px;
+		line-height: 20px;
+	}
+
+	&__tenant-id {
+		font-weight: 600;
+		color: var(--color-error-11);
 	}
 }

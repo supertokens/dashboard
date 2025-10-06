@@ -16,7 +16,6 @@
 import { Theme } from "@radix-ui/themes";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
-import UsersListPage2 from "./ui/pages/usersList/UsersList";
 import { getDashboardAppBasePath } from "./utils";
 
 // This is to make sure that images are packed in the build folder
@@ -31,10 +30,9 @@ import { AccessDeniedContextProvider } from "./ui/contexts/AccessDeniedContext";
 import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
 import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
 import MainLayout from "./ui/layouts/mainLayout";
-import TenantManagement from "./ui/pages/tenants";
-import TenantManagementTest from "./ui/pages/tenants/indexTest";
-import UserRolesList from "./ui/pages/userroles";
-import UserRolesAndPermissions2 from "./ui/pages/userroles";
+import TenantManagement2 from "./ui/pages/tenants";
+import TenantManagement from "@features/tenants/Page";
+
 import { UserManagement } from "@features/users/Page";
 import { ToastProvider } from "@shared/components/toast";
 import { QueryProvider } from "./shared/providers/QueryProvider";
@@ -66,11 +64,10 @@ function App() {
 														<Route
 															path={ROUTES.ROLES}
 															element={<RolesAndPermissions />}
-															// element={<UserRolesAndPermissions2 />}
 														/>
 														<Route
 															path={ROUTES.TENANTS}
-															element={<TenantManagementTest />}
+															element={<TenantManagement />}
 														/>
 														<Route
 															path="*"

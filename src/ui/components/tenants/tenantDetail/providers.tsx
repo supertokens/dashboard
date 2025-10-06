@@ -17,7 +17,7 @@ import Button from "@shared/components/button";
 import DashboardError from "@shared/components/error";
 import ItemLabel from "@shared/components/itemLabel";
 import Loader from "@shared/components/loader";
-import AddNewProviderModal from "@shared/components/modals/addNewProvider";
+import AddNewProviderModal from "@features/roles-and-permissions/modals/addNewProvider";
 import TabSelector from "@shared/components/tabSelector";
 import {
 	Cross1Icon,
@@ -47,7 +47,7 @@ import { useState } from "react";
 import "./providers.scss";
 import { NOOP } from "@utils/noop";
 import IconButton from "@shared/components/iconButton";
-import DeleteProviderConfigModal from "@shared/components/modals/deleteProviderConfig";
+import DeleteProviderConfigModal from "@features/tenants/modals/DeleteProviderConfigModal";
 
 const ProviderConfigSeparator = ({ ...props }: FlexProps) => {
 	return (
@@ -825,8 +825,18 @@ export const ProviderConfiguration = () => {
 	);
 };
 
-const ProvidersContent = () => {
+const ProvidersContent = ({
+	tenantId,
+	providers,
+}: {
+	tenantId: string;
+	providers: { thirdPartyId: string; name: string }[];
+}) => {
 	const [isNewProviderModalOpen, setIsNewProviderModalOpen] = useState(false);
+	const [selectedProvider, setSelectedProvider] = useState<string | undefined>(
+		providers.length > 0 ? providers[0].thirdPartyId : undefined
+	);
+
 	return (
 		<Flex
 			width="100%"
@@ -849,43 +859,43 @@ const ProvidersContent = () => {
 					handleClose={() => setIsNewProviderModalOpen(false)}
 				/>
 			</TabSelector.ContentHeading>
-			<Flex
-				px="4"
-				py="3"
-				gap="4"
-				className="providers-content__active-providers">
-				<ProviderButton
-					icon="github.png"
-					label="GitHub"
-					isActive={true}
-				/>
-				<ProviderButton
-					icon="google.png"
-					label="Google"
-					isActive={false}
-				/>
-			</Flex>
-			<Box
-				m="4"
-				className="providers-content__form">
-				{/* <ProviderSetup
-					handleCancel={NOOP}
-					handleContinue={NOOP}
-					providerName="Google"
-					providerIcon="google.png"
-					formLabel="Hosted Domain"
-					formTitle="Add domain you want to allow google workspace login for."
-					formFooter="For example: use 'example.com' if you want to allow logins only from that domain. Enter ' * ' if you want to allow logins for any google workspace domain."
-				/> */}
-
-				<ProviderConfiguration />
-			</Box>
+			{providers.length > 0 && (
+				<>
+					<Flex
+						px="4"
+						py="3"
+						gap="4"
+						className="providers-content__active-providers">
+						{providers.map((provider) => (
+							<ProviderButton
+								key={provider.thirdPartyId}
+								icon={`${provider.thirdPartyId}.png`}
+								label={provider.name}
+								isActive={selectedProvider === provider.thirdPartyId}
+							/>
+						))}
+					</Flex>
+					{selectedProvider && (
+						<Box
+							m="4"
+							className="providers-content__form">
+							<ProviderConfiguration />
+						</Box>
+					)}
+				</>
+			)}
 		</Flex>
 	);
 };
 
-export const Providers = () => {
-	const [state, setState] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
+export const Providers = ({
+	tenantId,
+	tenantInfo,
+}: {
+	tenantId: string;
+	tenantInfo: { thirdParty: { providers: { thirdPartyId: string; name: string }[] } };
+}) => {
+	const [state] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
 	switch (state) {
 		case "LOADING":
 			return (
@@ -896,7 +906,12 @@ export const Providers = () => {
 				</Flex>
 			);
 		case "SUCCESS":
-			return <ProvidersContent />;
+			return (
+				<ProvidersContent
+					tenantId={tenantId}
+					providers={tenantInfo.thirdParty.providers}
+				/>
+			);
 		case "ERROR":
 			return <DashboardError />;
 		default:

@@ -13,49 +13,19 @@
  * under the License.
  */
 
-import TabSelector from "@shared/components/tabSelector";
 import { Badge, Callout, Flex, Switch, Text } from "@radix-ui/themes";
-import ItemLabel from "@shared/components/itemLabel";
 
+import type { TenantInfo } from "@api/tenants/types";
+import { FIRST_FACTOR_IDS } from "@constants";
 import { getImageUrl } from "@utils";
+import TabSelector from "@shared/components/tabSelector";
+import ItemLabel from "@shared/components/itemLabel";
 
 import styles from "./LoginMethods.module.scss";
 
-const LOGIN_METHODS = [
-	{
-		id: "email-password",
-		name: "Email Password",
-		description: "Traditional email and password authentication",
-	},
-	{
-		id: "passwordless",
-		name: "Passwordless",
-		description: "Authentication without a password",
-	},
-	{
-		id: "third-party",
-		name: "Third Party",
-		description: "Authentication using third party providers",
-	},
-	{
-		id: "totp",
-		name: "TOTP",
-		description: "Authentication using TOTP",
-	},
-	{
-		id: "otp-email",
-		name: "OTP Email",
-		description: "Authentication using OTP sent to email",
-	},
-	{
-		id: "otp-phone",
-		name: "OTP Phone",
-		description: "Authentication using OTP sent to phone",
-	},
-];
+export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
+	const enabledFirstFactors = tenantInfo.firstFactors || [];
 
-export const LoginMethods = () => {
-	const selectedMethods: string[] = [];
 	return (
 		<Flex
 			width="100%"
@@ -72,37 +42,42 @@ export const LoginMethods = () => {
 				<Flex
 					className={styles["login-methods__content__main"]}
 					direction="column">
-					{LOGIN_METHODS.map((method) => (
-						<Flex
-							justify="between"
-							key={method.id}
-							className={styles["login-methods__content__main__item"]}
-							align="center"
-							mx="4"
-							py="4">
+					{FIRST_FACTOR_IDS.map((factor) => {
+						const isEnabled = enabledFirstFactors.includes(factor.id);
+						return (
 							<Flex
-								direction="column"
-								gap="1">
-								<Text
+								justify="between"
+								key={factor.id}
+								className={styles["login-methods__content__main__item"]}
+								align="center"
+								mx="4"
+								py="4">
+								<Flex
+									direction="column"
+									gap="1">
+									<Text
+										size="2"
+										weight="medium"
+										className={styles["login-methods__content__main__item__name"]}>
+										{factor.label}
+									</Text>
+									<Text
+										size="2"
+										weight="regular"
+										className={styles["login-methods__content__main__item__description"]}>
+										{factor.description}
+									</Text>
+								</Flex>
+								<Switch
 									size="2"
-									weight="medium"
-									className={styles["login-methods__content__main__item__name"]}>
-									{method.name}
-								</Text>
-								<Text
-									size="2"
-									weight="regular"
-									className={styles["login-methods__content__main__item__description"]}>
-									{method.description}
-								</Text>
+									variant="classic"
+									checked={isEnabled}
+									disabled
+									className={styles["login-methods__content__main__method__switch"]}
+								/>
 							</Flex>
-							<Switch
-								size="2"
-								variant="classic"
-								className={styles["login-methods__content__main__method__switch"]}
-							/>
-						</Flex>
-					))}
+						);
+					})}
 				</Flex>
 				<Flex className={styles["login-methods__content__preview"]}>
 					<Badge
@@ -112,7 +87,7 @@ export const LoginMethods = () => {
 						className={styles["login-methods__content__preview__badge"]}>
 						Preview
 					</Badge>
-					{selectedMethods.length === 0 && (
+					{enabledFirstFactors.length === 0 && (
 						<Flex
 							gap="2"
 							direction="column"
@@ -135,23 +110,25 @@ export const LoginMethods = () => {
 					)}
 				</Flex>
 			</Flex>
-			<Flex
-				className={styles["login-methods__footer"]}
-				px="4"
-				pb="4"
-				width="100%">
-				<Callout.Root
-					color="green"
-					size="1"
-					className={styles["login-methods__footer__callout"]}>
-					<Text
-						size="2"
-						className={styles["login-methods__footer__callout__text"]}>
-						<span>2 login methods enabled:</span> Users will be able to sign up using any of the selected
-						methods
-					</Text>
-				</Callout.Root>
-			</Flex>
+			{enabledFirstFactors.length > 0 && (
+				<Flex
+					className={styles["login-methods__footer"]}
+					px="4"
+					pb="4"
+					width="100%">
+					<Callout.Root
+						color="green"
+						size="1"
+						className={styles["login-methods__footer__callout"]}>
+						<Text
+							size="2"
+							className={styles["login-methods__footer__callout__text"]}>
+							<span>{enabledFirstFactors.length} login methods enabled:</span> Users will be able to sign
+							up using any of the selected methods
+						</Text>
+					</Callout.Root>
+				</Flex>
+			)}
 		</Flex>
 	);
 };

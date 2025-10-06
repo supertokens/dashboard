@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,29 +13,29 @@
  * under the License.
  */
 
-import { Modal } from "@shared/components/modal";
-import Form from "@shared/components/form";
 import { Text } from "@radix-ui/themes";
 
-import "./index.scss";
+import { Modal } from "@shared/components/modal";
+import Form from "@shared/components/form";
 
-export default function UneditableConfigurationModal({
-	open,
-	handleClose,
-}: {
+import styles from "./UneditableConfigurationModal.module.scss";
+
+interface UneditableConfigurationModalProps {
 	open: boolean;
 	handleClose: () => void;
-}) {
+}
+
+export default function UneditableConfigurationModal({ open, handleClose }: UneditableConfigurationModalProps) {
 	return (
 		<Modal
 			size="md"
 			open={open}
 			handleClose={handleClose}
 			title="Property Cannot be Edited">
-			<Form className="uneditable-configuration-modal">
+			<Form className={styles["uneditable-configuration-modal"]}>
 				<Form.Paper>
 					<Text
-						className="uneditable-configuration-modal__text"
+						className={styles["uneditable-configuration-modal__text"]}
 						size="2"
 						weight="regular">
 						This property is configurable only via the config.yaml file or via Docker env variables.

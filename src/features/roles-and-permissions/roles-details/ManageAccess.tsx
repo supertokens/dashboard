@@ -37,7 +37,7 @@ export default function ManageAccess({ roleId }: { roleId: string }) {
 		removeUserRole,
 		isRemovingUserRole,
 		currentPage,
-		totalPages,
+		// totalPages,
 		totalCount,
 		pageSize,
 		hasNextPage,

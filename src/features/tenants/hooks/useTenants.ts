@@ -13,14 +13,19 @@
  * under the License.
  */
 
-import { useListTenantsService } from "@api/tenants";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { create } from "zustand";
+
+import { useCreateTenantService, useDeleteTenantService, useListTenantsService } from "@api/tenants";
+import type { Tenant } from "@api/tenants/types";
 import { getSelectedTenantIdFromLocalStorage, setSelectedTenantIdToLocalStorage } from "@utils";
 
-const TENANTS_QUERY_KEY = "tenants";
-const TENANTS_STALE_TIME = 5 * 60 * 1000; // 5 minutes
+import { QUERY_KEYS, STALE_TIME } from "../constants";
+
+const queryKeys = {
+	tenants: () => [QUERY_KEYS.TENANTS] as const,
+};
 
 interface TenantStore {
 	selectedTenant: string | undefined;
@@ -45,35 +50,72 @@ const useTenantStore = create<TenantStore>((set) => ({
 }));
 
 export const useTenants = () => {
+	const queryClient = useQueryClient();
 	const { fetchTenants } = useListTenantsService();
+	const createTenant = useCreateTenantService();
+	const deleteTenant = useDeleteTenantService();
 	const { selectedTenant, setSelectedTenant, initializeTenant } = useTenantStore();
 
-	const {
-		data: tenantsResponse,
-		isLoading,
-		error,
-		refetch: refetchTenants,
-	} = useQuery({
-		queryKey: [TENANTS_QUERY_KEY],
-		queryFn: fetchTenants,
-		staleTime: TENANTS_STALE_TIME,
-		refetchOnWindowFocus: false,
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const tenantsQuery = useQuery({
+		queryKey: queryKeys.tenants(),
+		queryFn: async () => {
+			const response = await fetchTenants();
+
+			if (!response) {
+				throw new Error("Failed to fetch tenants");
+			}
+
+			if (response.status === "OK") {
+				return response.tenants;
+			}
+
+			throw new Error("Failed to fetch tenants");
+		},
+		staleTime: STALE_TIME.TENANTS,
+		retry: false,
 	});
 
-	const tenants = tenantsResponse?.tenants;
+	const createTenantMutation = useMutation({
+		mutationFn: (tenantId: string) => createTenant(tenantId),
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: queryKeys.tenants() });
+		},
+	});
+
+	const deleteTenantMutation = useMutation({
+		mutationFn: (tenantId: string) => deleteTenant(tenantId),
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: queryKeys.tenants() });
+		},
+	});
+
+	const filteredTenants = useMemo(() => {
+		const tenants = tenantsQuery.data || [];
+
+		if (!searchQuery.trim()) {
+			return tenants;
+		}
+
+		const query = searchQuery.toLowerCase().trim();
+		return tenants.filter((tenant: Tenant) => tenant.tenantId.toLowerCase().includes(query));
+	}, [tenantsQuery.data, searchQuery]);
 
 	useEffect(() => {
 		initializeTenant();
 	}, [initializeTenant]);
 
 	useEffect(() => {
+		const tenants = tenantsQuery.data;
 		if (tenants && tenants.length > 0 && !selectedTenant) {
 			const firstTenant = tenants[0].tenantId;
 			setSelectedTenant(firstTenant);
 		}
-	}, [tenants, selectedTenant, setSelectedTenant]);
+	}, [tenantsQuery.data, selectedTenant, setSelectedTenant]);
 
 	useEffect(() => {
+		const tenants = tenantsQuery.data;
 		if (tenants && selectedTenant) {
 			const tenantExists = tenants.some((t) => t.tenantId === selectedTenant);
 			if (!tenantExists) {
@@ -83,19 +125,22 @@ export const useTenants = () => {
 				}
 			}
 		}
-	}, [tenants, selectedTenant, setSelectedTenant]);
-
-	const getSelectedTenant = () => {
-		return selectedTenant;
-	};
+	}, [tenantsQuery.data, selectedTenant, setSelectedTenant]);
 
 	return {
-		tenants,
-		isLoading,
-		error,
-		refetchTenants,
+		tenants: filteredTenants,
+		allTenants: tenantsQuery.data || [],
+		isLoading: tenantsQuery.isLoading,
+		error: tenantsQuery.error,
+		refetch: tenantsQuery.refetch,
+		createTenant: createTenantMutation.mutateAsync,
+		deleteTenant: deleteTenantMutation.mutateAsync,
+		isCreatingTenant: createTenantMutation.isPending,
+		isDeletingTenant: deleteTenantMutation.isPending,
+		searchQuery,
+		setSearchQuery,
 		selectedTenant,
 		setSelectedTenant,
-		getSelectedTenant,
+		getSelectedTenant: () => selectedTenant,
 	};
 };

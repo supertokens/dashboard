@@ -13,25 +13,27 @@
  * under the License.
  */
 
+import { useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Box, Flex, Text } from "@radix-ui/themes";
+import { EyeOpenIcon, TrashIcon } from "@radix-ui/react-icons";
+
+import { assertNever } from "@utils/assertNever";
 import Button from "@shared/components/button";
 import ItemDetailHeader from "@shared/components/itemDetailsHeading";
 import PageContainer from "@shared/components/pageContainer";
-import { EyeOpenIcon, TrashIcon } from "@radix-ui/react-icons";
-import { Box, Flex, Text } from "@radix-ui/themes";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { assertNever } from "@utils/assertNever";
 import DashboardError from "@shared/components/error";
 import Loader from "@shared/components/loader";
-
 import TabSelector from "@shared/components/tabSelector";
 import ItemContainer from "@shared/components/itemContainer";
 import Separator from "@shared/components/separator";
 import ItemLabel from "@shared/components/itemLabel";
 import Crystal from "@shared/components/crystal";
+
+import { useTenantDetails } from "@features/tenants/hooks/useTenantDetails";
+import DeleteTenantModal from "@features/tenants/modals/DeleteTenantModal";
 import { LoginMethods } from "./LoginMethods";
 import { SecondaryFactors } from "./secondaryFactors";
-import DeleteTenantModal from "@shared/components/modals/deleteTenant";
 import CoreConfiguration from "./coreConfiguration";
 import { Providers } from "./providers";
 
@@ -55,13 +57,34 @@ const tenantDetailTabs: { name: string; value: TenantDetailTab }[] = [
 	},
 ];
 
-const TenantDetailContent = () => {
+const TenantDetailContent = ({
+	tenantId,
+	tenantInfo,
+	onDeleteTenant,
+	isDeletingTenant,
+}: {
+	tenantId: string;
+	tenantInfo: NonNullable<ReturnType<typeof useTenantDetails>["tenantInfo"]>;
+	onDeleteTenant: () => Promise<void>;
+	isDeletingTenant: boolean;
+}) => {
 	const [deleteTenantModalOpen, setDeleteTenantModalOpen] = useState(false);
 	const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("login-methods");
 	const navigate = useNavigate();
+
 	const handleTabChange = (tab: TenantDetailTab) => {
 		setSelectedTab(tab);
 	};
+
+	const handleDeleteTenant = async () => {
+		try {
+			await onDeleteTenant();
+			navigate("/tenants");
+		} catch (err) {
+			// Error handling
+		}
+	};
+
 	return (
 		<Box width={"100%"}>
 			<ItemContainer
@@ -76,20 +99,17 @@ const TenantDetailContent = () => {
 						size="5"
 						weight="bold"
 						className="tenant-detail__header__name">
-						Tenant 1
+						{tenantInfo.tenantId}
 					</Text>
 					<Button
 						color="red"
 						size="2"
 						variant="soft"
-						onClick={() => setDeleteTenantModalOpen(true)}>
+						onClick={() => setDeleteTenantModalOpen(true)}
+						disabled={isDeletingTenant}>
 						<TrashIcon />
 						Delete Tenant
 					</Button>
-					<DeleteTenantModal
-						open={deleteTenantModalOpen}
-						handleClose={() => setDeleteTenantModalOpen(false)}
-					/>
 				</Flex>
 				<Separator fullWidth />
 				<Flex
@@ -100,12 +120,12 @@ const TenantDetailContent = () => {
 					justify="between">
 					<Flex align="center">
 						<ItemLabel mr="2">Total Number of Users:</ItemLabel>
-						<Crystal>102</Crystal>
+						<Crystal>{tenantInfo.userCount}</Crystal>
 					</Flex>
 					<Button
 						size="2"
 						variant="ghost"
-						onClick={() => navigate("/")}>
+						onClick={() => navigate(`/users?tenantId=${tenantId}`)}>
 						<EyeOpenIcon />
 						See Users
 					</Button>
@@ -119,29 +139,57 @@ const TenantDetailContent = () => {
 				{(() => {
 					switch (selectedTab) {
 						case "login-methods":
-							return <LoginMethods />;
+							return <LoginMethods tenantInfo={tenantInfo} />;
 						case "Secondary Factors":
-							return <SecondaryFactors />;
+							return <SecondaryFactors tenantInfo={tenantInfo} />;
 						case "Providers":
-							return <Providers />;
+							return (
+								<Providers
+									tenantId={tenantId}
+									tenantInfo={tenantInfo}
+								/>
+							);
 						case "Core Configuration":
-							return <CoreConfiguration />;
+							return (
+								<CoreConfiguration
+									tenantId={tenantId}
+									coreConfig={tenantInfo.coreConfig}
+								/>
+							);
 						default:
 							return assertNever(selectedTab);
 					}
 				})()}
 			</TabSelector>
+
+			<DeleteTenantModal
+				open={deleteTenantModalOpen}
+				handleClose={() => setDeleteTenantModalOpen(false)}
+				tenantId={tenantId}
+				onDeleteTenant={handleDeleteTenant}
+				isDeleting={isDeletingTenant}
+			/>
 		</Box>
 	);
 };
 
 export default function TenantDetailTest() {
 	const navigate = useNavigate();
-	const [state, setState] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
+	const [searchParams] = useSearchParams();
+	const tenantId = searchParams.get("tenantid") || "";
+
+	const { tenantInfo, isLoading, error, deleteTenant, isDeletingTenant } = useTenantDetails(tenantId);
 
 	const handleBackToItemList = () => {
 		navigate("/tenants");
 	};
+
+	const pageState = useMemo(() => {
+		if (isLoading) return "LOADING";
+		if (error) return "ERROR";
+		if (!tenantInfo) return "ERROR";
+		return "SUCCESS";
+	}, [isLoading, error, tenantInfo]);
 
 	return (
 		<PageContainer>
@@ -156,15 +204,24 @@ export default function TenantDetailTest() {
 				/>
 
 				{(() => {
-					switch (state) {
+					switch (pageState) {
 						case "ERROR":
 							return <DashboardError />;
 						case "SUCCESS":
-							return <TenantDetailContent />;
+							return tenantInfo ? (
+								<TenantDetailContent
+									tenantId={tenantId}
+									tenantInfo={tenantInfo}
+									onDeleteTenant={async () => {
+										await deleteTenant();
+									}}
+									isDeletingTenant={isDeletingTenant}
+								/>
+							) : null;
 						case "LOADING":
 							return <Loader type="table-with-list" />;
 						default:
-							assertNever(state);
+							assertNever(pageState);
 					}
 				})()}
 			</Flex>

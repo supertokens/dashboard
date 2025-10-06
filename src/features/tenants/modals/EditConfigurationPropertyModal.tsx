@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,45 +13,45 @@
  * under the License.
  */
 
-import { Modal } from "@shared/components/modal";
-import Form from "@shared/components/form";
 import { Flex, Text } from "@radix-ui/themes";
 
-import "./index.scss";
+import { Modal } from "@shared/components/modal";
+import Form from "@shared/components/form";
 import ItemLabel from "@shared/components/itemLabel";
 import ItemValue from "@shared/components/itemValue";
 import TextField from "@shared/components/text";
 import Callout from "@shared/components/callout";
 import Button from "@shared/components/button";
 
-export default function EditConfigurationPropertyModal({
-	open,
-	handleClose,
-}: {
+import styles from "./EditConfigurationPropertyModal.module.scss";
+
+interface EditConfigurationPropertyModalProps {
 	open: boolean;
 	handleClose: () => void;
-}) {
+}
+
+export default function EditConfigurationPropertyModal({ open, handleClose }: EditConfigurationPropertyModalProps) {
 	return (
 		<Modal
 			size="md"
 			open={open}
 			handleClose={handleClose}
 			title="Edit Property">
-			<Form className="edit-configuration-property-modal">
+			<Form className={styles["edit-configuration-property-modal"]}>
 				<Flex
 					py="4"
 					px="3"
-					className="edit-configuration-property-modal__heading">
+					className={styles["edit-configuration-property-modal__heading"]}>
 					<ItemLabel
 						size="2"
 						mr="2"
 						weight="medium"
-						className="edit-configuration-property-modal__heading__label">
+						className={styles["edit-configuration-property-modal__heading__label"]}>
 						Property Name:
 					</ItemLabel>
 					<ItemValue
 						size="2"
-						className="edit-configuration-property-modal__heading__value">
+						className={styles["edit-configuration-property-modal__heading__value"]}>
 						email_verification_token_lifetime
 					</ItemValue>
 				</Flex>
@@ -72,19 +72,19 @@ export default function EditConfigurationPropertyModal({
 							color="gray"
 							size="3"
 							variant="surface"
-							className="edit-configuration-property-modal__value"
+							className={styles["edit-configuration-property-modal__value"]}
 						/>
 					</Form.Item>
 					<Callout
 						color="gray"
-						className="edit-configuration-property-modal__callout">
-						<Text className="edit-configuration-property-modal__callout__text">
+						className={styles["edit-configuration-property-modal__callout"]}>
+						<Text className={styles["edit-configuration-property-modal__callout__text"]}>
 							Time in milliseconds for how long an email verification token / link is valid for. [Default:
 							24 * 3600 * 1000 (1 day)]
 						</Text>
 						<Text
 							mt="3"
-							className="edit-configuration-property-modal__callout__text--bold">
+							className={styles["edit-configuration-property-modal__callout__text--bold"]}>
 							Default Value: 86400000
 						</Text>
 					</Callout>

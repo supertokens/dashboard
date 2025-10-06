@@ -30,7 +30,8 @@ import { assertNever } from "@utils/assertNever";
 import { getImageUrl } from "@utils/index";
 
 import Permissions from "./Permissions";
-import ManageAccess from "./ManageAccess";
+// TODO: Add this import when the manage access feature is ready
+// import ManageAccess from "./ManageAccess";
 import DeleteRoleModal from "../modals/DeleteRoleModal";
 import { useRoleDetails } from "../hooks";
 

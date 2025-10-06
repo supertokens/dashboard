@@ -13,33 +13,19 @@
  * under the License.
  */
 
-import TabSelector from "@shared/components/tabSelector";
 import { Badge, Flex, Switch, Text } from "@radix-ui/themes";
+
+import type { TenantInfo } from "@api/tenants/types";
+import { SECONDARY_FACTOR_IDS } from "@constants";
+import { getImageUrl } from "@utils/index";
+import TabSelector from "@shared/components/tabSelector";
 import ItemLabel from "@shared/components/itemLabel";
 
 import "./secondaryFactors.scss";
-import { getImageUrl } from "@utils/index";
 
-const SECONDARY_FACTORS = [
-	{
-		id: "totp",
-		name: "TOTP",
-		description: "Time-based one-time passwords using apps like Google Authenticator",
-	},
-	{
-		id: "OTP-Email",
-		name: "OTP Via Email",
-		description: "One-time password sent to user's email address without a password",
-	},
-	{
-		id: "OTP-Phone",
-		name: "OTP Via Phone",
-		description: "One-time password sent to user's phone number without a password",
-	},
-];
+export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
+	const requiredSecondaryFactors = tenantInfo.requiredSecondaryFactors || [];
 
-export const SecondaryFactors = () => {
-	const selectedMethods: string[] = [];
 	return (
 		<Flex
 			width="100%"
@@ -58,37 +44,42 @@ export const SecondaryFactors = () => {
 				<Flex
 					className="secondary-factors__content__main"
 					direction="column">
-					{SECONDARY_FACTORS.map((factor) => (
-						<Flex
-							justify="between"
-							key={factor.id}
-							className="secondary-factors__content__main__item"
-							align="center"
-							mx="4"
-							py="4">
+					{SECONDARY_FACTOR_IDS.map((factor) => {
+						const isRequired = requiredSecondaryFactors.includes(factor.id);
+						return (
 							<Flex
-								direction="column"
-								gap="1">
-								<Text
+								justify="between"
+								key={factor.id}
+								className="secondary-factors__content__main__item"
+								align="center"
+								mx="4"
+								py="4">
+								<Flex
+									direction="column"
+									gap="1">
+									<Text
+										size="2"
+										weight="medium"
+										className="secondary-factors__content__main__item__name">
+										{factor.label}
+									</Text>
+									<Text
+										size="2"
+										weight="regular"
+										className="secondary-factors__content__main__item__description">
+										{factor.description}
+									</Text>
+								</Flex>
+								<Switch
 									size="2"
-									weight="medium"
-									className="secondary-factors__content__main__item__name">
-									{factor.name}
-								</Text>
-								<Text
-									size="2"
-									weight="regular"
-									className="secondary-factors__content__main__item__description">
-									{factor.description}
-								</Text>
+									variant="classic"
+									checked={isRequired}
+									disabled
+									className="secondary-factors__content__main__method__switch"
+								/>
 							</Flex>
-							<Switch
-								size="2"
-								variant="classic"
-								className="secondary-factors__content__main__method__switch"
-							/>
-						</Flex>
-					))}
+						);
+					})}
 				</Flex>
 				<Flex className="secondary-factors__content__preview">
 					<Badge
@@ -98,7 +89,7 @@ export const SecondaryFactors = () => {
 						className="secondary-factors__content__preview__badge">
 						Preview
 					</Badge>
-					{selectedMethods.length === 0 && (
+					{requiredSecondaryFactors.length === 0 && (
 						<Flex
 							gap="2"
 							direction="column"

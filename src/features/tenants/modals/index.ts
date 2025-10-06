@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,8 +13,8 @@
  * under the License.
  */
 
-.uneditable-configuration-modal {
-	&__text {
-		color: var(--color-neutral-11);
-	}
-}
+export { default as CreateNewTenantModal } from "./CreateNewTenantModal";
+export { default as DeleteTenantModal } from "./DeleteTenantModal";
+export { default as DeleteProviderConfigModal } from "./DeleteProviderConfigModal";
+export { default as EditConfigurationPropertyModal } from "./EditConfigurationPropertyModal";
+export { default as UneditableConfigurationModal } from "./UneditableConfigurationModal";

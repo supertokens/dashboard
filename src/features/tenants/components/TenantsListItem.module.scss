@@ -1,4 +1,4 @@
-/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,7 +13,31 @@
  * under the License.
  */
 
-export type Tenant = {
-	tenantId: string;
-	firstFactors: string[];
-};
+.tenants-list-item {
+	padding: 16px 20px;
+	border-bottom: solid var(--color-neutral-8) 1px;
+
+	&__tenant-id {
+		width: 40%;
+		color: var(--color-neutral-12);
+	}
+
+	&__login-methods {
+		width: 55%;
+		&__badge {
+			background: var(--color-neutral-alpha-3) !important;
+			color: var(--color-neutral-alpha-11) !important;
+			font-weight: 600 !important;
+		}
+	}
+
+	&:hover {
+		background-color: var(--color-accent-2);
+		cursor: pointer;
+	}
+
+	&:last-child {
+		border-radius: 0 0 12px 12px;
+		border-bottom: none;
+	}
+}

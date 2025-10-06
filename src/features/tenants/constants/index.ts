@@ -1,4 +1,4 @@
-/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,7 +13,14 @@
  * under the License.
  */
 
-export type Tenant = {
-	tenantId: string;
-	firstFactors: string[];
-};
+export const TENANTS_PAGINATION_LIMIT = 10;
+
+export const QUERY_KEYS = {
+	TENANTS: "tenants",
+	TENANT_DETAILS: "tenant-details",
+} as const;
+
+export const STALE_TIME = {
+	TENANTS: 5 * 60 * 1000, // 5 minutes
+	TENANT_DETAILS: 30 * 1000, // 30 seconds
+} as const;
