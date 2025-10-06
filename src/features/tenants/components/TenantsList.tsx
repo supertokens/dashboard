@@ -14,7 +14,6 @@
  */
 
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { assertNever } from "@utils/assertNever";
 import PageContainer from "@shared/components/pageContainer";
@@ -28,9 +27,10 @@ import CreateNewTenantModal from "../modals/CreateNewTenantModal";
 import TenantsListHeader from "./TenantsListHeader";
 import TenantsListTable from "./TenantsListTable";
 import TenantsListFooter from "./TenantsListFooter";
+import { useNavigationHelpers } from "@shared/navigation";
 
 export default function TenantsList() {
-	const navigate = useNavigate();
+	const { goToTenantDetail } = useNavigationHelpers();
 	const {
 		tenants,
 		isLoading,
@@ -54,7 +54,7 @@ export default function TenantsList() {
 		const response = await createTenantMutation(tenantId);
 
 		if (response.status === "OK") {
-			navigate(`/tenants?tenantid=${tenantId.toLowerCase()}`);
+			goToTenantDetail(tenantId.toLowerCase());
 		} else if (response.status === "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR") {
 			throw new Error(
 				"Multitenancy is a paid feature and is not available on your core instance. Please sign up to get a license key."
@@ -94,6 +94,7 @@ export default function TenantsList() {
 									<TenantsListTable
 										tenants={tenants}
 										currentPage={currentPage}
+										isSearching={searchQuery.trim().length > 0}
 									/>
 									<TenantsListFooter
 										totalCount={tenants.length}

@@ -18,17 +18,25 @@
 	border-bottom: solid var(--color-neutral-8) 1px;
 
 	&__tenant-id {
-		width: 40%;
+		width: 35%;
 		color: var(--color-neutral-12);
 	}
 
 	&__login-methods {
-		width: 55%;
+		width: 60%;
+		overflow-x: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+
 		&__badge {
 			background: var(--color-neutral-alpha-3) !important;
 			color: var(--color-neutral-alpha-11) !important;
 			font-weight: 600 !important;
 		}
+	}
+
+	&__chevron-right {
+		width: 5%;
 	}
 
 	&:hover {

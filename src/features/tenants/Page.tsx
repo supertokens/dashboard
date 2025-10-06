@@ -15,18 +15,19 @@
 
 import { useSearchParams } from "react-router-dom";
 
+import { QUERY_PARAMS } from "@shared/navigation";
 import TenantDetailTest from "@components/tenants/tenantDetail/TenantDetailTest";
 
 import TenantsList from "./components/TenantsList";
 
 /**
  * This is the main component for the tenant management page.
- * It renders the tenant-detail page if a tenantid search param is provided in the URL,
+ * It renders the tenant-detail page if a tenantId search param is provided in the URL,
  * otherwise it renders the tenants-list page.
  */
 export default function TenantManagement() {
 	const [searchParams] = useSearchParams();
-	const tenantId = searchParams.get("tenantid");
+	const tenantId = searchParams.get(QUERY_PARAMS.TENANT_ID);
 
 	return tenantId ? <TenantDetailTest /> : <TenantsList />;
 }

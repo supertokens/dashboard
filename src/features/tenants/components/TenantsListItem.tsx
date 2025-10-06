@@ -13,20 +13,20 @@
  * under the License.
  */
 
-import { useNavigate } from "react-router-dom";
 import { Badge, Flex, Text } from "@radix-ui/themes";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 
 import type { Tenant } from "@api/tenants/types";
 
 import styles from "./TenantsListItem.module.scss";
+import { useNavigationHelpers } from "@shared/navigation";
 
 interface TenantsListItemProps {
 	tenant: Tenant;
 }
 
 export default function TenantsListItem({ tenant }: TenantsListItemProps) {
-	const navigate = useNavigate();
+	const { goToTenantDetail } = useNavigationHelpers();
 
 	return (
 		<Flex
@@ -34,7 +34,7 @@ export default function TenantsListItem({ tenant }: TenantsListItemProps) {
 			width="100%"
 			className={styles["tenants-list-item"]}
 			onClick={() => {
-				navigate(`/tenants?tenantid=${tenant.tenantId}`);
+				goToTenantDetail(tenant.tenantId);
 			}}>
 			<Text
 				className={styles["tenants-list-item__tenant-id"]}
@@ -57,11 +57,15 @@ export default function TenantsListItem({ tenant }: TenantsListItemProps) {
 					</Badge>
 				))}
 			</Flex>
-
-			<ChevronRightIcon
-				height={16}
-				width={16}
-			/>
+			<Flex
+				align="center"
+				justify="center"
+				className={styles["tenants-list-item__chevron-right"]}>
+				<ChevronRightIcon
+					height={16}
+					width={16}
+				/>
+			</Flex>
 		</Flex>
 	);
 }

@@ -22,6 +22,7 @@ export const ROUTES = {
 export const QUERY_PARAMS = {
 	USER_ID: "userid",
 	TENANT_ID: "tenantId",
+	ROLE_ID: "roleid",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

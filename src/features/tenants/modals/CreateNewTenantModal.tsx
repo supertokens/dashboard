@@ -78,7 +78,11 @@ export default function CreateNewTenantModal({
 			<Form className={styles["create-new-tenant-modal"]}>
 				<Form.Paper>
 					<Form.Item>
-						<ItemLabel htmlFor="tenant-id">Tenant Id</ItemLabel>
+						<ItemLabel
+							mb="2"
+							htmlFor="tenant-id">
+							Tenant Id
+						</ItemLabel>
 						<TextField.Root
 							id="tenant-id"
 							value={tenantId}
@@ -97,18 +101,8 @@ export default function CreateNewTenantModal({
 				</Form.Paper>
 				<Flex
 					justify="end"
-					mt="4"
-					gap="2">
+					mt="5">
 					<Button
-						color="gray"
-						size="3"
-						variant="outline"
-						onClick={handleModalClose}
-						disabled={isCreating}>
-						Cancel
-					</Button>
-					<Button
-						color="blue"
 						size="3"
 						onClick={handleSubmit}
 						disabled={isCreating}>

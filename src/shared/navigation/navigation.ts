@@ -14,18 +14,19 @@
  */
 
 import { useNavigate } from "react-router-dom";
-import { ROUTES } from "./routes";
+
+import { QUERY_PARAMS, ROUTES } from "./routes";
 
 export const useNavigationHelpers = () => {
 	const navigate = useNavigate();
 
 	return {
 		goToUserDetail: (userId: string) => {
-			navigate(`${ROUTES.USERS}?userid=${userId}`, { replace: true });
+			navigate(`${ROUTES.USERS}?${QUERY_PARAMS.USER_ID}=${userId}`, { replace: true });
 		},
 
 		goToTenantDetail: (tenantId: string) => {
-			navigate(`${ROUTES.TENANTS}?tenantId=${tenantId}`);
+			navigate(`${ROUTES.TENANTS}?${QUERY_PARAMS.TENANT_ID}=${tenantId}`);
 		},
 
 		goToUsersList: () => {
@@ -41,7 +42,7 @@ export const useNavigationHelpers = () => {
 		},
 
 		goToRoleDetails: (roleId: string) => {
-			navigate(`${ROUTES.ROLES}?roleid=${roleId}`);
+			navigate(`${ROUTES.ROLES}?${QUERY_PARAMS.ROLE_ID}=${roleId}`);
 		},
 	};
 };

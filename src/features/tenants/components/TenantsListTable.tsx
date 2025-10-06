@@ -26,12 +26,31 @@ import styles from "./TenantsListTable.module.scss";
 interface TenantsListTableProps {
 	tenants: Tenant[];
 	currentPage: number;
+	isSearching: boolean;
 }
 
-export default function TenantsListTable({ tenants, currentPage }: TenantsListTableProps) {
+export default function TenantsListTable({ tenants, currentPage, isSearching }: TenantsListTableProps) {
 	const startIndex = (currentPage - 1) * TENANTS_PAGINATION_LIMIT;
 	const endIndex = startIndex + TENANTS_PAGINATION_LIMIT;
 	const paginatedTenants = tenants.slice(startIndex, endIndex);
+
+	const getEmptyStateContent = () => {
+		if (isSearching) {
+			return {
+				iconUrl: "no-results.svg",
+				title: "No tenants found",
+				description: "No tenants match your search criteria. Try adjusting your search.",
+			};
+		}
+
+		return {
+			iconUrl: "tenant.svg",
+			title: "There are no tenants created",
+			description: "Once added, all tenants will be found here",
+		};
+	};
+
+	const emptyState = getEmptyStateContent();
 
 	return (
 		<Box className={styles["tenants-list-table"]}>
@@ -53,9 +72,9 @@ export default function TenantsListTable({ tenants, currentPage }: TenantsListTa
 			</Flex>
 			{tenants.length === 0 ? (
 				<EmptyList
-					iconUrl="tenant.svg"
-					title="There are no tenants created"
-					description="Once added, all tenants will be found here"
+					iconUrl={emptyState.iconUrl}
+					title={emptyState.title}
+					description={emptyState.description}
 				/>
 			) : (
 				<Flex direction="column">

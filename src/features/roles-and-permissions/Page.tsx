@@ -15,6 +15,8 @@
 
 import { useSearchParams } from "react-router-dom";
 
+import { QUERY_PARAMS } from "@shared/navigation";
+
 import RoleDetails from "./roles-details/RoleDetails";
 import RolesList from "./components/RolesList";
 
@@ -25,7 +27,7 @@ import RolesList from "./components/RolesList";
  */
 export default function RolesAndPermissions() {
 	const [searchParams] = useSearchParams();
-	const roleId = searchParams.get("roleid");
+	const roleId = searchParams.get(QUERY_PARAMS.ROLE_ID);
 
 	return !roleId ? <RolesList /> : <RoleDetails roleId={roleId} />;
 }

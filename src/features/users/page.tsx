@@ -13,6 +13,8 @@
  * under the License.
  */
 
+import { QUERY_PARAMS } from "@shared/navigation";
+
 import UserDetails from "@features/users/components/user-details/page";
 import { useSearchParams } from "react-router-dom";
 import { UsersList } from "./components/user-list/UsersList";
@@ -24,7 +26,7 @@ import { UsersList } from "./components/user-list/UsersList";
  */
 export function UserManagement() {
 	const [searchParams] = useSearchParams();
-	const userId = searchParams.get("userid");
+	const userId = searchParams.get(QUERY_PARAMS.USER_ID);
 
 	return userId ? <UserDetails userId={userId} /> : <UsersList />;
 }
