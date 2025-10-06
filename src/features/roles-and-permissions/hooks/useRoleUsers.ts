@@ -16,7 +16,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useFetchUsersService } from "@api/users";
 import { useUserRolesService } from "@api/userroles/user/roles";
 import { User } from "@features/users/types";
 import { QUERY_KEYS, STALE_TIME } from "../constants";
@@ -29,30 +28,24 @@ const PAGE_SIZE = 10;
 
 export const useRoleUsers = (roleId: string, tenantId?: string) => {
 	const queryClient = useQueryClient();
-	const { fetchUsers } = useFetchUsersService();
 	const { removeUserRole } = useUserRolesService();
 
 	const [currentPage, setCurrentPage] = useState(1);
 
+	// Note: Currently there's no API endpoint to fetch users by role
+	// The API only supports fetching roles for a specific user, not the reverse
+	// This query is disabled until backend support is added
 	const usersQuery = useQuery({
 		queryKey: queryKeys.roleUsers(roleId),
 		queryFn: async (): Promise<User[]> => {
-			const response = await fetchUsers({ limit: 1000 }, undefined, tenantId);
-
-			if (!response?.users) {
-				throw new Error("Failed to fetch users");
-			}
-
-			return response.users;
+			// This would require a backend API endpoint like:
+			// GET /api/userroles/role/users?role=roleId
+			// which doesn't exist yet
+			return [];
 		},
 		staleTime: STALE_TIME.ROLE_DETAILS,
-		enabled: !!roleId,
+		enabled: false, // Disabled until backend API is available
 		retry: false,
-		select: (allUsers) => {
-			// Filter on client side since we don't have a direct API to fetch users by role
-			// This is based on the old implementation approach
-			return allUsers;
-		},
 	});
 
 	const removeUserRoleMutation = useMutation({
@@ -88,8 +81,8 @@ export const useRoleUsers = (roleId: string, tenantId?: string) => {
 		users: paginatedUsers,
 		allUsers: usersQuery.data || [],
 		totalCount,
-		isLoading: usersQuery.isLoading,
-		error: usersQuery.error,
+		isLoading: false, // Not loading since query is disabled
+		error: null,
 		refetch: usersQuery.refetch,
 		removeUserRole: removeUserRoleMutation.mutateAsync,
 		isRemovingUserRole: removeUserRoleMutation.isPending,
