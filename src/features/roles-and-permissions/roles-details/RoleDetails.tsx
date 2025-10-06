@@ -53,7 +53,7 @@ interface RoleDetailContentProps {
 }
 
 const RoleDetailContent = ({ roleId, onDeleteSuccess }: RoleDetailContentProps) => {
-	const [selectedTab, setSelectedTab] = useState<RoleDetailTab>("manage-access");
+	const [selectedTab, setSelectedTab] = useState<RoleDetailTab>("permissions");
 	const [openDeleteRoleModal, setOpenDeleteRoleModal] = useState(false);
 
 	const handleTabChange = (tab: RoleDetailTab) => {

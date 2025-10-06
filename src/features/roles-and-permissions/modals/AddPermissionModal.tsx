@@ -26,7 +26,6 @@ import { useRolesList } from "../hooks";
 interface AddPermissionModalProps {
 	open: boolean;
 	handleClose: () => void;
-	roleId: string;
 	existingPermissions: string[];
 	onAddPermissions: (permissions: string[]) => Promise<void>;
 	isAdding: boolean;
@@ -35,7 +34,6 @@ interface AddPermissionModalProps {
 export default function AddPermissionModal({
 	open,
 	handleClose,
-	roleId,
 	existingPermissions,
 	onAddPermissions,
 	isAdding,
@@ -43,15 +41,13 @@ export default function AddPermissionModal({
 	const { allRoles } = useRolesList();
 	const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
-	// Get all permissions from all roles (for "existing permissions" section)
+	// Get all permissions from all roles, excluding ones already assigned to this role
 	const allExistingPermissions = Array.from(new Set(allRoles.flatMap((role) => role.permissions || []))).sort();
+	const availablePermissions = allExistingPermissions.filter((p) => !existingPermissions.includes(p));
 
 	const handleDone = async () => {
-		// Filter out permissions that are already assigned to this role
-		const newPermissions = selectedPermissions.filter((p) => !existingPermissions.includes(p));
-
-		if (newPermissions.length > 0) {
-			await onAddPermissions(newPermissions);
+		if (selectedPermissions.length > 0) {
+			await onAddPermissions(selectedPermissions);
 			setSelectedPermissions([]);
 		} else {
 			handleClose();
@@ -73,8 +69,7 @@ export default function AddPermissionModal({
 			size="lg">
 			<Form>
 				<AssignPermission
-					existingPermissions={allExistingPermissions}
-					selectedPermissions={selectedPermissions}
+					availablePermissions={availablePermissions}
 					onPermissionsChange={setSelectedPermissions}
 					disabled={isAdding}
 				/>

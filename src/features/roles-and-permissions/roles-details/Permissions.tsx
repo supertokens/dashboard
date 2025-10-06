@@ -23,7 +23,7 @@ import { assertNever } from "@utils/assertNever";
 
 import AddPermissionModal from "../modals/AddPermissionModal";
 import DeletePermissionModal from "../modals/DeletePermissionModal";
-import { useRoleDetails } from "../hooks";
+import { usePermissions } from "../hooks";
 import PermissionsHeader from "./PermissionsHeader";
 import PermissionsTable from "./PermissionsTable";
 
@@ -38,7 +38,7 @@ export default function Permissions({ roleId }: { roleId: string }) {
 		removePermissions,
 		isAddingPermissions,
 		isRemovingPermissions,
-	} = useRoleDetails(roleId);
+	} = usePermissions(roleId);
 
 	const [hoveredPermission, setHoveredPermission] = useState<string | null>(null);
 	const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
@@ -119,7 +119,6 @@ export default function Permissions({ roleId }: { roleId: string }) {
 					<AddPermissionModal
 						open={openAddPermissionModal}
 						handleClose={() => setOpenAddPermissionModal(false)}
-						roleId={roleId}
 						existingPermissions={permissions}
 						onAddPermissions={handleAddPermissions}
 						isAdding={isAddingPermissions}

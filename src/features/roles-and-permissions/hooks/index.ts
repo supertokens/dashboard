@@ -16,3 +16,4 @@
 export { useRolesList } from "./useRolesList";
 export { useRoleDetails } from "./useRoleDetails";
 export { useRoleUsers } from "./useRoleUsers";
+export { usePermissions } from "./usePermissions";

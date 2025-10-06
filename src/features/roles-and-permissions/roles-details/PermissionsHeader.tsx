@@ -38,7 +38,9 @@ export default function PermissionsHeader({
 			className={styles["permissions-header"]}
 			justify="between"
 			align="center"
-			width="100%">
+			width="100%"
+			px="4"
+			py="2">
 			<ItemLabel>Permissions</ItemLabel>
 			<Flex gap="2">
 				<IconButton

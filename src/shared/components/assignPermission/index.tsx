@@ -125,40 +125,38 @@ const ReviewSelection = ({ selectedExisting, newPermissions }: ReviewSelectionPr
 };
 
 interface AssignPermissionProps {
-	existingPermissions?: string[];
-	selectedPermissions?: string[];
+	availablePermissions?: string[];
 	onPermissionsChange?: (permissions: string[]) => void;
 	disabled?: boolean;
 }
 
 export const AssignPermission = ({
-	existingPermissions = [],
-	selectedPermissions = [],
+	availablePermissions = [],
 	onPermissionsChange,
 	disabled = false,
 }: AssignPermissionProps) => {
-	const [existingPermissionsStatus] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
+	const [availablePermissionsStatus] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [newPermissionInput, setNewPermissionInput] = useState("");
 	const [newPermissions, setNewPermissions] = useState<string[]>([]);
-	const [selectedExisting, setSelectedExisting] = useState<string[]>([]);
+	const [selectedAvailable, setSelectedAvailable] = useState<string[]>([]);
 
-	const filteredExistingPermissions = useMemo(() => {
-		if (!searchQuery.trim()) return existingPermissions;
+	const filteredAvailablePermissions = useMemo(() => {
+		if (!searchQuery.trim()) return availablePermissions;
 		const query = searchQuery.toLowerCase();
-		return existingPermissions.filter((p) => p.toLowerCase().includes(query));
-	}, [existingPermissions, searchQuery]);
+		return availablePermissions.filter((p) => p.toLowerCase().includes(query));
+	}, [availablePermissions, searchQuery]);
 
 	const handleAddNewPermission = () => {
 		const trimmed = newPermissionInput.trim();
-		if (trimmed && !newPermissions.includes(trimmed) && !existingPermissions.includes(trimmed)) {
+		if (trimmed && !newPermissions.includes(trimmed) && !availablePermissions.includes(trimmed)) {
 			const updated = [...newPermissions, trimmed];
 			setNewPermissions(updated);
 			setNewPermissionInput("");
 
 			// Notify parent of all selected permissions
 			if (onPermissionsChange) {
-				onPermissionsChange([...selectedExisting, ...updated]);
+				onPermissionsChange([...selectedAvailable, ...updated]);
 			}
 		}
 	};
@@ -169,12 +167,12 @@ export const AssignPermission = ({
 
 		// Notify parent of all selected permissions
 		if (onPermissionsChange) {
-			onPermissionsChange([...selectedExisting, ...updated]);
+			onPermissionsChange([...selectedAvailable, ...updated]);
 		}
 	};
 
-	const handleExistingSelectionChange = (selected: string[]) => {
-		setSelectedExisting(selected);
+	const handleAvailableSelectionChange = (selected: string[]) => {
+		setSelectedAvailable(selected);
 
 		// Notify parent of all selected permissions
 		if (onPermissionsChange) {
@@ -182,7 +180,7 @@ export const AssignPermission = ({
 		}
 	};
 
-	const renderExistingPermissions = () => {
+	const renderAvailablePermissions = () => {
 		return (
 			<Flex
 				direction="column"
@@ -194,7 +192,7 @@ export const AssignPermission = ({
 					Assign Existing Permissions
 				</Text>
 				{(() => {
-					switch (existingPermissionsStatus) {
+					switch (availablePermissionsStatus) {
 						case "LOADING":
 							return (
 								<Flex p="4">
@@ -221,23 +219,23 @@ export const AssignPermission = ({
 										</TextField.Slot>
 									</TextField.Root>
 
-									{filteredExistingPermissions.length === 0 ? (
+									{filteredAvailablePermissions.length === 0 ? (
 										<EmptyList
 											iconUrl="permission.svg"
 											title="No permissions found"
 											description={
 												searchQuery
 													? "No permissions match your search"
-													: "No existing permissions available"
+													: "No available permissions"
 											}
 										/>
 									) : (
 										<CheckboxGroup.Root
-											value={selectedExisting}
-											onValueChange={handleExistingSelectionChange}
-											name="existing-permissions"
+											value={selectedAvailable}
+											onValueChange={handleAvailableSelectionChange}
+											name="available-permissions"
 											className="permissions__existing-permissions__list-items">
-											{filteredExistingPermissions.map((item) => (
+											{filteredAvailablePermissions.map((item) => (
 												<CheckboxGroup.Item
 													key={item}
 													disabled={disabled}
@@ -354,11 +352,11 @@ export const AssignPermission = ({
 			<Flex
 				className="permissions"
 				width="100%">
-				<Form.Paper p="0">{renderExistingPermissions()}</Form.Paper>
+				<Form.Paper p="0">{renderAvailablePermissions()}</Form.Paper>
 				<Form.Paper p="0">{renderCreateNewPermissions()}</Form.Paper>
 			</Flex>
 			<ReviewSelection
-				selectedExisting={selectedExisting}
+				selectedExisting={selectedAvailable}
 				newPermissions={newPermissions}
 			/>
 		</>

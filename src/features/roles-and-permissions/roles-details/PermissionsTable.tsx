@@ -59,7 +59,7 @@ export default function PermissionsTable({
 				width="100%"
 				withBackground
 				withBorder
-				m="3"
+				m="4"
 				p="0"
 				className={styles["permissions-table__paper"]}>
 				{permissions.map((permission) => (

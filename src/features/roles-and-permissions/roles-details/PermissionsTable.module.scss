@@ -39,36 +39,28 @@
 			background: var(--color-accent-alpha-3);
 		}
 
-		&:first-child {
-			border-radius: var(--radius-max-4) var(--radius-max-4) 0 0 !important;
+		&:only-child {
+			border-radius: var(--radius-max-4);
 		}
 
-		&:last-child {
-			border-radius: 0 0 var(--radius-max-4) var(--radius-max-4) !important;
+		&:last-child:not(:only-child) {
+			border-radius: 0 0 var(--radius-max-4) var(--radius-max-4);
+		}
+
+		&:first-child:not(:only-child) {
+			border-radius: var(--radius-max-4) var(--radius-max-4) 0 0;
 		}
 
 		&__badge {
 			&--selected {
 				background: var(--color-accent-alpha-4) !important;
 			}
-
-			&--hovered {
-				// Add hover styles if needed
-			}
 		}
 
 		&__text {
 			&--selected {
-				color: var(--color-accent-alpha-11) !important;
-			}
-
-			&--hovered {
-				// Add hover styles if needed
+				color: var(--color-accent-alpha-11);
 			}
 		}
-	}
-
-	&__empty {
-		// Add empty state styles if needed
 	}
 }

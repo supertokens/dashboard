@@ -36,8 +36,8 @@ export default function CreateNewRoleModal({ handleClose, open, onCreateRole }: 
 	const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
-	// Get all existing permissions from all roles
-	const existingPermissions = Array.from(new Set(allRoles.flatMap((role) => role.permissions || []))).sort();
+	// Get all available permissions from all roles
+	const availablePermissions = Array.from(new Set(allRoles.flatMap((role) => role.permissions || []))).sort();
 
 	const handleSave = async () => {
 		if (!roleName.trim()) return;
@@ -79,8 +79,7 @@ export default function CreateNewRoleModal({ handleClose, open, onCreateRole }: 
 					</Form.Item>
 				</Form.Paper>
 				<AssignPermission
-					existingPermissions={existingPermissions}
-					selectedPermissions={selectedPermissions}
+					availablePermissions={availablePermissions}
 					onPermissionsChange={setSelectedPermissions}
 					disabled={isLoading}
 				/>
