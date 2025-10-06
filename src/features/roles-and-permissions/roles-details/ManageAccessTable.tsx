@@ -49,8 +49,7 @@ export default function ManageAccessTable({ users, onRemoveUser }: ManageAccessT
 		<Paper
 			className={styles["manage-access-table"]}
 			withBorder={true}
-			mx="3"
-			my="4"
+			m="4"
 			p="0">
 			<Flex
 				direction="column"

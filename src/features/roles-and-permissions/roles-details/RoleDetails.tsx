@@ -34,17 +34,22 @@ import ManageAccess from "./ManageAccess";
 import DeleteRoleModal from "../modals/DeleteRoleModal";
 import { useRoleDetails } from "../hooks";
 
-type RoleDetailTab = "permissions" | "manage-access";
+// TODO: Add "manage-access" to RoleDetailTab type when the manage access feature is ready
+type RoleDetailTab = "permissions";
 
 const roleDetailTabs: Array<{ name: string; value: RoleDetailTab }> = [
 	{
 		name: "Permissions",
 		value: "permissions",
 	},
+
+	/*
+	// TODO: Add this tab in the future to show users assigned to roles and manage role assignments
 	{
 		name: "Manage Access",
 		value: "manage-access",
 	},
+	*/
 ];
 
 interface RoleDetailContentProps {
@@ -96,8 +101,10 @@ const RoleDetailContent = ({ roleId, onDeleteSuccess }: RoleDetailContentProps) 
 						switch (selectedTab) {
 							case "permissions":
 								return <Permissions roleId={roleId} />;
+							/* TODO: Add this tab in the future to show users assigned to roles and manage role assignments
 							case "manage-access":
 								return <ManageAccess roleId={roleId} />;
+							*/
 							default:
 								return assertNever(selectedTab);
 						}

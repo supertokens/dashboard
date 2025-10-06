@@ -23,8 +23,7 @@ export default function ManageAccessHeader() {
 	return (
 		<Flex
 			className={styles["manage-access-header"]}
-			px="3"
-			py="4">
+			p="4">
 			<ItemLabel>List of users who have access to this role</ItemLabel>
 		</Flex>
 	);
