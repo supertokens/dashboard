@@ -20,6 +20,9 @@ import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
 import ItemLabel from "@shared/components/itemLabel";
 import Button from "@shared/components/button";
+import { AssignPermission } from "@shared/components/assignPermission";
+
+import { useRolesList } from "../../hooks";
 
 interface CreateNewRoleModalProps {
 	handleClose: () => void;
@@ -28,32 +31,22 @@ interface CreateNewRoleModalProps {
 }
 
 export default function CreateNewRoleModal({ handleClose, open, onCreateRole }: CreateNewRoleModalProps) {
+	const { allRoles } = useRolesList();
 	const [roleName, setRoleName] = useState("");
-	const [permissionInput, setPermissionInput] = useState("");
-	const [permissions, setPermissions] = useState<string[]>([]);
+	const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const handleAddPermission = () => {
-		const trimmedPermission = permissionInput.trim();
-		if (trimmedPermission && !permissions.includes(trimmedPermission)) {
-			setPermissions([...permissions, trimmedPermission]);
-			setPermissionInput("");
-		}
-	};
-
-	const handleRemovePermission = (permission: string) => {
-		setPermissions(permissions.filter((p) => p !== permission));
-	};
+	// Get all existing permissions from all roles
+	const existingPermissions = Array.from(new Set(allRoles.flatMap((role) => role.permissions || []))).sort();
 
 	const handleSave = async () => {
 		if (!roleName.trim()) return;
 
 		setIsLoading(true);
 		try {
-			await onCreateRole(roleName.trim(), permissions);
+			await onCreateRole(roleName.trim(), selectedPermissions);
 			setRoleName("");
-			setPermissions([]);
-			setPermissionInput("");
+			setSelectedPermissions([]);
 		} finally {
 			setIsLoading(false);
 		}
@@ -62,8 +55,7 @@ export default function CreateNewRoleModal({ handleClose, open, onCreateRole }: 
 	const handleCloseModal = () => {
 		if (!isLoading) {
 			setRoleName("");
-			setPermissions([]);
-			setPermissionInput("");
+			setSelectedPermissions([]);
 			handleClose();
 		}
 	};
@@ -86,77 +78,15 @@ export default function CreateNewRoleModal({ handleClose, open, onCreateRole }: 
 						/>
 					</Form.Item>
 				</Form.Paper>
-				<Form.Paper>
-					<Form.Item>
-						<ItemLabel mb="2">Permissions (Optional)</ItemLabel>
-						<Flex
-							gap="2"
-							align="center">
-							<TextField.Root
-								value={permissionInput}
-								onChange={(e) => setPermissionInput(e.target.value)}
-								onKeyDown={(e) => {
-									if (e.key === "Enter") {
-										e.preventDefault();
-										handleAddPermission();
-									}
-								}}
-								disabled={isLoading}
-								placeholder="Enter permission and press Enter"
-								style={{ flex: 1 }}
-							/>
-							<Button
-								size="2"
-								onClick={handleAddPermission}
-								disabled={!permissionInput.trim() || isLoading}>
-								Add
-							</Button>
-						</Flex>
-						{permissions.length > 0 && (
-							<Flex
-								gap="2"
-								mt="3"
-								wrap="wrap">
-								{permissions.map((permission) => (
-									<Flex
-										key={permission}
-										align="center"
-										gap="2"
-										style={{
-											padding: "4px 8px",
-											background: "var(--accent-3)",
-											borderRadius: "4px",
-										}}>
-										{permission}
-										<button
-											onClick={() => handleRemovePermission(permission)}
-											style={{
-												background: "none",
-												border: "none",
-												cursor: "pointer",
-												padding: 0,
-											}}
-											disabled={isLoading}>
-											×
-										</button>
-									</Flex>
-								))}
-							</Flex>
-						)}
-					</Form.Item>
-				</Form.Paper>
+				<AssignPermission
+					existingPermissions={existingPermissions}
+					selectedPermissions={selectedPermissions}
+					onPermissionsChange={setSelectedPermissions}
+					disabled={isLoading}
+				/>
 				<Flex
 					justify="end"
-					mt="4"
-					gap="3">
-					<Button
-						size="3"
-						variant="outline"
-						color="gray"
-						onClick={handleCloseModal}
-						disabled={isLoading}>
-						Cancel
-					</Button>
+					mt="4">
 					<Button
 						size="3"
 						onClick={handleSave}

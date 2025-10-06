@@ -32,6 +32,9 @@
 			width: 100%;
 		}
 		&__list-items {
+			max-height: 200px;
+			overflow-y: auto;
+
 			&__item {
 				width: 100% !important;
 				padding: 14px 0;

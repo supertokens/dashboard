@@ -13,18 +13,30 @@
  * under the License.
  */
 
-import Loader from "@shared/components/loader";
+import { useState, useMemo } from "react";
 import { Cross1Icon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Badge, Flex, Text, TextField } from "@radix-ui/themes";
+
+import Loader from "@shared/components/loader";
 import DashboardError from "@shared/components/error";
-import { useState } from "react";
 import EmptyList from "@shared/components/empty";
 import Form from "@shared/components/form";
 import CheckboxGroup from "../checkboxGroup";
 
 import "./index.scss";
 
-const ReviewSelection = () => {
+interface ReviewSelectionProps {
+	selectedExisting: string[];
+	newPermissions: string[];
+}
+
+const ReviewSelection = ({ selectedExisting, newPermissions }: ReviewSelectionProps) => {
+	const totalSelected = selectedExisting.length + newPermissions.length;
+
+	if (totalSelected === 0) {
+		return null;
+	}
+
 	return (
 		<Form.Paper
 			p="0"
@@ -37,78 +49,138 @@ const ReviewSelection = () => {
 					radius="full"
 					size="1"
 					className="permissions__review-selection__header__badge">
-					1 selected
+					{totalSelected} selected
 				</Badge>
 			</Flex>
 			<Flex className="permissions__review-selection__content">
-				<Flex
-					className="permissions__review-selection__content__existing"
-					direction="column"
-					gap="3">
-					<Text className="permissions__review-selection__content__existing__title">
-						<Text
-							size="2"
-							weight="medium">
-							Existing (2)
+				{selectedExisting.length > 0 && (
+					<Flex
+						className="permissions__review-selection__content__existing"
+						direction="column"
+						gap="3">
+						<Text className="permissions__review-selection__content__existing__title">
+							<Text
+								size="2"
+								weight="medium">
+								Existing ({selectedExisting.length})
+							</Text>
 						</Text>
-					</Text>
 
-					<Flex gap="3">
-						{["test1", "test2"].map((item) => (
-							<Badge
-								size="1"
-								radius="medium"
-								key={item}
-								variant="soft"
-								color="gray">
-								<Text
-									className="permissions__review-selection__content__existing__badge"
-									size="2"
-									weight="medium">
-									{item}
-								</Text>
-							</Badge>
-						))}
+						<Flex
+							gap="3"
+							wrap="wrap">
+							{selectedExisting.map((item) => (
+								<Badge
+									size="1"
+									radius="medium"
+									key={item}
+									variant="soft"
+									color="gray">
+									<Text
+										className="permissions__review-selection__content__existing__badge"
+										size="2"
+										weight="medium">
+										{item}
+									</Text>
+								</Badge>
+							))}
+						</Flex>
 					</Flex>
-				</Flex>
-				<Flex
-					className="permissions__review-selection__content__new"
-					direction="column"
-					gap="3">
-					<Text className="permissions__review-selection__content__new__title">
-						<Text
-							size="2"
-							weight="medium">
-							New (2)
+				)}
+				{newPermissions.length > 0 && (
+					<Flex
+						className="permissions__review-selection__content__new"
+						direction="column"
+						gap="3">
+						<Text className="permissions__review-selection__content__new__title">
+							<Text
+								size="2"
+								weight="medium">
+								New ({newPermissions.length})
+							</Text>
 						</Text>
-					</Text>
-					<Flex gap="3">
-						{["test3", "test4"].map((item) => (
-							<Badge
-								size="1"
-								radius="medium"
-								key={item}
-								variant="soft">
-								<Text
-									className="permissions__review-selection__content__new__badge"
-									size="2"
-									weight="medium">
-									{item}
-								</Text>
-							</Badge>
-						))}
+						<Flex
+							gap="3"
+							wrap="wrap">
+							{newPermissions.map((item) => (
+								<Badge
+									size="1"
+									radius="medium"
+									key={item}
+									variant="soft">
+									<Text
+										className="permissions__review-selection__content__new__badge"
+										size="2"
+										weight="medium">
+										{item}
+									</Text>
+								</Badge>
+							))}
+						</Flex>
 					</Flex>
-				</Flex>
+				)}
 			</Flex>
 		</Form.Paper>
 	);
 };
 
-export const AssignPermission = () => {
-	const [existingPermissionsStatus, setExistingPermissionsStatus] = useState<"LOADING" | "SUCCESS" | "ERROR">(
-		"SUCCESS"
-	);
-	const [existingPermissions, setExistingPermissions] = useState<string[]>(["test1", "test2", "test3"]);
+interface AssignPermissionProps {
+	existingPermissions?: string[];
+	selectedPermissions?: string[];
+	onPermissionsChange?: (permissions: string[]) => void;
+	disabled?: boolean;
+}
+
+export const AssignPermission = ({
+	existingPermissions = [],
+	selectedPermissions = [],
+	onPermissionsChange,
+	disabled = false,
+}: AssignPermissionProps) => {
+	const [existingPermissionsStatus] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
+	const [searchQuery, setSearchQuery] = useState("");
+	const [newPermissionInput, setNewPermissionInput] = useState("");
+	const [newPermissions, setNewPermissions] = useState<string[]>([]);
+	const [selectedExisting, setSelectedExisting] = useState<string[]>([]);
+
+	const filteredExistingPermissions = useMemo(() => {
+		if (!searchQuery.trim()) return existingPermissions;
+		const query = searchQuery.toLowerCase();
+		return existingPermissions.filter((p) => p.toLowerCase().includes(query));
+	}, [existingPermissions, searchQuery]);
+
+	const handleAddNewPermission = () => {
+		const trimmed = newPermissionInput.trim();
+		if (trimmed && !newPermissions.includes(trimmed) && !existingPermissions.includes(trimmed)) {
+			const updated = [...newPermissions, trimmed];
+			setNewPermissions(updated);
+			setNewPermissionInput("");
+
+			// Notify parent of all selected permissions
+			if (onPermissionsChange) {
+				onPermissionsChange([...selectedExisting, ...updated]);
+			}
+		}
+	};
+
+	const handleRemoveNewPermission = (permission: string) => {
+		const updated = newPermissions.filter((p) => p !== permission);
+		setNewPermissions(updated);
+
+		// Notify parent of all selected permissions
+		if (onPermissionsChange) {
+			onPermissionsChange([...selectedExisting, ...updated]);
+		}
+	};
+
+	const handleExistingSelectionChange = (selected: string[]) => {
+		setSelectedExisting(selected);
+
+		// Notify parent of all selected permissions
+		if (onPermissionsChange) {
+			onPermissionsChange([...selected, ...newPermissions]);
+		}
+	};
 
 	const renderExistingPermissions = () => {
 		return (
@@ -140,29 +212,46 @@ export const AssignPermission = () => {
 									direction="column">
 									<TextField.Root
 										placeholder="Search Permissions"
+										value={searchQuery}
+										onChange={(e) => setSearchQuery(e.target.value)}
+										disabled={disabled}
 										className="permissions__existing-permissions__search">
 										<TextField.Slot>
 											<MagnifyingGlassIcon />
 										</TextField.Slot>
 									</TextField.Root>
 
-									<CheckboxGroup.Root
-										defaultValue={["1"]}
-										name="example"
-										className="permissions__existing-permissions__list-items">
-										{["test1", "test2", "test3"].map((item) => (
-											<CheckboxGroup.Item
-												key={item}
-												className="permissions__existing-permissions__list-items__item"
-												value={item}>
-												<Text
-													size="2"
-													weight="regular">
-													{item}
-												</Text>
-											</CheckboxGroup.Item>
-										))}
-									</CheckboxGroup.Root>
+									{filteredExistingPermissions.length === 0 ? (
+										<EmptyList
+											iconUrl="permission.svg"
+											title="No permissions found"
+											description={
+												searchQuery
+													? "No permissions match your search"
+													: "No existing permissions available"
+											}
+										/>
+									) : (
+										<CheckboxGroup.Root
+											value={selectedExisting}
+											onValueChange={handleExistingSelectionChange}
+											name="existing-permissions"
+											className="permissions__existing-permissions__list-items">
+											{filteredExistingPermissions.map((item) => (
+												<CheckboxGroup.Item
+													key={item}
+													disabled={disabled}
+													className="permissions__existing-permissions__list-items__item"
+													value={item}>
+													<Text
+														size="2"
+														weight="regular">
+														{item}
+													</Text>
+												</CheckboxGroup.Item>
+											))}
+										</CheckboxGroup.Root>
+									)}
 								</Flex>
 							);
 						case "ERROR":
@@ -174,7 +263,6 @@ export const AssignPermission = () => {
 	};
 
 	const renderCreateNewPermissions = () => {
-		const permissions = ["test1", "test2", "test3", "test4", "test5", "test6", "test7", "test8", "test9", "test10"];
 		return (
 			<Flex
 				direction="column"
@@ -191,7 +279,18 @@ export const AssignPermission = () => {
 					px="4"
 					py="3"
 					className="permissions__create-new-permissions__search">
-					<TextField.Root placeholder="Enter Permission Name"></TextField.Root>
+					<TextField.Root
+						placeholder="Enter Permission Name"
+						value={newPermissionInput}
+						onChange={(e) => setNewPermissionInput(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.preventDefault();
+								handleAddNewPermission();
+							}
+						}}
+						disabled={disabled}
+					/>
 					<Text
 						size="1"
 						weight="medium"
@@ -200,9 +299,9 @@ export const AssignPermission = () => {
 					</Text>
 				</Flex>
 
-				{permissions.length === 0 ? (
+				{newPermissions.length === 0 ? (
 					<EmptyList
-						iconUrl="permissions.svg"
+						iconUrl="permission.svg"
 						title={
 							<Text
 								size="1"
@@ -227,7 +326,7 @@ export const AssignPermission = () => {
 						gap="2"
 						px="4"
 						py="3">
-						{permissions.map((permission) => (
+						{newPermissions.map((permission) => (
 							<Badge
 								variant="soft"
 								size="3"
@@ -238,7 +337,10 @@ export const AssignPermission = () => {
 									weight="regular">
 									{permission}
 								</Text>
-								<Cross1Icon />
+								<Cross1Icon
+									onClick={() => !disabled && handleRemoveNewPermission(permission)}
+									style={{ cursor: disabled ? "default" : "pointer" }}
+								/>
 							</Badge>
 						))}
 					</Flex>
@@ -255,7 +357,10 @@ export const AssignPermission = () => {
 				<Form.Paper p="0">{renderExistingPermissions()}</Form.Paper>
 				<Form.Paper p="0">{renderCreateNewPermissions()}</Form.Paper>
 			</Flex>
-			<ReviewSelection />
+			<ReviewSelection
+				selectedExisting={selectedExisting}
+				newPermissions={newPermissions}
+			/>
 		</>
 	);
 };

@@ -14,12 +14,14 @@
  */
 
 import { useState } from "react";
-import { Flex, TextField } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 
 import { Modal } from "@shared/components/modal";
-import Form from "@shared/components/form";
-import ItemLabel from "@shared/components/itemLabel";
+import { AssignPermission } from "@shared/components/assignPermission";
 import Button from "@shared/components/button";
+import Form from "@shared/components/form";
+
+import { useRolesList } from "../../hooks";
 
 interface AddPermissionModalProps {
 	open: boolean;
@@ -38,30 +40,19 @@ export default function AddPermissionModal({
 	onAddPermissions,
 	isAdding,
 }: AddPermissionModalProps) {
-	const [permissionInput, setPermissionInput] = useState("");
-	const [newPermissions, setNewPermissions] = useState<string[]>([]);
+	const { allRoles } = useRolesList();
+	const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
-	const handleAddPermission = () => {
-		const trimmedPermission = permissionInput.trim();
-		if (
-			trimmedPermission &&
-			!newPermissions.includes(trimmedPermission) &&
-			!existingPermissions.includes(trimmedPermission)
-		) {
-			setNewPermissions([...newPermissions, trimmedPermission]);
-			setPermissionInput("");
-		}
-	};
-
-	const handleRemovePermission = (permission: string) => {
-		setNewPermissions(newPermissions.filter((p) => p !== permission));
-	};
+	// Get all permissions from all roles (for "existing permissions" section)
+	const allExistingPermissions = Array.from(new Set(allRoles.flatMap((role) => role.permissions || []))).sort();
 
 	const handleDone = async () => {
+		// Filter out permissions that are already assigned to this role
+		const newPermissions = selectedPermissions.filter((p) => !existingPermissions.includes(p));
+
 		if (newPermissions.length > 0) {
 			await onAddPermissions(newPermissions);
-			setNewPermissions([]);
-			setPermissionInput("");
+			setSelectedPermissions([]);
 		} else {
 			handleClose();
 		}
@@ -69,8 +60,7 @@ export default function AddPermissionModal({
 
 	const handleCloseModal = () => {
 		if (!isAdding) {
-			setNewPermissions([]);
-			setPermissionInput("");
+			setSelectedPermissions([]);
 			handleClose();
 		}
 	};
@@ -82,81 +72,19 @@ export default function AddPermissionModal({
 			handleClose={handleCloseModal}
 			size="lg">
 			<Form>
-				<Form.Paper>
-					<Form.Item>
-						<ItemLabel mb="2">Add New Permissions</ItemLabel>
-						<Flex
-							gap="2"
-							align="center">
-							<TextField.Root
-								value={permissionInput}
-								onChange={(e) => setPermissionInput(e.target.value)}
-								onKeyDown={(e) => {
-									if (e.key === "Enter") {
-										e.preventDefault();
-										handleAddPermission();
-									}
-								}}
-								disabled={isAdding}
-								placeholder="Enter permission and press Enter"
-								style={{ flex: 1 }}
-							/>
-							<Button
-								size="2"
-								onClick={handleAddPermission}
-								disabled={!permissionInput.trim() || isAdding}>
-								Add
-							</Button>
-						</Flex>
-						{newPermissions.length > 0 && (
-							<Flex
-								gap="2"
-								mt="3"
-								wrap="wrap">
-								{newPermissions.map((permission) => (
-									<Flex
-										key={permission}
-										align="center"
-										gap="2"
-										style={{
-											padding: "4px 8px",
-											background: "var(--accent-3)",
-											borderRadius: "4px",
-										}}>
-										{permission}
-										<button
-											onClick={() => handleRemovePermission(permission)}
-											style={{
-												background: "none",
-												border: "none",
-												cursor: "pointer",
-												padding: 0,
-											}}
-											disabled={isAdding}>
-											×
-										</button>
-									</Flex>
-								))}
-							</Flex>
-						)}
-					</Form.Item>
-				</Form.Paper>
+				<AssignPermission
+					existingPermissions={allExistingPermissions}
+					selectedPermissions={selectedPermissions}
+					onPermissionsChange={setSelectedPermissions}
+					disabled={isAdding}
+				/>
 				<Flex
 					justify="end"
-					mt="4"
-					gap="3">
-					<Button
-						size="3"
-						variant="outline"
-						color="gray"
-						onClick={handleCloseModal}
-						disabled={isAdding}>
-						Cancel
-					</Button>
+					mt="4">
 					<Button
 						size="3"
 						onClick={handleDone}
-						disabled={newPermissions.length === 0 || isAdding}>
+						disabled={isAdding || selectedPermissions.length === 0}>
 						{isAdding ? "Adding..." : "Done"}
 					</Button>
 				</Flex>
