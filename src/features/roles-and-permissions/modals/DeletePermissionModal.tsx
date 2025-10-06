@@ -19,7 +19,7 @@ import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
 import Button from "@shared/components/button";
 
-import "./DeletePermissionModal.module.scss";
+import styles from "./DeletePermissionModal.module.scss";
 
 interface DeletePermissionModalProps {
 	open: boolean;
@@ -33,46 +33,36 @@ interface DeletePermissionModalProps {
 export default function DeletePermissionModal({
 	open,
 	handleClose,
-	roleId,
 	selectedPermissions,
 	onDeletePermissions,
 	isDeleting,
 }: DeletePermissionModalProps) {
 	return (
 		<Modal
-			title="Delete Permission"
+			title="Remove Permission"
 			open={open}
 			handleClose={handleClose}>
-			<Form className="delete-permission-modal">
+			<Form className={styles["delete-permission-modal"]}>
 				<Form.Paper>
 					<Text
 						size="2"
-						className="delete-permission-modal__disclaimer">
-						Are you sure you want to delete{" "}
+						className={styles["delete-permission-modal__disclaimer"]}>
+						Are you sure you want to remove{" "}
 						{selectedPermissions.length === 1
-							? "this permission"
-							: `these ${selectedPermissions.length} permissions`}
-						? This action is irreversible.
+							? "this permission from this role"
+							: `these ${selectedPermissions.length} permissions from this role`}
+						?
 					</Text>
 				</Form.Paper>
 				<Flex
 					justify="end"
-					mt="4"
-					gap="3">
-					<Button
-						size="3"
-						variant="outline"
-						color="gray"
-						onClick={handleClose}
-						disabled={isDeleting}>
-						Cancel
-					</Button>
+					mt="5">
 					<Button
 						color="red"
 						size="3"
 						onClick={onDeletePermissions}
 						disabled={isDeleting}>
-						{isDeleting ? "Deleting..." : "Delete"}
+						{isDeleting ? "Removing..." : "Remove"}
 					</Button>
 				</Flex>
 			</Form>

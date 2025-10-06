@@ -42,7 +42,7 @@ export default function PermissionsHeader({
 			px="4"
 			py="2">
 			<ItemLabel>Permissions</ItemLabel>
-			<Flex gap="2">
+			<Flex gap="3">
 				<IconButton
 					color="red"
 					disabled={selectedPermissions.length === 0}
