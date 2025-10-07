@@ -16,7 +16,7 @@
 import { Flex, IconButton, Text } from "@radix-ui/themes";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 
-import { formatNumber } from "@utils";
+import { formatNumber } from "@shared/utils";
 
 const PAGE_SIZE = 10;
 

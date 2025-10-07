@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,17 +13,4 @@
  * under the License.
  */
 
-export const ROUTES = {
-	USERS: "/",
-	ROLES: "/roles",
-	TENANTS: "/tenants",
-} as const;
-
-export const QUERY_PARAMS = {
-	USER_ID: "userid",
-	TENANT_ID: "tenantid",
-	ROLE_ID: "roleid",
-} as const;
-
-export type RouteKey = keyof typeof ROUTES;
-export type Route = typeof ROUTES[RouteKey];
+export const package_version = "0.13.0";

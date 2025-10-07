@@ -19,9 +19,9 @@ import { create } from "zustand";
 
 import { useCreateTenantService, useDeleteTenantService, useListTenantsService } from "@api/tenants";
 import type { Tenant } from "@api/tenants/types";
-import { getSelectedTenantIdFromLocalStorage, setSelectedTenantIdToLocalStorage } from "@utils";
 
 import { QUERY_KEYS, STALE_TIME } from "../constants";
+import { getSelectedTenantIdFromLocalStorage, setSelectedTenantIdToLocalStorage } from "@shared/utils/storage";
 
 const queryKeys = {
 	tenants: () => [QUERY_KEYS.TENANTS] as const,

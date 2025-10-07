@@ -13,8 +13,10 @@
  * under the License.
  */
 
-import { Flex, Text } from "@radix-ui/themes";
+import { useState } from "react";
+import { Checkbox, Flex, Select, Switch, Text } from "@radix-ui/themes";
 
+import type { CoreConfigFieldInfo } from "@api/tenants/types";
 import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
 import ItemLabel from "@shared/components/itemLabel";
@@ -22,15 +24,142 @@ import ItemValue from "@shared/components/itemValue";
 import TextField from "@shared/components/text";
 import Callout from "@shared/components/callout";
 import Button from "@shared/components/button";
+import { useToast } from "@shared/components/toast";
+import { useTenantDetails } from "@features/tenants/hooks/useTenantDetails";
 
 import styles from "./EditConfigurationPropertyModal.module.scss";
 
 interface EditConfigurationPropertyModalProps {
 	open: boolean;
 	handleClose: () => void;
+	config: CoreConfigFieldInfo;
+	tenantId: string;
 }
 
-export default function EditConfigurationPropertyModal({ open, handleClose }: EditConfigurationPropertyModalProps) {
+export default function EditConfigurationPropertyModal({
+	open,
+	handleClose,
+	config,
+	tenantId,
+}: EditConfigurationPropertyModalProps) {
+	const [currentValue, setCurrentValue] = useState<string | number | boolean | null>(config.value);
+	const [isLoading, setIsLoading] = useState(false);
+	const { updateCoreConfig, refetch } = useTenantDetails(tenantId);
+	const { showSuccessToast, showErrorToast } = useToast();
+
+	const isMultiValue = Array.isArray(config.possibleValues) && config.possibleValues.length > 0;
+
+	const toggleNull = () => {
+		if (currentValue === null) {
+			// Restore to default value or appropriate zero value
+			if (config.valueType === "number") {
+				setCurrentValue(config.defaultValue !== null ? config.defaultValue : 0);
+			} else if (config.valueType === "boolean") {
+				setCurrentValue(config.defaultValue !== null ? config.defaultValue : false);
+			} else {
+				setCurrentValue(config.defaultValue !== null ? config.defaultValue : "");
+			}
+		} else {
+			setCurrentValue(null);
+		}
+	};
+
+	const handleSaveProperty = async () => {
+		try {
+			setIsLoading(true);
+
+			// Parse value based on type
+			let parsedValue: string | number | boolean | null = currentValue;
+
+			if (config.valueType === "number" && typeof currentValue === "string") {
+				parsedValue = parseInt(currentValue, 10);
+				if (isNaN(parsedValue as number)) {
+					showErrorToast("Invalid Value", "Please enter a valid number");
+					setIsLoading(false);
+					return;
+				}
+			}
+
+			await updateCoreConfig({
+				name: config.key,
+				value: parsedValue,
+			});
+
+			await refetch();
+			showSuccessToast("Success", `Property "${config.key}" updated successfully`);
+			handleClose();
+		} catch (e: unknown) {
+			const errorMessage = e instanceof Error ? e.message : "Something went wrong. Please try again.";
+			showErrorToast("Update Failed", errorMessage);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const renderValueInput = () => {
+		// Multi-value select (dropdown)
+		if (isMultiValue && config.possibleValues) {
+			return (
+				<Select.Root
+					value={currentValue as string}
+					onValueChange={(value) => setCurrentValue(value)}
+					disabled={currentValue === null}>
+					<Select.Trigger />
+					<Select.Content>
+						{config.possibleValues.map((option) => (
+							<Select.Item
+								key={option}
+								value={option}>
+								{option}
+							</Select.Item>
+						))}
+					</Select.Content>
+				</Select.Root>
+			);
+		}
+
+		// Boolean type - use switch
+		if (config.valueType === "boolean") {
+			if (currentValue === null) {
+				return (
+					<Text
+						size="2"
+						color="gray">
+						[null]
+					</Text>
+				);
+			}
+			return (
+				<Flex
+					align="center"
+					gap="2">
+					<Switch
+						checked={currentValue as boolean}
+						onCheckedChange={(checked) => setCurrentValue(checked)}
+					/>
+					<Text size="2">{currentValue ? "True" : "False"}</Text>
+				</Flex>
+			);
+		}
+
+		// String or number type - use text field
+		return (
+			<TextField
+				value={currentValue === null ? "" : String(currentValue)}
+				onChange={(e) => {
+					const value = e.target.value;
+					setCurrentValue(value);
+				}}
+				placeholder={currentValue === null ? "[null]" : ""}
+				disabled={currentValue === null}
+				color="gray"
+				size="3"
+				variant="surface"
+				className={styles["edit-configuration-property-modal__value"]}
+			/>
+		);
+	};
+
 	return (
 		<Modal
 			size="md"
@@ -52,7 +181,7 @@ export default function EditConfigurationPropertyModal({ open, handleClose }: Ed
 					<ItemValue
 						size="2"
 						className={styles["edit-configuration-property-modal__heading__value"]}>
-						email_verification_token_lifetime
+						{config.key}
 					</ItemValue>
 				</Flex>
 				<Flex
@@ -67,33 +196,46 @@ export default function EditConfigurationPropertyModal({ open, handleClose }: Ed
 							mb="2">
 							Value:
 						</ItemLabel>
-						<TextField
-							value="10"
-							color="gray"
-							size="3"
-							variant="surface"
-							className={styles["edit-configuration-property-modal__value"]}
-						/>
+						{renderValueInput()}
+						{config.isNullable && (
+							<Flex
+								mt="2"
+								gap="2">
+								<Checkbox
+									checked={currentValue === null}
+									onCheckedChange={toggleNull}
+								/>
+								<Text size="2">Set value as null</Text>
+							</Flex>
+						)}
 					</Form.Item>
-					<Callout
-						color="gray"
-						className={styles["edit-configuration-property-modal__callout"]}>
-						<Text className={styles["edit-configuration-property-modal__callout__text"]}>
-							Time in milliseconds for how long an email verification token / link is valid for. [Default:
-							24 * 3600 * 1000 (1 day)]
-						</Text>
-						<Text
-							mt="3"
-							className={styles["edit-configuration-property-modal__callout__text--bold"]}>
-							Default Value: 86400000
-						</Text>
-					</Callout>
+					{config.description && (
+						<Callout
+							color="gray"
+							className={styles["edit-configuration-property-modal__callout"]}>
+							<Text className={styles["edit-configuration-property-modal__callout__text"]}>
+								{config.description}
+							</Text>
+							{config.defaultValue !== null && (
+								<Text
+									mt="3"
+									className={styles["edit-configuration-property-modal__callout__text--bold"]}>
+									Default Value: {String(config.defaultValue)}
+								</Text>
+							)}
+						</Callout>
+					)}
 				</Flex>
 			</Form>
 			<Flex
 				justify="end"
 				mt="5">
-				<Button size="3">Save</Button>
+				<Button
+					size="3"
+					onClick={handleSaveProperty}
+					disabled={isLoading}>
+					{isLoading ? "Saving..." : "Save"}
+				</Button>
 			</Flex>
 		</Modal>
 	);

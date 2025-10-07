@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { PasswordlessContactMethod } from "@api/tenants/types";
 import { useCreatePasswordlessUser } from "@features/users/hooks/useCreatePasswordlessUser";
 import { CreateUserDialogStepType } from "./CreateUserModal";
-import { assertNever } from "@utils/assertNever";
+import { assertNever } from "@shared/utils/assertNever";
 import { useNavigationHelpers } from "@shared/navigation";
 import { useTenants } from "@features/tenants/hooks/useTenants";
 import { FactorIds } from "@shared/constants";

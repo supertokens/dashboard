@@ -13,10 +13,23 @@
  * under the License.
  */
 
-export { default as CreateNewTenantModal } from "./CreateNewTenantModal";
-export { default as DeleteTenantModal } from "./DeleteTenantModal";
-export { default as DeleteProviderConfigModal } from "./DeleteProviderConfigModal";
-export { default as EditConfigurationPropertyModal } from "./EditConfigurationPropertyModal";
-export { default as UneditableConfigurationModal } from "./UneditableConfigurationModal";
-export { default as AddNewProviderModal } from "./AddNewProviderModal";
-export { default as EditPluginPropertyModal } from "./EditPluginPropertyModal";
+.core-configuration-table {
+	border: 1px solid var(--color-neutral-alpha-8);
+
+	&__header {
+		color: var(--color-neutral-9);
+		border-bottom: 1px solid var(--color-neutral-alpha-8);
+
+		&__property-name {
+			width: 50%;
+		}
+
+		&__value {
+			width: 50%;
+		}
+	}
+
+	&__body {
+		// Styles for body are in CoreConfigTableRow.module.scss
+	}
+}

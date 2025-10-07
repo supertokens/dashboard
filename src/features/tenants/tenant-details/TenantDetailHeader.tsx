@@ -13,9 +13,9 @@
  * under the License.
  */
 
-import { getDashboardAppBasePath, setSelectedTenantIdToLocalStorage } from "../../../../utils";
-import Button from "../../button";
-import { useTenantDetailContext } from "./TenantDetailContext";
+import { getDashboardAppBasePath, setSelectedTenantIdToLocalStorage } from "../../../utils";
+import Button from "../../../ui/components/button";
+import { useTenantDetailContext } from "../../../ui/components/tenants/tenantDetail/TenantDetailContext";
 
 const HeaderItem = ({ title, value }: { title: string; value: string }) => {
 	return (

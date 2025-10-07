@@ -15,7 +15,7 @@
 
 import { Dialog, Flex } from "@radix-ui/themes";
 import React from "react";
-import { getImageUrl } from "@utils";
+import { getImageUrl } from "@shared/utils";
 
 import "./modal.scss";
 import Button from "../button";

@@ -17,7 +17,7 @@ import { Flex } from "@radix-ui/themes";
 
 import { useNavigationHelpers } from "@shared/navigation";
 import { useUser } from "@features/users/hooks/useUser";
-import { assertNever } from "@utils/assertNever";
+import { assertNever } from "@shared/utils/assertNever";
 
 import PageContainer from "@shared/components/pageContainer";
 import ItemDetailHeader from "@shared/components/itemDetailsHeading";

@@ -17,7 +17,7 @@ import { useState } from "react";
 import { CopyIcon, EyeNoneIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { Flex, FlexProps, Text } from "@radix-ui/themes";
 import { useToast } from "../toast";
-import { copyToClipboard, maskText } from "@utils/copyToClipboard";
+import { copyToClipboard, maskText } from "@shared/utils/copyToClipboard";
 import IconButton from "../iconButton";
 
 import "./index.scss";

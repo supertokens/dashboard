@@ -14,10 +14,10 @@
  */
 
 import { useAnalyticsService } from "@api/analytics";
-import { getAuthMode } from "@utils";
-import { localStorageHandler } from "@services/storage";
-import { StorageKeys } from "@constants";
-import { package_version } from "@version";
+import { getAuthMode } from "@shared/utils";
+import { localStorageHandler } from "@shared/services/storage";
+import { StorageKeys } from "@shared/constants";
+import { package_version } from "@shared/version";
 
 let isAnalyticsFired = false;
 

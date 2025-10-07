@@ -23,7 +23,7 @@ import { Loader } from "../../loader/Loader";
 import { CoreConfigSection } from "./CoreConfigSection";
 import { LoginMethodsSection } from "./LoginMethodsSection";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
-import { TenantDetailHeader } from "./TenantDetailHeader";
+import { TenantDetailHeader } from "../../../../features/tenants/tenant-details/TenantDetailHeader";
 import { ThirdPartySection } from "./ThirdPartySection";
 import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialog";
 import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";

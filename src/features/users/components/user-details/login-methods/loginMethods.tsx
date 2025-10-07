@@ -26,7 +26,7 @@ import TabSelector from "@shared/components/tabSelector";
 
 import { useUser } from "@features/users/hooks/useUser";
 import { useTenants } from "@features/tenants/hooks/useTenants";
-import { assertNever } from "@utils/assertNever";
+import { assertNever } from "@shared/utils/assertNever";
 
 import LoginMethodCard from "./LoginMethodCard";
 

@@ -20,7 +20,7 @@ import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
 import Button from "@shared/components/button";
 import { PopupContentContext } from "@contexts/PopupContentContext";
-import { getImageUrl } from "@utils/index";
+import { getImageUrl } from "@shared/utils/index";
 
 import { useRoleDetails } from "../hooks";
 

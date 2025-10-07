@@ -26,7 +26,7 @@ import CopyBox from "@shared/components/copyBox";
 import TabSelector from "@shared/components/tabSelector";
 import Separator from "@shared/components/separator";
 
-import { assertNever } from "@utils/assertNever";
+import { assertNever } from "@shared/utils/assertNever";
 import { formatLongDate } from "@shared/utils";
 import { getFirstLetter } from "@shared/utils/getFirstLetter";
 

@@ -13,10 +13,32 @@
  * under the License.
  */
 
-export { default as CreateNewTenantModal } from "./CreateNewTenantModal";
-export { default as DeleteTenantModal } from "./DeleteTenantModal";
-export { default as DeleteProviderConfigModal } from "./DeleteProviderConfigModal";
-export { default as EditConfigurationPropertyModal } from "./EditConfigurationPropertyModal";
-export { default as UneditableConfigurationModal } from "./UneditableConfigurationModal";
-export { default as AddNewProviderModal } from "./AddNewProviderModal";
-export { default as EditPluginPropertyModal } from "./EditPluginPropertyModal";
+.edit-plugin-property-modal {
+	&__description {
+		color: var(--color-secondary);
+	}
+
+	&__command {
+		background-color: var(--color-window-bg);
+		border-radius: var(--radius-2);
+		padding: var(--space-3);
+
+		&__code {
+			background-color: var(--color-black);
+			color: var(--color-white);
+			padding: var(--space-3);
+			border-radius: var(--radius-2);
+			overflow-x: auto;
+			font-family: monospace;
+			font-size: 12px;
+			line-height: 1.5;
+			white-space: pre-wrap;
+			word-wrap: break-word;
+			margin: 0;
+
+			code {
+				font-family: inherit;
+			}
+		}
+	}
+}

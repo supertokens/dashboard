@@ -62,16 +62,7 @@ export default function DeleteTenantModal({
 				</Form.Paper>
 				<Flex
 					justify="end"
-					mt="4"
-					gap="2">
-					<Button
-						color="gray"
-						size="3"
-						variant="outline"
-						onClick={handleClose}
-						disabled={isDeleting}>
-						Cancel
-					</Button>
+					mt="4">
 					<Button
 						color="red"
 						size="3"

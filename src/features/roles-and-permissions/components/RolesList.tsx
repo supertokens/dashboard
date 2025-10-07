@@ -20,7 +20,7 @@ import DashboardError from "@shared/components/error";
 import PageContainer from "@shared/components/pageContainer";
 import PageHeading from "@shared/components/pageHeading";
 import Loader from "@shared/components/loader";
-import { assertNever } from "@utils/assertNever";
+import { assertNever } from "@shared/utils/assertNever";
 import { useToast } from "@shared/components/toast";
 
 import CreateNewRoleModal from "../modals/CreateNewRoleModal";

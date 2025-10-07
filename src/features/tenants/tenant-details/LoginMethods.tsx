@@ -13,44 +13,42 @@
  * under the License.
  */
 
-import { Badge, Flex, Switch, Text } from "@radix-ui/themes";
+import { Badge, Callout, Flex, Switch, Text } from "@radix-ui/themes";
 
 import type { TenantInfo } from "@api/tenants/types";
-import { SECONDARY_FACTOR_IDS } from "@constants";
-import { getImageUrl } from "@utils/index";
+import { FIRST_FACTOR_IDS } from "@constants";
+import { getImageUrl } from "@shared/utils";
 import TabSelector from "@shared/components/tabSelector";
 import ItemLabel from "@shared/components/itemLabel";
 
-import "./secondaryFactors.scss";
+import styles from "./LoginMethods.module.scss";
 
-export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
-	const requiredSecondaryFactors = tenantInfo.requiredSecondaryFactors || [];
+export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
+	const enabledFirstFactors = tenantInfo.firstFactors || [];
 
 	return (
 		<Flex
 			width="100%"
 			direction="column"
-			className="secondary-factors">
+			className={styles["login-methods"]}>
 			<TabSelector.ContentHeading>
-				<ItemLabel>
-					The secondary factors necessary for successful authentication for this tenant post-login.
-				</ItemLabel>
+				<ItemLabel>The login methods you wish to activate for the tenant</ItemLabel>
 			</TabSelector.ContentHeading>
 			<Flex
-				className="secondary-factors__content"
+				className={styles["login-methods__content"]}
 				width="100%"
 				p="4"
 				gap="3">
 				<Flex
-					className="secondary-factors__content__main"
+					className={styles["login-methods__content__main"]}
 					direction="column">
-					{SECONDARY_FACTOR_IDS.map((factor) => {
-						const isRequired = requiredSecondaryFactors.includes(factor.id);
+					{FIRST_FACTOR_IDS.map((factor) => {
+						const isEnabled = enabledFirstFactors.includes(factor.id);
 						return (
 							<Flex
 								justify="between"
 								key={factor.id}
-								className="secondary-factors__content__main__item"
+								className={styles["login-methods__content__main__item"]}
 								align="center"
 								mx="4"
 								py="4">
@@ -60,42 +58,42 @@ export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => 
 									<Text
 										size="2"
 										weight="medium"
-										className="secondary-factors__content__main__item__name">
+										className={styles["login-methods__content__main__item__name"]}>
 										{factor.label}
 									</Text>
 									<Text
 										size="2"
 										weight="regular"
-										className="secondary-factors__content__main__item__description">
+										className={styles["login-methods__content__main__item__description"]}>
 										{factor.description}
 									</Text>
 								</Flex>
 								<Switch
 									size="2"
 									variant="classic"
-									checked={isRequired}
+									checked={isEnabled}
 									disabled
-									className="secondary-factors__content__main__method__switch"
+									className={styles["login-methods__content__main__method__switch"]}
 								/>
 							</Flex>
 						);
 					})}
 				</Flex>
-				<Flex className="secondary-factors__content__preview">
+				<Flex className={styles["login-methods__content__preview"]}>
 					<Badge
 						size="1"
 						variant="solid"
 						radius="small"
-						className="secondary-factors__content__preview__badge">
+						className={styles["login-methods__content__preview__badge"]}>
 						Preview
 					</Badge>
-					{requiredSecondaryFactors.length === 0 && (
+					{enabledFirstFactors.length === 0 && (
 						<Flex
 							gap="2"
 							direction="column"
 							justify="center"
 							align="center"
-							className="secondary-factors__content__preview__empty">
+							className={styles["login-methods__content__preview__empty"]}>
 							<img
 								src={getImageUrl("shield.svg")}
 								alt="Shield"
@@ -105,13 +103,32 @@ export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => 
 							<Text
 								size="1"
 								weight="regular"
-								className="secondary-factors__content__preview__empty__text">
-								Select secondary factor to see preview
+								className={styles["login-methods__content__preview__empty__text"]}>
+								Select login methods to see preview
 							</Text>
 						</Flex>
 					)}
 				</Flex>
 			</Flex>
+			{enabledFirstFactors.length > 0 && (
+				<Flex
+					className={styles["login-methods__footer"]}
+					px="4"
+					pb="4"
+					width="100%">
+					<Callout.Root
+						color="green"
+						size="1"
+						className={styles["login-methods__footer__callout"]}>
+						<Text
+							size="2"
+							className={styles["login-methods__footer__callout__text"]}>
+							<span>{enabledFirstFactors.length} login methods enabled:</span> Users will be able to sign
+							up using any of the selected methods
+						</Text>
+					</Callout.Root>
+				</Flex>
+			)}
 		</Flex>
 	);
 };

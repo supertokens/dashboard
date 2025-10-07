@@ -31,8 +31,8 @@ import Loader from "@shared/components/loader";
 import DashboardError from "@shared/components/error";
 import Paper from "@shared/components/paper";
 
-import { getConnectionUri } from "@utils";
-import { assertNever } from "@utils/assertNever";
+import { getConnectionUri } from "@shared/utils";
+import { assertNever } from "@shared/utils/assertNever";
 import { CreateUserModal } from "../create-user/CreateUserModal";
 
 export function UsersList() {

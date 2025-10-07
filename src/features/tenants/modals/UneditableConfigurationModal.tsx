@@ -23,9 +23,10 @@ import styles from "./UneditableConfigurationModal.module.scss";
 interface UneditableConfigurationModalProps {
 	open: boolean;
 	handleClose: () => void;
+	reason: React.ReactNode;
 }
 
-export default function UneditableConfigurationModal({ open, handleClose }: UneditableConfigurationModalProps) {
+export default function UneditableConfigurationModal({ open, handleClose, reason }: UneditableConfigurationModalProps) {
 	return (
 		<Modal
 			size="md"
@@ -38,7 +39,7 @@ export default function UneditableConfigurationModal({ open, handleClose }: Uned
 						className={styles["uneditable-configuration-modal__text"]}
 						size="2"
 						weight="regular">
-						This property is configurable only via the config.yaml file or via Docker env variables.
+						{reason}
 					</Text>
 				</Form.Paper>
 			</Form>

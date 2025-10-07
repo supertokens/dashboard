@@ -17,8 +17,8 @@ import Button from "@shared/components/button";
 import DashboardError from "@shared/components/error";
 import ItemLabel from "@shared/components/itemLabel";
 import Loader from "@shared/components/loader";
-import AddNewProviderModal from "@features/roles-and-permissions/modals/addNewProvider";
 import TabSelector from "@shared/components/tabSelector";
+import AddNewProviderModal from "@features/tenants/modals/AddNewProviderModal";
 import {
 	Cross1Icon,
 	InfoCircledIcon,
@@ -40,12 +40,12 @@ import {
 	TextField,
 	Tooltip,
 } from "@radix-ui/themes";
-import { assertNever } from "@utils/assertNever";
-import { getImageUrl } from "@utils/index";
+import { assertNever } from "@shared/utils/assertNever";
+import { getImageUrl } from "@shared/utils/index";
 import { useState } from "react";
 
-import "./providers.scss";
-import { NOOP } from "@utils/noop";
+import styles from "./Providers.module.scss";
+import { NOOP } from "@shared/utils/noop";
 import IconButton from "@shared/components/iconButton";
 import DeleteProviderConfigModal from "@features/tenants/modals/DeleteProviderConfigModal";
 
@@ -54,7 +54,7 @@ const ProviderConfigSeparator = ({ ...props }: FlexProps) => {
 		<Flex
 			m="3"
 			{...props}>
-			<Separator className="provider-config-separator" />
+			<Separator className={styles["provider-config-separator"]} />
 		</Flex>
 	);
 };
@@ -68,13 +68,20 @@ const ProviderConfigInput = ({
 	readonly?: boolean;
 	grow?: boolean;
 }) => {
+	const classNames = [
+		styles["provider-config-input"],
+		disabled && styles["provider-config-input--disabled"],
+		grow && styles["provider-config-input--grow"],
+		readonly && styles["provider-config-input--readonly"],
+	]
+		.filter(Boolean)
+		.join(" ");
+
 	return (
 		<TextField.Root
 			size="3"
 			variant="surface"
-			className={`provider-config-input ${disabled ? "provider-config-input--disabled" : ""} ${
-				grow ? "provider-config-input--grow" : ""
-			} ${readonly ? "provider-config-input--readonly" : ""}`}
+			className={classNames}
 			disabled={false}
 			readOnly={readonly}></TextField.Root>
 	);
@@ -95,24 +102,24 @@ const ProviderConfigInputLabel = ({
 		<Flex
 			align="center"
 			gap="2"
-			className={`provider-config-input-label provider-config-input-label--${size}`}>
+			className={`${styles["provider-config-input-label"]} ${styles[`provider-config-input-label--${size}`]}`}>
 			{withIcon && (
 				<InfoCircledIcon
 					width={16}
 					height={16}
-					className="provider-config-input-label__icon"
+					className={styles["provider-config-input-label__icon"]}
 				/>
 			)}
 			<Text
 				size="2"
 				weight="regular"
-				className="provider-config-input-label__text">
+				className={styles["provider-config-input-label__text"]}>
 				{label}
 				{required && (
 					<Text
 						size="2"
 						weight="regular"
-						className="provider-config-input-label__text--required">
+						className={styles["provider-config-input-label__text--required"]}>
 						*
 					</Text>
 				)}
@@ -139,7 +146,7 @@ const ProviderConfigInputRow = ({
 }) => {
 	return (
 		<Flex
-			className="provider-config-input-row"
+			className={styles["provider-config-input-row"]}
 			align="center"
 			gap="2">
 			<ProviderConfigInputLabel
@@ -168,7 +175,7 @@ const ProviderConfigButton = ({
 			size="2"
 			color="gray"
 			{...props}
-			className="provider-config-button">
+			className={styles["provider-config-button"]}>
 			<PlusIcon />
 			{label}
 		</Button>
@@ -182,7 +189,7 @@ const ProviderConfigScopeInput = ({ disabled }: { disabled?: boolean }) => {
 	]);
 	return (
 		<Flex
-			className="provider-config-scope"
+			className={styles["provider-config-scope"]}
 			width="100%"
 			gap="2">
 			<ProviderConfigInputLabel
@@ -192,13 +199,13 @@ const ProviderConfigScopeInput = ({ disabled }: { disabled?: boolean }) => {
 			<Flex
 				direction="column"
 				gap="3"
-				className="provider-config-scope__inputs"
+				className={styles["provider-config-scope__inputs"]}
 				width="100%">
 				{scopes.map((scope) => (
 					<Flex
 						align="center"
 						gap="2"
-						className="provider-config-scope__inputs__input"
+						className={styles["provider-config-scope__inputs__input"]}
 						key={scope.id}>
 						<ProviderConfigInput disabled={disabled} />
 						<ProviderConfigCancelButton
@@ -216,9 +223,14 @@ const ProviderConfigScopeInput = ({ disabled }: { disabled?: boolean }) => {
 };
 
 const ProviderButton = ({ icon, label, isActive }: { icon: string; label: string; isActive: boolean }) => {
+	const buttonClass = `${styles["provider-button"]} ${isActive ? styles["provider-button--active"] : ""}`;
+	const labelClass = `${styles["provider-button__label"]} ${
+		isActive ? styles["provider-button__label--active"] : ""
+	}`;
+
 	return (
 		<Button
-			className={`provider-button ${isActive ? "provider-button--active" : ""}`}
+			className={buttonClass}
 			variant="outline"
 			radius="large">
 			<img
@@ -230,7 +242,7 @@ const ProviderButton = ({ icon, label, isActive }: { icon: string; label: string
 			<Text
 				size="2"
 				weight="medium"
-				className={`provider-button__label ${isActive ? "provider-button__label--active" : ""}`}>
+				className={labelClass}>
 				{label}
 			</Text>
 		</Button>
@@ -256,25 +268,25 @@ const ProviderSetup = ({
 }) => {
 	return (
 		<Flex
-			className="provider-setup"
+			className={styles["provider-setup"]}
 			direction="column">
 			<Flex
 				justify="between"
 				align="center"
-				className="provider-setup__header"
+				className={styles["provider-setup__header"]}
 				p="3">
 				<Flex
 					gap="3"
 					align="center">
 					<Text
 						size="2"
-						className="provider-setup__header__title">
+						className={styles["provider-setup__header__title"]}>
 						Configure new provider
 					</Text>
 					<Badge
 						size="2"
 						color="gray"
-						className="provider-setup__header__badge">
+						className={styles["provider-setup__header__badge"]}>
 						<img
 							src={providerIcon}
 							alt={providerName}
@@ -284,7 +296,7 @@ const ProviderSetup = ({
 						<Text
 							size="2"
 							weight="medium"
-							className="provider-setup__header__badge__text">
+							className={styles["provider-setup__header__badge__text"]}>
 							{providerName}
 						</Text>
 					</Badge>
@@ -308,34 +320,34 @@ const ProviderSetup = ({
 			</Flex>
 			<Flex
 				direction="column"
-				className="provider-setup__main"
+				className={styles["provider-setup__main"]}
 				p="3">
 				<Text
 					size="2"
-					className="provider-setup__main__title">
+					className={styles["provider-setup__main__title"]}>
 					{formTitle}
 				</Text>
 				<Flex
-					className="provider-setup__main__form"
+					className={styles["provider-setup__main__form"]}
 					width="100%"
 					align="center"
 					gap="3">
 					<Text
 						size="2"
 						weight="medium"
-						className="provider-setup__main__form__label">
+						className={styles["provider-setup__main__form__label"]}>
 						{formLabel}
 					</Text>
 					<TextField.Root
 						size="3"
 						variant="surface"
-						className="provider-setup__main__form__input"
+						className={styles["provider-setup__main__form__input"]}
 					/>
 				</Flex>
 				<Text
 					size="2"
 					weight="regular"
-					className="provider-setup__main__footer">
+					className={styles["provider-setup__main__footer"]}>
 					{formFooter}
 				</Text>
 			</Flex>
@@ -346,7 +358,7 @@ const ProviderSetup = ({
 const ProviderConfigCancelButton = ({ onClick = NOOP }: { onClick?: () => void }) => {
 	return (
 		<IconButton
-			className="provider-config-cancel-button"
+			className={styles["provider-config-cancel-button"]}
 			size="2"
 			variant="soft"
 			color="gray"
@@ -360,7 +372,7 @@ const ProviderConfigKeyValue = () => {
 	const [items, setItems] = useState<{ id: string; key: string; value: string }[]>([{ id: "1", key: "", value: "" }]);
 	return (
 		<Flex
-			className="provider-config-key-value"
+			className={styles["provider-config-key-value"]}
 			direction="column"
 			gap="2"
 			p="3">
@@ -368,12 +380,12 @@ const ProviderConfigKeyValue = () => {
 				<Flex
 					key={item.id}
 					gap="4"
-					className="provider-config-key-value__item"
+					className={styles["provider-config-key-value__item"]}
 					align="center"
 					px="3"
 					py="1">
 					<Flex
-						className="provider-config-key-value__item__key"
+						className={styles["provider-config-key-value__item__key"]}
 						align="center"
 						gap="2">
 						<Text
@@ -384,7 +396,7 @@ const ProviderConfigKeyValue = () => {
 						<ProviderConfigInput />
 					</Flex>
 					<Flex
-						className="provider-config-key-value__item__value"
+						className={styles["provider-config-key-value__item__value"]}
 						align="center"
 						gap="2">
 						<Text
@@ -409,10 +421,10 @@ const ProviderConfigClient = ({ onDelete }: { onDelete: () => void }) => {
 	return (
 		<Flex
 			direction="column"
-			className="provider-configuration-client">
+			className={styles["provider-configuration-client"]}>
 			<Flex
 				justify="end"
-				className="provider-configuration-client__delete"
+				className={styles["provider-configuration-client__delete"]}
 				px="3"
 				py="2">
 				<IconButton
@@ -424,7 +436,7 @@ const ProviderConfigClient = ({ onDelete }: { onDelete: () => void }) => {
 			</Flex>
 			<Flex
 				direction="column"
-				className="provider-configuration-client__details"
+				className={styles["provider-configuration-client__details"]}
 				p="3"
 				gap="3">
 				<ProviderConfigInputRow
@@ -448,7 +460,7 @@ const ProviderConfigClient = ({ onDelete }: { onDelete: () => void }) => {
 			<ProviderConfigSeparator />
 			<Flex
 				p="3"
-				className="provider-configuration__form__clients__scopes">
+				className={styles["provider-configuration__form__clients__scopes"]}>
 				<ProviderConfigScopeInput disabled={false} />
 			</Flex>
 			<Flex
@@ -464,7 +476,7 @@ const ProviderConfigClient = ({ onDelete }: { onDelete: () => void }) => {
 			<Flex
 				p="3"
 				gap="2"
-				className="provider-configuration__form__clients__force-pkce">
+				className={styles["provider-configuration__form__clients__force-pkce"]}>
 				<ProviderConfigInputLabel label="Force PKCE" />
 				<Switch />
 			</Flex>
@@ -480,7 +492,7 @@ const ProviderConfigClients = () => {
 			direction="column"
 			gap="3"
 			p="3"
-			className="provider-configuration-clients">
+			className={styles["provider-configuration-clients"]}>
 			{clients.map((client) => (
 				<ProviderConfigClient
 					key={client}
@@ -510,21 +522,23 @@ const ProviderConfigSuffixInput = ({
 }) => {
 	const [suffixValue, setSuffixValue] = useState(suffix);
 
+	const className = `${styles["provider-config-suffix-input"]} ${
+		suffixValue !== undefined ? styles["provider-config-suffix-input--active"] : ""
+	}`;
+
 	return (
 		<Flex
 			align="center"
-			className={`provider-config-suffix-input ${
-				suffixValue !== undefined ? "provider-config-suffix-input--active" : ""
-			}`}
+			className={className}
 			width="100%">
 			<Button
 				size="3"
 				variant="surface"
 				disabled
-				className="provider-config-suffix-input__button">
+				className={styles["provider-config-suffix-input__button"]}>
 				<Text
 					size="3"
-					className="provider-config-suffix-input__button__text">
+					className={styles["provider-config-suffix-input__button__text"]}>
 					{label}-
 				</Text>
 			</Button>
@@ -533,13 +547,13 @@ const ProviderConfigSuffixInput = ({
 				<Flex
 					align="center"
 					ml="2"
-					className="provider-config-suffix-input__add-suffix">
+					className={styles["provider-config-suffix-input__add-suffix"]}>
 					<PlusIcon />
 					<Text
 						size="2"
 						weight="medium"
 						onClick={() => setSuffixValue("test")}
-						className="provider-config-suffix-input__add-suffix__text">
+						className={styles["provider-config-suffix-input__add-suffix__text"]}>
 						Add Suffix
 					</Text>
 					<Tooltip
@@ -563,7 +577,7 @@ const ProviderConfigSuffixInput = ({
 const ProviderConfigThirdParty = ({ withSuffix = false }: { withSuffix?: boolean }) => {
 	return (
 		<Flex
-			className="provider-configuration__form__thirdparty"
+			className={styles["provider-configuration__form__thirdparty"]}
 			direction="column"
 			gap="3">
 			{withSuffix ? (
@@ -657,25 +671,25 @@ export const ProviderConfiguration = () => {
 		<Flex
 			width="100%"
 			direction="column"
-			className="provider-configuration">
+			className={styles["provider-configuration"]}>
 			<Flex
-				className="provider-configuration__header"
+				className={styles["provider-configuration__header"]}
 				justify="between"
 				align="center">
 				<Flex
 					align="center"
 					gap="3"
-					className="provider-configuration__header__main">
+					className={styles["provider-configuration__header__main"]}>
 					<ItemLabel
 						size="2"
-						className="provider-configuration__header__main__label">
+						className={styles["provider-configuration__header__main__label"]}>
 						Provider Configuration
 					</ItemLabel>
 					<Badge
 						size="2"
 						variant="soft"
 						color="gray"
-						className="provider-configuration__header__main__badge">
+						className={styles["provider-configuration__header__main__badge"]}>
 						<img
 							src={getImageUrl("google.png")}
 							alt="Google"
@@ -685,7 +699,7 @@ export const ProviderConfiguration = () => {
 						<Text
 							size="2"
 							weight="medium"
-							className="provider-configuration__header__main__badge__text">
+							className={styles["provider-configuration__header__main__badge__text"]}>
 							Google
 						</Text>
 					</Badge>
@@ -696,14 +710,14 @@ export const ProviderConfiguration = () => {
 				/>
 			</Flex>
 			<Flex
-				className="provider-configuration__form"
+				className={styles["provider-configuration__form"]}
 				width="100%"
 				direction="column">
 				<ProviderConfigThirdParty />
 				<Flex
 					direction="column"
-					className="provider-configuration__form__clients">
-					<Flex className="provider-configuration__form__clients__header">Clients</Flex>
+					className={styles["provider-configuration__form__clients"]}>
+					<Flex className={styles["provider-configuration__form__clients__header"]}>Clients</Flex>
 					<ProviderConfigClients />
 				</Flex>
 				<ProviderConfigSeparator />
@@ -753,7 +767,7 @@ export const ProviderConfiguration = () => {
 						<ProviderConfigInputLabel label="How often does the provider return email?" />
 						<SegmentedControl.Root
 							defaultValue="inbox"
-							className="provider-config-segmented-control"
+							className={styles["provider-config-segmented-control"]}
 							variant="surface"
 							size="3">
 							<SegmentedControl.Item value="inbox">All the time</SegmentedControl.Item>
@@ -769,7 +783,7 @@ export const ProviderConfiguration = () => {
 							direction="column"
 							gap="3"
 							p="3"
-							className="provider-configuration__form__user-info">
+							className={styles["provider-configuration__form__user-info"]}>
 							<ProviderConfigInputRow
 								label="userId"
 								withIcon={false}
@@ -792,7 +806,7 @@ export const ProviderConfiguration = () => {
 							p="3"
 							gap="3"
 							direction="column"
-							className="provider-configuration__form__user-info">
+							className={styles["provider-configuration__form__user-info"]}>
 							<ProviderConfigInputRow
 								label="userId"
 								withIcon={false}
@@ -865,7 +879,7 @@ const ProvidersContent = ({
 						px="4"
 						py="3"
 						gap="4"
-						className="providers-content__active-providers">
+						className={styles["providers-content__active-providers"]}>
 						{providers.map((provider) => (
 							<ProviderButton
 								key={provider.thirdPartyId}
@@ -878,7 +892,7 @@ const ProvidersContent = ({
 					{selectedProvider && (
 						<Box
 							m="4"
-							className="providers-content__form">
+							className={styles["providers-content__form"]}>
 							<ProviderConfiguration />
 						</Box>
 					)}

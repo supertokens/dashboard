@@ -15,7 +15,7 @@
 
 import { parsePhoneNumber } from "libphonenumber-js/max";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getImageUrl } from "@utils";
+import { getImageUrl } from "@shared/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useFetchSearchTags } from "@api/search/searchTags";
 import { Flex, TextField } from "@radix-ui/themes";

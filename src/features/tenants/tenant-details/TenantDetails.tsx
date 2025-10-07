@@ -18,7 +18,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { EyeOpenIcon, TrashIcon } from "@radix-ui/react-icons";
 
-import { assertNever } from "@utils/assertNever";
+import { assertNever } from "@shared/utils/assertNever";
+import { PUBLIC_TENANT_ID } from "@constants";
 import Button from "@shared/components/button";
 import ItemDetailHeader from "@shared/components/itemDetailsHeading";
 import PageContainer from "@shared/components/pageContainer";
@@ -29,15 +30,19 @@ import ItemContainer from "@shared/components/itemContainer";
 import Separator from "@shared/components/separator";
 import ItemLabel from "@shared/components/itemLabel";
 import Crystal from "@shared/components/crystal";
+import EmptyList from "@shared/components/empty";
+import Paper from "@shared/components/paper";
 
 import { useTenantDetails } from "@features/tenants/hooks/useTenantDetails";
 import DeleteTenantModal from "@features/tenants/modals/DeleteTenantModal";
 import { LoginMethods } from "./LoginMethods";
-import { SecondaryFactors } from "./secondaryFactors";
-import CoreConfiguration from "./coreConfiguration";
-import { Providers } from "./providers";
+import { SecondaryFactors } from "./SecondaryFactors";
+import CoreConfiguration from "./core-configuration/CoreConfiguration";
+import { Providers } from "./Providers";
+import { useNavigationHelpers, QUERY_PARAMS } from "@shared/navigation";
 
-type TenantDetailTab = "login-methods" | "Secondary Factors" | "Providers" | "Core Configuration";
+type TenantDetailTab = "login-methods" | "secondary-factors" | "providers" | "core-configuration";
+
 const tenantDetailTabs: { name: string; value: TenantDetailTab }[] = [
 	{
 		name: "Login Methods",
@@ -45,15 +50,15 @@ const tenantDetailTabs: { name: string; value: TenantDetailTab }[] = [
 	},
 	{
 		name: "Secondary Factors",
-		value: "Secondary Factors",
+		value: "secondary-factors",
 	},
 	{
 		name: "Providers",
-		value: "Providers",
+		value: "providers",
 	},
 	{
 		name: "Core Configuration",
-		value: "Core Configuration",
+		value: "core-configuration",
 	},
 ];
 
@@ -85,6 +90,8 @@ const TenantDetailContent = ({
 		}
 	};
 
+	const canDeleteTenant = tenantId !== PUBLIC_TENANT_ID;
+
 	return (
 		<Box width={"100%"}>
 			<ItemContainer
@@ -101,15 +108,17 @@ const TenantDetailContent = ({
 						className="tenant-detail__header__name">
 						{tenantInfo.tenantId}
 					</Text>
-					<Button
-						color="red"
-						size="2"
-						variant="soft"
-						onClick={() => setDeleteTenantModalOpen(true)}
-						disabled={isDeletingTenant}>
-						<TrashIcon />
-						Delete Tenant
-					</Button>
+					{canDeleteTenant && (
+						<Button
+							color="red"
+							size="2"
+							variant="soft"
+							onClick={() => setDeleteTenantModalOpen(true)}
+							disabled={isDeletingTenant}>
+							<TrashIcon />
+							Delete Tenant
+						</Button>
+					)}
 				</Flex>
 				<Separator fullWidth />
 				<Flex
@@ -140,16 +149,16 @@ const TenantDetailContent = ({
 					switch (selectedTab) {
 						case "login-methods":
 							return <LoginMethods tenantInfo={tenantInfo} />;
-						case "Secondary Factors":
+						case "secondary-factors":
 							return <SecondaryFactors tenantInfo={tenantInfo} />;
-						case "Providers":
+						case "providers":
 							return (
 								<Providers
 									tenantId={tenantId}
 									tenantInfo={tenantInfo}
 								/>
 							);
-						case "Core Configuration":
+						case "core-configuration":
 							return (
 								<CoreConfiguration
 									tenantId={tenantId}
@@ -162,26 +171,28 @@ const TenantDetailContent = ({
 				})()}
 			</TabSelector>
 
-			<DeleteTenantModal
-				open={deleteTenantModalOpen}
-				handleClose={() => setDeleteTenantModalOpen(false)}
-				tenantId={tenantId}
-				onDeleteTenant={handleDeleteTenant}
-				isDeleting={isDeletingTenant}
-			/>
+			{canDeleteTenant && (
+				<DeleteTenantModal
+					open={deleteTenantModalOpen}
+					handleClose={() => setDeleteTenantModalOpen(false)}
+					tenantId={tenantId}
+					onDeleteTenant={handleDeleteTenant}
+					isDeleting={isDeletingTenant}
+				/>
+			)}
 		</Box>
 	);
 };
 
-export default function TenantDetailTest() {
-	const navigate = useNavigate();
+export default function TenantDetails() {
+	const { goToTenantsList } = useNavigationHelpers();
 	const [searchParams] = useSearchParams();
-	const tenantId = searchParams.get("tenantid") || "";
+	const tenantId = searchParams.get(QUERY_PARAMS.TENANT_ID) || "";
 
 	const { tenantInfo, isLoading, error, deleteTenant, isDeletingTenant } = useTenantDetails(tenantId);
 
 	const handleBackToItemList = () => {
-		navigate("/tenants");
+		goToTenantsList();
 	};
 
 	const pageState = useMemo(() => {
@@ -206,6 +217,17 @@ export default function TenantDetailTest() {
 				{(() => {
 					switch (pageState) {
 						case "ERROR":
+							if (error?.message === "Tenant not found") {
+								return (
+									<Paper withBackground>
+										<EmptyList
+											iconUrl="no-tenants.svg"
+											title="Tenant not found"
+											description="We couldn't locate this tenant in our system. They may have been deleted or the tenant ID might be incorrect."
+										/>
+									</Paper>
+								);
+							}
 							return <DashboardError />;
 						case "SUCCESS":
 							return tenantInfo ? (
@@ -221,7 +243,7 @@ export default function TenantDetailTest() {
 						case "LOADING":
 							return <Loader type="table-with-list" />;
 						default:
-							assertNever(pageState);
+							return assertNever(pageState);
 					}
 				})()}
 			</Flex>

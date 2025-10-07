@@ -26,8 +26,8 @@ import ItemDetailHeader from "@shared/components/itemDetailsHeading";
 import DashboardError from "@shared/components/error";
 import Loader from "@shared/components/loader";
 import { PopupContentContext } from "@contexts/PopupContentContext";
-import { assertNever } from "@utils/assertNever";
-import { getImageUrl } from "@utils/index";
+import { assertNever } from "@shared/utils/assertNever";
+import { getImageUrl } from "@shared/utils/index";
 
 import Permissions from "./Permissions";
 // TODO: Add this import when the manage access feature is ready

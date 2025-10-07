@@ -18,10 +18,10 @@ import { useLocation } from "react-router-dom";
 import { FactorIds, HTTPStatusCodes, StorageKeys } from "@constants";
 import { getAccessDeniedEvent } from "@events/accessDenied";
 import NetworkManager from "@services/network";
-import { localStorageHandler } from "@services/storage";
-import { HttpMethod } from "@types";
+import { HttpMethod } from "@shared/types/auth";
 import { UserRecipeType } from "@pages/usersList/types";
-import { ForbiddenError } from "@utils/customErrors";
+import { ForbiddenError } from "@shared/utils/customErrors";
+import { localStorageHandler } from "@shared/services/storage";
 
 export function getStaticBasePath(): string {
 	return (window as any).staticBasePath;
@@ -295,14 +295,6 @@ export const getRecipeNameFromid = (id: UserRecipeType): string => {
 export const getAuthMode = (): "api-key" | "email-password" => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return (window as any).authMode; // for now, either "api-key" or "email-password"
-};
-
-export const setSelectedTenantId = (tenantId: string) => {
-	localStorageHandler.setItem(StorageKeys.TENANT_ID, tenantId);
-};
-
-export const getSelectedTenantId = (): string | undefined => {
-	return localStorageHandler.getItem(StorageKeys.TENANT_ID);
 };
 
 export const useQuery = () => {

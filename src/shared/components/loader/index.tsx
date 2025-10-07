@@ -15,7 +15,7 @@
 
 import { Flex, Skeleton, Spinner } from "@radix-ui/themes";
 import Paper from "../paper";
-import { assertNever } from "@utils/assertNever";
+import { assertNever } from "@shared/utils/assertNever";
 
 type LoaderType = "inline" | "list" | "table-with-list" | "page";
 

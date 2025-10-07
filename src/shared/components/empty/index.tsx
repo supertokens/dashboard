@@ -14,7 +14,7 @@
  */
 
 import { Flex, Text } from "@radix-ui/themes";
-import { getImageUrl } from "@utils";
+import { getImageUrl } from "@shared/utils";
 
 import "./index.scss";
 import { ReactNode } from "react";

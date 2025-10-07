@@ -29,7 +29,7 @@ import {
 } from "react";
 import PhoneInputWithCountrySelect, { getCountryCallingCode } from "react-phone-number-input";
 import { Flex, Text } from "@radix-ui/themes";
-import { getImageUrl, useClickOutside } from "@utils";
+import { getImageUrl, useClickOutside } from "@shared/utils";
 import { useAppEnvContext } from "@contexts/AppEnvContext";
 
 import "./index.scss";

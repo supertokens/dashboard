@@ -13,10 +13,4 @@
  * under the License.
  */
 
-export { default as CreateNewTenantModal } from "./CreateNewTenantModal";
-export { default as DeleteTenantModal } from "./DeleteTenantModal";
-export { default as DeleteProviderConfigModal } from "./DeleteProviderConfigModal";
-export { default as EditConfigurationPropertyModal } from "./EditConfigurationPropertyModal";
-export { default as UneditableConfigurationModal } from "./UneditableConfigurationModal";
-export { default as AddNewProviderModal } from "./AddNewProviderModal";
-export { default as EditPluginPropertyModal } from "./EditPluginPropertyModal";
+export { default } from "./CoreConfiguration";

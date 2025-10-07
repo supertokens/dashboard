@@ -17,7 +17,7 @@ import React, { createContext } from "react";
 import * as Toast from "@radix-ui/react-toast";
 import { Cross2Icon } from "@radix-ui/react-icons";
 
-import { getImageUrl } from "@utils";
+import { getImageUrl } from "@shared/utils";
 
 import "./index.scss";
 

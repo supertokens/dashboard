@@ -19,7 +19,7 @@ import { Flex } from "@radix-ui/themes";
 import Loader from "@shared/components/loader";
 import DashboardError from "@shared/components/error";
 import { useToast } from "@shared/components/toast";
-import { assertNever } from "@utils/assertNever";
+import { assertNever } from "@shared/utils/assertNever";
 
 import RemoveAccessModal from "../modals/RemoveAccessModal";
 import { useRoleUsers } from "../hooks";

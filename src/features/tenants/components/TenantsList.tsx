@@ -15,7 +15,7 @@
 
 import { useMemo, useState } from "react";
 
-import { assertNever } from "@utils/assertNever";
+import { assertNever } from "@shared/utils/assertNever";
 import PageContainer from "@shared/components/pageContainer";
 import PageHeading from "@shared/components/pageHeading";
 import Paper from "@shared/components/paper";
