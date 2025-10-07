@@ -56,6 +56,13 @@ export default function TenantsListItem({ tenant }: TenantsListItemProps) {
 						<Text size="2">{factor}</Text>
 					</Badge>
 				))}
+				{tenant.firstFactors.length === 0 && (
+					<Text
+						size="2"
+						color="gray">
+						No login methods enabled for this tenant
+					</Text>
+				)}
 			</Flex>
 			<Flex
 				align="center"

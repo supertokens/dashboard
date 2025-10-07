@@ -14,7 +14,7 @@
  */
 
 import { useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { EyeOpenIcon, TrashIcon } from "@radix-ui/react-icons";
 
@@ -40,6 +40,8 @@ import { SecondaryFactors } from "./SecondaryFactors";
 import CoreConfiguration from "./core-configuration/CoreConfiguration";
 import { Providers } from "./Providers";
 import { useNavigationHelpers, QUERY_PARAMS } from "@shared/navigation";
+
+import styles from "./TenantDetails.module.scss";
 
 type TenantDetailTab = "login-methods" | "secondary-factors" | "providers" | "core-configuration";
 
@@ -74,8 +76,8 @@ const TenantDetailContent = ({
 	isDeletingTenant: boolean;
 }) => {
 	const [deleteTenantModalOpen, setDeleteTenantModalOpen] = useState(false);
-	const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("login-methods");
-	const navigate = useNavigate();
+	const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("providers");
+	const { goToTenantsList, goToUsersList } = useNavigationHelpers();
 
 	const handleTabChange = (tab: TenantDetailTab) => {
 		setSelectedTab(tab);
@@ -84,7 +86,7 @@ const TenantDetailContent = ({
 	const handleDeleteTenant = async () => {
 		try {
 			await onDeleteTenant();
-			navigate("/tenants");
+			goToTenantsList();
 		} catch (err) {
 			// Error handling
 		}
@@ -101,11 +103,11 @@ const TenantDetailContent = ({
 					align="center"
 					justify="between"
 					p="4"
-					className="tenant-detail__header">
+					className={styles["tenant-detail__header"]}>
 					<Text
 						size="5"
 						weight="bold"
-						className="tenant-detail__header__name">
+						className={styles["tenant-detail__header__name"]}>
 						{tenantInfo.tenantId}
 					</Text>
 					{canDeleteTenant && (
@@ -122,7 +124,7 @@ const TenantDetailContent = ({
 				</Flex>
 				<Separator fullWidth />
 				<Flex
-					className="tenant-detail__header__secondary"
+					className={styles["tenant-detail__header__secondary"]}
 					align="center"
 					px="4"
 					py="3"
@@ -134,7 +136,7 @@ const TenantDetailContent = ({
 					<Button
 						size="2"
 						variant="ghost"
-						onClick={() => navigate(`/users?tenantId=${tenantId}`)}>
+						onClick={() => goToUsersList()}>
 						<EyeOpenIcon />
 						See Users
 					</Button>

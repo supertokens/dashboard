@@ -1,25 +1,39 @@
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
 .provider-configuration {
-	background: var(--gray-a2);
-	border-radius: var(--radius-3);
-	border: 1px solid var(--gray-a4);
+	border: 1px solid var(--color-neutral-8);
+	border-radius: var(--radius-max-4);
+	background: var(--color-sand-1);
 
 	&__header {
-		padding: var(--space-4);
-		border-bottom: 1px solid var(--gray-a4);
+		border-bottom: 1px solid var(--color-neutral-8);
+		background: var(--color-sand-2);
+		border-radius: var(--radius-max-4) var(--radius-max-4) 0 0;
+		padding: var(--space-3);
 
-		&__main {
-			&__label {
-				font-weight: 600;
-			}
+		&__label {
+			color: var(--color-accent-9);
+			font-weight: 600;
+		}
 
-			&__badge {
-				display: flex;
-				align-items: center;
-				gap: var(--space-2);
+		&__badge {
+			height: 32px !important;
 
-				&__text {
-					color: var(--gray-12);
-				}
+			&__text {
+				color: var(--color-neutral-alpha-11);
 			}
 		}
 	}
@@ -27,17 +41,86 @@
 	&__form {
 		&__clients {
 			&__header {
-				font-size: var(--font-size-2);
-				font-weight: 600;
-				padding: var(--space-3);
-				background: var(--gray-a3);
+				border-top: 1px solid var(--color-neutral-6);
+				border-bottom: 1px solid var(--color-neutral-6);
+				background: var(--color-sand-2);
+				padding: var(--space-2) var(--space-3);
+				color: var(--color-neutral-11);
 			}
 		}
+	}
 
-		&__user-info {
-			background: var(--gray-a2);
-			border-radius: var(--radius-2);
-			border: 1px solid var(--gray-a4);
+	&__saml-select {
+		flex: 1;
+		padding: var(--space-2);
+		border-radius: var(--radius-2);
+		border: 1px solid var(--gray-a6);
+		font-size: var(--font-size-2);
+		background: var(--color-sand-1);
+		color: var(--color-neutral-12);
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
 		}
 	}
+
+	&__warning-text {
+		font-style: italic;
+	}
+
+	&__add-new-client {
+		width: fit-content !important;
+	}
+}
+
+.provider-configuration-client {
+	border-radius: var(--radius-max-3);
+	border: 1px solid var(--color-neutral-6);
+	background: var(--color-sand-2);
+
+	&__delete {
+		border-radius: var(--radius-max-3) var(--radius-max-3) 0 0;
+		border-bottom: 1px solid var(--color-neutral-6);
+		background: var(--color-sand-2);
+	}
+}
+
+.provider-config-input-label {
+	min-width: 200px;
+
+	&__text {
+		color: var(--color-neutral-11);
+	}
+
+	&__icon {
+		color: var(--color-neutral-9);
+	}
+}
+
+.provider-config-key-value {
+	border-radius: var(--radius-max-3);
+	border: 1px solid var(--color-neutral-6);
+	background: var(--color-sand-2);
+
+	&__item {
+		border-radius: var(--radius-max-3);
+		border: 1px solid var(--color-neutral-6);
+		background: var(--color-sand-2);
+		color: var(--color-neutral-11);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 20px;
+	}
+}
+
+.provider-config-user-info {
+	border-radius: var(--radius-max-3);
+	border: 1px solid var(--color-neutral-6);
+	background: var(--color-sand-2);
+}
+
+.provider-config-separator {
+	background: var(--color-neutral-6) !important;
+	flex: 1;
 }

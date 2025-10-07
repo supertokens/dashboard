@@ -15,104 +15,151 @@
 
 import { isValidHttpUrl } from "@shared/utils";
 import type { ProviderCustomField } from "@api/tenants/types";
-import type { ProviderConfigState } from "./providerConfigHelpers";
+
+import type { ProviderClientState, ProviderConfigState } from "./providerConfigHelpers";
 import { isKnownThirdPartyId } from "./providerConfigHelpers";
+
+type ValidationErrors = Record<string, string>;
+
+const THIRD_PARTY_ID_REGEX = /^[a-z0-9-]+$/;
+
+const ERROR_MESSAGES = {
+	THIRD_PARTY_ID_REQUIRED: "Third Party Id is required",
+	THIRD_PARTY_ID_FORMAT: "Third Party Id can only contain lowercase alphabets, numbers and hyphens",
+	THIRD_PARTY_ID_DUPLICATE:
+		"Another provider with this third party id already exists, please enter a unique third party id or a unique suffix if adding a built-in provider.",
+	NAME_REQUIRED: "Name is required",
+	CLIENT_ID_REQUIRED: "Client Id is required",
+	CLIENT_SECRET_REQUIRED: "Client Secret is required",
+	CLIENT_TYPE_REQUIRED: "Client Type is required",
+	CLIENT_TYPE_UNIQUE: "Client Type should be unique",
+	INVALID_URL: "should be a valid URL",
+} as const;
+
+const validateThirdPartyId = (
+	thirdPartyId: string,
+	existingProviderIds: string[],
+	isAddingNewProvider: boolean,
+	errors: ValidationErrors
+): void => {
+	const trimmedId = thirdPartyId.trim();
+
+	if (trimmedId === "") {
+		errors.thirdPartyId = ERROR_MESSAGES.THIRD_PARTY_ID_REQUIRED;
+		return;
+	}
+
+	if (!THIRD_PARTY_ID_REGEX.test(trimmedId)) {
+		errors.thirdPartyId = ERROR_MESSAGES.THIRD_PARTY_ID_FORMAT;
+		return;
+	}
+
+	if (isAddingNewProvider && existingProviderIds.includes(trimmedId)) {
+		errors.thirdPartyId = ERROR_MESSAGES.THIRD_PARTY_ID_DUPLICATE;
+	}
+};
+
+const validateProviderName = (thirdPartyId: string, name: string, errors: ValidationErrors): void => {
+	if (!isKnownThirdPartyId(thirdPartyId) && name.trim() === "") {
+		errors.name = ERROR_MESSAGES.NAME_REQUIRED;
+	}
+};
+
+const validateClient = (
+	client: ProviderClientState,
+	clientIndex: number,
+	totalClients: number,
+	isAppleProvider: boolean,
+	clientTypes: Set<string>,
+	errors: ValidationErrors
+): void => {
+	// Validate client ID
+	if (typeof client.clientId !== "string" || client.clientId.trim() === "") {
+		errors[`clients.${clientIndex}.clientId`] = ERROR_MESSAGES.CLIENT_ID_REQUIRED;
+	}
+
+	// Validate client secret (not required for Apple)
+	if (!isAppleProvider && (client.clientSecret === undefined || client.clientSecret.trim() === "")) {
+		errors[`clients.${clientIndex}.clientSecret`] = ERROR_MESSAGES.CLIENT_SECRET_REQUIRED;
+	}
+
+	// Validate client type (required if multiple clients)
+	if (totalClients > 1) {
+		if (client.clientType === undefined || client.clientType.trim() === "") {
+			errors[`clients.${clientIndex}.clientType`] = ERROR_MESSAGES.CLIENT_TYPE_REQUIRED;
+		} else {
+			if (clientTypes.has(client.clientType)) {
+				errors[`clients.${clientIndex}.clientType`] = ERROR_MESSAGES.CLIENT_TYPE_UNIQUE;
+			}
+			clientTypes.add(client.clientType);
+		}
+	}
+};
+
+const validateCustomFields = (
+	clients: ProviderClientState[],
+	customFields: ProviderCustomField[],
+	errors: ValidationErrors
+): void => {
+	clients.forEach((client, clientIndex) => {
+		customFields.forEach((field) => {
+			if (!field.required) return;
+
+			const fieldValue = client.additionalConfig.find(([key]) => key === field.id)?.[1];
+			if (typeof fieldValue !== "string" || fieldValue.trim() === "") {
+				errors[`clients.${clientIndex}.additionalConfig.${field.id}`] = `${field.label} is required`;
+			}
+		});
+	});
+};
+
+const validateUrl = (
+	url: string | undefined,
+	fieldName: string,
+	displayName: string,
+	errors: ValidationErrors
+): void => {
+	if (url !== undefined && url !== "" && !isValidHttpUrl(url.trim())) {
+		errors[fieldName] = `${displayName} should be a valid URL`;
+	}
+};
+
+const validateEndpointUrls = (state: ProviderConfigState, errors: ValidationErrors): void => {
+	validateUrl(state.oidcDiscoveryEndpoint, "oidcDiscoveryEndpoint", "OIDC Discovery Endpoint", errors);
+	validateUrl(state.authorizationEndpoint, "authorizationEndpoint", "Authorization Endpoint", errors);
+	validateUrl(state.tokenEndpoint, "tokenEndpoint", "Token Endpoint", errors);
+	validateUrl(state.userInfoEndpoint, "userInfoEndpoint", "User Info Endpoint", errors);
+	validateUrl(state.jwksURI, "jwksURI", "JWKS URI", errors);
+};
 
 export const validateProviderConfig = (
 	state: ProviderConfigState,
 	existingProviderIds: string[],
 	isAddingNewProvider: boolean,
 	customFields?: ProviderCustomField[]
-): Record<string, string> => {
-	const errors: Record<string, string> = {};
+): ValidationErrors => {
+	const errors: ValidationErrors = {};
 	const clientTypes = new Set<string>();
-	const isAppleProvider = state.thirdPartyId?.startsWith("apple");
+	const isAppleProvider = state.thirdPartyId?.startsWith("apple") || false;
 
-	// Validate thirdPartyId
-	if (state.thirdPartyId.trim() === "") {
-		errors.thirdPartyId = "Third Party Id is required";
-	} else if (!state.thirdPartyId.match(/^[a-z0-9-]+$/)) {
-		errors.thirdPartyId = "Third Party Id can only contain lowercase alphabets, numbers and hyphens";
-	} else if (isAddingNewProvider && existingProviderIds.includes(state.thirdPartyId)) {
-		errors.thirdPartyId =
-			"Another provider with this third party id already exists, please enter a unique third party id or a unique suffix if adding a built-in provider.";
-	}
+	// Validate third party ID
+	validateThirdPartyId(state.thirdPartyId, existingProviderIds, isAddingNewProvider, errors);
 
-	// Validate name for custom providers
-	if (!isKnownThirdPartyId(state.thirdPartyId) && state.name.trim() === "") {
-		errors.name = "Name is required";
-	}
+	// Validate provider name for custom providers
+	validateProviderName(state.thirdPartyId, state.name, errors);
 
 	// Validate clients
 	state.clients?.forEach((client, index) => {
-		if (typeof client.clientId !== "string" || client.clientId.trim() === "") {
-			errors[`clients.${index}.clientId`] = "Client Id is required";
-		}
-		if (!isAppleProvider) {
-			if (client.clientSecret === undefined || client.clientSecret.trim() === "") {
-				errors[`clients.${index}.clientSecret`] = "Client Secret is required";
-			}
-		}
-		if ((state.clients?.length ?? 0) > 1) {
-			if (client.clientType === undefined || client.clientType.trim() === "") {
-				errors[`clients.${index}.clientType`] = "Client Type is required";
-			} else {
-				if (clientTypes.has(client.clientType)) {
-					errors[`clients.${index}.clientType`] = "Client Type should be unique";
-				}
-				clientTypes.add(client.clientType);
-			}
-		}
+		validateClient(client, index, state.clients?.length ?? 0, isAppleProvider, clientTypes, errors);
 	});
 
-	// Validate custom fields for special providers
-	if (customFields !== undefined && customFields.length > 0) {
-		state.clients?.forEach((client, index) => {
-			customFields?.forEach((field) => {
-				const fieldValue = client.additionalConfig.find(([key]) => key === field.id)?.[1];
-				if (field.required && (typeof fieldValue !== "string" || fieldValue.trim() === "")) {
-					errors[`clients.${index}.additionalConfig.${field.id}`] = `${field.label} is required`;
-				}
-			});
-		});
+	// Validate custom fields (e.g., Apple provider fields)
+	if (customFields && customFields.length > 0 && state.clients) {
+		validateCustomFields(state.clients, customFields, errors);
 	}
 
-	// Validate URLs
-	if (
-		state.oidcDiscoveryEndpoint !== undefined &&
-		state.oidcDiscoveryEndpoint !== "" &&
-		!isValidHttpUrl(state.oidcDiscoveryEndpoint.trim())
-	) {
-		errors.oidcDiscoveryEndpoint = "OIDC Discovery Endpoint should be a valid URL";
-	}
-
-	if (
-		state.tokenEndpoint !== undefined &&
-		state.tokenEndpoint !== "" &&
-		!isValidHttpUrl(state.tokenEndpoint.trim())
-	) {
-		errors.tokenEndpoint = "Token Endpoint should be a valid URL";
-	}
-
-	if (
-		state.authorizationEndpoint !== undefined &&
-		state.authorizationEndpoint !== "" &&
-		!isValidHttpUrl(state.authorizationEndpoint.trim())
-	) {
-		errors.authorizationEndpoint = "Authorization Endpoint should be a valid URL";
-	}
-
-	if (
-		state.userInfoEndpoint !== undefined &&
-		state.userInfoEndpoint !== "" &&
-		!isValidHttpUrl(state.userInfoEndpoint.trim())
-	) {
-		errors.userInfoEndpoint = "User Info Endpoint should be a valid URL";
-	}
-
-	if (state.jwksURI !== undefined && state.jwksURI !== "" && !isValidHttpUrl(state.jwksURI.trim())) {
-		errors.jwksURI = "JWKS URI should be a valid URL";
-	}
+	// Validate all endpoint URLs
+	validateEndpointUrls(state, errors);
 
 	return errors;
 };

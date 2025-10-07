@@ -38,6 +38,10 @@
 	&__active-providers {
 		border-bottom: 1px solid var(--color-neutral-6);
 	}
+
+	&__form {
+		border-radius: var(--radius-max-4);
+	}
 }
 
 .provider-setup {

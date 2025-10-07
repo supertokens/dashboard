@@ -23,7 +23,6 @@ import { Loader } from "../../loader/Loader";
 import { CoreConfigSection } from "./CoreConfigSection";
 import { LoginMethodsSection } from "./LoginMethodsSection";
 import { TenantDetailContextProvider } from "./TenantDetailContext";
-import { TenantDetailHeader } from "../../../../features/tenants/tenant-details/TenantDetailHeader";
 import { ThirdPartySection } from "./ThirdPartySection";
 import { AddNewProviderDialog } from "./addNewProviderDialog/AddNewProviderDialog";
 import { DeleteTenantDialog } from "./deleteTenant/DeleteTenant";
@@ -135,7 +134,7 @@ export const TenantDetail = ({
 					<span>Back to all tenants</span>
 				</button>
 				<div className="tenant-detail__sections">
-					<TenantDetailHeader />
+					{/* <TenantDetailHeader /> */}
 					<LoginMethodsSection />
 					{tenantHasThirdPartyEnabled && (
 						<ThirdPartySection

@@ -22,7 +22,7 @@ import ItemLabel from "@shared/components/itemLabel";
 import TabSelector from "@shared/components/tabSelector";
 import EmptyList from "@shared/components/empty";
 import { getImageUrl } from "@shared/utils/index";
-import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "@constants";
+import { IN_BUILT_THIRD_PARTY_PROVIDERS, FactorIds } from "@constants";
 import AddNewProviderModal from "@features/tenants/modals/AddNewProviderModal";
 import { ProviderConfiguration } from "./provider-configuration/ProviderConfiguration";
 
@@ -33,7 +33,10 @@ export const Providers = ({
 	tenantInfo,
 }: {
 	tenantId: string;
-	tenantInfo: { thirdParty: { providers: { thirdPartyId: string; name: string }[] } };
+	tenantInfo: {
+		thirdParty: { providers: { thirdPartyId: string; name: string }[] };
+		firstFactors: string[];
+	};
 }) => {
 	const [isNewProviderModalOpen, setIsNewProviderModalOpen] = useState(false);
 	const [selectedProvider, setSelectedProvider] = useState<string | undefined>(
@@ -80,6 +83,8 @@ export const Providers = ({
 		return provider.name || provider.thirdPartyId;
 	};
 
+	const tenantHasThirdPartyEnabled = tenantInfo.firstFactors?.includes(FactorIds.THIRDPARTY);
+
 	return (
 		<Flex
 			width="100%"
@@ -90,25 +95,33 @@ export const Providers = ({
 				<ItemLabel>
 					Configure third-party OAuth 2.0/OIDC/SAML providers available for user sign-in/sign-up
 				</ItemLabel>
-				<Button
-					m="0"
-					size="2"
-					onClick={() => setIsNewProviderModalOpen(true)}>
-					<PlusIcon />
-					Add Provider
-				</Button>
-				<AddNewProviderModal
-					open={isNewProviderModalOpen}
-					handleClose={() => setIsNewProviderModalOpen(false)}
-					tenantId={tenantId}
-					onProviderSelected={handleNewProviderSelected}
-				/>
+				{tenantHasThirdPartyEnabled && (
+					<>
+						<Button
+							m="0"
+							size="2"
+							onClick={() => setIsNewProviderModalOpen(true)}>
+							<PlusIcon />
+							Add Provider
+						</Button>
+						<AddNewProviderModal
+							open={isNewProviderModalOpen}
+							handleClose={() => setIsNewProviderModalOpen(false)}
+							tenantId={tenantId}
+							onProviderSelected={handleNewProviderSelected}
+						/>
+					</>
+				)}
 			</TabSelector.ContentHeading>
 			{tenantInfo.thirdParty.providers.length === 0 && !isAddingNewProvider ? (
 				<EmptyList
 					iconUrl="permission.svg"
 					title="No providers are configured"
-					description="Add at least one provider to enable third-party login for your users. Click 'Add Provider' to get started."
+					description={
+						tenantHasThirdPartyEnabled
+							? "Add at least one provider to enable third-party login for your users. Click 'Add Provider' to get started."
+							: "Third-party login is not enabled for this tenant. Enable it in the Login Methods tab to configure providers."
+					}
 				/>
 			) : (
 				<>

@@ -19,7 +19,7 @@ import { getImageUrl, isValidHttpUrl } from "../../../../../utils";
 import Button from "../../../button";
 import { Loader } from "../../../loader/Loader";
 import { useTenantDetailContext } from "../TenantDetailContext";
-import { TenantDetailHeader } from "../../../../../features/tenants/tenant-details/TenantDetailHeader";
+// import { TenantDetailHeader } from "../../../../../features/tenants/tenant-details/TenantDetailHeader";
 import { PanelHeader, PanelHeaderTitleWithTooltip, PanelRoot } from "../tenantDetailPanel/TenantDetailPanel";
 import { ProviderInfoForm } from "../thirdPartyProviderConfig/ProviderInfoForm";
 import { ProviderInfoFormForBoxy } from "../thirdPartyProviderConfig/ProviderInfoFormForBoxy";
@@ -47,7 +47,7 @@ export const ThirdPartyPage = ({
 				<span>Back to tenant info</span>
 			</button>
 			<div className="third-party-section__cards">
-				<TenantDetailHeader onlyShowTenantId />
+				{/* <TenantDetailHeader onlyShowTenantId /> */}
 				<ProviderInfo
 					providerId={providerId}
 					isAddingNewProvider={isAddingNewProvider}

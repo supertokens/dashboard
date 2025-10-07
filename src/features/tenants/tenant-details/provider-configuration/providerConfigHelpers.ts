@@ -86,6 +86,8 @@ export const getInitialProviderState = (
 				Array.isArray(providerConfig.clients) && providerConfig.clients.length > 0
 					? providerConfig.clients.map((client) => ({
 							...client,
+							clientType: client.clientType ?? "",
+							clientSecret: client.clientSecret ?? "",
 							scope: Array.isArray(client.scope) && client.scope.length > 0 ? client.scope : [""],
 							additionalConfig:
 								client.additionalConfig && Object.keys(client.additionalConfig).length > 0
