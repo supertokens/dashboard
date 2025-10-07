@@ -13,843 +13,72 @@
  * under the License.
  */
 
-import Button from "@shared/components/button";
-import DashboardError from "@shared/components/error";
-import ItemLabel from "@shared/components/itemLabel";
-import Loader from "@shared/components/loader";
-import TabSelector from "@shared/components/tabSelector";
-import AddNewProviderModal from "@features/tenants/modals/AddNewProviderModal";
-import {
-	Cross1Icon,
-	InfoCircledIcon,
-	Pencil1Icon,
-	PlusIcon,
-	QuestionMarkCircledIcon,
-	TrashIcon,
-} from "@radix-ui/react-icons";
-import {
-	Badge,
-	Box,
-	ButtonProps,
-	Flex,
-	FlexProps,
-	SegmentedControl,
-	Separator,
-	Switch,
-	Text,
-	TextField,
-	Tooltip,
-} from "@radix-ui/themes";
-import { assertNever } from "@shared/utils/assertNever";
-import { getImageUrl } from "@shared/utils/index";
 import { useState } from "react";
+import { Box, Flex, Text } from "@radix-ui/themes";
+import { PlusIcon } from "@radix-ui/react-icons";
+
+import Button from "@shared/components/button";
+import ItemLabel from "@shared/components/itemLabel";
+import TabSelector from "@shared/components/tabSelector";
+import EmptyList from "@shared/components/empty";
+import { getImageUrl } from "@shared/utils/index";
+import { IN_BUILT_THIRD_PARTY_PROVIDERS } from "@constants";
+import AddNewProviderModal from "@features/tenants/modals/AddNewProviderModal";
+import { ProviderConfiguration } from "./provider-configuration/ProviderConfiguration";
 
 import styles from "./Providers.module.scss";
-import { NOOP } from "@shared/utils/noop";
-import IconButton from "@shared/components/iconButton";
-import DeleteProviderConfigModal from "@features/tenants/modals/DeleteProviderConfigModal";
 
-const ProviderConfigSeparator = ({ ...props }: FlexProps) => {
-	return (
-		<Flex
-			m="3"
-			{...props}>
-			<Separator className={styles["provider-config-separator"]} />
-		</Flex>
-	);
-};
-
-const ProviderConfigInput = ({
-	disabled = true,
-	readonly = false,
-	grow = true,
-}: {
-	disabled?: boolean;
-	readonly?: boolean;
-	grow?: boolean;
-}) => {
-	const classNames = [
-		styles["provider-config-input"],
-		disabled && styles["provider-config-input--disabled"],
-		grow && styles["provider-config-input--grow"],
-		readonly && styles["provider-config-input--readonly"],
-	]
-		.filter(Boolean)
-		.join(" ");
-
-	return (
-		<TextField.Root
-			size="3"
-			variant="surface"
-			className={classNames}
-			disabled={false}
-			readOnly={readonly}></TextField.Root>
-	);
-};
-
-const ProviderConfigInputLabel = ({
-	label,
-	withIcon = true,
-	required = false,
-	size = "sm",
-}: {
-	label: string;
-	withIcon?: boolean;
-	required?: boolean;
-	size?: "sm" | "md";
-}) => {
-	return (
-		<Flex
-			align="center"
-			gap="2"
-			className={`${styles["provider-config-input-label"]} ${styles[`provider-config-input-label--${size}`]}`}>
-			{withIcon && (
-				<InfoCircledIcon
-					width={16}
-					height={16}
-					className={styles["provider-config-input-label__icon"]}
-				/>
-			)}
-			<Text
-				size="2"
-				weight="regular"
-				className={styles["provider-config-input-label__text"]}>
-				{label}
-				{required && (
-					<Text
-						size="2"
-						weight="regular"
-						className={styles["provider-config-input-label__text--required"]}>
-						*
-					</Text>
-				)}
-				:
-			</Text>
-		</Flex>
-	);
-};
-
-const ProviderConfigInputRow = ({
-	label,
-	withIcon,
-	required,
-	disabled,
-	readonly,
-	size,
-}: {
-	label: string;
-	withIcon?: boolean;
-	required?: boolean;
-	disabled?: boolean;
-	readonly?: boolean;
-	size?: "sm" | "md";
-}) => {
-	return (
-		<Flex
-			className={styles["provider-config-input-row"]}
-			align="center"
-			gap="2">
-			<ProviderConfigInputLabel
-				label={label}
-				withIcon={withIcon}
-				required={required}
-				size={size}
-			/>
-			<ProviderConfigInput
-				disabled={disabled}
-				readonly={readonly}
-			/>
-		</Flex>
-	);
-};
-
-const ProviderConfigButton = ({
-	label,
-	...props
-}: {
-	label: string;
-} & ButtonProps) => {
-	return (
-		<Button
-			variant="outline"
-			size="2"
-			color="gray"
-			{...props}
-			className={styles["provider-config-button"]}>
-			<PlusIcon />
-			{label}
-		</Button>
-	);
-};
-
-const ProviderConfigScopeInput = ({ disabled }: { disabled?: boolean }) => {
-	const [scopes, setScopes] = useState<{ id: string; value: string }[]>([
-		{ id: "1", value: "" },
-		{ id: "2", value: "" },
-	]);
-	return (
-		<Flex
-			className={styles["provider-config-scope"]}
-			width="100%"
-			gap="2">
-			<ProviderConfigInputLabel
-				label="Scopes"
-				size="sm"
-			/>
-			<Flex
-				direction="column"
-				gap="3"
-				className={styles["provider-config-scope__inputs"]}
-				width="100%">
-				{scopes.map((scope) => (
-					<Flex
-						align="center"
-						gap="2"
-						className={styles["provider-config-scope__inputs__input"]}
-						key={scope.id}>
-						<ProviderConfigInput disabled={disabled} />
-						<ProviderConfigCancelButton
-							onClick={() => setScopes(scopes.filter((s) => s.id !== scope.id))}
-						/>
-					</Flex>
-				))}
-				<ProviderConfigButton
-					label="Add New"
-					onClick={() => setScopes([...scopes, { id: crypto.randomUUID(), value: "" }])}
-				/>
-			</Flex>
-		</Flex>
-	);
-};
-
-const ProviderButton = ({ icon, label, isActive }: { icon: string; label: string; isActive: boolean }) => {
-	const buttonClass = `${styles["provider-button"]} ${isActive ? styles["provider-button--active"] : ""}`;
-	const labelClass = `${styles["provider-button__label"]} ${
-		isActive ? styles["provider-button__label--active"] : ""
-	}`;
-
-	return (
-		<Button
-			className={buttonClass}
-			variant="outline"
-			radius="large">
-			<img
-				src={getImageUrl(icon)}
-				alt={label}
-				width="30px"
-				height="30px"
-			/>
-			<Text
-				size="2"
-				weight="medium"
-				className={labelClass}>
-				{label}
-			</Text>
-		</Button>
-	);
-};
-
-const ProviderSetup = ({
-	handleCancel,
-	handleContinue,
-	providerName,
-	providerIcon,
-	formLabel,
-	formTitle,
-	formFooter,
-}: {
-	handleCancel: () => void;
-	handleContinue: () => void;
-	providerName: string;
-	providerIcon: string;
-	formLabel: string;
-	formTitle: string;
-	formFooter: string;
-}) => {
-	return (
-		<Flex
-			className={styles["provider-setup"]}
-			direction="column">
-			<Flex
-				justify="between"
-				align="center"
-				className={styles["provider-setup__header"]}
-				p="3">
-				<Flex
-					gap="3"
-					align="center">
-					<Text
-						size="2"
-						className={styles["provider-setup__header__title"]}>
-						Configure new provider
-					</Text>
-					<Badge
-						size="2"
-						color="gray"
-						className={styles["provider-setup__header__badge"]}>
-						<img
-							src={providerIcon}
-							alt={providerName}
-							width="16px"
-							height="16px"
-						/>
-						<Text
-							size="2"
-							weight="medium"
-							className={styles["provider-setup__header__badge__text"]}>
-							{providerName}
-						</Text>
-					</Badge>
-				</Flex>
-				<Flex
-					align="center"
-					gap="2">
-					<Button
-						size="2"
-						variant="outline"
-						color="gray"
-						onClick={handleCancel}>
-						Cancel
-					</Button>
-					<Button
-						size="2"
-						onClick={handleContinue}>
-						Continue
-					</Button>
-				</Flex>
-			</Flex>
-			<Flex
-				direction="column"
-				className={styles["provider-setup__main"]}
-				p="3">
-				<Text
-					size="2"
-					className={styles["provider-setup__main__title"]}>
-					{formTitle}
-				</Text>
-				<Flex
-					className={styles["provider-setup__main__form"]}
-					width="100%"
-					align="center"
-					gap="3">
-					<Text
-						size="2"
-						weight="medium"
-						className={styles["provider-setup__main__form__label"]}>
-						{formLabel}
-					</Text>
-					<TextField.Root
-						size="3"
-						variant="surface"
-						className={styles["provider-setup__main__form__input"]}
-					/>
-				</Flex>
-				<Text
-					size="2"
-					weight="regular"
-					className={styles["provider-setup__main__footer"]}>
-					{formFooter}
-				</Text>
-			</Flex>
-		</Flex>
-	);
-};
-
-const ProviderConfigCancelButton = ({ onClick = NOOP }: { onClick?: () => void }) => {
-	return (
-		<IconButton
-			className={styles["provider-config-cancel-button"]}
-			size="2"
-			variant="soft"
-			color="gray"
-			onClick={onClick}>
-			<Cross1Icon />
-		</IconButton>
-	);
-};
-
-const ProviderConfigKeyValue = () => {
-	const [items, setItems] = useState<{ id: string; key: string; value: string }[]>([{ id: "1", key: "", value: "" }]);
-	return (
-		<Flex
-			className={styles["provider-config-key-value"]}
-			direction="column"
-			gap="2"
-			p="3">
-			{items.map((item) => (
-				<Flex
-					key={item.id}
-					gap="4"
-					className={styles["provider-config-key-value__item"]}
-					align="center"
-					px="3"
-					py="1">
-					<Flex
-						className={styles["provider-config-key-value__item__key"]}
-						align="center"
-						gap="2">
-						<Text
-							size="2"
-							weight="medium">
-							Key
-						</Text>
-						<ProviderConfigInput />
-					</Flex>
-					<Flex
-						className={styles["provider-config-key-value__item__value"]}
-						align="center"
-						gap="2">
-						<Text
-							size="2"
-							weight="medium">
-							Value
-						</Text>
-						<ProviderConfigInput />
-					</Flex>
-					<ProviderConfigCancelButton onClick={() => setItems(items.filter((i) => i.id !== item.id))} />
-				</Flex>
-			))}
-			<ProviderConfigButton
-				label="Add New"
-				onClick={() => setItems([...items, { id: crypto.randomUUID(), key: "", value: "" }])}
-			/>
-		</Flex>
-	);
-};
-
-const ProviderConfigClient = ({ onDelete }: { onDelete: () => void }) => {
-	return (
-		<Flex
-			direction="column"
-			className={styles["provider-configuration-client"]}>
-			<Flex
-				justify="end"
-				className={styles["provider-configuration-client__delete"]}
-				px="3"
-				py="2">
-				<IconButton
-					variant="soft"
-					color="gray"
-					onClick={onDelete}>
-					<TrashIcon />
-				</IconButton>
-			</Flex>
-			<Flex
-				direction="column"
-				className={styles["provider-configuration-client__details"]}
-				p="3"
-				gap="3">
-				<ProviderConfigInputRow
-					label="Client Id"
-					required
-					disabled={false}
-					readonly={false}
-				/>
-				<ProviderConfigInputRow
-					label="Client Secret"
-					required
-					disabled={false}
-					readonly={false}
-				/>
-				<ProviderConfigInputRow
-					label="Client Type"
-					disabled={false}
-					readonly={false}
-				/>
-			</Flex>
-			<ProviderConfigSeparator />
-			<Flex
-				p="3"
-				className={styles["provider-configuration__form__clients__scopes"]}>
-				<ProviderConfigScopeInput disabled={false} />
-			</Flex>
-			<Flex
-				direction="column"
-				gap="2"
-				p="3">
-				<ProviderConfigInputLabel
-					label="Additional Configuration"
-					withIcon={false}
-				/>
-				<ProviderConfigKeyValue />
-			</Flex>
-			<Flex
-				p="3"
-				gap="2"
-				className={styles["provider-configuration__form__clients__force-pkce"]}>
-				<ProviderConfigInputLabel label="Force PKCE" />
-				<Switch />
-			</Flex>
-		</Flex>
-	);
-};
-
-const ProviderConfigClients = () => {
-	const [clients, setClients] = useState<string[]>(["test"]);
-
-	return (
-		<Flex
-			direction="column"
-			gap="3"
-			p="3"
-			className={styles["provider-configuration-clients"]}>
-			{clients.map((client) => (
-				<ProviderConfigClient
-					key={client}
-					onDelete={() => setClients(clients.filter((c) => c !== client))}
-				/>
-			))}
-			<Box>
-				<Button
-					onClick={() => setClients([...clients, crypto.randomUUID()])}
-					variant="soft"
-					size="2">
-					<PlusIcon />
-					Add New Client
-				</Button>
-			</Box>
-		</Flex>
-	);
-};
-const ProviderConfigSuffixInput = ({
-	label,
-	suffix,
-	disabled,
-}: {
-	label: string;
-	suffix?: string;
-	disabled?: boolean;
-}) => {
-	const [suffixValue, setSuffixValue] = useState(suffix);
-
-	const className = `${styles["provider-config-suffix-input"]} ${
-		suffixValue !== undefined ? styles["provider-config-suffix-input--active"] : ""
-	}`;
-
-	return (
-		<Flex
-			align="center"
-			className={className}
-			width="100%">
-			<Button
-				size="3"
-				variant="surface"
-				disabled
-				className={styles["provider-config-suffix-input__button"]}>
-				<Text
-					size="3"
-					className={styles["provider-config-suffix-input__button__text"]}>
-					{label}-
-				</Text>
-			</Button>
-
-			{suffixValue === undefined ? (
-				<Flex
-					align="center"
-					ml="2"
-					className={styles["provider-config-suffix-input__add-suffix"]}>
-					<PlusIcon />
-					<Text
-						size="2"
-						weight="medium"
-						onClick={() => setSuffixValue("test")}
-						className={styles["provider-config-suffix-input__add-suffix__text"]}>
-						Add Suffix
-					</Text>
-					<Tooltip
-						content={
-							<Text size="2">
-								You can add multiple providers of the same type by adding a unique suffix to the third
-								party id.
-							</Text>
-						}
-						side="right">
-						<QuestionMarkCircledIcon />
-					</Tooltip>
-				</Flex>
-			) : (
-				<ProviderConfigInput disabled={disabled} />
-			)}
-		</Flex>
-	);
-};
-
-const ProviderConfigThirdParty = ({ withSuffix = false }: { withSuffix?: boolean }) => {
-	return (
-		<Flex
-			className={styles["provider-configuration__form__thirdparty"]}
-			direction="column"
-			gap="3">
-			{withSuffix ? (
-				<Flex
-					align="center"
-					gap="2">
-					<ProviderConfigInputLabel
-						label="Third Party ID"
-						required
-					/>
-					<ProviderConfigSuffixInput
-						label="github"
-						disabled={false}
-					/>
-				</Flex>
-			) : (
-				<ProviderConfigInputRow
-					label="Third Party ID"
-					withIcon
-					disabled={false}
-					readonly={false}
-				/>
-			)}
-
-			<ProviderConfigInputRow
-				label="Name"
-				withIcon
-				disabled={false}
-				readonly={false}
-			/>
-		</Flex>
-	);
-};
-
-const ProviderConfigActions = ({
-	isEditing,
-	setIsEditing,
-}: {
-	isEditing: boolean;
-	setIsEditing: (isEditing: boolean) => void;
-}) => {
-	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-	return (
-		<>
-			{isEditing ? (
-				<Flex
-					align="center"
-					gap="2">
-					<Button
-						variant="outline"
-						color="gray"
-						size="2"
-						onClick={() => setIsEditing(false)}>
-						Cancel
-					</Button>
-					<Button size="2">Save</Button>
-				</Flex>
-			) : (
-				<Flex
-					align="center"
-					gap="2">
-					<Button
-						variant="outline"
-						size="2"
-						onClick={() => setIsEditing(true)}>
-						<Pencil1Icon />
-						Edit
-					</Button>
-
-					<Button
-						size="2"
-						variant="soft"
-						color="red"
-						onClick={() => setIsDeleteModalOpen(true)}>
-						<TrashIcon />
-						Delete
-					</Button>
-					<DeleteProviderConfigModal
-						open={isDeleteModalOpen}
-						handleClose={() => setIsDeleteModalOpen(false)}
-					/>
-				</Flex>
-			)}
-		</>
-	);
-};
-
-export const ProviderConfiguration = () => {
-	const [isEditing, setIsEditing] = useState(false);
-	return (
-		<Flex
-			width="100%"
-			direction="column"
-			className={styles["provider-configuration"]}>
-			<Flex
-				className={styles["provider-configuration__header"]}
-				justify="between"
-				align="center">
-				<Flex
-					align="center"
-					gap="3"
-					className={styles["provider-configuration__header__main"]}>
-					<ItemLabel
-						size="2"
-						className={styles["provider-configuration__header__main__label"]}>
-						Provider Configuration
-					</ItemLabel>
-					<Badge
-						size="2"
-						variant="soft"
-						color="gray"
-						className={styles["provider-configuration__header__main__badge"]}>
-						<img
-							src={getImageUrl("google.png")}
-							alt="Google"
-							width="16px"
-							height="16px"
-						/>
-						<Text
-							size="2"
-							weight="medium"
-							className={styles["provider-configuration__header__main__badge__text"]}>
-							Google
-						</Text>
-					</Badge>
-				</Flex>
-				<ProviderConfigActions
-					isEditing={isEditing}
-					setIsEditing={setIsEditing}
-				/>
-			</Flex>
-			<Flex
-				className={styles["provider-configuration__form"]}
-				width="100%"
-				direction="column">
-				<ProviderConfigThirdParty />
-				<Flex
-					direction="column"
-					className={styles["provider-configuration__form__clients"]}>
-					<Flex className={styles["provider-configuration__form__clients__header"]}>Clients</Flex>
-					<ProviderConfigClients />
-				</Flex>
-				<ProviderConfigSeparator />
-
-				<Flex
-					direction="column"
-					p="3"
-					gap="3">
-					<ProviderConfigInputRow
-						label="OIDC Discovery Endpoint"
-						size="md"
-					/>
-					<ProviderConfigInputRow
-						label="Authorization Endpoint"
-						size="md"
-					/>
-
-					<Flex
-						direction="column"
-						gap="3">
-						<ProviderConfigInputLabel label="Authorization Endpoint Query Params" />
-						<ProviderConfigKeyValue />
-					</Flex>
-					<ProviderConfigInputRow label="Token Endpoint" />
-					<Flex
-						direction="column"
-						gap="3">
-						<ProviderConfigInputLabel label="Token Endpoint Body Params" />
-						<ProviderConfigKeyValue />
-					</Flex>
-					<ProviderConfigSeparator mx="0" />
-					<ProviderConfigInputRow label="User Info Endpoint" />
-					<Flex
-						direction="column"
-						gap="3">
-						<ProviderConfigInputLabel label="User Info Endpoint Query Params" />
-						<ProviderConfigKeyValue />
-					</Flex>
-					<ProviderConfigInputRow label="User Info Endpoint Headers" />
-					<Flex
-						direction="column"
-						gap="3">
-						<ProviderConfigInputLabel label="User Info Endpoint Headers" />
-						<ProviderConfigKeyValue />
-					</Flex>
-					<Flex gap="3">
-						<ProviderConfigInputLabel label="How often does the provider return email?" />
-						<SegmentedControl.Root
-							defaultValue="inbox"
-							className={styles["provider-config-segmented-control"]}
-							variant="surface"
-							size="3">
-							<SegmentedControl.Item value="inbox">All the time</SegmentedControl.Item>
-							<SegmentedControl.Item value="drafts">Sometimes</SegmentedControl.Item>
-							<SegmentedControl.Item value="sent">Never</SegmentedControl.Item>
-						</SegmentedControl.Root>
-					</Flex>
-					<Flex
-						direction="column"
-						gap="3">
-						<ProviderConfigInputLabel label="User Info Map from UserInfo API" />
-						<Flex
-							direction="column"
-							gap="3"
-							p="3"
-							className={styles["provider-configuration__form__user-info"]}>
-							<ProviderConfigInputRow
-								label="userId"
-								withIcon={false}
-							/>
-							<ProviderConfigInputRow
-								label="email"
-								withIcon={false}
-							/>
-							<ProviderConfigInputRow
-								label="emailVerified"
-								withIcon={false}
-							/>
-						</Flex>
-					</Flex>
-					<Flex
-						direction="column"
-						gap="3">
-						<ProviderConfigInputLabel label="User Info Map from Id Token Payload" />
-						<Flex
-							p="3"
-							gap="3"
-							direction="column"
-							className={styles["provider-configuration__form__user-info"]}>
-							<ProviderConfigInputRow
-								label="userId"
-								withIcon={false}
-							/>
-							<ProviderConfigInputRow
-								label="email"
-								withIcon={false}
-							/>
-							<ProviderConfigInputRow
-								label="emailVerified"
-								withIcon={false}
-							/>
-						</Flex>
-					</Flex>
-					<ProviderConfigSeparator mx="0" />
-					<ProviderConfigInputRow label="JWKS URI" />
-				</Flex>
-			</Flex>
-			<Flex
-				justify="end"
-				m="3">
-				{isEditing && (
-					<ProviderConfigActions
-						isEditing={isEditing}
-						setIsEditing={setIsEditing}
-					/>
-				)}
-			</Flex>
-		</Flex>
-	);
-};
-
-const ProvidersContent = ({
+export const Providers = ({
 	tenantId,
-	providers,
+	tenantInfo,
 }: {
 	tenantId: string;
-	providers: { thirdPartyId: string; name: string }[];
+	tenantInfo: { thirdParty: { providers: { thirdPartyId: string; name: string }[] } };
 }) => {
 	const [isNewProviderModalOpen, setIsNewProviderModalOpen] = useState(false);
 	const [selectedProvider, setSelectedProvider] = useState<string | undefined>(
-		providers.length > 0 ? providers[0].thirdPartyId : undefined
+		tenantInfo.thirdParty.providers.length > 0 ? tenantInfo.thirdParty.providers[0].thirdPartyId : undefined
 	);
+	const [newProviderId, setNewProviderId] = useState<string | undefined>(undefined);
+	const [isAddingNewProvider, setIsAddingNewProvider] = useState(false);
+
+	const handleSelectProvider = (providerId: string) => {
+		setSelectedProvider(providerId);
+		setIsAddingNewProvider(false);
+		setNewProviderId(undefined);
+	};
+
+	const handleProviderDeleted = () => {
+		setSelectedProvider(
+			tenantInfo.thirdParty.providers.length > 0 ? tenantInfo.thirdParty.providers[0].thirdPartyId : undefined
+		);
+		setIsAddingNewProvider(false);
+		setNewProviderId(undefined);
+	};
+
+	const handleNewProviderSelected = (providerId: string) => {
+		setNewProviderId(providerId);
+		setIsAddingNewProvider(true);
+		setSelectedProvider(undefined);
+	};
+
+	const handleProviderSaved = () => {
+		setIsAddingNewProvider(false);
+		setNewProviderId(undefined);
+		// The tenant info will be refreshed, so we'll see the new provider
+	};
+
+	const getProviderIcon = (thirdPartyId: string) => {
+		const builtInProvider = IN_BUILT_THIRD_PARTY_PROVIDERS.find((p) => thirdPartyId.startsWith(p.id));
+		if (builtInProvider) {
+			return builtInProvider.icon;
+		}
+		return "permission.svg";
+	};
+
+	const getProviderName = (provider: { thirdPartyId: string; name: string }) => {
+		return provider.name || provider.thirdPartyId;
+	};
 
 	return (
 		<Flex
@@ -871,64 +100,83 @@ const ProvidersContent = ({
 				<AddNewProviderModal
 					open={isNewProviderModalOpen}
 					handleClose={() => setIsNewProviderModalOpen(false)}
+					tenantId={tenantId}
+					onProviderSelected={handleNewProviderSelected}
 				/>
 			</TabSelector.ContentHeading>
-			{providers.length > 0 && (
+			{tenantInfo.thirdParty.providers.length === 0 && !isAddingNewProvider ? (
+				<EmptyList
+					iconUrl="permission.svg"
+					title="No providers are configured"
+					description="Add at least one provider to enable third-party login for your users. Click 'Add Provider' to get started."
+				/>
+			) : (
 				<>
-					<Flex
-						px="4"
-						py="3"
-						gap="4"
-						className={styles["providers-content__active-providers"]}>
-						{providers.map((provider) => (
-							<ProviderButton
-								key={provider.thirdPartyId}
-								icon={`${provider.thirdPartyId}.png`}
-								label={provider.name}
-								isActive={selectedProvider === provider.thirdPartyId}
-							/>
-						))}
-					</Flex>
-					{selectedProvider && (
+					{tenantInfo.thirdParty.providers.length > 0 && (
+						<Flex
+							px="4"
+							py="3"
+							gap="4"
+							className={styles["providers-content__active-providers"]}>
+							{tenantInfo.thirdParty.providers.map((provider) => {
+								const isActive = selectedProvider === provider.thirdPartyId;
+								const buttonClass = `${styles["provider-button"]} ${
+									isActive ? styles["provider-button--active"] : ""
+								}`;
+								const labelClass = `${styles["provider-button__label"]} ${
+									isActive ? styles["provider-button__label--active"] : ""
+								}`;
+
+								return (
+									<Button
+										key={provider.thirdPartyId}
+										className={buttonClass}
+										variant="outline"
+										radius="large"
+										onClick={() => handleSelectProvider(provider.thirdPartyId)}>
+										<img
+											src={getImageUrl(getProviderIcon(provider.thirdPartyId))}
+											alt={getProviderName(provider)}
+											width="30px"
+											height="30px"
+										/>
+										<Text
+											size="2"
+											weight="medium"
+											className={labelClass}>
+											{getProviderName(provider)}
+										</Text>
+									</Button>
+								);
+							})}
+						</Flex>
+					)}
+					{selectedProvider && !isAddingNewProvider && (
 						<Box
 							m="4"
 							className={styles["providers-content__form"]}>
-							<ProviderConfiguration />
+							<ProviderConfiguration
+								tenantId={tenantId}
+								providerId={selectedProvider}
+								isAddingNewProvider={false}
+								onDelete={handleProviderDeleted}
+							/>
+						</Box>
+					)}
+					{isAddingNewProvider && newProviderId && (
+						<Box
+							m="4"
+							className={styles["providers-content__form"]}>
+							<ProviderConfiguration
+								tenantId={tenantId}
+								providerId={newProviderId}
+								isAddingNewProvider={true}
+								onSave={handleProviderSaved}
+							/>
 						</Box>
 					)}
 				</>
 			)}
 		</Flex>
 	);
-};
-
-export const Providers = ({
-	tenantId,
-	tenantInfo,
-}: {
-	tenantId: string;
-	tenantInfo: { thirdParty: { providers: { thirdPartyId: string; name: string }[] } };
-}) => {
-	const [state] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
-	switch (state) {
-		case "LOADING":
-			return (
-				<Flex
-					width="100%"
-					p="3">
-					<Loader type="list" />
-				</Flex>
-			);
-		case "SUCCESS":
-			return (
-				<ProvidersContent
-					tenantId={tenantId}
-					providers={tenantInfo.thirdParty.providers}
-				/>
-			);
-		case "ERROR":
-			return <DashboardError />;
-		default:
-			return assertNever(state);
-	}
 };

@@ -92,9 +92,22 @@ const SOCIAL_PROVIDERS = [
 interface AddNewProviderModalProps {
 	open: boolean;
 	handleClose: () => void;
+	tenantId: string;
+	onProviderSelected?: (providerId: string) => void;
 }
 
-export default function AddNewProviderModal({ open, handleClose }: AddNewProviderModalProps) {
+export default function AddNewProviderModal({
+	open,
+	handleClose,
+	tenantId,
+	onProviderSelected,
+}: AddNewProviderModalProps) {
+	const handleSelectProvider = (providerId: string) => {
+		if (onProviderSelected) {
+			onProviderSelected(providerId);
+		}
+		handleClose();
+	};
 	return (
 		<Modal
 			title="Add New Provider"
@@ -124,6 +137,7 @@ export default function AddNewProviderModal({ open, handleClose }: AddNewProvide
 									variant="outline"
 									color="gray"
 									radius="large"
+									onClick={() => handleSelectProvider(provider.id)}
 									className={styles["add-new-provider-modal__providers__list__item__button"]}>
 									<img
 										src={getImageUrl(provider.icon)}
@@ -148,6 +162,7 @@ export default function AddNewProviderModal({ open, handleClose }: AddNewProvide
 									variant="outline"
 									color="gray"
 									radius="large"
+									onClick={() => handleSelectProvider(provider.id)}
 									className={styles["add-new-provider-modal__providers__list__item__button"]}>
 									<img
 										src={getImageUrl(provider.icon)}
@@ -167,6 +182,7 @@ export default function AddNewProviderModal({ open, handleClose }: AddNewProvide
 						variant="outline"
 						color="gray"
 						radius="large"
+						onClick={() => handleSelectProvider("custom")}
 						className={styles["add-new-provider-modal__providers__list__item__button"]}>
 						<PlusIcon /> Add Custom Provider
 					</Button>
@@ -177,6 +193,7 @@ export default function AddNewProviderModal({ open, handleClose }: AddNewProvide
 						variant="outline"
 						radius="large"
 						color="gray"
+						onClick={() => handleSelectProvider("boxy-saml")}
 						className={styles["add-new-provider-modal__providers__list__item__button"]}>
 						<PlusIcon /> Add SAML Provider
 					</Button>
