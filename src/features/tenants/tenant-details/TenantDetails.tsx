@@ -76,7 +76,7 @@ const TenantDetailContent = ({
 	isDeletingTenant: boolean;
 }) => {
 	const [deleteTenantModalOpen, setDeleteTenantModalOpen] = useState(false);
-	const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("providers");
+	const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("login-methods");
 	const { goToTenantsList, goToUsersList } = useNavigationHelpers();
 
 	const handleTabChange = (tab: TenantDetailTab) => {
