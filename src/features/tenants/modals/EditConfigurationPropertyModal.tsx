@@ -200,6 +200,7 @@ export default function EditConfigurationPropertyModal({
 						{config.isNullable && (
 							<Flex
 								mt="2"
+								align="center"
 								gap="2">
 								<Checkbox
 									checked={currentValue === null}
