@@ -21,20 +21,11 @@
 			border-radius: var(--radius-max-4);
 			border: 1px solid var(--color-neutral-8);
 			background: var(--color-sand-1);
-			&__item {
-				border-bottom: 1px solid var(--color-gray-200);
-				&__name {
-					color: var(--color-neutral-12);
-				}
-				&__description {
-					color: var(--color-neutral-11);
-				}
-			}
 		}
 		&__preview {
 			flex-basis: 40%;
 			border-radius: var(--radius-4);
-			border: 1px solid var(--color-accent-11, #3451b2);
+			border: 1px solid var(--color-accent-11);
 			background: var(--color-accent-3, #f0f4ff);
 			position: relative;
 
@@ -66,5 +57,28 @@
 				}
 			}
 		}
+	}
+}
+
+.login-method-item {
+	border-bottom: 1px solid var(--color-gray-200);
+
+	&__container {
+		&__item {
+			&__name {
+				color: var(--color-neutral-12);
+			}
+			&__description {
+				color: var(--color-neutral-11);
+			}
+		}
+		&__error {
+			color: var(--color-red-9);
+			padding: 4px 16px;
+		}
+	}
+
+	&:last-of-type {
+		border-bottom: none;
 	}
 }

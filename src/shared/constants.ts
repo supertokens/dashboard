@@ -110,32 +110,32 @@ export const SAML_PROVIDER_ID = "boxy-saml";
 export const FIRST_FACTOR_IDS = [
 	{
 		label: "Email Password",
-		description: "Sign in/up using email and password (Requires the EmailPassword recipe to be initialized)",
+		description: "Traditional email and password authentication",
 		id: "emailpassword",
 	},
 	{
-		label: "OTP - Email",
-		description: "Sign in/up using OTP sent to email (Requires the Passwordless recipe to be initialized)",
+		label: "OTP via Email",
+		description: "One-time password sent to email address",
 		id: "otp-email",
 	},
 	{
-		label: "OTP - Phone",
-		description: "Sign in/up using OTP sent to phone (Requires the Passwordless recipe to be initialized)",
+		label: "OTP via SMS",
+		description: "One-time password sent via SMS",
 		id: "otp-phone",
 	},
 	{
-		label: "Link - Email",
-		description: "Sign in/up using link sent to email (Requires the Passwordless recipe to be initialized)",
+		label: "Magic Link (Email)",
+		description: "Passwordless login link sent to email",
 		id: "link-email",
 	},
 	{
-		label: "Link - Phone",
-		description: "Sign in/up using link sent to phone (Requires the Passwordless recipe to be initialized)",
+		label: "Magic Link (SMS)",
+		description: "Passwordless login link sent via SMS",
 		id: "link-phone",
 	},
 	{
 		label: "Third Party",
-		description: "Sign in/up using third party providers (Requires the ThirdParty recipe to be initialized)",
+		description: "Login with Google, GitHub, etc.",
 		id: "thirdparty",
 	},
 ];
@@ -143,20 +143,17 @@ export const FIRST_FACTOR_IDS = [
 export const SECONDARY_FACTOR_IDS = [
 	{
 		label: "TOTP",
-		description:
-			"Require TOTP as a secondary factor for successful authentication (Requires the TOTP recipe to be initialized)",
+		description: "Time-based one-time passwords using apps like Google Authenticator",
 		id: "totp",
 	},
 	{
 		label: "OTP - Email",
-		description:
-			"Require OTP sent to email as a secondary factor for successful authentication (Requires the Passwordless recipe to be initialized)",
+		description: "One-time password sent to user's email address",
 		id: "otp-email",
 	},
 	{
 		label: "OTP - Phone",
-		description:
-			"Require OTP sent to phone as a secondary factor for successful authentication (Requires the Passwordless recipe to be initialized)",
+		description: "One-time password sent via SMS to user's phone",
 		id: "otp-phone",
 	},
 ];

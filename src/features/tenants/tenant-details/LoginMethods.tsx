@@ -13,14 +13,17 @@
  * under the License.
  */
 
+import { useState } from "react";
 import { Badge, Callout, Flex, Switch, Text } from "@radix-ui/themes";
 
 import type { TenantInfo } from "@api/tenants/types";
-import { FIRST_FACTOR_IDS } from "@constants";
+import { FIRST_FACTOR_IDS } from "@shared/constants";
 import { getImageUrl } from "@shared/utils";
 import TabSelector from "@shared/components/tabSelector";
 import ItemLabel from "@shared/components/itemLabel";
+import { useToast } from "@shared/components/toast";
 
+import { useTenantDetails } from "../hooks/useTenantDetails";
 import styles from "./LoginMethods.module.scss";
 
 export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
@@ -34,6 +37,19 @@ export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
 			<TabSelector.ContentHeading>
 				<ItemLabel>The login methods you wish to activate for the tenant</ItemLabel>
 			</TabSelector.ContentHeading>
+
+			{enabledFirstFactors.length === 0 && (
+				<Callout.Root
+					color="red"
+					size="1"
+					mb="3"
+					mx="4">
+					<Callout.Text size="2">
+						At least one login method needs to be enabled for the user to log in to the tenant.
+					</Callout.Text>
+				</Callout.Root>
+			)}
+
 			<Flex
 				className={styles["login-methods__content"]}
 				width="100%"
@@ -45,37 +61,14 @@ export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
 					{FIRST_FACTOR_IDS.map((factor) => {
 						const isEnabled = enabledFirstFactors.includes(factor.id);
 						return (
-							<Flex
-								justify="between"
+							<LoginMethodItem
 								key={factor.id}
-								className={styles["login-methods__content__main__item"]}
-								align="center"
-								mx="4"
-								py="4">
-								<Flex
-									direction="column"
-									gap="1">
-									<Text
-										size="2"
-										weight="medium"
-										className={styles["login-methods__content__main__item__name"]}>
-										{factor.label}
-									</Text>
-									<Text
-										size="2"
-										weight="regular"
-										className={styles["login-methods__content__main__item__description"]}>
-										{factor.description}
-									</Text>
-								</Flex>
-								<Switch
-									size="2"
-									variant="classic"
-									checked={isEnabled}
-									disabled
-									className={styles["login-methods__content__main__method__switch"]}
-								/>
-							</Flex>
+								factorId={factor.id}
+								label={factor.label}
+								description={factor.description}
+								isEnabled={isEnabled}
+								tenantId={tenantInfo.tenantId}
+							/>
 						);
 					})}
 				</Flex>
@@ -129,6 +122,109 @@ export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
 					</Callout.Root>
 				</Flex>
 			)}
+		</Flex>
+	);
+};
+
+interface LoginMethodItemProps {
+	factorId: string;
+	label: string;
+	description: string;
+	isEnabled: boolean;
+	tenantId: string;
+}
+
+const LoginMethodItem = ({ factorId, label, description, isEnabled, tenantId }: LoginMethodItemProps) => {
+	const [isLoading, setIsLoading] = useState(false);
+	const { showErrorToast } = useToast();
+	const [error, setError] = useState<
+		"RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR" | "UNKNOWN_TENANT_ERROR" | "GENERIC_ERROR" | null
+	>(null);
+	const { updateFirstFactor } = useTenantDetails(tenantId);
+
+	const handleToggle = async () => {
+		try {
+			setIsLoading(true);
+			const response = await updateFirstFactor({ factorId, enable: !isEnabled });
+
+			if (response.status !== "OK") {
+				if (response.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
+					setError("RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR");
+				} else if (response.status === "UNKNOWN_TENANT_ERROR") {
+					setError("UNKNOWN_TENANT_ERROR");
+					showErrorToast("Could not update login method. Tenant not found!");
+				} else {
+					setError("GENERIC_ERROR");
+					showErrorToast("Could not update login method. Something went wrong!");
+				}
+			} else {
+				setError(null);
+			}
+		} catch (error) {
+			setError("GENERIC_ERROR");
+			showErrorToast("Could not update login method. Something went wrong!");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return (
+		<Flex
+			direction="column"
+			className={styles["login-method-item"]}>
+			<Flex
+				direction="column"
+				className={styles["login-method-item__container"]}>
+				<Flex
+					justify="between"
+					className={styles["login-method-item__container__item"]}
+					align="center"
+					mx="4"
+					py="4">
+					<Flex
+						direction="column"
+						gap="1">
+						<Text
+							size="2"
+							weight="medium"
+							className={styles["login-method-item__container__item__name"]}>
+							{label}
+						</Text>
+						<Text
+							size="2"
+							weight="regular"
+							className={styles["login-method-item__container__item__description"]}>
+							{description}
+						</Text>
+					</Flex>
+					<Switch
+						size="2"
+						variant="classic"
+						checked={isEnabled}
+						disabled={isLoading}
+						onCheckedChange={handleToggle}
+						className={styles["login-method-item__container__method__switch"]}
+					/>
+				</Flex>
+				{(() => {
+					switch (error) {
+						case "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR":
+							return (
+								<Text
+									className={styles["login-method-item__container__error"]}
+									size="1"
+									weight="medium"
+									color="red">
+									⚠️ This login method is not configured in your backend SDK. Please check your
+									configuration.
+								</Text>
+							);
+
+						default:
+							return null;
+					}
+				})()}
+			</Flex>
 		</Flex>
 	);
 };

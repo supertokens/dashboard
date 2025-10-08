@@ -56,4 +56,11 @@
 			}
 		}
 	}
+	&__callout {
+		&__link {
+			color: inherit !important;
+			font-weight: 600;
+			text-decoration: underline;
+		}
+	}
 }
