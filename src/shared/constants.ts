@@ -143,17 +143,17 @@ export const FIRST_FACTOR_IDS = [
 export const SECONDARY_FACTOR_IDS = [
 	{
 		label: "TOTP",
-		description: "Time-based one-time passwords using apps like Google Authenticator",
+		description: "Setup an authenticator app to get 2fa codes when prompted ",
 		id: "totp",
 	},
 	{
-		label: "OTP - Email",
-		description: "One-time password sent to user's email address",
+		label: "Email based OTP",
+		description: "Get an OTP code on your email address to complete authentication requests",
 		id: "otp-email",
 	},
 	{
-		label: "OTP - Phone",
-		description: "One-time password sent via SMS to user's phone",
+		label: "SMS based OTP",
+		description: "Get an OTP code on your phone to complete authentication requests",
 		id: "otp-phone",
 	},
 ];

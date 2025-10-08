@@ -25,12 +25,27 @@ import { useToast } from "@shared/components/toast";
 
 import { useTenantDetails } from "../hooks/useTenantDetails";
 import styles from "./SecondaryFactors.module.scss";
+import { SecondFactorPreview } from "@shared/components/second-factor-preview";
+
+type SecondaryFactor = "totp" | "otp-email" | "otp-phone";
 
 type MFAError = null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN";
 
 export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
-	const requiredSecondaryFactors = tenantInfo.requiredSecondaryFactors || [];
+	const [requiredSecondaryFactors, setRequiredSecondaryFactors] = useState<SecondaryFactor[]>(
+		(tenantInfo.requiredSecondaryFactors as SecondaryFactor[]) || []
+	);
 	const [mfaError, setMfaError] = useState<MFAError>(null);
+
+	const handleSecondaryFactorToggle = (factorId: string, enable: boolean) => {
+		setRequiredSecondaryFactors((prev) => {
+			if (enable) {
+				return [...prev, factorId as SecondaryFactor];
+			} else {
+				return prev.filter((id) => id !== factorId);
+			}
+		});
+	};
 
 	return (
 		<Flex
@@ -85,7 +100,7 @@ export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => 
 					className={styles["secondary-factors__content__main"]}
 					direction="column">
 					{SECONDARY_FACTOR_IDS.map((factor) => {
-						const isRequired = requiredSecondaryFactors.includes(factor.id);
+						const isRequired = requiredSecondaryFactors.includes(factor.id as SecondaryFactor);
 						return (
 							<SecondaryFactorItem
 								key={factor.id}
@@ -95,6 +110,7 @@ export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => 
 								isRequired={isRequired}
 								tenantId={tenantInfo.tenantId}
 								setMfaError={setMfaError}
+								onToggle={handleSecondaryFactorToggle}
 							/>
 						);
 					})}
@@ -107,7 +123,7 @@ export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => 
 						className={styles["secondary-factors__content__preview__badge"]}>
 						Preview
 					</Badge>
-					{requiredSecondaryFactors.length === 0 && (
+					{requiredSecondaryFactors.length === 0 ? (
 						<Flex
 							gap="2"
 							direction="column"
@@ -127,6 +143,10 @@ export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => 
 								Select secondary factor to see preview
 							</Text>
 						</Flex>
+					) : (
+						<Flex className={styles["secondary-factors__content__preview__content"]}>
+							<SecondFactorPreview secondaryFactors={requiredSecondaryFactors} />
+						</Flex>
 					)}
 				</Flex>
 			</Flex>
@@ -141,6 +161,7 @@ interface SecondaryFactorItemProps {
 	isRequired: boolean;
 	tenantId: string;
 	setMfaError: (error: MFAError) => void;
+	onToggle: (factorId: string, enable: boolean) => void;
 }
 
 const SecondaryFactorItem = ({
@@ -150,6 +171,7 @@ const SecondaryFactorItem = ({
 	isRequired,
 	tenantId,
 	setMfaError,
+	onToggle,
 }: SecondaryFactorItemProps) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -159,7 +181,8 @@ const SecondaryFactorItem = ({
 	const handleToggle = async () => {
 		try {
 			setIsLoading(true);
-			const response = await updateRequiredSecondaryFactor({ factorId, enable: !isRequired });
+			const newState = !isRequired;
+			const response = await updateRequiredSecondaryFactor({ factorId, enable: newState });
 
 			if (response.status !== "OK") {
 				if (response.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
@@ -170,6 +193,8 @@ const SecondaryFactorItem = ({
 					throw new Error(response.status);
 				}
 			} else {
+				// Update local state when the backend update is successful
+				onToggle(factorId, newState);
 				if (response.isMFARequirementsForAuthOverridden) {
 					setMfaError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
 				} else {
@@ -199,7 +224,8 @@ const SecondaryFactorItem = ({
 				className={styles["secondary-factors__content__main__item"]}
 				align="center"
 				mx="4"
-				py="4">
+				py="4"
+				gap="2">
 				<Flex
 					direction="column"
 					gap="1">
@@ -218,7 +244,7 @@ const SecondaryFactorItem = ({
 					{error && (
 						<Text
 							size="1"
-							style={{ color: "var(--red-9)" }}>
+							color="red">
 							⚠️ {error}
 						</Text>
 					)}

@@ -120,3 +120,7 @@ import "./assets/okta.png";
 import "./assets/bitbucket.png";
 import "./assets/gitlab.png";
 import "./logo.svg";
+import "./assets/totp.svg";
+import "./assets/otp-email.svg";
+import "./assets/otp-phone.svg";
+import "./assets/back-arrow.svg";

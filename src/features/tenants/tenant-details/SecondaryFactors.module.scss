@@ -30,6 +30,7 @@
 					color: var(--color-neutral-11);
 				}
 			}
+			height: fit-content;
 		}
 		&__preview {
 			flex-basis: 40%;
@@ -53,6 +54,9 @@
 				&__text {
 					color: var(--color-accent-9);
 				}
+			}
+			&__content {
+				margin: 40px 15px;
 			}
 		}
 	}

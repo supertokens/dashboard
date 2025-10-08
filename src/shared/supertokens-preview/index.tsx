@@ -123,7 +123,7 @@ export const SupertokensPreview = ({ enabledFirstFactors }: SupertokensPreviewPr
 			(factorChecks.isMultifactorEmailEnabled || factorChecks.isEmailPasswordEnabled);
 
 		return {
-			inputLabel: showEmailLabel ? "Email" : "Phone",
+			inputLabel: showEmailLabel ? "Email" : "Phone Number",
 			showPhoneOption,
 		};
 	}, [factorChecks]);
