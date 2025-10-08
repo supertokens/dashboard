@@ -13,12 +13,14 @@
  * under the License.
  */
 
+import React, { useMemo } from "react";
 import { Flex, Text, TextField } from "@radix-ui/themes";
 
-import styles from "./index.module.scss";
 import { getImageUrl } from "@shared/utils";
 import { Button, ButtonProps } from "@radix-ui/themes";
 import { FactorIds } from "@constants";
+
+import styles from "./index.module.scss";
 
 type FactorIds = typeof FactorIds[keyof typeof FactorIds];
 
@@ -71,24 +73,60 @@ const hasMultifactorPhoneEnabled = (enabledFirstFactors: FactorIds[]) => {
 	return enabledFirstFactors.includes(FactorIds.OTP_PHONE) || enabledFirstFactors.includes(FactorIds.LINK_PHONE);
 };
 
-const hasMultifactorEnabled = (enabledFirstFactors: FactorIds[]) => {
-	return hasMultifactorEmailEnabled(enabledFirstFactors) || hasMultifactorPhoneEnabled(enabledFirstFactors);
-};
-
 const hasEmailPasswordEnabled = (enabledFirstFactors: FactorIds[]) => {
 	return enabledFirstFactors.includes(FactorIds.EMAILPASSWORD);
 };
 
-export const SupertokensPreview = ({
-	enabledFirstFactors,
-}: {
+const hasThirdPartyEnabled = (enabledFirstFactors: FactorIds[]) => {
+	return enabledFirstFactors.includes(FactorIds.THIRDPARTY);
+};
+
+interface SupertokensPreviewProps {
 	enabledFirstFactors: typeof FactorIds[keyof typeof FactorIds][];
-}) => {
-	const showThirdParty = enabledFirstFactors.includes(FactorIds.THIRDPARTY);
-	const showEmailPassword =
-		enabledFirstFactors.includes(FactorIds.EMAILPASSWORD) && !hasMultifactorEnabled(enabledFirstFactors);
-	const showMultifactor = hasMultifactorEnabled(enabledFirstFactors);
-	const showOr = showThirdParty && (showEmailPassword || showMultifactor);
+}
+
+export const SupertokensPreview = ({ enabledFirstFactors }: SupertokensPreviewProps) => {
+	const factorChecks = useMemo(() => {
+		const isMultifactorEmailEnabled = hasMultifactorEmailEnabled(enabledFirstFactors);
+		const isMultifactorPhoneEnabled = hasMultifactorPhoneEnabled(enabledFirstFactors);
+		const isMultifactorEnabled = isMultifactorEmailEnabled || isMultifactorPhoneEnabled;
+		const isEmailPasswordEnabled = hasEmailPasswordEnabled(enabledFirstFactors);
+		const isThirdPartyEnabled = hasThirdPartyEnabled(enabledFirstFactors);
+
+		return {
+			isMultifactorEmailEnabled,
+			isMultifactorPhoneEnabled,
+			isMultifactorEnabled,
+			isEmailPasswordEnabled,
+			isThirdPartyEnabled,
+		};
+	}, [enabledFirstFactors]);
+
+	const displayConditions = useMemo(() => {
+		const showThirdParty = factorChecks.isThirdPartyEnabled;
+		const showEmailPassword = factorChecks.isEmailPasswordEnabled && !factorChecks.isMultifactorEnabled;
+		const showMultifactor = factorChecks.isMultifactorEnabled;
+		const showOr = showThirdParty && (showEmailPassword || showMultifactor);
+
+		return {
+			showThirdParty,
+			showEmailPassword,
+			showMultifactor,
+			showOr,
+		};
+	}, [factorChecks]);
+
+	const mfaConditions = useMemo(() => {
+		const showEmailLabel = factorChecks.isMultifactorEmailEnabled || factorChecks.isEmailPasswordEnabled;
+		const showPhoneOption =
+			factorChecks.isMultifactorPhoneEnabled &&
+			(factorChecks.isMultifactorEmailEnabled || factorChecks.isEmailPasswordEnabled);
+
+		return {
+			inputLabel: showEmailLabel ? "Email" : "Phone",
+			showPhoneOption,
+		};
+	}, [factorChecks]);
 
 	return (
 		<Flex
@@ -105,7 +143,7 @@ export const SupertokensPreview = ({
 			<Separator fullWidth />
 
 			{/* Third party buttons */}
-			{showThirdParty && (
+			{displayConditions.showThirdParty && (
 				<Flex
 					className={styles["supertokens-preview__third-party"]}
 					gap="3"
@@ -124,7 +162,7 @@ export const SupertokensPreview = ({
 			)}
 
 			{/* Or */}
-			{showOr && (
+			{displayConditions.showOr && (
 				<Flex
 					gap="3"
 					align="center"
@@ -137,7 +175,7 @@ export const SupertokensPreview = ({
 			)}
 
 			{/* MFA */}
-			{showMultifactor && (
+			{displayConditions.showMultifactor && (
 				<Flex
 					direction="column"
 					className={styles["supertokens-preview__mfa-container"]}>
@@ -146,19 +184,12 @@ export const SupertokensPreview = ({
 						align="center"
 						className={styles["supertokens-preview__mfa-label"]}
 						mb="2">
-						<Text>
-							{hasMultifactorEmailEnabled(enabledFirstFactors) ||
-							hasEmailPasswordEnabled(enabledFirstFactors)
-								? "Email"
-								: "Phone"}
-						</Text>
-						{hasMultifactorPhoneEnabled(enabledFirstFactors) &&
-							(hasMultifactorEmailEnabled(enabledFirstFactors) ||
-								hasEmailPasswordEnabled(enabledFirstFactors)) && (
-								<Text className={styles["supertokens-preview__mfa-label__subtext"]}>
-									Use a phone number
-								</Text>
-							)}
+						<Text>{mfaConditions.inputLabel}</Text>
+						{mfaConditions.showPhoneOption && (
+							<Text className={styles["supertokens-preview__mfa-label__subtext"]}>
+								Use a phone number
+							</Text>
+						)}
 					</Flex>
 					<InputField />
 					<SubmitButton
@@ -169,7 +200,7 @@ export const SupertokensPreview = ({
 			)}
 
 			{/* Email Password */}
-			{showEmailPassword && (
+			{displayConditions.showEmailPassword && (
 				<Flex
 					className={styles["supertokens-preview__email-password"]}
 					direction="column"
