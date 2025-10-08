@@ -20,11 +20,12 @@ import "./index.scss";
 
 export default function Separator({
 	fullWidth = false,
+	className,
 	...props
-}: React.ComponentProps<typeof RadixSeparator> & { fullWidth?: boolean }) {
+}: React.ComponentProps<typeof RadixSeparator> & { fullWidth?: boolean; className?: string }) {
 	return (
 		<RadixSeparator
-			className={`separator  ${fullWidth ? "separator--full-width" : ""}`}
+			className={`separator  ${fullWidth ? "separator--full-width" : ""} ${className}`}
 			{...props}
 		/>
 	);

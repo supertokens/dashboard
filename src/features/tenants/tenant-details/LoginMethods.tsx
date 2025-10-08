@@ -25,6 +25,7 @@ import { useToast } from "@shared/components/toast";
 
 import { useTenantDetails } from "../hooks/useTenantDetails";
 import styles from "./LoginMethods.module.scss";
+import { SupertokensPreview } from "@shared/supertokens-preview";
 
 export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
 	const enabledFirstFactors = tenantInfo.firstFactors || [];
@@ -42,7 +43,7 @@ export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
 				<Callout.Root
 					color="red"
 					size="1"
-					mb="3"
+					my="3"
 					mx="4">
 					<Callout.Text size="2">
 						At least one login method needs to be enabled for the user to log in to the tenant.
@@ -80,7 +81,7 @@ export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
 						className={styles["login-methods__content__preview__badge"]}>
 						Preview
 					</Badge>
-					{enabledFirstFactors.length === 0 && (
+					{enabledFirstFactors.length === 0 ? (
 						<Flex
 							gap="2"
 							direction="column"
@@ -99,6 +100,13 @@ export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
 								className={styles["login-methods__content__preview__empty__text"]}>
 								Select login methods to see preview
 							</Text>
+						</Flex>
+					) : (
+						<Flex
+							justify="center"
+							align="center"
+							className={styles["login-methods__content__preview__supertokens-preview"]}>
+							<SupertokensPreview enabledFirstFactors={enabledFirstFactors} />
 						</Flex>
 					)}
 				</Flex>
