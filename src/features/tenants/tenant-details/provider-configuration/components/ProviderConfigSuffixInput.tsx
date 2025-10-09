@@ -17,7 +17,6 @@ import { Flex, Text, Tooltip } from "@radix-ui/themes";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 
 import { ProviderConfigInputLabel } from "./ProviderConfigInputLabel";
-import { ProviderConfigInput } from "./ProviderConfigInput";
 import styles from "../ProviderConfiguration.module.scss";
 
 interface ProviderConfigSuffixInputProps {
@@ -40,7 +39,7 @@ export const ProviderConfigSuffixInput = ({
 	disabled,
 }: ProviderConfigSuffixInputProps) => {
 	if (isSuffixFieldVisible) {
-		// Show input field with prefix
+		// Show prefix box + input field for suffix
 		return (
 			<Flex
 				direction="column"
@@ -60,18 +59,14 @@ export const ProviderConfigSuffixInput = ({
 						gap="0"
 						style={{ flex: 1 }}
 						className={styles["provider-config-suffix-input--active"]}>
-						<button
-							type="button"
-							className={styles["provider-config-suffix-input__button"]}
-							disabled>
-							{baseProviderId}-
-						</button>
-						<ProviderConfigInput
+						<span className={styles["provider-config-suffix-input__prefix"]}>{baseProviderId}-</span>
+						<input
+							type="text"
 							value={suffixValue}
 							onChange={onSuffixChange}
-							placeholder="Enter suffix"
+							placeholder=""
 							disabled={disabled}
-							className={styles["provider-config-input"]}
+							className={styles["provider-config-suffix-input__input"]}
 						/>
 					</Flex>
 				</Flex>

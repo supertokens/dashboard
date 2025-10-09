@@ -55,6 +55,7 @@ interface ProviderConfigurationProps {
 	isAddingNewProvider: boolean;
 	onDelete?: () => void;
 	onSave?: () => void;
+	onCancel?: () => void;
 	providerConfigResponse?: ProviderConfigResponse;
 	additionalConfig?: Record<string, string>;
 }
@@ -65,6 +66,7 @@ export const ProviderConfiguration = ({
 	isAddingNewProvider,
 	onDelete,
 	onSave,
+	onCancel,
 	providerConfigResponse: initialProviderConfigResponse,
 	additionalConfig,
 }: ProviderConfigurationProps) => {
@@ -324,57 +326,86 @@ export const ProviderConfiguration = ({
 					)}
 				</Flex>
 
-				{!isAddingNewProvider &&
-					(isEditing ? (
-						<Flex
-							align="center"
-							gap="2">
-							<Button
-								variant="outline"
-								color="gray"
-								size="2"
-								onClick={() => {
-									setIsEditing(false);
-									setErrors({});
-									// Reset state
-									if (providerConfigResponse) {
-										setProviderConfigState(
-											getInitialProviderState(providerConfigResponse, providerId)
-										);
-									}
-								}}
-								disabled={isSaving}>
-								Cancel
-							</Button>
-							<Button
-								size="2"
-								onClick={handleSave}
-								disabled={isSaving}>
-								{isSaving ? "Saving..." : "Save"}
-							</Button>
-						</Flex>
-					) : (
-						<Flex
-							align="center"
-							gap="2">
-							<Button
-								variant="outline"
-								size="2"
-								onClick={() => setIsEditing(true)}>
-								<Pencil1Icon />
-								Edit
-							</Button>
+				{/* Action buttons in header */}
+				{isAddingNewProvider ? (
+					<Flex
+						align="center"
+						gap="2">
+						<Button
+							variant="outline"
+							color="gray"
+							size="2"
+							onClick={() => {
+								// Reset suffix field visibility if no suffix was added
+								if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
+									setIsSuffixFieldVisible(false);
+								}
+								if (onCancel) {
+									onCancel();
+								}
+							}}
+							disabled={isSaving}>
+							Cancel
+						</Button>
+						<Button
+							size="2"
+							onClick={handleSave}
+							disabled={isSaving}>
+							{isSaving ? "Saving..." : "Save"}
+						</Button>
+					</Flex>
+				) : isEditing ? (
+					<Flex
+						align="center"
+						gap="2">
+						<Button
+							variant="outline"
+							color="gray"
+							size="2"
+							onClick={() => {
+								setIsEditing(false);
+								setErrors({});
+								// Reset state
+								if (providerConfigResponse) {
+									setProviderConfigState(getInitialProviderState(providerConfigResponse, providerId));
+								}
+								// Reset suffix field visibility if no suffix was added
+								if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
+									setIsSuffixFieldVisible(false);
+								}
+							}}
+							disabled={isSaving}>
+							Cancel
+						</Button>
+						<Button
+							size="2"
+							onClick={handleSave}
+							disabled={isSaving}>
+							{isSaving ? "Saving..." : "Save"}
+						</Button>
+					</Flex>
+				) : (
+					<Flex
+						align="center"
+						gap="2">
+						<Button
+							variant="outline"
+							size="2"
+							onClick={() => setIsEditing(true)}>
+							<Pencil1Icon />
+							Edit
+						</Button>
 
-							<Button
-								size="2"
-								variant="soft"
-								color="red"
-								onClick={() => setIsDeleteModalOpen(true)}>
-								<TrashIcon />
-								Delete
-							</Button>
-						</Flex>
-					))}
+						<Button
+							size="2"
+							variant="soft"
+							color="red"
+							onClick={() => setIsDeleteModalOpen(true)}>
+							<TrashIcon />
+							Delete
+						</Button>
+					</Flex>
+				)}
 			</Flex>
 
 			{/* Form Content */}
@@ -778,7 +809,20 @@ export const ProviderConfiguration = ({
 							size="2"
 							variant="outline"
 							color="gray"
-							onClick={() => setIsEditing(false)}>
+							onClick={() => {
+								// Reset suffix field visibility if no suffix was added
+								if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
+									setIsSuffixFieldVisible(false);
+								}
+
+								if (isAddingNewProvider && onCancel) {
+									// When adding new provider, call onCancel to go back
+									onCancel();
+								} else {
+									// When editing existing provider, just exit edit mode
+									setIsEditing(false);
+								}
+							}}>
 							Cancel
 						</Button>
 

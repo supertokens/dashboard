@@ -341,6 +341,7 @@ const ProviderConfigWrapper = ({
 			isAddingNewProvider={isAddingNewProvider}
 			onDelete={onDelete}
 			onSave={onSave}
+			onCancel={onCancel}
 			providerConfigResponse={providerConfigResponse}
 			additionalConfig={additionalConfig}
 		/>
