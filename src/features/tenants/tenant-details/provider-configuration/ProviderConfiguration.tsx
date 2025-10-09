@@ -44,6 +44,7 @@ import {
 	ProviderConfigInputRow,
 	ProviderConfigKeyValue,
 	ProviderConfigSeparator,
+	ProviderConfigSuffixInput,
 	UserInfoMapSection,
 } from "./components";
 import styles from "./ProviderConfiguration.module.scss";
@@ -77,21 +78,24 @@ export const ProviderConfiguration = ({
 	const [providerConfigState, setProviderConfigState] = useState<ProviderConfigState | null>(null);
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [emailSelectValue, setEmailSelectValue] = useState<EmailSelectState>("always");
+	const [isSuffixFieldVisible, setIsSuffixFieldVisible] = useState(false);
 
 	const getThirdPartyProviderInfo = useGetThirdPartyProviderInfoService();
 	const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProviderService();
 	const { tenantInfo, refetch } = useTenantDetails(tenantId);
 	const { showSuccessToast, showErrorToast } = useToast();
 
+	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
 	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId?.startsWith(provider.id));
+	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
+	const shouldUseSuffixField = isAddingNewProvider && (Boolean(inBuiltProviderInfo) || isSAMLProvider);
+
 	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT).find((id) =>
 		providerId?.startsWith(id)
 	);
 	const customFields = customFieldProviderKey
 		? IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT[customFieldProviderKey]
 		: undefined;
-
-	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
 
 	useEffect(() => {
 		// If we already have provider config response (passed from parent), use it
@@ -142,6 +146,35 @@ export const ProviderConfiguration = ({
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tenantId, providerId, isAddingNewProvider, initialProviderConfigResponse]);
+
+	const handleThirdPartyIdSuffixChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (!providerConfigState) return;
+
+		const suffixValue = e.target.value.trim();
+		if (suffixValue === "") {
+			setProviderConfigState({ ...providerConfigState, thirdPartyId: baseProviderId });
+		} else {
+			setProviderConfigState({
+				...providerConfigState,
+				thirdPartyId: `${baseProviderId}-${suffixValue}`,
+			});
+		}
+	};
+
+	const showSuffixField = () => {
+		if (!providerConfigState) return;
+
+		setIsSuffixFieldVisible(true);
+		setProviderConfigState({
+			...providerConfigState,
+			thirdPartyId: baseProviderId,
+		});
+		// Clear any thirdPartyId errors when showing suffix field
+		setErrors((prev) => {
+			const { thirdPartyId, ...rest } = prev;
+			return rest;
+		});
+	};
 
 	const handleUserInfoFieldChange = ({
 		name,
@@ -357,18 +390,34 @@ export const ProviderConfiguration = ({
 					gap="4"
 					px="3"
 					pt="4">
-					{/* Third Party ID */}
-					<ProviderConfigInputRow
-						label="Third Party ID"
-						tooltip="The ID of the provider"
-						required
-						disabled={!isEditing || !isAddingNewProvider}
-						value={providerConfigState.thirdPartyId}
-						onChange={(e) =>
-							setProviderConfigState({ ...providerConfigState, thirdPartyId: e.target.value })
-						}
-						error={errors.thirdPartyId}
-					/>
+					{/* Third Party ID - with suffix support for built-in and SAML providers */}
+					{shouldUseSuffixField ? (
+						<ProviderConfigSuffixInput
+							baseProviderId={baseProviderId}
+							suffixValue={
+								providerConfigState.thirdPartyId.length > baseProviderId.length + 1
+									? providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)
+									: ""
+							}
+							onSuffixChange={handleThirdPartyIdSuffixChange}
+							onShowSuffixField={showSuffixField}
+							isSuffixFieldVisible={isSuffixFieldVisible}
+							error={errors.thirdPartyId}
+							disabled={!isEditing}
+						/>
+					) : (
+						<ProviderConfigInputRow
+							label="Third Party ID"
+							tooltip="The ID of the provider"
+							required
+							disabled={!isEditing || !isAddingNewProvider}
+							value={providerConfigState.thirdPartyId}
+							onChange={(e) =>
+								setProviderConfigState({ ...providerConfigState, thirdPartyId: e.target.value })
+							}
+							error={errors.thirdPartyId}
+						/>
+					)}
 
 					{/* Name */}
 					{isSAMLProvider ? (

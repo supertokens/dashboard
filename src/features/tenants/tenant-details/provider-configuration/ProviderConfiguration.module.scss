@@ -124,3 +124,64 @@
 	background: var(--color-neutral-6) !important;
 	flex: 1;
 }
+
+.provider-config-suffix-input {
+	&__button {
+		padding: 8px 12px;
+		border: 1px solid var(--color-neutral-alpha-3);
+		background: var(--color-neutral-alpha-6);
+		color: var(--color-neutral-alpha-9);
+		font-size: var(--font-size-2);
+		font-weight: 500;
+		border-radius: var(--radius-2) 0 0 var(--radius-2);
+		outline: none;
+		box-shadow: none;
+		cursor: not-allowed;
+	}
+
+	&__add-suffix {
+		color: var(--color-accent-alpha-11);
+
+		&__text {
+			margin-right: 4px;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	&--active {
+		.provider-config-suffix-input__button {
+			border-right: none;
+		}
+
+		.provider-config-input {
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+		}
+	}
+}
+
+.provider-config-input {
+	flex: 1;
+	padding: 8px 12px;
+	border: 1px solid var(--gray-a6);
+	border-radius: var(--radius-2);
+	font-size: var(--font-size-2);
+	background: var(--color-sand-1);
+	color: var(--color-neutral-12);
+	outline: none;
+
+	&:focus {
+		border-color: var(--accent-9);
+		box-shadow: 0 0 0 1px var(--accent-a5);
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		background: var(--color-neutral-3);
+	}
+}
