@@ -54,6 +54,8 @@ interface ProviderConfigurationProps {
 	isAddingNewProvider: boolean;
 	onDelete?: () => void;
 	onSave?: () => void;
+	providerConfigResponse?: ProviderConfigResponse;
+	additionalConfig?: Record<string, string>;
 }
 
 export const ProviderConfiguration = ({
@@ -62,12 +64,16 @@ export const ProviderConfiguration = ({
 	isAddingNewProvider,
 	onDelete,
 	onSave,
+	providerConfigResponse: initialProviderConfigResponse,
+	additionalConfig,
 }: ProviderConfigurationProps) => {
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(!initialProviderConfigResponse);
 	const [isEditing, setIsEditing] = useState(isAddingNewProvider);
 	const [isSaving, setIsSaving] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>();
+	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>(
+		initialProviderConfigResponse
+	);
 	const [providerConfigState, setProviderConfigState] = useState<ProviderConfigState | null>(null);
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [emailSelectValue, setEmailSelectValue] = useState<EmailSelectState>("always");
@@ -88,10 +94,26 @@ export const ProviderConfiguration = ({
 	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
 
 	useEffect(() => {
+		// If we already have provider config response (passed from parent), use it
+		if (initialProviderConfigResponse) {
+			const initialState = getInitialProviderState(initialProviderConfigResponse, providerId);
+			setProviderConfigState(initialState);
+
+			// Set email select value
+			if (initialProviderConfigResponse.requireEmail === false) {
+				setEmailSelectValue("sometimes");
+			} else {
+				setEmailSelectValue("always");
+			}
+			setIsLoading(false);
+			return;
+		}
+
+		// Otherwise fetch provider info
 		const fetchProviderInfo = async () => {
 			try {
 				setIsLoading(true);
-				const response = await getThirdPartyProviderInfo(tenantId, providerId);
+				const response = await getThirdPartyProviderInfo(tenantId, providerId, additionalConfig);
 				if (response.status === "OK") {
 					setProviderConfigResponse(response.providerConfig);
 					const initialState = getInitialProviderState(response.providerConfig, providerId);
@@ -119,7 +141,7 @@ export const ProviderConfiguration = ({
 			setIsLoading(false);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tenantId, providerId, isAddingNewProvider]);
+	}, [tenantId, providerId, isAddingNewProvider, initialProviderConfigResponse]);
 
 	const handleUserInfoFieldChange = ({
 		name,

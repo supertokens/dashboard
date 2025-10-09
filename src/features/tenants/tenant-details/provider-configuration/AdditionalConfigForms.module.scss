@@ -13,7 +13,7 @@
  * under the License.
  */
 
-.provider-setup {
+.additional-config {
 	border-radius: var(--radius-max-4);
 	border: 1px solid var(--color-neutral-8);
 	background: var(--color-sand-1);
@@ -23,7 +23,7 @@
 		background: var(--color-sand-2);
 		border-radius: var(--radius-max-4) var(--radius-max-4) 0 0;
 
-		&__title {
+		&__label {
 			color: var(--color-accent-9);
 			font-size: 14px;
 			font-style: normal;
@@ -33,42 +33,18 @@
 
 		&__badge {
 			height: 32px !important;
-
-			&__text {
-				color: var(--color-neutral-alpha-11);
-			}
 		}
 	}
 
-	&__main {
-		padding: 14px 20px;
-
-		&__title {
-			color: var(--color-neutral-11);
-			margin-bottom: 14px;
-		}
-
-		&__form {
-			margin-bottom: 14px;
-			padding: 14px 12px;
-			border-radius: var(--radius-max-3);
-			border: 1px solid var(--color-neutral-6);
-			background: var(--color-sand-2);
-
-			&__label {
-				color: var(--color-neutral-11);
-			}
-
-			&__input {
-				flex: 1;
-			}
-		}
-
-		&__footer {
-			color: var(--color-neutral-11);
-			font-size: 14px;
-			font-weight: 500;
-			line-height: 20px;
+	&__form {
+		&__input {
+			flex: 1;
 		}
 	}
+}
+
+.saml-info-box {
+	border-radius: var(--radius-max-3);
+	border: 1px solid var(--color-neutral-6);
+	background: var(--color-sand-2);
 }
