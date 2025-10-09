@@ -37,7 +37,7 @@ export default function TenantsListTable({ tenants, currentPage, isSearching }: 
 	const getEmptyStateContent = () => {
 		if (isSearching) {
 			return {
-				iconUrl: "no-results.svg",
+				iconUrl: "tenant.svg",
 				title: "No tenants found",
 				description: "No tenants match your search criteria. Try adjusting your search.",
 			};

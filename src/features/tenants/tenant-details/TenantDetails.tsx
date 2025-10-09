@@ -223,7 +223,7 @@ export default function TenantDetails() {
 								return (
 									<Paper withBackground>
 										<EmptyList
-											iconUrl="no-tenants.svg"
+											iconUrl="tenant.svg"
 											title="Tenant not found"
 											description="We couldn't locate this tenant in our system. They may have been deleted or the tenant ID might be incorrect."
 										/>

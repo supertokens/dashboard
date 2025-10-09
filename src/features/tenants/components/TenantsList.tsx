@@ -28,6 +28,7 @@ import TenantsListHeader from "./TenantsListHeader";
 import TenantsListTable from "./TenantsListTable";
 import TenantsListFooter from "./TenantsListFooter";
 import { useNavigationHelpers } from "@shared/navigation";
+import { useToast } from "@shared/components/toast";
 
 export default function TenantsList() {
 	const { goToTenantDetail } = useNavigationHelpers();
@@ -43,6 +44,7 @@ export default function TenantsList() {
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const [isCreateTenantModalOpen, setIsCreateTenantModalOpen] = useState(false);
+	const { showErrorToast } = useToast();
 
 	const pageState = useMemo(() => {
 		if (isLoading) return "LOADING";
@@ -56,13 +58,13 @@ export default function TenantsList() {
 		if (response.status === "OK") {
 			goToTenantDetail(tenantId.toLowerCase());
 		} else if (response.status === "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR") {
-			throw new Error(
+			showErrorToast(
 				"Multitenancy is a paid feature and is not available on your core instance. Please sign up to get a license key."
 			);
 		} else if (response.status === "TENANT_ID_ALREADY_EXISTS_ERROR") {
-			throw new Error("Provided tenant id already exists.");
+			showErrorToast("Provided tenant id already exists.");
 		} else if (response.status === "INVALID_TENANT_ID_ERROR") {
-			throw new Error(response.message);
+			showErrorToast(response.message);
 		}
 	};
 
