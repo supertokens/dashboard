@@ -124,3 +124,88 @@
 	background: var(--color-neutral-6) !important;
 	flex: 1;
 }
+
+.provider-config-suffix-input {
+	&__prefix {
+		display: inline-flex;
+		align-items: center;
+		padding: 8px 12px;
+		background: #f2f2f5;
+		border: 1px solid var(--gray-a6);
+		border-right: none;
+		border-radius: var(--radius-2) 0 0 var(--radius-2);
+		font-size: var(--font-size-2);
+		color: var(--color-neutral-11);
+		font-weight: 500;
+		white-space: nowrap;
+	}
+
+	&__input {
+		flex: 1;
+		padding: 8px 12px;
+		border: 1px solid var(--gray-a6);
+		border-radius: 0 var(--radius-2) var(--radius-2) 0;
+		font-size: var(--font-size-2);
+		background: var(--color-sand-1);
+		color: var(--color-neutral-12);
+		outline: none;
+		font-family: inherit;
+		min-width: 0;
+
+		&::placeholder {
+			color: var(--color-neutral-9);
+		}
+
+		&:focus {
+			border-color: var(--accent-9);
+			box-shadow: 0 0 0 1px var(--accent-a5);
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+			background: var(--color-neutral-3);
+		}
+	}
+
+	&__add-suffix {
+		color: var(--color-accent-alpha-11);
+
+		&__text {
+			margin-right: 4px;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	&--active {
+		display: flex;
+		align-items: stretch;
+		width: 100%;
+	}
+}
+
+.provider-config-input {
+	flex: 1;
+	padding: 8px 12px;
+	border: 1px solid var(--gray-a6);
+	border-radius: var(--radius-2);
+	font-size: var(--font-size-2);
+	background: var(--color-sand-1);
+	color: var(--color-neutral-12);
+	outline: none;
+
+	&:focus {
+		border-color: var(--accent-9);
+		box-shadow: 0 0 0 1px var(--accent-a5);
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		background: var(--color-neutral-3);
+	}
+}

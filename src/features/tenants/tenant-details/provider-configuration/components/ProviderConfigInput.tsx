@@ -24,6 +24,7 @@ interface ProviderConfigInputProps {
 	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	placeholder?: string;
 	error?: string;
+	className?: string;
 }
 
 export const ProviderConfigInput = ({
@@ -33,6 +34,7 @@ export const ProviderConfigInput = ({
 	onChange,
 	placeholder,
 	error,
+	className,
 }: ProviderConfigInputProps) => (
 	<Flex
 		direction="column"
@@ -48,7 +50,7 @@ export const ProviderConfigInput = ({
 			placeholder={placeholder}
 			className={`${style["provider-config-input"]} ${disabled ? style["provider-config-input--disabled"] : ""} ${
 				readonly ? style["provider-config-input--disabled"] : ""
-			}`}
+			} ${className || ""}`}
 		/>
 		{error && (
 			<Text

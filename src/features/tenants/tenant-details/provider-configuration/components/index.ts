@@ -22,4 +22,5 @@ export { ProviderConfigInputLabel } from "./ProviderConfigInputLabel";
 export { ProviderConfigInputRow } from "./ProviderConfigInputRow";
 export { ProviderConfigKeyValue } from "./ProviderConfigKeyValue";
 export { ProviderConfigSeparator } from "./ProviderConfigSeparator";
+export { ProviderConfigSuffixInput } from "./ProviderConfigSuffixInput";
 export { UserInfoMapSection } from "./UserInfoMapSection";

@@ -44,6 +44,7 @@ import {
 	ProviderConfigInputRow,
 	ProviderConfigKeyValue,
 	ProviderConfigSeparator,
+	ProviderConfigSuffixInput,
 	UserInfoMapSection,
 } from "./components";
 import styles from "./ProviderConfiguration.module.scss";
@@ -54,6 +55,9 @@ interface ProviderConfigurationProps {
 	isAddingNewProvider: boolean;
 	onDelete?: () => void;
 	onSave?: () => void;
+	onCancel?: () => void;
+	providerConfigResponse?: ProviderConfigResponse;
+	additionalConfig?: Record<string, string>;
 }
 
 export const ProviderConfiguration = ({
@@ -62,22 +66,32 @@ export const ProviderConfiguration = ({
 	isAddingNewProvider,
 	onDelete,
 	onSave,
+	onCancel,
+	providerConfigResponse: initialProviderConfigResponse,
+	additionalConfig,
 }: ProviderConfigurationProps) => {
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(!initialProviderConfigResponse);
 	const [isEditing, setIsEditing] = useState(isAddingNewProvider);
 	const [isSaving, setIsSaving] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>();
+	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>(
+		initialProviderConfigResponse
+	);
 	const [providerConfigState, setProviderConfigState] = useState<ProviderConfigState | null>(null);
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [emailSelectValue, setEmailSelectValue] = useState<EmailSelectState>("always");
+	const [isSuffixFieldVisible, setIsSuffixFieldVisible] = useState(false);
 
 	const getThirdPartyProviderInfo = useGetThirdPartyProviderInfoService();
 	const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProviderService();
 	const { tenantInfo, refetch } = useTenantDetails(tenantId);
 	const { showSuccessToast, showErrorToast } = useToast();
 
+	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
 	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId?.startsWith(provider.id));
+	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
+	const shouldUseSuffixField = isAddingNewProvider && (Boolean(inBuiltProviderInfo) || isSAMLProvider);
+
 	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT).find((id) =>
 		providerId?.startsWith(id)
 	);
@@ -85,13 +99,27 @@ export const ProviderConfiguration = ({
 		? IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT[customFieldProviderKey]
 		: undefined;
 
-	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
-
 	useEffect(() => {
+		// If we already have provider config response (passed from parent), use it
+		if (initialProviderConfigResponse) {
+			const initialState = getInitialProviderState(initialProviderConfigResponse, providerId);
+			setProviderConfigState(initialState);
+
+			// Set email select value
+			if (initialProviderConfigResponse.requireEmail === false) {
+				setEmailSelectValue("sometimes");
+			} else {
+				setEmailSelectValue("always");
+			}
+			setIsLoading(false);
+			return;
+		}
+
+		// Otherwise fetch provider info
 		const fetchProviderInfo = async () => {
 			try {
 				setIsLoading(true);
-				const response = await getThirdPartyProviderInfo(tenantId, providerId);
+				const response = await getThirdPartyProviderInfo(tenantId, providerId, additionalConfig);
 				if (response.status === "OK") {
 					setProviderConfigResponse(response.providerConfig);
 					const initialState = getInitialProviderState(response.providerConfig, providerId);
@@ -119,7 +147,36 @@ export const ProviderConfiguration = ({
 			setIsLoading(false);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tenantId, providerId, isAddingNewProvider]);
+	}, [tenantId, providerId, isAddingNewProvider, initialProviderConfigResponse]);
+
+	const handleThirdPartyIdSuffixChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (!providerConfigState) return;
+
+		const suffixValue = e.target.value.trim();
+		if (suffixValue === "") {
+			setProviderConfigState({ ...providerConfigState, thirdPartyId: baseProviderId });
+		} else {
+			setProviderConfigState({
+				...providerConfigState,
+				thirdPartyId: `${baseProviderId}-${suffixValue}`,
+			});
+		}
+	};
+
+	const showSuffixField = () => {
+		if (!providerConfigState) return;
+
+		setIsSuffixFieldVisible(true);
+		setProviderConfigState({
+			...providerConfigState,
+			thirdPartyId: baseProviderId,
+		});
+		// Clear any thirdPartyId errors when showing suffix field
+		setErrors((prev) => {
+			const { thirdPartyId, ...rest } = prev;
+			return rest;
+		});
+	};
 
 	const handleUserInfoFieldChange = ({
 		name,
@@ -269,57 +326,86 @@ export const ProviderConfiguration = ({
 					)}
 				</Flex>
 
-				{!isAddingNewProvider &&
-					(isEditing ? (
-						<Flex
-							align="center"
-							gap="2">
-							<Button
-								variant="outline"
-								color="gray"
-								size="2"
-								onClick={() => {
-									setIsEditing(false);
-									setErrors({});
-									// Reset state
-									if (providerConfigResponse) {
-										setProviderConfigState(
-											getInitialProviderState(providerConfigResponse, providerId)
-										);
-									}
-								}}
-								disabled={isSaving}>
-								Cancel
-							</Button>
-							<Button
-								size="2"
-								onClick={handleSave}
-								disabled={isSaving}>
-								{isSaving ? "Saving..." : "Save"}
-							</Button>
-						</Flex>
-					) : (
-						<Flex
-							align="center"
-							gap="2">
-							<Button
-								variant="outline"
-								size="2"
-								onClick={() => setIsEditing(true)}>
-								<Pencil1Icon />
-								Edit
-							</Button>
+				{/* Action buttons in header */}
+				{isAddingNewProvider ? (
+					<Flex
+						align="center"
+						gap="2">
+						<Button
+							variant="outline"
+							color="gray"
+							size="2"
+							onClick={() => {
+								// Reset suffix field visibility if no suffix was added
+								if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
+									setIsSuffixFieldVisible(false);
+								}
+								if (onCancel) {
+									onCancel();
+								}
+							}}
+							disabled={isSaving}>
+							Cancel
+						</Button>
+						<Button
+							size="2"
+							onClick={handleSave}
+							disabled={isSaving}>
+							{isSaving ? "Saving..." : "Save"}
+						</Button>
+					</Flex>
+				) : isEditing ? (
+					<Flex
+						align="center"
+						gap="2">
+						<Button
+							variant="outline"
+							color="gray"
+							size="2"
+							onClick={() => {
+								setIsEditing(false);
+								setErrors({});
+								// Reset state
+								if (providerConfigResponse) {
+									setProviderConfigState(getInitialProviderState(providerConfigResponse, providerId));
+								}
+								// Reset suffix field visibility if no suffix was added
+								if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
+									setIsSuffixFieldVisible(false);
+								}
+							}}
+							disabled={isSaving}>
+							Cancel
+						</Button>
+						<Button
+							size="2"
+							onClick={handleSave}
+							disabled={isSaving}>
+							{isSaving ? "Saving..." : "Save"}
+						</Button>
+					</Flex>
+				) : (
+					<Flex
+						align="center"
+						gap="2">
+						<Button
+							variant="outline"
+							size="2"
+							onClick={() => setIsEditing(true)}>
+							<Pencil1Icon />
+							Edit
+						</Button>
 
-							<Button
-								size="2"
-								variant="soft"
-								color="red"
-								onClick={() => setIsDeleteModalOpen(true)}>
-								<TrashIcon />
-								Delete
-							</Button>
-						</Flex>
-					))}
+						<Button
+							size="2"
+							variant="soft"
+							color="red"
+							onClick={() => setIsDeleteModalOpen(true)}>
+							<TrashIcon />
+							Delete
+						</Button>
+					</Flex>
+				)}
 			</Flex>
 
 			{/* Form Content */}
@@ -335,18 +421,34 @@ export const ProviderConfiguration = ({
 					gap="4"
 					px="3"
 					pt="4">
-					{/* Third Party ID */}
-					<ProviderConfigInputRow
-						label="Third Party ID"
-						tooltip="The ID of the provider"
-						required
-						disabled={!isEditing || !isAddingNewProvider}
-						value={providerConfigState.thirdPartyId}
-						onChange={(e) =>
-							setProviderConfigState({ ...providerConfigState, thirdPartyId: e.target.value })
-						}
-						error={errors.thirdPartyId}
-					/>
+					{/* Third Party ID - with suffix support for built-in and SAML providers */}
+					{shouldUseSuffixField ? (
+						<ProviderConfigSuffixInput
+							baseProviderId={baseProviderId}
+							suffixValue={
+								providerConfigState.thirdPartyId.length > baseProviderId.length + 1
+									? providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)
+									: ""
+							}
+							onSuffixChange={handleThirdPartyIdSuffixChange}
+							onShowSuffixField={showSuffixField}
+							isSuffixFieldVisible={isSuffixFieldVisible}
+							error={errors.thirdPartyId}
+							disabled={!isEditing}
+						/>
+					) : (
+						<ProviderConfigInputRow
+							label="Third Party ID"
+							tooltip="The ID of the provider"
+							required
+							disabled={!isEditing || !isAddingNewProvider}
+							value={providerConfigState.thirdPartyId}
+							onChange={(e) =>
+								setProviderConfigState({ ...providerConfigState, thirdPartyId: e.target.value })
+							}
+							error={errors.thirdPartyId}
+						/>
+					)}
 
 					{/* Name */}
 					{isSAMLProvider ? (
@@ -707,7 +809,20 @@ export const ProviderConfiguration = ({
 							size="2"
 							variant="outline"
 							color="gray"
-							onClick={() => setIsEditing(false)}>
+							onClick={() => {
+								// Reset suffix field visibility if no suffix was added
+								if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
+									setIsSuffixFieldVisible(false);
+								}
+
+								if (isAddingNewProvider && onCancel) {
+									// When adding new provider, call onCancel to go back
+									onCancel();
+								} else {
+									// When editing existing provider, just exit edit mode
+									setIsEditing(false);
+								}
+							}}>
 							Cancel
 						</Button>
 
