@@ -13,10 +13,39 @@
  * under the License.
  */
 
-export { default as Auth } from "./Auth";
-export { default as SignInContent } from "./SignInContent";
-export { default as SignInContentWrapper } from "./SignInContentWrapper";
-export { default as SignInWithApiKeyContent } from "./SignInWithApiKeyContent";
-export { default as SignUpOrResetPasswordContent } from "./SignUpOrResetPasswordContent";
-export { default as SignOutBtn } from "./SignOutBtn";
-export * from "./types";
+.auth-container {
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	background-position: top center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-image: var(--auth-background-portrait);
+
+	@media only screen and (min-width: 600px) {
+		background-image: var(--auth-background);
+	}
+
+	&__content {
+		max-width: 320px;
+		margin: 32px auto;
+
+		&--sign-up,
+		&--forgot-password {
+			max-width: 460px;
+		}
+
+		@media only screen and (min-width: 600px) {
+			max-width: 450px;
+
+			&--sign-up,
+			&--forgot-password {
+				max-width: 760px;
+				width: max(600px, 41vw);
+			}
+		}
+	}
+}

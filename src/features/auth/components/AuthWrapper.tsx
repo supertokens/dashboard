@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,13 +13,17 @@
  * under the License.
  */
 
-import { useEffect, useState } from "react";
-import { StorageKeys } from "../../../constants";
-import { localStorageHandler } from "../../../services/storage";
-import Auth from "../auth/Auth";
+import React, { useEffect, useState } from "react";
+import { StorageKeys } from "@shared/constants";
+import { localStorageHandler } from "@shared/services/storage";
+import Loader from "@shared/components/loader";
+import Auth from "./Auth";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function AuthWrapper(props: { children: any }) {
+interface AuthWrapperProps {
+	children: React.ReactNode;
+}
+
+export default function AuthWrapper({ children }: AuthWrapperProps): JSX.Element {
 	const [shouldShowAuthForm, setShouldShowAuthForm] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -37,7 +41,7 @@ export default function AuthWrapper(props: { children: any }) {
 	}, []);
 
 	if (isLoading) {
-		return <></>;
+		return <Loader type="page" />;
 	}
 
 	if (shouldShowAuthForm) {
@@ -50,5 +54,5 @@ export default function AuthWrapper(props: { children: any }) {
 		);
 	}
 
-	return props.children;
+	return <>{children}</>;
 }

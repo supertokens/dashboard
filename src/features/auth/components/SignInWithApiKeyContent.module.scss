@@ -13,10 +13,22 @@
  * under the License.
  */
 
-export { default as Auth } from "./Auth";
-export { default as SignInContent } from "./SignInContent";
-export { default as SignInContentWrapper } from "./SignInContentWrapper";
-export { default as SignInWithApiKeyContent } from "./SignInWithApiKeyContent";
-export { default as SignUpOrResetPasswordContent } from "./SignUpOrResetPasswordContent";
-export { default as SignOutBtn } from "./SignOutBtn";
-export * from "./types";
+.api-key-form {
+	&__title {
+		font-size: 24px;
+		font-weight: 600;
+		letter-spacing: 0.24px;
+		margin-bottom: 8px;
+		color: var(--color-neutral-12);
+	}
+
+	&__subtitle {
+		font-size: 14px;
+		margin-bottom: 16px;
+		color: var(--color-secondary-text);
+	}
+
+	&__button {
+		width: fit-content !important;
+	}
+}

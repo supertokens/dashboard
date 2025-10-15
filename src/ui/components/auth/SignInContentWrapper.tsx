@@ -1,4 +1,4 @@
-import { getAuthMode } from "../../../utils";
+import { getAuthMode } from "@shared/utils";
 import SignIn from "./SignInContent";
 import SignInWithApiKeyContent from "./SignInWithApiKeyContent";
 

@@ -20,7 +20,7 @@ import { getDashboardAppBasePath } from "./utils";
 
 // This is to make sure that images are packed in the build folder
 import "./images";
-import AuthWrapper from "./ui/components/authWrapper";
+
 import ErrorBoundary from "./ui/components/errorboundary";
 import { AccessDeniedModal } from "./ui/components/layout/accessDeniedModal";
 import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
@@ -37,21 +37,22 @@ import { QueryProvider } from "./shared/providers/QueryProvider";
 import { ROUTES } from "@shared/navigation";
 import RolesAndPermissions from "@features/roles-and-permissions/Page";
 import { Layout } from "@features/layout";
+import AuthWrapper from "@features/auth/components/AuthWrapper";
 
 function App() {
 	return (
 		<>
 			<SafeAreaView />
-			<ErrorBoundary>
-				<QueryProvider>
-					<PopupContentContextProvider>
-						<AccessDeniedContextProvider>
-							<TenantsListContextProvider>
-								<AuthWrapper>
-									<Theme
-										radius="medium"
-										accentColor="indigo"
-										appearance="light">
+			<Theme
+				radius="medium"
+				accentColor="indigo"
+				appearance="light">
+				<ErrorBoundary>
+					<QueryProvider>
+						<PopupContentContextProvider>
+							<AccessDeniedContextProvider>
+								<TenantsListContextProvider>
+									<AuthWrapper>
 										<ToastProvider>
 											<Router basename={getDashboardAppBasePath()}>
 												<Layout>
@@ -76,17 +77,16 @@ function App() {
 												</Layout>
 											</Router>
 										</ToastProvider>
-									</Theme>
-
-									<AccessDeniedModal />
-									<ToastNotificationContainer />
-									<LayoutModalContainer />
-								</AuthWrapper>
-							</TenantsListContextProvider>
-						</AccessDeniedContextProvider>
-					</PopupContentContextProvider>
-				</QueryProvider>
-			</ErrorBoundary>
+										<AccessDeniedModal />
+										<ToastNotificationContainer />
+										<LayoutModalContainer />
+									</AuthWrapper>
+								</TenantsListContextProvider>
+							</AccessDeniedContextProvider>
+						</PopupContentContextProvider>
+					</QueryProvider>
+				</ErrorBoundary>
+			</Theme>
 		</>
 	);
 }

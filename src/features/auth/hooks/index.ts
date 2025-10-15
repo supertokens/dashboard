@@ -13,10 +13,5 @@
  * under the License.
  */
 
-export { default as Auth } from "./Auth";
-export { default as SignInContent } from "./SignInContent";
-export { default as SignInContentWrapper } from "./SignInContentWrapper";
-export { default as SignInWithApiKeyContent } from "./SignInWithApiKeyContent";
-export { default as SignUpOrResetPasswordContent } from "./SignUpOrResetPasswordContent";
-export { default as SignOutBtn } from "./SignOutBtn";
-export * from "./types";
+export { useSignIn } from "./useSignIn";
+export { useApiKeyValidation } from "./useApiKeyValidation";

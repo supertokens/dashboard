@@ -58,7 +58,7 @@ export default function TextField({ error, fullWidth = true, children, ...props 
 				{...props}
 				type={getInputType()}>
 				{children}
-				{props.type === "password" && <PasswordSlot />}
+				{props.type === "password" && props.value && <PasswordSlot />}
 			</RadixTextField.Root>
 			{error && (
 				<Text

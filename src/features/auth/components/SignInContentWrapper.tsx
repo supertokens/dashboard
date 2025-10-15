@@ -13,10 +13,24 @@
  * under the License.
  */
 
-export { default as Auth } from "./Auth";
-export { default as SignInContent } from "./SignInContent";
-export { default as SignInContentWrapper } from "./SignInContentWrapper";
-export { default as SignInWithApiKeyContent } from "./SignInWithApiKeyContent";
-export { default as SignUpOrResetPasswordContent } from "./SignUpOrResetPasswordContent";
-export { default as SignOutBtn } from "./SignOutBtn";
-export * from "./types";
+import { getAuthMode } from "@shared/utils";
+import SignIn from "./SignInContent";
+import SignInWithApiKeyContent from "./SignInWithApiKeyContent";
+
+interface SignInContentWrapperProps {
+	onSuccess: () => void;
+	onCreateNewUserClick: () => void;
+	onForgotPasswordBtnClick: () => void;
+}
+
+const SignInContentWrapper: React.FC<SignInContentWrapperProps> = ({ ...props }: SignInContentWrapperProps) => {
+	const authMode = getAuthMode();
+
+	if (authMode === "email-password") {
+		return <SignIn {...props} />;
+	}
+
+	return <SignInWithApiKeyContent onSuccess={props.onSuccess} />;
+};
+
+export default SignInContentWrapper;
