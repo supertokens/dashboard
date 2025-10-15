@@ -29,8 +29,6 @@ import { ToastNotificationContainer } from "./ui/components/toast/toastNotificat
 import { AccessDeniedContextProvider } from "./ui/contexts/AccessDeniedContext";
 import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
 import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
-import MainLayout from "./ui/layouts/mainLayout";
-import TenantManagement2 from "./ui/pages/tenants";
 import TenantManagement from "@features/tenants/Page";
 
 import { UserManagement } from "@features/users/Page";
@@ -38,6 +36,7 @@ import { ToastProvider } from "@shared/components/toast";
 import { QueryProvider } from "./shared/providers/QueryProvider";
 import { ROUTES } from "@shared/navigation";
 import RolesAndPermissions from "@features/roles-and-permissions/Page";
+import { Layout } from "@features/layout";
 
 function App() {
 	return (
@@ -55,7 +54,7 @@ function App() {
 										appearance="light">
 										<ToastProvider>
 											<Router basename={getDashboardAppBasePath()}>
-												<MainLayout>
+												<Layout>
 													<Routes>
 														<Route
 															path={ROUTES.USERS}
@@ -74,7 +73,7 @@ function App() {
 															element={<UserManagement />}
 														/>
 													</Routes>
-												</MainLayout>
+												</Layout>
 											</Router>
 										</ToastProvider>
 									</Theme>

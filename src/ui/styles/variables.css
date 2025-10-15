@@ -180,6 +180,8 @@ body {
 
 	--color-gray-200: #e5e7eb;
 
+	--color-primary-600: #1c64f2;
+
 	/* Shadows */
 	--box-shadow-1: 0 1.5px 2px 0 rgba(0, 0, 0, 0.13) inset;
 	--box-shadow-2: 0px 1px 3px 0px rgba(0, 0, 0, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05),
