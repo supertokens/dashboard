@@ -17,6 +17,8 @@ import { Flex, Skeleton, Spinner } from "@radix-ui/themes";
 import Paper from "../paper";
 import { assertNever } from "@shared/utils/assertNever";
 
+import styles from "./index.module.scss";
+
 type LoaderType = "inline" | "list" | "table-with-list" | "page";
 
 const ListSkeleton = () => {
@@ -74,11 +76,13 @@ export default function Loader({ type }: { type: LoaderType }) {
 		case "page":
 			return (
 				<Flex
-					minHeight="70vh"
-					width="100%"
 					justify="center"
-					align="center">
-					<Spinner size="2" />
+					align="center"
+					className={styles["full-page-loader"]}>
+					<Spinner
+						size="3"
+						ml="2"
+					/>
 				</Flex>
 			);
 		default:
