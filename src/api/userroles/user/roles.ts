@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { getApiUrl, useFetchData } from "../../../utils";
+import { getApiUrl, useFetchData } from "@shared/utils";
 
 export type UserRolesResponse =
 	| {

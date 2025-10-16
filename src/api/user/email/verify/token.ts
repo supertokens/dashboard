@@ -1,4 +1,4 @@
-import { getApiUrl, useFetchData } from "../../../../utils";
+import { getApiUrl, useFetchData } from "@shared/utils";
 
 interface IUseVerifyUserTokenService {
 	sendUserEmailVerification: (userId: string, tenantId?: string) => Promise<boolean>;

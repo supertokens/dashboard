@@ -13,8 +13,8 @@
  * under the License.
  */
 
-import { User } from "../../ui/pages/usersList/types";
-import { getApiUrl, useFetchData } from "../../utils";
+import { User } from "@features/users/types";
+import { getApiUrl, useFetchData } from "@shared/utils";
 
 interface IUseUserService {
 	updateUserInformation: (args: IUpdateUserInformationArgs) => Promise<UpdateUserInformationResponse>;

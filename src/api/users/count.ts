@@ -13,8 +13,8 @@
  * under the License.
  */
 
-import { UserListCount } from "../../ui/pages/usersList/types";
-import { getApiUrl, useFetchData } from "../../utils";
+import { UserListCount } from "@features/users/types";
+import { getApiUrl, useFetchData } from "@shared/utils";
 
 interface IUseFetchCountService {
 	fetchCount: (tenantid?: string) => Promise<UserListCount | undefined>;

@@ -13,9 +13,9 @@
  * under the License.
  */
 
-import { LIST_DEFAULT_LIMIT } from "../../ui/components/usersListTable/UsersListTable";
-import { UserPaginationList } from "../../ui/pages/usersList/types";
-import { getApiUrl, useFetchData } from "../../utils";
+import { LIST_DEFAULT_LIMIT } from "@shared/constants";
+import { UserPaginationList } from "@features/users/types";
+import { getApiUrl, useFetchData } from "@shared/utils";
 
 interface IUseFetchUsersService {
 	fetchUsers: (

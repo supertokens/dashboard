@@ -12,7 +12,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-import { getApiUrl, useFetchData } from "../../utils";
+import { getApiUrl, useFetchData } from "@shared/utils";
 import { ProviderConfig, ProviderConfigResponse, Tenant, TenantInfo } from "./types";
 
 export const useListTenantsService = () => {

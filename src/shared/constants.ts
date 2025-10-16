@@ -19,6 +19,9 @@ export class StorageKeys {
 	static TENANT_ID = "tenant-id";
 }
 
+// List pagination constants
+export const LIST_DEFAULT_LIMIT = 10;
+
 // Add types as required
 export enum HTTPStatusCodes {
 	OK = 200,

@@ -1,5 +1,5 @@
-import { EmailVerificationStatus } from "../../../../ui/pages/usersList/types";
-import { getApiUrl, useFetchData } from "../../../../utils";
+import { EmailVerificationStatus } from "@shared/types/auth";
+import { getApiUrl, useFetchData } from "@shared/utils";
 
 interface IUseVerifyUserEmailService {
 	getUserEmailVerificationStatus: (userId: string) => Promise<EmailVerificationStatus>;

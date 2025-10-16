@@ -1,5 +1,5 @@
-import { SessionInfo } from "../../ui/components/userDetail/userDetailSessionList";
-import { getApiUrl, useFetchData } from "../../utils";
+import { SessionInfo } from "@features/users/types";
+import { getApiUrl, useFetchData } from "@shared/utils";
 
 interface IUseSessionsForUserService {
 	getSessionsForUser: (userId: string) => Promise<SessionInfo[] | undefined>;

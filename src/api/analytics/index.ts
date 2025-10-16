@@ -1,5 +1,5 @@
-import { getApiUrl, useFetchData } from "../../utils";
-import { package_version } from "../../version";
+import { getApiUrl, useFetchData } from "@shared/utils";
+import { package_version } from "@shared/version";
 
 /* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
  *

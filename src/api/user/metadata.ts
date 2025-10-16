@@ -1,4 +1,4 @@
-import { getApiUrl, useFetchData } from "../../utils";
+import { getApiUrl, useFetchData } from "@shared/utils";
 
 interface IUseMetadataService {
 	getUserMetaData: (userId: string) => Promise<string | any>;
