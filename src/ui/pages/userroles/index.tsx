@@ -15,8 +15,6 @@
 
 import { useContext, useEffect, useState } from "react";
 
-import { AppEnvContextProvider } from "../../contexts/AppEnvContext";
-
 import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { RolesTable } from "../../components/userroles/components/RolesTable";
 
@@ -148,19 +146,13 @@ export default function UserRolesList() {
 	}
 
 	return (
-		<AppEnvContextProvider
-			connectionURI={
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(window as any).connectionURI
-			}>
-			<div className="userroles-container">
-				<h1 className="users-list-title">Roles and Permissions</h1>
-				<p className="text-small users-list-subtitle">
-					One place to manage all your user roles and permissions. Edit roles and permissions according to
-					your needs.
-				</p>
-				{renderContent()}
-			</div>
-		</AppEnvContextProvider>
+		<div className="userroles-container">
+			<h1 className="users-list-title">Roles and Permissions</h1>
+			<p className="text-small users-list-subtitle">
+				One place to manage all your user roles and permissions. Edit roles and permissions according to your
+				needs.
+			</p>
+			{renderContent()}
+		</div>
 	);
 }

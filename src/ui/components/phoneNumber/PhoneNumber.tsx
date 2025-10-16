@@ -14,11 +14,14 @@
  */
 
 import { parsePhoneNumber } from "libphonenumber-js/max";
-import { useAppEnvContext } from "../../contexts/AppEnvContext";
+import { useAppEnv } from "@shared/hooks";
 import "./PhoneNumber.scss";
+import { getConnectionUri } from "@shared/utils";
 
 export const PhoneDisplay = ({ phone }: { phone: string }) => {
-	const { isDemoConnectionURI } = useAppEnvContext();
+	const { isDemoConnectionURI } = useAppEnv({
+		connectionURI: getConnectionUri(),
+	});
 	if (isDemoConnectionURI) return <>{phone}</>;
 	let finalPhone = phone;
 

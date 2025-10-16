@@ -24,8 +24,8 @@ import useFetchCount from "../../../api/users/count";
 import { ReactComponent as PlusIcon } from "../../../assets/plus.svg";
 import { StorageKeys } from "../../../constants";
 import { localStorageHandler } from "../../../services/storage";
-import { AppEnvContextProvider, useAppEnvContext } from "../../../ui/contexts/AppEnvContext";
-import { getApiUrl, getAuthMode, isSearchEnabled, useFetchData } from "../../../utils";
+import { useAppEnv } from "@shared/hooks";
+import { getApiUrl, getAuthMode, getConnectionUri, isSearchEnabled, useFetchData } from "../../../utils";
 import { package_version } from "../../../version";
 import Button from "../../components/button";
 import CreateUserDialog from "../../components/createUser/CreateUserDialog";
@@ -246,7 +246,9 @@ export const UsersList: React.FC<UserListProps> = ({
 		}
 	}, [reloadRef, loadOffset, offset]);
 
-	const { connectionURI } = useAppEnvContext();
+	const { connectionURI } = useAppEnv({
+		connectionURI: getConnectionUri(),
+	});
 
 	const onEmailChanged = async () => {
 		await loadOffset(offset);
@@ -450,11 +452,7 @@ export const UserListPage = () => {
 	};
 
 	return (
-		<AppEnvContextProvider
-			connectionURI={
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(window as any).connectionURI
-			}>
+		<>
 			{isSelectedUserNotEmpty && (
 				<UserDetail
 					refetchUsersList={() => {
@@ -486,7 +484,7 @@ export const UserListPage = () => {
 				onChangePasswordCallback={changePassword}
 				onDeleteCallback={(userId) => onUserDelete(userId)}
 			/>
-		</AppEnvContextProvider>
+		</>
 	);
 };
 

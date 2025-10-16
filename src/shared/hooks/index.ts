@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,24 +13,5 @@
  * under the License.
  */
 
-import { useAccessDenied } from "@shared/hooks";
-import { LayoutModalContent } from "./layoutModal";
-
-export const AccessDeniedModal = () => {
-	const { isPopupVisible, popupMessage, hidePopup } = useAccessDenied();
-
-	if (isPopupVisible === false) {
-		return <></>;
-	}
-
-	return (
-		<LayoutModalContent
-			hideBackDrop={false}
-			header={<h2>Access Denied</h2>}
-			onClose={() => {
-				hidePopup();
-			}}>
-			<p>{popupMessage}</p>
-		</LayoutModalContent>
-	);
-};
+export { useAccessDenied } from "./useAccessDenied";
+export { useAppEnv } from "./useAppEnv";

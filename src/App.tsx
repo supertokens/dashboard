@@ -21,72 +21,58 @@ import { getDashboardAppBasePath } from "./utils";
 // This is to make sure that images are packed in the build folder
 import "./images";
 
-import ErrorBoundary from "./ui/components/errorboundary";
-import { AccessDeniedModal } from "./ui/components/layout/accessDeniedModal";
-import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
-import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
-import { ToastNotificationContainer } from "./ui/components/toast/toastNotification";
-import { AccessDeniedContextProvider } from "./ui/contexts/AccessDeniedContext";
-import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
-import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
 import TenantManagement from "@features/tenants/Page";
-
 import { UserManagement } from "@features/users/Page";
 import { ToastProvider } from "@shared/components/toast";
-import { QueryProvider } from "./shared/providers/QueryProvider";
+import { QueryProvider } from "@shared/providers/QueryProvider";
 import { ROUTES } from "@shared/navigation";
 import RolesAndPermissions from "@features/roles-and-permissions/Page";
 import { Layout } from "@features/layout";
 import AuthWrapper from "@features/auth/components/AuthWrapper";
+import SafeAreaView from "@shared/components/safeAreaView/SafeAreaView";
+import ErrorBoundary from "@shared/components/errorboundary";
+import { AccessDeniedModal } from "@shared/components/accessDenied";
 
 function App() {
 	return (
 		<>
 			<SafeAreaView />
-			<Theme
-				radius="medium"
-				accentColor="indigo"
-				appearance="light">
-				<ErrorBoundary>
+			<ErrorBoundary>
+				<Theme
+					radius="medium"
+					accentColor="indigo"
+					appearance="light">
 					<QueryProvider>
-						<PopupContentContextProvider>
-							<AccessDeniedContextProvider>
-								<TenantsListContextProvider>
-									<AuthWrapper>
-										<ToastProvider>
-											<Router basename={getDashboardAppBasePath()}>
-												<Layout>
-													<Routes>
-														<Route
-															path={ROUTES.USERS}
-															element={<UserManagement />}
-														/>
-														<Route
-															path={ROUTES.ROLES}
-															element={<RolesAndPermissions />}
-														/>
-														<Route
-															path={ROUTES.TENANTS}
-															element={<TenantManagement />}
-														/>
-														<Route
-															path="*"
-															element={<UserManagement />}
-														/>
-													</Routes>
-												</Layout>
-											</Router>
-										</ToastProvider>
-										<AccessDeniedModal />
-										<ToastNotificationContainer />
-										<LayoutModalContainer />
-									</AuthWrapper>
-								</TenantsListContextProvider>
-							</AccessDeniedContextProvider>
-						</PopupContentContextProvider>
+						<AuthWrapper>
+							<ToastProvider>
+								<Router basename={getDashboardAppBasePath()}>
+									<Layout>
+										<Routes>
+											<Route
+												path={ROUTES.USERS}
+												element={<UserManagement />}
+											/>
+											<Route
+												path={ROUTES.ROLES}
+												element={<RolesAndPermissions />}
+											/>
+											<Route
+												path={ROUTES.TENANTS}
+												element={<TenantManagement />}
+											/>
+											<Route
+												path="*"
+												element={<UserManagement />}
+											/>
+										</Routes>
+									</Layout>
+								</Router>
+							</ToastProvider>
+							<AccessDeniedModal />
+						</AuthWrapper>
 					</QueryProvider>
-				</ErrorBoundary>
-			</Theme>
+				</Theme>
+			</ErrorBoundary>
 		</>
 	);
 }

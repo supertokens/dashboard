@@ -29,8 +29,8 @@ import {
 } from "react";
 import PhoneInputWithCountrySelect, { getCountryCallingCode } from "react-phone-number-input";
 import { Flex, Text } from "@radix-ui/themes";
-import { getImageUrl, useClickOutside } from "@shared/utils";
-import { useAppEnvContext } from "@contexts/AppEnvContext";
+import { getConnectionUri, getImageUrl, useClickOutside } from "@shared/utils";
+import { useAppEnv } from "@shared/hooks";
 
 import "./index.scss";
 import { getPopupPosition, PopUpPositionProperties } from "@components/tooltip/tooltip-util";
@@ -318,7 +318,9 @@ export default function PhoneNumberInput(props: PhoneNumberInputProps) {
 }
 
 export function PhoneDisplay({ phone }: { phone: string }) {
-	const { isDemoConnectionURI } = useAppEnvContext();
+	const { isDemoConnectionURI } = useAppEnv({
+		connectionURI: getConnectionUri(),
+	});
 	if (isDemoConnectionURI) return <Text>{phone}</Text>;
 	let finalPhone = phone;
 

@@ -14,23 +14,21 @@
  */
 
 import { useAccessDenied } from "@shared/hooks";
-import { LayoutModalContent } from "./layoutModal";
+import { Modal } from "../modal";
 
 export const AccessDeniedModal = () => {
 	const { isPopupVisible, popupMessage, hidePopup } = useAccessDenied();
 
 	if (isPopupVisible === false) {
-		return <></>;
+		return null;
 	}
 
 	return (
-		<LayoutModalContent
-			hideBackDrop={false}
-			header={<h2>Access Denied</h2>}
-			onClose={() => {
-				hidePopup();
-			}}>
+		<Modal
+			open={isPopupVisible}
+			handleClose={hidePopup}
+			title="Access Denied">
 			<p>{popupMessage}</p>
-		</LayoutModalContent>
+		</Modal>
 	);
 };
