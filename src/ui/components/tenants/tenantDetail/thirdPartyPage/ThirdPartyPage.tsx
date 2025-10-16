@@ -270,8 +270,8 @@ const BoxySamlForm = ({
 			</p>
 
 			<SAMLInfoBox title="Managed Service">
-				<a href="mailto:team@supertokens.com">Email us</a> to receive your Boxy URL and continue setup of your
-				SAML client.
+				<a href="mailto:support@supertokens.com">Email us</a> to receive your Boxy URL and continue setup of
+				your SAML client.
 			</SAMLInfoBox>
 
 			<SAMLInfoBox title="Self Hosted">

@@ -434,7 +434,7 @@ const BoxySamlForm = ({ onContinue, onCancel, currentAdditionalConfig }: FormPro
 					Managed Service
 				</Text>
 				<Text size="2">
-					<a href="mailto:team@supertokens.com">Email us</a> to receive your Boxy URL and continue setup of
+					<a href="mailto:support@supertokens.com">Email us</a> to receive your Boxy URL and continue setup of
 					your SAML client.
 				</Text>
 			</Flex>
