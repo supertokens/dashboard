@@ -15,10 +15,11 @@
 
 .table {
 	border-radius: 12px;
-	border: 1px solid var(--color-neutral-alpha-6);
+	border: 1px solid var(--color-neutral-8);
 
 	&__header {
 		background: var(--color-gray-9);
+		border-bottom: solid var(--color-neutral-8) 1px;
 		padding: 12px 20px;
 		color: var(--color-neutral-9);
 		border-top-left-radius: 12px;
