@@ -24,11 +24,11 @@ import { AssignPermission } from "@shared/components/assignPermission";
 
 import { useRolesList } from "../hooks";
 
-interface CreateNewRoleModalProps {
+type CreateNewRoleModalProps = {
 	handleClose: () => void;
 	open: boolean;
 	onCreateRole: (roleName: string, permissions: string[]) => Promise<void>;
-}
+};
 
 export default function CreateNewRoleModal({ handleClose, open, onCreateRole }: CreateNewRoleModalProps) {
 	const { allRoles } = useRolesList();

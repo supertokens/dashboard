@@ -61,6 +61,7 @@ export function Modal({
 						/>
 					</Button>
 				</Flex>
+				<Dialog.Description className="sr-only">{title} dialog</Dialog.Description>
 				{children}
 			</Dialog.Content>
 		</Dialog.Root>

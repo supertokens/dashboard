@@ -21,6 +21,7 @@ import { QUERY_KEYS, STALE_TIME } from "../constants";
 
 const queryKeys = {
 	rolePermissions: (roleId: string) => [QUERY_KEYS.ROLE_PERMISSIONS, roleId] as const,
+	roles: () => [QUERY_KEYS.ROLES] as const,
 };
 
 export const useRoleDetails = (roleId: string) => {
@@ -76,6 +77,9 @@ export const useRoleDetails = (roleId: string) => {
 
 	const deleteRoleMutation = useMutation({
 		mutationFn: () => deleteRole(roleId),
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: queryKeys.roles() });
+		},
 	});
 
 	return {

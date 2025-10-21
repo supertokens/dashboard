@@ -119,7 +119,7 @@ while IFS='"' read -ra ADDR; do
     done
 done <<< "$version"
 
-codeversion=`cat src/version.ts | grep -e 'package_version'`
+codeversion=`cat src/shared/version.ts | grep -e 'package_version'`
 while IFS='"' read -ra ADDR; do
     counter=0
     for i in "${ADDR[@]}"; do

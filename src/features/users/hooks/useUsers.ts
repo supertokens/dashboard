@@ -75,16 +75,28 @@ export const useUsersList = (options: UseUsersListOptions = {}) => {
 		return searchCriteria && Object.values(searchCriteria).some((value) => value != null && value !== "");
 	}, [searchCriteria]);
 
+	// Invalidate all user-related queries for the current tenant
+	const invalidateQueries = useCallback(async () => {
+		await Promise.allSettled([
+			// Invalidate all search queries for this tenant regardless of criteria
+			queryClient.invalidateQueries({
+				predicate: (query) => query.queryKey[0] === QUERY_KEYS.USERS_SEARCH && query.queryKey[1] === tenantId,
+			}),
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.users.infinite(tenantId),
+			}),
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.users.count(tenantId),
+			}),
+		]);
+	}, [queryClient, tenantId]);
+
 	// Invalidate queries when tenant changes to ensure fresh data
 	useEffect(() => {
 		if (tenantId) {
-			void queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === QUERY_KEYS.USERS_SEARCH });
-			void queryClient.invalidateQueries({
-				predicate: (query) => query.queryKey[0] === QUERY_KEYS.USERS_INFINITE,
-			});
-			void queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === QUERY_KEYS.USERS_COUNT });
+			void invalidateQueries();
 		}
-	}, [tenantId, queryClient]);
+	}, [tenantId]);
 
 	// Search query - for when user searches
 	const searchQuery = useQuery({
@@ -157,15 +169,6 @@ export const useUsersList = (options: UseUsersListOptions = {}) => {
 			await Promise.allSettled([infiniteQuery.refetch(), countQuery.refetch()]);
 		}
 	}, [searchQuery, infiniteQuery, countQuery, tagsQuery, isSearchActive]);
-
-	const invalidateQueries = useCallback(async () => {
-		// Invalidate all user-related queries to trigger fresh fetches with new tenant
-		await Promise.allSettled([
-			queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === QUERY_KEYS.USERS_SEARCH }),
-			queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === QUERY_KEYS.USERS_INFINITE }),
-			queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === QUERY_KEYS.USERS_COUNT }),
-		]);
-	}, [queryClient]);
 
 	// Pagination functions
 	const goToNextPage = useCallback(() => {

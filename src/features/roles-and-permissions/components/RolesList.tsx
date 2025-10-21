@@ -23,12 +23,12 @@ import Loader from "@shared/components/loader";
 import { assertNever } from "@shared/utils/assertNever";
 import { useToast } from "@shared/components/toast";
 
-import CreateNewRoleModal from "../modals/CreateNewRoleModal";
 import RolesListHeader from "./RolesListHeader";
 import RolesListFooter from "./RolesListFooter";
 import RolesListTable from "./RolesListTable";
 import { useRolesList } from "../hooks";
 import { ROLES_PAGINATION_LIMIT } from "../constants";
+import CreateNewRoleModal from "../modals/CreateNewRoleModal";
 
 export default function RolesList() {
 	const { showErrorToast, showSuccessToast } = useToast();
