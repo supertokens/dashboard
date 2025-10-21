@@ -15,6 +15,7 @@
 
 import { Theme } from "@radix-ui/themes";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 
 import { getDashboardAppBasePath } from "@shared/utils";
 
@@ -35,7 +36,7 @@ import { AccessDeniedModal } from "@shared/components/accessDenied";
 
 function App() {
 	return (
-		<>
+		<HelmetProvider>
 			<SafeAreaView />
 			<ErrorBoundary>
 				<Theme
@@ -73,7 +74,7 @@ function App() {
 					</QueryProvider>
 				</Theme>
 			</ErrorBoundary>
-		</>
+		</HelmetProvider>
 	);
 }
 
