@@ -13,26 +13,27 @@
  * under the License.
  */
 
-import { useState } from "react";
 import { Badge, Flex, IconButton, Text, Tooltip } from "@radix-ui/themes";
 import { InfoCircledIcon, Pencil1Icon, QuestionMarkIcon } from "@radix-ui/react-icons";
 
 import type { CoreConfigFieldInfo } from "@api/tenants/types";
 import { PUBLIC_TENANT_ID } from "@shared/constants";
-import UneditableConfigurationModal from "@features/tenants/modals/UneditableConfigurationModal";
-import EditConfigurationPropertyModal from "@features/tenants/modals/EditConfigurationPropertyModal";
 
-import { getUneditableReason } from "./CoreConfigurationUneditableReason";
 import styles from "./CoreConfigTableRow.module.scss";
 
 interface CoreConfigTableRowProps {
 	tenantId: string;
 	config: CoreConfigFieldInfo;
+	onEditClick: (config: CoreConfigFieldInfo) => void;
+	onUneditableClick: () => void;
 }
 
-export default function CoreConfigTableRow({ tenantId, config }: CoreConfigTableRowProps) {
-	const [isUneditableModalOpen, setIsUneditableModalOpen] = useState(false);
-	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+export default function CoreConfigTableRow({
+	tenantId,
+	config,
+	onEditClick,
+	onUneditableClick,
+}: CoreConfigTableRowProps) {
 	const isPublicTenant = tenantId === PUBLIC_TENANT_ID;
 
 	// Determine if the property is editable
@@ -82,7 +83,7 @@ export default function CoreConfigTableRow({ tenantId, config }: CoreConfigTable
 						<IconButton
 							size="2"
 							variant="soft"
-							onClick={() => setIsUneditableModalOpen(true)}>
+							onClick={onUneditableClick}>
 							<QuestionMarkIcon />
 						</IconButton>
 					) : (
@@ -90,28 +91,12 @@ export default function CoreConfigTableRow({ tenantId, config }: CoreConfigTable
 							size="2"
 							variant="soft"
 							color="gray"
-							onClick={() => setIsEditModalOpen(true)}>
+							onClick={() => onEditClick(config)}>
 							<Pencil1Icon />
 						</IconButton>
 					)}
 				</Flex>
 			</Flex>
-
-			{isEditModalOpen && (
-				<EditConfigurationPropertyModal
-					open={isEditModalOpen}
-					handleClose={() => setIsEditModalOpen(false)}
-					config={config}
-					tenantId={tenantId}
-				/>
-			)}
-			{isUneditableModalOpen && (
-				<UneditableConfigurationModal
-					open={isUneditableModalOpen}
-					handleClose={() => setIsUneditableModalOpen(false)}
-					reason={getUneditableReason(isPublicTenant)}
-				/>
-			)}
 		</>
 	);
 }

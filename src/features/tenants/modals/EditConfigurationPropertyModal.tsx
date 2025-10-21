@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Checkbox, Flex, Select, Switch, Text } from "@radix-ui/themes";
 
 import type { CoreConfigFieldInfo } from "@api/tenants/types";
@@ -49,20 +49,22 @@ export default function EditConfigurationPropertyModal({
 
 	const isMultiValue = Array.isArray(config.possibleValues) && config.possibleValues.length > 0;
 
-	const toggleNull = () => {
-		if (currentValue === null) {
-			// Restore to default value or appropriate zero value
-			if (config.valueType === "number") {
-				setCurrentValue(config.defaultValue !== null ? config.defaultValue : 0);
-			} else if (config.valueType === "boolean") {
-				setCurrentValue(config.defaultValue !== null ? config.defaultValue : false);
+	const toggleNull = useCallback(() => {
+		setCurrentValue((currentValue) => {
+			if (currentValue === null) {
+				// Restore to default value or appropriate zero value
+				if (config.valueType === "number") {
+					return config.defaultValue !== null ? config.defaultValue : 0;
+				} else if (config.valueType === "boolean") {
+					return config.defaultValue !== null ? config.defaultValue : false;
+				} else {
+					return config.defaultValue !== null ? config.defaultValue : "";
+				}
 			} else {
-				setCurrentValue(config.defaultValue !== null ? config.defaultValue : "");
+				return null;
 			}
-		} else {
-			setCurrentValue(null);
-		}
-	};
+		});
+	}, [config.defaultValue, config.valueType]);
 
 	const handleSaveProperty = async () => {
 		try {
