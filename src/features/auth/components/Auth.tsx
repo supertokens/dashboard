@@ -66,11 +66,11 @@ const Auth: React.FC<{
 				className={`${styles["page-container"]} ${styles["auth-container"]}`}
 				style={{ ...backgroundUrlVars }}>
 				<div
-					className={`${styles["auth-container__content"]} block-container block-large ${
-						contentMode !== "sign-in" ? styles[`auth-container__content--${contentMode}`] : ""
-					}`}>
+					className={`${styles["auth-container__content"]} ${styles["block-container"]} ${
+						styles["block-large"]
+					} ${contentMode !== "sign-in" ? styles[`auth-container__content--${contentMode}`] : ""}`}>
 					<img
-						className={`title-image-smaller ${styles["auth-container__logo"]}`}
+						className={`${styles["title-image-smaller"]} ${styles["auth-container__logo"]}`}
 						src={LOGO_ICON_LIGHT}
 						alt="Auth Page"
 					/>

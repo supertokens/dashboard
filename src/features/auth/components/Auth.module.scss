@@ -30,6 +30,10 @@
 	}
 
 	&__content {
+		border-radius: 16px;
+		background: #fff;
+		box-shadow: var(--box-shadow-2);
+		padding: 30px;
 		max-width: 320px;
 		margin: 32px auto;
 

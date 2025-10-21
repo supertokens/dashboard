@@ -44,8 +44,8 @@ function App() {
 					accentColor="indigo"
 					appearance="light">
 					<QueryProvider>
-						<AuthWrapper>
-							<ToastProvider>
+						<ToastProvider>
+							<AuthWrapper>
 								<Router basename={getDashboardAppBasePath()}>
 									<Layout>
 										<Routes>
@@ -68,9 +68,9 @@ function App() {
 										</Routes>
 									</Layout>
 								</Router>
-							</ToastProvider>
-							<AccessDeniedModal />
-						</AuthWrapper>
+								<AccessDeniedModal />
+							</AuthWrapper>
+						</ToastProvider>
 					</QueryProvider>
 				</Theme>
 			</ErrorBoundary>
