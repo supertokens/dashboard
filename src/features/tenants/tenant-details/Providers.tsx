@@ -117,7 +117,6 @@ export const Providers = ({
 						<AddNewProviderModal
 							open={isNewProviderModalOpen}
 							handleClose={() => setIsNewProviderModalOpen(false)}
-							tenantId={tenantId}
 							onProviderSelected={handleNewProviderSelected}
 						/>
 					</>

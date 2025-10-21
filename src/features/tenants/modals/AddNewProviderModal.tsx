@@ -92,20 +92,12 @@ const SOCIAL_PROVIDERS = [
 interface AddNewProviderModalProps {
 	open: boolean;
 	handleClose: () => void;
-	tenantId: string;
-	onProviderSelected?: (providerId: string) => void;
+	onProviderSelected: (providerId: string) => void;
 }
 
-export default function AddNewProviderModal({
-	open,
-	handleClose,
-	tenantId,
-	onProviderSelected,
-}: AddNewProviderModalProps) {
+export default function AddNewProviderModal({ open, handleClose, onProviderSelected }: AddNewProviderModalProps) {
 	const handleSelectProvider = (providerId: string) => {
-		if (onProviderSelected) {
-			onProviderSelected(providerId);
-		}
+		onProviderSelected(providerId);
 		handleClose();
 	};
 	return (

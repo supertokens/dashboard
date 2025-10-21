@@ -14,7 +14,6 @@
  */
 
 import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { EyeOpenIcon, TrashIcon } from "@radix-ui/react-icons";
 
@@ -39,7 +38,7 @@ import { LoginMethods } from "./LoginMethods";
 import { SecondaryFactors } from "./SecondaryFactors";
 import CoreConfiguration from "./core-configuration/CoreConfiguration";
 import { Providers } from "./Providers";
-import { useNavigationHelpers, QUERY_PARAMS } from "@shared/navigation";
+import { useNavigationHelpers } from "@shared/navigation";
 
 import styles from "./TenantDetails.module.scss";
 
@@ -186,13 +185,9 @@ const TenantDetailContent = ({
 	);
 };
 
-export default function TenantDetails() {
+export default function TenantDetails({ tenantId }: { tenantId: string }) {
 	const { goToTenantsList } = useNavigationHelpers();
-	const [searchParams] = useSearchParams();
-	const tenantId = searchParams.get(QUERY_PARAMS.TENANT_ID) || "";
-
 	const { tenantInfo, isLoading, error, deleteTenant, isDeletingTenant } = useTenantDetails(tenantId);
-
 	const handleBackToItemList = () => {
 		goToTenantsList();
 	};

@@ -29,5 +29,5 @@ export default function TenantManagement() {
 	const [searchParams] = useSearchParams();
 	const tenantId = searchParams.get(QUERY_PARAMS.TENANT_ID);
 
-	return tenantId ? <TenantDetails /> : <TenantsList />;
+	return tenantId ? <TenantDetails tenantId={tenantId} /> : <TenantsList />;
 }
