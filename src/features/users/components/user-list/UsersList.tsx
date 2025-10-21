@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -15,7 +15,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import type { UserSearchCriteria } from "@features/users/types/queries";
+import type { UserSearchCriteria } from "@features/users/hooks/useUsers";
 
 import { useUsersList } from "@features/users/hooks/useUsers";
 import { useAnalytics } from "@features/analytics/hooks/useAnalytics";

@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -25,7 +25,7 @@ import { useToast } from "@shared/components/toast";
 
 import { useTenantDetails } from "../hooks/useTenantDetails";
 import styles from "./LoginMethods.module.scss";
-import { SupertokensPreview } from "@shared/supertokens-preview";
+import { SupertokensPreview } from "@shared/components/supertokens-preview";
 
 export const LoginMethods = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
 	const enabledFirstFactors = tenantInfo.firstFactors || [];

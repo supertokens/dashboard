@@ -1,0 +1,144 @@
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.supertokens-preview {
+	border-radius: 12px;
+	background: #fff;
+	box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.08);
+	padding: 40px 30px 60px 30px;
+	width: 100%;
+	height: fit-content;
+	position: relative;
+	pointer-events: none;
+
+	&__title {
+		color: #000;
+		font-size: 24px;
+		font-style: normal;
+		font-weight: 700;
+		line-height: normal;
+		margin: 0;
+		padding: 0;
+		margin-bottom: 20px;
+	}
+
+	&__subtitle {
+		color: #363636;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: normal;
+
+		strong {
+			color: #007aff;
+			font-weight: 400;
+			font-size: 14px;
+		}
+	}
+	&__separator {
+		width: 100%;
+		height: 1px;
+		background: #e8e8e8;
+		margin: 25px 0;
+	}
+
+	&__third-party {
+		width: 100%;
+
+		&__button {
+			width: 100%;
+			border-radius: 6px;
+			border: 1px solid #ddd;
+			position: relative;
+			color: #000;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 400;
+			line-height: normal;
+			padding: 8px 4px;
+
+			img {
+				position: absolute;
+				left: 12px;
+			}
+		}
+	}
+	&__or {
+		width: 100%;
+		color: #808080;
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: normal;
+	}
+	&__mfa-container {
+		width: 100%;
+	}
+	&__mfa-label {
+		color: #000;
+		font-size: 12px;
+		font-style: normal;
+		font-weight: 700;
+		line-height: normal;
+
+		&__subtext {
+			color: #1570ef;
+			font-weight: 400;
+		}
+	}
+
+	&__submit-button {
+		border-radius: 6px !important;
+		border: 1px solid #1c222a !important;
+		background: #1c222a !important;
+		box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.25) !important;
+
+		&__text {
+			color: #fff;
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 700;
+			line-height: normal;
+		}
+	}
+
+	&__email-password {
+		width: 100%;
+	}
+	&__email-password-item {
+		width: 100%;
+		color: #000;
+		font-size: 12px;
+		font-style: normal;
+		font-weight: 700;
+		line-height: normal;
+	}
+	&__powered-by {
+		color: #808080;
+		font-size: 12px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: normal;
+		position: absolute;
+		bottom: 0px;
+		border-radius: 12px 12px 0 0;
+		background: #f8f8f8;
+
+		strong {
+			font-weight: 700;
+			margin-left: 4px;
+		}
+	}
+}

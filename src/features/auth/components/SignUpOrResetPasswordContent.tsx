@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -14,12 +14,13 @@
  */
 import HighlightJS from "highlight.js";
 import BashHighlight from "highlight.js/lib/languages/bash";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button, Flex, Text } from "@radix-ui/themes";
-import CopyText from "@components/copyText/CopyText";
 import { ContentMode } from "./types";
 import styles from "./SignUpOrResetPasswordContent.module.scss";
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
+import { copyToClipboard } from "@shared/utils/copyToClipboard";
+import { useToast } from "@shared/components/toast";
 
 interface ISignUpOrResetPasswordContentProps {
 	contentMode: Exclude<ContentMode, "sign-in">;
@@ -44,20 +45,12 @@ const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps>
 	contentMode,
 	onBack,
 }: ISignUpOrResetPasswordContentProps): JSX.Element => {
-	const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
+	const { showSuccessToast, showErrorToast } = useToast();
 
 	useEffect(() => {
 		HighlightJS.registerLanguage("bash", BashHighlight);
 		HighlightJS.initHighlightingOnLoad();
 	});
-
-	useEffect(() => {
-		if (showCopiedTooltip) {
-			setTimeout(() => {
-				setShowCopiedTooltip(false);
-			}, 1000);
-		}
-	}, [showCopiedTooltip]);
 
 	const getContentForMode = (): IContentForMode => {
 		switch (contentMode) {
@@ -115,8 +108,22 @@ ${commonHeaders.trim()}
 							__html: highlightedCode.value,
 						}}
 					/>
+					{/* TODO: VERIFY THIS */}
 					<div className={styles["command-container__tooltip"]}>
-						<CopyText showChild={false}>{command}</CopyText>
+						<CopyIcon
+							onClick={(e) => {
+								e.stopPropagation();
+								void copyToClipboard(
+									command,
+									() => {
+										showSuccessToast("Success", "Command copied to clipboard.");
+									},
+									() => {
+										showErrorToast("Failed to copy command to clipboard.");
+									}
+								);
+							}}
+						/>
 					</div>
 				</div>
 				<Flex

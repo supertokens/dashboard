@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -19,7 +19,7 @@ import { Box, Flex, Text } from "@radix-ui/themes";
 import { EyeOpenIcon, TrashIcon } from "@radix-ui/react-icons";
 
 import { assertNever } from "@shared/utils/assertNever";
-import { PUBLIC_TENANT_ID } from "@constants";
+import { PUBLIC_TENANT_ID } from "@shared/constants";
 import Button from "@shared/components/button";
 import ItemDetailHeader from "@shared/components/itemDetailsHeading";
 import PageContainer from "@shared/components/pageContainer";

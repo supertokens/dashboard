@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,14 +13,13 @@
  * under the License.
  */
 
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Flex, Text } from "@radix-ui/themes";
 
-import { Modal } from "@shared/components/modal";
-import Form from "@shared/components/form";
 import Button from "@shared/components/button";
-import { PopupContentContext } from "@contexts/PopupContentContext";
-import { getImageUrl } from "@shared/utils/index";
+import Form from "@shared/components/form";
+import { Modal } from "@shared/components/modal";
+import { useToast } from "@shared/components/toast";
 
 import { useRoleDetails } from "../hooks";
 
@@ -34,7 +33,7 @@ interface DeleteRoleModalProps {
 }
 
 export default function DeleteRoleModal({ open, handleClose, roleId, onDeleteSuccess }: DeleteRoleModalProps) {
-	const { showToast } = useContext(PopupContentContext);
+	const { showErrorToast } = useToast();
 	const { deleteRole } = useRoleDetails(roleId);
 	const [isDeleting, setIsDeleting] = useState(false);
 
@@ -51,20 +50,12 @@ export default function DeleteRoleModal({ open, handleClose, roleId, onDeleteSuc
 				handleClose();
 				onDeleteSuccess();
 			} else if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showToast({
-					iconImage: getImageUrl("form-field-error-icon.svg"),
-					toastType: "error",
-					children: <>Feature is not enabled</>,
-				});
+				showErrorToast("Feature is not enabled");
 			} else {
 				throw new Error("Failed to delete role");
 			}
 		} catch {
-			showToast({
-				iconImage: getImageUrl("form-field-error-icon.svg"),
-				toastType: "error",
-				children: <>Something went wrong. Please try again!</>,
-			});
+			showErrorToast("Something went wrong. Please try again!");
 		} finally {
 			setIsDeleting(false);
 		}

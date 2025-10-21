@@ -1,6 +1,4 @@
-import { HttpMethod } from "../types";
-
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -14,6 +12,8 @@ import { HttpMethod } from "../types";
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+
+import { HttpMethod } from "@features/auth/types";
 
 class RequestQueueManager {
 	static requestQueue: { [key: string]: () => Promise<Response> } = {};

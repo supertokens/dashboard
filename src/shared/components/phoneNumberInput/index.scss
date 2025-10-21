@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -12,8 +12,6 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-
-@import "@styles/mixin.scss";
 
 .phone-number-input {
 	width: 100%;
@@ -39,7 +37,9 @@
 			align-items: center;
 			padding-left: 12px;
 			cursor: pointer;
-			@include gap-horizontal(8px);
+			> :not(:last-child) {
+				margin-right: 8px;
+			}
 
 			.PhoneInputCountryIcon {
 				img {
@@ -73,7 +73,10 @@
 				align-items: center;
 				font-weight: normal;
 				cursor: pointer;
-				@include gap-horizontal(12px);
+
+				> :not(:last-child) {
+					margin-right: 12px;
+				}
 
 				.PhoneInputCountryIcon {
 					font-size: 14px;
@@ -143,6 +146,8 @@
 	&__display {
 		display: flex;
 		align-items: flex-start;
-		@include gap-horizontal(5px);
+		> :not(:last-child) {
+			margin-right: 5px;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useContext, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Flex, Text } from "@radix-ui/themes";
 import { TrashIcon } from "@radix-ui/react-icons";
@@ -25,15 +25,14 @@ import PageContainer from "@shared/components/pageContainer";
 import ItemDetailHeader from "@shared/components/itemDetailsHeading";
 import DashboardError from "@shared/components/error";
 import Loader from "@shared/components/loader";
-import { PopupContentContext } from "@contexts/PopupContentContext";
 import { assertNever } from "@shared/utils/assertNever";
-import { getImageUrl } from "@shared/utils/index";
 
 import Permissions from "./Permissions";
 // TODO: Add this import when the manage access feature is ready
 // import ManageAccess from "./ManageAccess";
 import DeleteRoleModal from "../modals/DeleteRoleModal";
 import { useRoleDetails } from "../hooks";
+import { useToast } from "@shared/components/toast";
 
 // TODO: Add "manage-access" to RoleDetailTab type when the manage access feature is ready
 type RoleDetailTab = "permissions";
@@ -125,7 +124,7 @@ const RoleDetailContent = ({ roleId, onDeleteSuccess }: RoleDetailContentProps) 
 
 export default function RoleDetails({ roleId }: { roleId: string }) {
 	const navigate = useNavigate();
-	const { showToast } = useContext(PopupContentContext);
+	const { showSuccessToast } = useToast();
 	const { isLoading, error } = useRoleDetails(roleId);
 
 	const pageState = useMemo(() => {
@@ -139,11 +138,7 @@ export default function RoleDetails({ roleId }: { roleId: string }) {
 	};
 
 	const handleDeleteSuccess = () => {
-		showToast({
-			iconImage: getImageUrl("checkmark-green.svg"),
-			toastType: "success",
-			children: <>Role deleted successfully!</>,
-		});
+		showSuccessToast("Role deleted successfully!");
 		navigate("/roles");
 	};
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -15,13 +15,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { FactorIds, HTTPStatusCodes, StorageKeys } from "@constants";
-import { getAccessDeniedEvent } from "@events/accessDenied";
+import { FactorIds, HTTPStatusCodes, StorageKeys } from "@shared/constants";
+import { getAccessDeniedEvent } from "@shared/events/accessDenied";
 import NetworkManager from "@services/network";
-import { HttpMethod } from "@shared/types/auth";
-import { UserRecipeType } from "@pages/usersList/types";
+import { HttpMethod } from "@features/auth/types";
 import { ForbiddenError } from "@shared/utils/customErrors";
 import { localStorageHandler } from "@shared/services/storage";
+import { UserRecipeType } from "@features/users/types";
 
 export function getStaticBasePath(): string {
 	return (window as any).staticBasePath;

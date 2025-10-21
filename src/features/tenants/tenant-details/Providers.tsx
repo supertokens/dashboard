@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -23,7 +23,7 @@ import TabSelector from "@shared/components/tabSelector";
 import EmptyList from "@shared/components/empty";
 import Loader from "@shared/components/loader";
 import { getImageUrl } from "@shared/utils/index";
-import { IN_BUILT_THIRD_PARTY_PROVIDERS, FactorIds } from "@constants";
+import { IN_BUILT_THIRD_PARTY_PROVIDERS, FactorIds } from "@shared/constants";
 import { useGetThirdPartyProviderInfoService } from "@api/tenants";
 import type { ProviderConfigResponse } from "@api/tenants/types";
 import AddNewProviderModal from "@features/tenants/modals/AddNewProviderModal";

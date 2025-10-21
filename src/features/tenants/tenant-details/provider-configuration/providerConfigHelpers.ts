@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -14,7 +14,7 @@
  */
 
 import type { ProviderConfig, ProviderConfigResponse, ProviderClientConfig } from "@api/tenants/types";
-import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "@constants";
+import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "@shared/constants";
 import { IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT } from "@features/tenants/constants/providers";
 
 export type ProviderClientState = Omit<ProviderClientConfig, "additionalConfig" | "scope"> & {

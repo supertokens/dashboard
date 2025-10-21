@@ -1,4 +1,4 @@
-/* Copyright (c) 2024, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -33,7 +33,7 @@ import { getConnectionUri, getImageUrl, useClickOutside } from "@shared/utils";
 import { useAppEnv } from "@shared/hooks";
 
 import "./index.scss";
-import { getPopupPosition, PopUpPositionProperties } from "@components/tooltip/tooltip-util";
+import { getPopupPosition, PopUpPositionProperties } from "@shared/utils/tooltip";
 
 export type PhoneNumberInputProps = {
 	onChange: (phoneNumber: string) => void;
