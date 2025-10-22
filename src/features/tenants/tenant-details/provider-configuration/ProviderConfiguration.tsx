@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge, Flex, Switch, Text } from "@radix-ui/themes";
 import { Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 
@@ -149,95 +149,102 @@ export const ProviderConfiguration = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tenantId, providerId, isAddingNewProvider, initialProviderConfigResponse]);
 
-	const handleThirdPartyIdSuffixChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!providerConfigState) return;
+	const handleThirdPartyIdSuffixChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const suffixValue = e.target.value.trim();
+			setProviderConfigState((prevState) => {
+				if (!prevState) return prevState;
 
-		const suffixValue = e.target.value.trim();
-		if (suffixValue === "") {
-			setProviderConfigState({ ...providerConfigState, thirdPartyId: baseProviderId });
-		} else {
-			setProviderConfigState({
-				...providerConfigState,
-				thirdPartyId: `${baseProviderId}-${suffixValue}`,
+				if (suffixValue === "") {
+					return { ...prevState, thirdPartyId: baseProviderId };
+				} else {
+					return {
+						...prevState,
+						thirdPartyId: `${baseProviderId}-${suffixValue}`,
+					};
+				}
 			});
-		}
-	};
+		},
+		[baseProviderId]
+	);
 
-	const showSuffixField = () => {
-		if (!providerConfigState) return;
-
+	const showSuffixField = useCallback(() => {
 		setIsSuffixFieldVisible(true);
-		setProviderConfigState({
-			...providerConfigState,
-			thirdPartyId: baseProviderId,
+		setProviderConfigState((prevState) => {
+			if (!prevState) return prevState;
+			return {
+				...prevState,
+				thirdPartyId: baseProviderId,
+			};
 		});
 		// Clear any thirdPartyId errors when showing suffix field
 		setErrors((prev) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { thirdPartyId, ...rest } = prev;
 			return rest;
 		});
-	};
+	}, [baseProviderId]);
 
-	const handleUserInfoFieldChange = ({
-		name,
-		key,
-		value,
-	}: {
-		name: "fromIdTokenPayload" | "fromUserInfoAPI";
-		key: string;
-		value: string;
-	}) => {
-		if (!providerConfigState) return;
-		setProviderConfigState({
-			...providerConfigState,
-			userInfoMap: {
-				...providerConfigState.userInfoMap,
-				[name]: {
-					...providerConfigState.userInfoMap[name],
-					[key]: value,
-				},
-			},
-		});
-	};
+	const handleUserInfoFieldChange = useCallback(
+		({ name, key, value }: { name: "fromIdTokenPayload" | "fromUserInfoAPI"; key: string; value: string }) => {
+			setProviderConfigState((prevState) => {
+				if (!prevState) return prevState;
+				return {
+					...prevState,
+					userInfoMap: {
+						...prevState.userInfoMap,
+						[name]: {
+							...prevState.userInfoMap[name],
+							[key]: value,
+						},
+					},
+				};
+			});
+		},
+		[]
+	);
 
-	const handleEmailSelectChange = (value: EmailSelectState) => {
-		if (!providerConfigState) return;
+	const handleEmailSelectChange = useCallback((value: EmailSelectState) => {
 		setEmailSelectValue(value);
-		if (value === "never") {
-			setProviderConfigState({ ...providerConfigState, requireEmail: false });
-		} else {
-			setProviderConfigState({ ...providerConfigState, requireEmail: true });
-		}
-	};
-
-	const handleAddNewClient = () => {
-		if (!providerConfigState) return;
-
-		let additionalConfig: [string, string | null][] = providerConfigState.clients[0]?.additionalConfig
-			? [...providerConfigState.clients[0].additionalConfig]
-			: [["", ""]];
-
-		// Apply custom fields if needed
-		if (customFields) {
-			additionalConfig = customFields.map((field) => [field.id, ""] as [string, string | null]);
-		}
-
-		setProviderConfigState({
-			...providerConfigState,
-			clients: [
-				...(providerConfigState?.clients ?? []),
-				{
-					clientId: "",
-					clientSecret: "",
-					clientType: "",
-					scope: providerConfigState.clients[0]?.scope ? [...providerConfigState.clients[0].scope] : [""],
-					additionalConfig,
-					forcePKCE: providerConfigState.clients[0]?.forcePKCE || false,
-					key: crypto.randomUUID(),
-				},
-			],
+		setProviderConfigState((prevState) => {
+			if (!prevState) return prevState;
+			return {
+				...prevState,
+				requireEmail: value !== "never",
+			};
 		});
-	};
+	}, []);
+
+	const handleAddNewClient = useCallback(() => {
+		setProviderConfigState((prevState) => {
+			if (!prevState) return prevState;
+
+			let additionalConfig: [string, string | null][] = prevState.clients[0]?.additionalConfig
+				? [...prevState.clients[0].additionalConfig]
+				: [["", ""]];
+
+			// Apply custom fields if needed
+			if (customFields) {
+				additionalConfig = customFields.map((field) => [field.id, ""] as [string, string | null]);
+			}
+
+			return {
+				...prevState,
+				clients: [
+					...(prevState?.clients ?? []),
+					{
+						clientId: "",
+						clientSecret: "",
+						clientType: "",
+						scope: prevState.clients[0]?.scope ? [...prevState.clients[0].scope] : [""],
+						additionalConfig,
+						forcePKCE: prevState.clients[0]?.forcePKCE || false,
+						key: crypto.randomUUID(),
+					},
+				],
+			};
+		});
+	}, [customFields]);
 
 	const handleSave = async () => {
 		if (!providerConfigState || !tenantInfo) return;
@@ -444,7 +451,9 @@ export const ProviderConfiguration = ({
 							disabled={!isEditing || !isAddingNewProvider}
 							value={providerConfigState.thirdPartyId}
 							onChange={(e) =>
-								setProviderConfigState({ ...providerConfigState, thirdPartyId: e.target.value })
+								setProviderConfigState((prevState) =>
+									prevState ? { ...prevState, thirdPartyId: e.target.value } : prevState
+								)
 							}
 							error={errors.thirdPartyId}
 						/>
@@ -467,7 +476,9 @@ export const ProviderConfiguration = ({
 									disabled={!isEditing}
 									value={providerConfigState.name}
 									onChange={(e) =>
-										setProviderConfigState({ ...providerConfigState, name: e.target.value })
+										setProviderConfigState((prevState) =>
+											prevState ? { ...prevState, name: e.target.value } : prevState
+										)
 									}
 									className={styles["provider-configuration__saml-select"]}>
 									<option value="">Select a name</option>
@@ -496,7 +507,11 @@ export const ProviderConfiguration = ({
 							disabled={!isEditing}
 							required={!isKnownThirdPartyId(providerConfigState.thirdPartyId)}
 							value={providerConfigState.name}
-							onChange={(e) => setProviderConfigState({ ...providerConfigState, name: e.target.value })}
+							onChange={(e) =>
+								setProviderConfigState((prevState) =>
+									prevState ? { ...prevState, name: e.target.value } : prevState
+								)
+							}
 							error={errors.name}
 						/>
 					)}
@@ -524,14 +539,20 @@ export const ProviderConfiguration = ({
 							errors={errors}
 							customFields={customFields}
 							setClient={(updatedClient) => {
-								const newClients = [...providerConfigState.clients];
-								newClients[index] = updatedClient;
-								setProviderConfigState({ ...providerConfigState, clients: newClients });
+								setProviderConfigState((prevState) => {
+									if (!prevState) return prevState;
+									const newClients = [...prevState.clients];
+									newClients[index] = updatedClient;
+									return { ...prevState, clients: newClients };
+								});
 							}}
 							handleDeleteClient={() => {
-								setProviderConfigState({
-									...providerConfigState,
-									clients: providerConfigState.clients.filter((_, i) => i !== index),
+								setProviderConfigState((prevState) => {
+									if (!prevState) return prevState;
+									return {
+										...prevState,
+										clients: prevState.clients.filter((_, i) => i !== index),
+									};
 								});
 							}}
 							disabled={!isEditing}
@@ -560,7 +581,9 @@ export const ProviderConfiguration = ({
 						disabled={!isEditing}
 						value={providerConfigState.oidcDiscoveryEndpoint}
 						onChange={(e) =>
-							setProviderConfigState({ ...providerConfigState, oidcDiscoveryEndpoint: e.target.value })
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, oidcDiscoveryEndpoint: e.target.value } : prevState
+							)
 						}
 						error={errors.oidcDiscoveryEndpoint}
 					/>
@@ -578,7 +601,9 @@ export const ProviderConfiguration = ({
 								: providerConfigState.authorizationEndpoint
 						}
 						onChange={(e) =>
-							setProviderConfigState({ ...providerConfigState, authorizationEndpoint: e.target.value })
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, authorizationEndpoint: e.target.value } : prevState
+							)
 						}
 						error={errors.authorizationEndpoint}
 					/>
@@ -588,7 +613,9 @@ export const ProviderConfiguration = ({
 						tooltip="The query params to be sent to the authorization endpoint"
 						items={providerConfigState.authorizationEndpointQueryParams}
 						setItems={(items) =>
-							setProviderConfigState({ ...providerConfigState, authorizationEndpointQueryParams: items })
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, authorizationEndpointQueryParams: items } : prevState
+							)
 						}
 						disabled={!isEditing || providerConfigResponse?.isGetAuthorisationRedirectUrlOverridden}
 					/>
@@ -616,7 +643,9 @@ export const ProviderConfiguration = ({
 								: providerConfigState.tokenEndpoint
 						}
 						onChange={(e) =>
-							setProviderConfigState({ ...providerConfigState, tokenEndpoint: e.target.value })
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, tokenEndpoint: e.target.value } : prevState
+							)
 						}
 						error={errors.tokenEndpoint}
 					/>
@@ -626,7 +655,9 @@ export const ProviderConfiguration = ({
 						tooltip="The body params to be sent to the token endpoint"
 						items={providerConfigState.tokenEndpointBodyParams}
 						setItems={(items) =>
-							setProviderConfigState({ ...providerConfigState, tokenEndpointBodyParams: items })
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, tokenEndpointBodyParams: items } : prevState
+							)
 						}
 						disabled={!isEditing || providerConfigResponse?.isExchangeAuthCodeForOAuthTokensOverridden}
 					/>
@@ -654,7 +685,9 @@ export const ProviderConfiguration = ({
 								: providerConfigState.userInfoEndpoint
 						}
 						onChange={(e) =>
-							setProviderConfigState({ ...providerConfigState, userInfoEndpoint: e.target.value })
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, userInfoEndpoint: e.target.value } : prevState
+							)
 						}
 						error={errors.userInfoEndpoint}
 					/>
@@ -664,7 +697,9 @@ export const ProviderConfiguration = ({
 						tooltip="The query params to be sent to the user info endpoint"
 						items={providerConfigState.userInfoEndpointQueryParams}
 						setItems={(items) =>
-							setProviderConfigState({ ...providerConfigState, userInfoEndpointQueryParams: items })
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, userInfoEndpointQueryParams: items } : prevState
+							)
 						}
 						disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
 					/>
@@ -674,7 +709,9 @@ export const ProviderConfiguration = ({
 						tooltip="The headers to be sent to the user info endpoint"
 						items={providerConfigState.userInfoEndpointHeaders}
 						setItems={(items) =>
-							setProviderConfigState({ ...providerConfigState, userInfoEndpointHeaders: items })
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, userInfoEndpointHeaders: items } : prevState
+							)
 						}
 						disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
 					/>
@@ -709,7 +746,9 @@ export const ProviderConfiguration = ({
 							<Switch
 								checked={!providerConfigState.requireEmail}
 								onCheckedChange={(checked) =>
-									setProviderConfigState({ ...providerConfigState, requireEmail: !checked })
+									setProviderConfigState((prevState) =>
+										prevState ? { ...prevState, requireEmail: !checked } : prevState
+									)
 								}
 								disabled={!isEditing}
 							/>
@@ -767,7 +806,11 @@ export const ProviderConfiguration = ({
 						tooltip="The JWKS URI of the provider"
 						disabled={!isEditing}
 						value={providerConfigState.jwksURI}
-						onChange={(e) => setProviderConfigState({ ...providerConfigState, jwksURI: e.target.value })}
+						onChange={(e) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, jwksURI: e.target.value } : prevState
+							)
+						}
 						error={errors.jwksURI}
 					/>
 				</Flex>

@@ -41,6 +41,7 @@ import { Providers } from "./Providers";
 import { useNavigationHelpers } from "@shared/navigation";
 
 import styles from "./TenantDetails.module.scss";
+import { useToast } from "@components/toast";
 
 type TenantDetailTab = "login-methods" | "secondary-factors" | "providers" | "core-configuration";
 
@@ -77,6 +78,7 @@ const TenantDetailContent = ({
 	const [deleteTenantModalOpen, setDeleteTenantModalOpen] = useState(false);
 	const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("login-methods");
 	const { goToTenantsList, goToUsersList } = useNavigationHelpers();
+	const { showErrorToast } = useToast();
 
 	const handleTabChange = (tab: TenantDetailTab) => {
 		setSelectedTab(tab);
@@ -87,7 +89,7 @@ const TenantDetailContent = ({
 			await onDeleteTenant();
 			goToTenantsList();
 		} catch (err) {
-			// Error handling
+			showErrorToast("Failed to delete tenant");
 		}
 	};
 
