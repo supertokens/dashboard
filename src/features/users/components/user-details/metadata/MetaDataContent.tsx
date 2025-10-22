@@ -16,7 +16,6 @@
 import { Box, Flex, TextArea } from "@radix-ui/themes";
 import HighlightJS from "highlight.js";
 
-import { METADATA_NOT_ENABLED_TEXT } from "@features/users/components/user-details/metadata/constants";
 import styles from "./MetaDataContent.module.scss";
 
 interface MetaDataContentProps {
@@ -29,7 +28,7 @@ interface MetaDataContentProps {
 
 export default function MetaDataContent({ isEditing, value, onChange, error, metadata }: MetaDataContentProps) {
 	const getFormattedMetaData = (_metadata: string): string => {
-		if (_metadata === METADATA_NOT_ENABLED_TEXT) {
+		if (_metadata === "Feature Not Enabled") {
 			return _metadata;
 		}
 

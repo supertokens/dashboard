@@ -16,4 +16,3 @@
 export { default } from "./MetaData";
 export { default as MetaDataHeader } from "./MetaDataHeader";
 export { default as MetaDataContent } from "./MetaDataContent";
-export * from "./constants";

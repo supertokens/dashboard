@@ -16,16 +16,15 @@
 import { Cross1Icon } from "@radix-ui/react-icons";
 
 import IconButton from "@shared/components/iconButton";
-import { NOOP } from "@shared/utils/noop";
 
 import style from "./ProviderConfigCancelButton.module.scss";
 
 interface ProviderConfigCancelButtonProps {
-	onClick?: () => void;
+	onClick: () => void;
 	disabled?: boolean;
 }
 
-export const ProviderConfigCancelButton = ({ onClick = NOOP, disabled = false }: ProviderConfigCancelButtonProps) => (
+export const ProviderConfigCancelButton = ({ onClick, disabled = false }: ProviderConfigCancelButtonProps) => (
 	<IconButton
 		size="2"
 		variant="soft"
