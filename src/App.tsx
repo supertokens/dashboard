@@ -23,7 +23,7 @@ import { getDashboardAppBasePath } from "@shared/utils";
 import "./images";
 
 import TenantManagement from "@features/tenants/Page";
-import { UserManagement } from "@features/users/Page";
+import { UserManagement } from "@features/users/page";
 import { ToastProvider } from "@shared/components/toast";
 import { QueryProvider } from "@shared/providers/QueryProvider";
 import { ROUTES } from "@shared/navigation";
@@ -33,47 +33,62 @@ import AuthWrapper from "@features/auth/components/AuthWrapper";
 import SafeAreaView from "@shared/components/safeAreaView/SafeAreaView";
 import ErrorBoundary from "@shared/components/errorboundary";
 import { AccessDeniedModal } from "@shared/components/accessDenied";
+import { ComponentOverrideContext } from "@plugins";
+import React, { useMemo } from "react";
+import { SuperTokens } from "./supertokens";
+
+const genericContext = React.createContext({});
 
 function App() {
+	const contextValue = React.useContext(genericContext);
+	const componentOverrides = useMemo(() => {
+		return {
+			...SuperTokens.getInstanceOrThrow().componentOverrides,
+			...contextValue,
+		};
+	}, [contextValue]);
+
 	return (
 		<HelmetProvider>
-			<SafeAreaView />
-			<ErrorBoundary>
-				<Theme
-					radius="medium"
-					accentColor="indigo"
-					appearance="light">
-					<QueryProvider>
-						<ToastProvider>
-							<AuthWrapper>
-								<Router basename={getDashboardAppBasePath()}>
-									<Layout>
-										<Routes>
-											<Route
-												path={ROUTES.USERS}
-												element={<UserManagement />}
-											/>
-											<Route
-												path={ROUTES.ROLES}
-												element={<RolesAndPermissions />}
-											/>
-											<Route
-												path={ROUTES.TENANTS}
-												element={<TenantManagement />}
-											/>
-											<Route
-												path="*"
-												element={<UserManagement />}
-											/>
-										</Routes>
-									</Layout>
-								</Router>
-								<AccessDeniedModal />
-							</AuthWrapper>
-						</ToastProvider>
-					</QueryProvider>
-				</Theme>
-			</ErrorBoundary>
+			<ComponentOverrideContext.Provider value={componentOverrides}>
+				<SafeAreaView />
+				<ErrorBoundary>
+					<Theme
+						radius="medium"
+						accentColor="indigo"
+						appearance="light">
+						<QueryProvider>
+							<ToastProvider>
+								<AuthWrapper>
+									<Router basename={getDashboardAppBasePath()}>
+										<Layout>
+											<Routes>
+												<Route
+													path={ROUTES.USERS}
+													element={<UserManagement />}
+												/>
+												<Route
+													path={ROUTES.ROLES}
+													element={<RolesAndPermissions />}
+												/>
+												<Route
+													path={ROUTES.TENANTS}
+													element={<TenantManagement />}
+												/>
+												<Route
+													path="*"
+													element={<UserManagement />}
+												/>
+											</Routes>
+										</Layout>
+									</Router>
+									<AccessDeniedModal />
+								</AuthWrapper>
+							</ToastProvider>
+						</QueryProvider>
+					</Theme>
+				</ErrorBoundary>
+			</ComponentOverrideContext.Provider>
 		</HelmetProvider>
 	);
 }

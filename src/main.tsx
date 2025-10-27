@@ -17,7 +17,14 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+
 import "./shared/styles";
+import { SuperTokens } from "./supertokens";
+
+SuperTokens.init({
+	apiPath: "/api",
+	plugins: [],
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
