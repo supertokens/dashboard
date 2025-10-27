@@ -21,6 +21,7 @@ import styles from "./SignUpOrResetPasswordContent.module.scss";
 import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
 import { copyToClipboard } from "@shared/utils/copyToClipboard";
 import { useToast } from "@shared/components/toast";
+import { withOverride } from "@plugins";
 
 interface ISignUpOrResetPasswordContentProps {
 	contentMode: Exclude<ContentMode, "sign-in">;
@@ -41,121 +42,122 @@ const commonHeaders = `
 --header 'Content-Type: application/json' \\
 `;
 
-const SignUpOrResetPasswordContent: React.FC<ISignUpOrResetPasswordContentProps> = ({
-	contentMode,
-	onBack,
-}: ISignUpOrResetPasswordContentProps): JSX.Element => {
-	const { showSuccessToast, showErrorToast } = useToast();
+const SignUpOrResetPasswordContent = withOverride(
+	"SignUpOrResetPasswordContent",
+	function SignUpOrResetPasswordContent(props: ISignUpOrResetPasswordContentProps) {
+		const { contentMode, onBack } = props;
+		const { showSuccessToast, showErrorToast } = useToast();
 
-	useEffect(() => {
-		HighlightJS.registerLanguage("bash", BashHighlight);
-		HighlightJS.initHighlightingOnLoad();
-	});
+		useEffect(() => {
+			HighlightJS.registerLanguage("bash", BashHighlight);
+			HighlightJS.initHighlightingOnLoad();
+		});
 
-	const getContentForMode = (): IContentForMode => {
-		switch (contentMode) {
-			case "sign-up":
-				return {
-					title: "Sign Up",
-					subtitle: "Run the below command in your terminal",
-					endpoint: "/recipe/dashboard/user",
-					method: "POST",
-					// eslint-disable-next-line @typescript-eslint/quotes
-					rawData: `"email": "<YOUR_EMAIL>","password": "<YOUR_PASSWORD>"`,
-				};
-			case "forgot-password":
-				return {
-					title: "Reset your password",
-					subtitle: "Run the below command in your terminal",
-					endpoint: "/recipe/dashboard/user",
-					method: "PUT",
-					// eslint-disable-next-line @typescript-eslint/quotes
-					rawData: `"email": "<YOUR_EMAIL>","newPassword": "<YOUR_NEW_PASSWORD>"`,
-				};
-			default:
-				throw Error("No content found for the prop!");
-		}
-	};
+		const getContentForMode = (): IContentForMode => {
+			switch (contentMode) {
+				case "sign-up":
+					return {
+						title: "Sign Up",
+						subtitle: "Run the below command in your terminal",
+						endpoint: "/recipe/dashboard/user",
+						method: "POST",
+						// eslint-disable-next-line @typescript-eslint/quotes
+						rawData: `"email": "<YOUR_EMAIL>","password": "<YOUR_PASSWORD>"`,
+					};
+				case "forgot-password":
+					return {
+						title: "Reset your password",
+						subtitle: "Run the below command in your terminal",
+						endpoint: "/recipe/dashboard/user",
+						method: "PUT",
+						// eslint-disable-next-line @typescript-eslint/quotes
+						rawData: `"email": "<YOUR_EMAIL>","newPassword": "<YOUR_NEW_PASSWORD>"`,
+					};
+				default:
+					throw Error("No content found for the prop!");
+			}
+		};
 
-	const { title, subtitle, endpoint, method, rawData } = getContentForMode();
+		const { title, subtitle, endpoint, method, rawData } = getContentForMode();
 
-	const command = `curl --location --request ${method} '${
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(window as any).connectionURI
-	}${endpoint}' \\
+		const command = `curl --location --request ${method} '${
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(window as any).connectionURI
+		}${endpoint}' \\
 ${commonHeaders.trim()}
 --data-raw '{${rawData}}'`;
 
-	const highlightedCode = HighlightJS.highlight(command, {
-		language: "bash",
-	});
+		const highlightedCode = HighlightJS.highlight(command, {
+			language: "bash",
+		});
 
-	return (
-		<section>
-			<Flex
-				direction="column"
-				className={styles["content-container"]}>
-				<h2 className={styles["content-container__title"]}>{title}</h2>
-				<Text
-					size="2"
-					className={styles["content-container__subtitle"]}>
-					{subtitle}
-				</Text>
-				<div className={styles["command-container"]}>
-					<code
-						className={`${styles["command-container__code"]} with-thin-scrollbar bold-400`}
-						dangerouslySetInnerHTML={{
-							__html: highlightedCode.value,
-						}}
-					/>
-					{/* TODO: VERIFY THIS */}
-					<div className={styles["command-container__tooltip"]}>
-						<CopyIcon
-							onClick={(e) => {
-								e.stopPropagation();
-								void copyToClipboard(
-									command,
-									() => {
-										showSuccessToast("Success", "Command copied to clipboard.");
-									},
-									() => {
-										showErrorToast("Failed to copy command to clipboard.");
-									}
-								);
+		return (
+			<section>
+				<Flex
+					direction="column"
+					className={styles["content-container"]}>
+					<h2 className={styles["content-container__title"]}>{title}</h2>
+					<Text
+						size="2"
+						className={styles["content-container__subtitle"]}>
+						{subtitle}
+					</Text>
+					<div className={styles["command-container"]}>
+						<code
+							className={`${styles["command-container__code"]} with-thin-scrollbar bold-400`}
+							dangerouslySetInnerHTML={{
+								__html: highlightedCode.value,
 							}}
 						/>
+						{/* TODO: VERIFY THIS */}
+						<div className={styles["command-container__tooltip"]}>
+							<CopyIcon
+								onClick={(e) => {
+									e.stopPropagation();
+									void copyToClipboard(
+										command,
+										() => {
+											showSuccessToast("Success", "Command copied to clipboard.");
+										},
+										() => {
+											showErrorToast("Failed to copy command to clipboard.");
+										}
+									);
+								}}
+							/>
+						</div>
 					</div>
-				</div>
-				<Flex
-					className={styles["cta-container"]}
-					justify="between"
-					align="center">
-					<div />
-					{contentMode === "sign-up" ? (
-						<Text
-							size="2"
-							className={styles["content-container__subtitle"]}>
-							Account exists?{" "}
-							<span
-								className={styles["content-container__link"]}
-								role="button"
-								onClick={onBack}>
-								Sign In
-							</span>
-						</Text>
-					) : (
-						<Button
-							variant="ghost"
-							onClick={onBack}
-							className={styles["cta-container__back-button"]}>
-							<ArrowLeftIcon />
-							Back
-						</Button>
-					)}
+					<Flex
+						className={styles["cta-container"]}
+						justify="between"
+						align="center">
+						<div />
+						{contentMode === "sign-up" ? (
+							<Text
+								size="2"
+								className={styles["content-container__subtitle"]}>
+								Account exists?{" "}
+								<span
+									className={styles["content-container__link"]}
+									role="button"
+									onClick={onBack}>
+									Sign In
+								</span>
+							</Text>
+						) : (
+							<Button
+								variant="ghost"
+								onClick={onBack}
+								className={styles["cta-container__back-button"]}>
+								<ArrowLeftIcon />
+								Back
+							</Button>
+						)}
+					</Flex>
 				</Flex>
-			</Flex>
-		</section>
-	);
-};
+			</section>
+		);
+	}
+);
 
 export default SignUpOrResetPasswordContent;

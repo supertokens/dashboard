@@ -19,69 +19,75 @@ import EmptyList from "@shared/components/empty";
 
 import RolesListItem from "./RolesListItem";
 import styles from "./RolesListTable.module.scss";
+import { withOverride } from "@plugins";
 
 interface RolesListTableProps {
 	roles: Array<{ role: string; permissions: string[] | undefined }>;
 	isFeatureEnabled: boolean;
 }
 
-export default function RolesListTable({ roles, isFeatureEnabled }: RolesListTableProps) {
-	const isEmpty = roles.length === 0;
-	const isFeatureDisabled = !isFeatureEnabled;
+const RolesListTable = withOverride(
+	"RolesListTable",
+	function RolesListTable({ roles, isFeatureEnabled }: RolesListTableProps) {
+		const isEmpty = roles.length === 0;
+		const isFeatureDisabled = !isFeatureEnabled;
 
-	return (
-		<Box className={styles.table}>
-			<Flex
-				align="center"
-				className={styles.table__header}>
-				<Text
-					size="2"
-					weight="medium"
-					className={styles.table__header__roles}>
-					User Roles
-				</Text>
-				<Text
-					size="2"
-					weight="medium"
-					className={styles.table__header__permissions}>
-					Permissions
-				</Text>
-			</Flex>
-			<Flex direction="column">
-				{isFeatureDisabled ? (
-					<EmptyList
-						iconUrl="danger.svg"
-						title="Feature is not enabled"
-						description={
-							<span>
-								Enable this feature to manage user roles and permissions. Start by initialising the
-								UserRoles recipe in the recipeList on the backend.{" "}
-								<a
-									href="https://supertokens.com/docs/post-authentication/dashboard/user-management"
-									target="_blank"
-									rel="noopener noreferrer">
-									Click here
-								</a>{" "}
-								for more details.
-							</span>
-						}
-					/>
-				) : isEmpty ? (
-					<EmptyList
-						iconUrl="permission.svg"
-						title="There are no roles created"
-						description="Once added, all created user roles will be found here"
-					/>
-				) : (
-					roles.map(({ role, permissions }) => (
-						<RolesListItem
-							key={role}
-							role={role}
-							permissions={permissions}
+		return (
+			<Box className={styles.table}>
+				<Flex
+					align="center"
+					className={styles.table__header}>
+					<Text
+						size="2"
+						weight="medium"
+						className={styles.table__header__roles}>
+						User Roles
+					</Text>
+					<Text
+						size="2"
+						weight="medium"
+						className={styles.table__header__permissions}>
+						Permissions
+					</Text>
+				</Flex>
+				<Flex direction="column">
+					{isFeatureDisabled ? (
+						<EmptyList
+							iconUrl="danger.svg"
+							title="Feature is not enabled"
+							description={
+								<span>
+									Enable this feature to manage user roles and permissions. Start by initialising the
+									UserRoles recipe in the recipeList on the backend.{" "}
+									<a
+										href="https://supertokens.com/docs/post-authentication/dashboard/user-management"
+										target="_blank"
+										rel="noopener noreferrer">
+										Click here
+									</a>{" "}
+									for more details.
+								</span>
+							}
 						/>
-					))
-				)}
-			</Flex>
-		</Box>
-	);
-}
+					) : isEmpty ? (
+						<EmptyList
+							iconUrl="permission.svg"
+							title="There are no roles created"
+							description="Once added, all created user roles will be found here"
+						/>
+					) : (
+						roles.map(({ role, permissions }) => (
+							<RolesListItem
+								key={role}
+								role={role}
+								permissions={permissions}
+							/>
+						))
+					)}
+				</Flex>
+			</Box>
+		);
+	}
+);
+
+export default RolesListTable;

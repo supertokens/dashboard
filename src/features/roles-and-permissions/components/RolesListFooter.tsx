@@ -17,6 +17,7 @@ import { Flex, IconButton, Text } from "@radix-ui/themes";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 
 import styles from "./RolesListFooter.module.scss";
+import { withOverride } from "@plugins";
 
 interface RolesListFooterProps {
 	currentPage: number;
@@ -29,49 +30,54 @@ interface RolesListFooterProps {
 	onPreviousPage: () => void;
 }
 
-export default function RolesListFooter({
-	currentPage,
-	totalPages,
-	totalCount,
-	pageSize,
-	hasNextPage,
-	hasPreviousPage,
-	onNextPage,
-	onPreviousPage,
-}: RolesListFooterProps) {
-	const startIndex = (currentPage - 1) * pageSize + 1;
-	const endIndex = Math.min(currentPage * pageSize, totalCount);
+const RolesListFooter = withOverride(
+	"RolesListFooter",
+	function RolesListFooter({
+		currentPage,
+		totalPages,
+		totalCount,
+		pageSize,
+		hasNextPage,
+		hasPreviousPage,
+		onNextPage,
+		onPreviousPage,
+	}: RolesListFooterProps) {
+		const startIndex = (currentPage - 1) * pageSize + 1;
+		const endIndex = Math.min(currentPage * pageSize, totalCount);
 
-	return (
-		<Flex
-			align="center"
-			justify="end"
-			gap="3"
-			className={styles.footer}
-			mt="4">
-			<Text
-				size="2"
-				weight="medium">
-				{totalCount > 0 ? `${startIndex} - ${endIndex} of ${totalCount}` : "0 of 0"}
-			</Text>
-			<Flex gap="3">
-				<IconButton
+		return (
+			<Flex
+				align="center"
+				justify="end"
+				gap="3"
+				className={styles.footer}
+				mt="4">
+				<Text
 					size="2"
-					variant="soft"
-					color="gray"
-					disabled={!hasPreviousPage}
-					onClick={onPreviousPage}>
-					<ChevronLeftIcon />
-				</IconButton>
-				<IconButton
-					size="2"
-					variant="soft"
-					color="gray"
-					disabled={!hasNextPage}
-					onClick={onNextPage}>
-					<ChevronRightIcon />
-				</IconButton>
+					weight="medium">
+					{totalCount > 0 ? `${startIndex} - ${endIndex} of ${totalCount}` : "0 of 0"}
+				</Text>
+				<Flex gap="3">
+					<IconButton
+						size="2"
+						variant="soft"
+						color="gray"
+						disabled={!hasPreviousPage}
+						onClick={onPreviousPage}>
+						<ChevronLeftIcon />
+					</IconButton>
+					<IconButton
+						size="2"
+						variant="soft"
+						color="gray"
+						disabled={!hasNextPage}
+						onClick={onNextPage}>
+						<ChevronRightIcon />
+					</IconButton>
+				</Flex>
 			</Flex>
-		</Flex>
-	);
-}
+		);
+	}
+);
+
+export default RolesListFooter;

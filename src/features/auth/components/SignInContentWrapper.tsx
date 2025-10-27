@@ -16,6 +16,7 @@
 import { getAuthMode } from "@shared/utils";
 import SignIn from "./SignInContent";
 import SignInWithApiKeyContent from "./SignInWithApiKeyContent";
+import { withOverride } from "@plugins";
 
 interface SignInContentWrapperProps {
 	onSuccess: () => void;
@@ -23,14 +24,17 @@ interface SignInContentWrapperProps {
 	onForgotPasswordBtnClick: () => void;
 }
 
-const SignInContentWrapper: React.FC<SignInContentWrapperProps> = ({ ...props }: SignInContentWrapperProps) => {
-	const authMode = getAuthMode();
+const SignInContentWrapper = withOverride(
+	"SignInContentWrapper",
+	function SignInContentWrapper(props: SignInContentWrapperProps) {
+		const authMode = getAuthMode();
 
-	if (authMode === "email-password") {
-		return <SignIn {...props} />;
+		if (authMode === "email-password") {
+			return <SignIn {...props} />;
+		}
+
+		return <SignInWithApiKeyContent onSuccess={props.onSuccess} />;
 	}
-
-	return <SignInWithApiKeyContent onSuccess={props.onSuccess} />;
-};
+);
 
 export default SignInContentWrapper;

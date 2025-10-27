@@ -18,12 +18,13 @@ import { StorageKeys } from "@shared/constants";
 import { localStorageHandler } from "@shared/services/storage";
 import Loader from "@shared/components/loader";
 import Auth from "./Auth";
+import { withOverride } from "@plugins";
 
 interface AuthWrapperProps {
 	children: React.ReactNode;
 }
 
-export default function AuthWrapper({ children }: AuthWrapperProps): JSX.Element {
+const AuthWrapper = withOverride("AuthWrapper", function AuthWrapper({ children }: AuthWrapperProps): JSX.Element {
 	const [shouldShowAuthForm, setShouldShowAuthForm] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -55,4 +56,6 @@ export default function AuthWrapper({ children }: AuthWrapperProps): JSX.Element
 	}
 
 	return <>{children}</>;
-}
+});
+
+export default AuthWrapper;

@@ -39,6 +39,7 @@ import { SecondaryFactors } from "./SecondaryFactors";
 import CoreConfiguration from "./core-configuration/CoreConfiguration";
 import { Providers } from "./Providers";
 import { useNavigationHelpers } from "@shared/navigation";
+import { withOverride } from "@plugins";
 
 import styles from "./TenantDetails.module.scss";
 
@@ -63,129 +64,132 @@ const tenantDetailTabs: { name: string; value: TenantDetailTab }[] = [
 	},
 ];
 
-const TenantDetailContent = ({
-	tenantId,
-	tenantInfo,
-	onDeleteTenant,
-	isDeletingTenant,
-}: {
-	tenantId: string;
-	tenantInfo: NonNullable<ReturnType<typeof useTenantDetails>["tenantInfo"]>;
-	onDeleteTenant: () => Promise<void>;
-	isDeletingTenant: boolean;
-}) => {
-	const [deleteTenantModalOpen, setDeleteTenantModalOpen] = useState(false);
-	const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("login-methods");
-	const { goToTenantsList, goToUsersList } = useNavigationHelpers();
+export const TenantDetailContent = withOverride(
+	"TenantDetailContent",
+	function TenantDetailContent({
+		tenantId,
+		tenantInfo,
+		onDeleteTenant,
+		isDeletingTenant,
+	}: {
+		tenantId: string;
+		tenantInfo: NonNullable<ReturnType<typeof useTenantDetails>["tenantInfo"]>;
+		onDeleteTenant: () => Promise<void>;
+		isDeletingTenant: boolean;
+	}) {
+		const [deleteTenantModalOpen, setDeleteTenantModalOpen] = useState(false);
+		const [selectedTab, setSelectedTab] = useState<TenantDetailTab>("login-methods");
+		const { goToTenantsList, goToUsersList } = useNavigationHelpers();
 
-	const handleTabChange = (tab: TenantDetailTab) => {
-		setSelectedTab(tab);
-	};
+		const handleTabChange = (tab: TenantDetailTab) => {
+			setSelectedTab(tab);
+		};
 
-	const handleDeleteTenant = async () => {
-		try {
-			await onDeleteTenant();
-			goToTenantsList();
-		} catch (err) {
-			// Error handling
-		}
-	};
+		const handleDeleteTenant = async () => {
+			try {
+				await onDeleteTenant();
+				goToTenantsList();
+			} catch (err) {
+				// Error handling
+			}
+		};
 
-	const canDeleteTenant = tenantId !== PUBLIC_TENANT_ID;
+		const canDeleteTenant = tenantId !== PUBLIC_TENANT_ID;
 
-	return (
-		<Box width={"100%"}>
-			<ItemContainer
-				mb="4"
-				p="0">
-				<Flex
-					align="center"
-					justify="between"
-					p="4"
-					className={styles["tenant-detail__header"]}>
-					<Text
-						size="5"
-						weight="bold"
-						className={styles["tenant-detail__header__name"]}>
-						{tenantInfo.tenantId}
-					</Text>
-					{canDeleteTenant && (
-						<Button
-							color="red"
-							size="2"
-							variant="soft"
-							onClick={() => setDeleteTenantModalOpen(true)}
-							disabled={isDeletingTenant}>
-							<TrashIcon />
-							Delete Tenant
-						</Button>
-					)}
-				</Flex>
-				<Separator fullWidth />
-				<Flex
-					className={styles["tenant-detail__header__secondary"]}
-					align="center"
-					px="4"
-					py="3"
-					justify="between">
-					<Flex align="center">
-						<ItemLabel mr="2">Total Number of Users:</ItemLabel>
-						<Crystal>{tenantInfo.userCount}</Crystal>
+		return (
+			<Box width={"100%"}>
+				<ItemContainer
+					mb="4"
+					p="0">
+					<Flex
+						align="center"
+						justify="between"
+						p="4"
+						className={styles["tenant-detail__header"]}>
+						<Text
+							size="5"
+							weight="bold"
+							className={styles["tenant-detail__header__name"]}>
+							{tenantInfo.tenantId}
+						</Text>
+						{canDeleteTenant && (
+							<Button
+								color="red"
+								size="2"
+								variant="soft"
+								onClick={() => setDeleteTenantModalOpen(true)}
+								disabled={isDeletingTenant}>
+								<TrashIcon />
+								Delete Tenant
+							</Button>
+						)}
 					</Flex>
-					<Button
-						size="2"
-						variant="ghost"
-						onClick={() => goToUsersList()}>
-						<EyeOpenIcon />
-						See Users
-					</Button>
-				</Flex>
-			</ItemContainer>
+					<Separator fullWidth />
+					<Flex
+						className={styles["tenant-detail__header__secondary"]}
+						align="center"
+						px="4"
+						py="3"
+						justify="between">
+						<Flex align="center">
+							<ItemLabel mr="2">Total Number of Users:</ItemLabel>
+							<Crystal>{tenantInfo.userCount}</Crystal>
+						</Flex>
+						<Button
+							size="2"
+							variant="ghost"
+							onClick={() => goToUsersList()}>
+							<EyeOpenIcon />
+							See Users
+						</Button>
+					</Flex>
+				</ItemContainer>
 
-			<TabSelector
-				tabs={tenantDetailTabs}
-				onTabChange={(tab) => handleTabChange(tab as TenantDetailTab)}
-				selectedTab={selectedTab}>
-				{(() => {
-					switch (selectedTab) {
-						case "login-methods":
-							return <LoginMethods tenantInfo={tenantInfo} />;
-						case "secondary-factors":
-							return <SecondaryFactors tenantInfo={tenantInfo} />;
-						case "providers":
-							return (
-								<Providers
-									tenantId={tenantId}
-									tenantInfo={tenantInfo}
-								/>
-							);
-						case "core-configuration":
-							return (
-								<CoreConfiguration
-									tenantId={tenantId}
-									coreConfig={tenantInfo.coreConfig}
-								/>
-							);
-						default:
-							return assertNever(selectedTab);
-					}
-				})()}
-			</TabSelector>
+				<TabSelector
+					tabs={tenantDetailTabs}
+					onTabChange={(tab) => handleTabChange(tab as TenantDetailTab)}
+					selectedTab={selectedTab}>
+					{(() => {
+						switch (selectedTab) {
+							case "login-methods":
+								return <LoginMethods tenantInfo={tenantInfo} />;
+							case "secondary-factors":
+								return <SecondaryFactors tenantInfo={tenantInfo} />;
+							case "providers":
+								return (
+									<Providers
+										tenantId={tenantId}
+										tenantInfo={tenantInfo}
+									/>
+								);
+							case "core-configuration":
+								return (
+									<CoreConfiguration
+										tenantId={tenantId}
+										coreConfig={tenantInfo.coreConfig}
+									/>
+								);
+							default:
+								return assertNever(selectedTab);
+						}
+					})()}
+				</TabSelector>
 
-			{canDeleteTenant && (
-				<DeleteTenantModal
-					open={deleteTenantModalOpen}
-					handleClose={() => setDeleteTenantModalOpen(false)}
-					tenantId={tenantId}
-					onDeleteTenant={handleDeleteTenant}
-					isDeleting={isDeletingTenant}
-				/>
-			)}
-		</Box>
-	);
-};
+				{canDeleteTenant && (
+					<DeleteTenantModal
+						open={deleteTenantModalOpen}
+						handleClose={() => setDeleteTenantModalOpen(false)}
+						tenantId={tenantId}
+						onDeleteTenant={handleDeleteTenant}
+						isDeleting={isDeletingTenant}
+					/>
+				)}
+			</Box>
+		);
+	}
+);
 
-export default function TenantDetails({ tenantId }: { tenantId: string }) {
+const TenantDetails = withOverride("TenantDetails", function TenantDetails({ tenantId }: { tenantId: string }) {
 	const { goToTenantsList } = useNavigationHelpers();
 	const { tenantInfo, isLoading, error, deleteTenant, isDeletingTenant } = useTenantDetails(tenantId);
 	const handleBackToItemList = () => {
@@ -246,4 +250,6 @@ export default function TenantDetails({ tenantId }: { tenantId: string }) {
 			</Flex>
 		</PageContainer>
 	);
-}
+});
+
+export default TenantDetails;

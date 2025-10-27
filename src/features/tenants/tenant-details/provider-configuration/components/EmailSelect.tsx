@@ -14,6 +14,7 @@
  */
 
 import { SegmentedControl } from "@radix-ui/themes";
+import { withOverride } from "@plugins";
 
 import styles from "./EmailSelect.module.scss";
 
@@ -25,27 +26,32 @@ interface EmailSelectProps {
 	disabled?: boolean;
 }
 
-export const EmailSelect = ({ value, setValue, disabled }: EmailSelectProps) => (
-	<SegmentedControl.Root
-		value={value}
-		onValueChange={(val) => setValue(val as EmailSelectState)}
-		size="2"
-		disabled={disabled}
-		className={styles["email-select"]}>
-		<SegmentedControl.Item
-			value="always"
-			className={styles["email-select__item"]}>
-			All the time
-		</SegmentedControl.Item>
-		<SegmentedControl.Item
-			value="sometimes"
-			className={styles["email-select__item"]}>
-			Sometimes
-		</SegmentedControl.Item>
-		<SegmentedControl.Item
-			value="never"
-			className={styles["email-select__item"]}>
-			Never
-		</SegmentedControl.Item>
-	</SegmentedControl.Root>
+export const EmailSelect = withOverride(
+	"EmailSelect",
+	function EmailSelect({ value, setValue, disabled }: EmailSelectProps) {
+		return (
+			<SegmentedControl.Root
+				value={value}
+				onValueChange={(val) => setValue(val as EmailSelectState)}
+				size="2"
+				disabled={disabled}
+				className={styles["email-select"]}>
+				<SegmentedControl.Item
+					value="always"
+					className={styles["email-select__item"]}>
+					All the time
+				</SegmentedControl.Item>
+				<SegmentedControl.Item
+					value="sometimes"
+					className={styles["email-select__item"]}>
+					Sometimes
+				</SegmentedControl.Item>
+				<SegmentedControl.Item
+					value="never"
+					className={styles["email-select__item"]}>
+					Never
+				</SegmentedControl.Item>
+			</SegmentedControl.Root>
+		);
+	}
 );

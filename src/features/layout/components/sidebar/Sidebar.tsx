@@ -24,6 +24,7 @@ import { ReactComponent as TenantManagementIcon } from "@assets/tenant-nav-icon.
 import { ReactComponent as UserManagementIcon } from "@assets/user-nav-icon.svg";
 
 import { ROUTES } from "@shared/navigation";
+import { withOverride } from "@plugins";
 
 export const NAVIGATION_ITEMS = [
 	{
@@ -51,7 +52,7 @@ interface SidebarProps {
 	readonly onToggle: () => void;
 }
 
-export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
+const Sidebar = withOverride("Sidebar", function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 	const location = useLocation();
 
 	const isItemActive = (href: string) => {
@@ -99,4 +100,6 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 			</Box>
 		</aside>
 	);
-}
+});
+
+export default Sidebar;

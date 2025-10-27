@@ -18,6 +18,7 @@ import { Flex, Text } from "@radix-ui/themes";
 import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
 import Button from "@shared/components/button";
+import { withOverride } from "@plugins";
 
 import styles from "./DeletePermissionModal.module.scss";
 
@@ -30,42 +31,47 @@ interface DeletePermissionModalProps {
 	isDeleting: boolean;
 }
 
-export default function DeletePermissionModal({
-	open,
-	handleClose,
-	selectedPermissions,
-	onDeletePermissions,
-	isDeleting,
-}: DeletePermissionModalProps) {
-	return (
-		<Modal
-			title="Remove Permission"
-			open={open}
-			handleClose={handleClose}>
-			<Form className={styles["delete-permission-modal"]}>
-				<Form.Paper>
-					<Text
-						size="2"
-						className={styles["delete-permission-modal__disclaimer"]}>
-						Are you sure you want to remove{" "}
-						{selectedPermissions.length === 1
-							? "this permission from this role"
-							: `these ${selectedPermissions.length} permissions from this role`}
-						?
-					</Text>
-				</Form.Paper>
-				<Flex
-					justify="end"
-					mt="5">
-					<Button
-						color="red"
-						size="3"
-						onClick={onDeletePermissions}
-						disabled={isDeleting}>
-						{isDeleting ? "Removing..." : "Remove"}
-					</Button>
-				</Flex>
-			</Form>
-		</Modal>
-	);
-}
+const DeletePermissionModal = withOverride(
+	"DeletePermissionModal",
+	function DeletePermissionModal({
+		open,
+		handleClose,
+		selectedPermissions,
+		onDeletePermissions,
+		isDeleting,
+	}: DeletePermissionModalProps) {
+		return (
+			<Modal
+				title="Remove Permission"
+				open={open}
+				handleClose={handleClose}>
+				<Form className={styles["delete-permission-modal"]}>
+					<Form.Paper>
+						<Text
+							size="2"
+							className={styles["delete-permission-modal__disclaimer"]}>
+							Are you sure you want to remove{" "}
+							{selectedPermissions.length === 1
+								? "this permission from this role"
+								: `these ${selectedPermissions.length} permissions from this role`}
+							?
+						</Text>
+					</Form.Paper>
+					<Flex
+						justify="end"
+						mt="5">
+						<Button
+							color="red"
+							size="3"
+							onClick={onDeletePermissions}
+							disabled={isDeleting}>
+							{isDeleting ? "Removing..." : "Remove"}
+						</Button>
+					</Flex>
+				</Form>
+			</Modal>
+		);
+	}
+);
+
+export default DeletePermissionModal;

@@ -15,13 +15,19 @@
 
 import { Flex, Separator } from "@radix-ui/themes";
 import type { FlexProps } from "@radix-ui/themes";
+import { withOverride } from "@plugins";
 
 import styles from "../ProviderConfiguration.module.scss";
 
-export const ProviderConfigSeparator = ({ ...props }: FlexProps) => (
-	<Flex
-		m="3"
-		{...props}>
-		<Separator className={styles["provider-config-separator"]} />
-	</Flex>
+export const ProviderConfigSeparator = withOverride(
+	"ProviderConfigSeparator",
+	function ProviderConfigSeparator({ ...props }: FlexProps) {
+		return (
+			<Flex
+				m="3"
+				{...props}>
+				<Separator className={styles["provider-config-separator"]} />
+			</Flex>
+		);
+	}
 );

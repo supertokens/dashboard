@@ -29,8 +29,9 @@ import RolesListTable from "./RolesListTable";
 import { useRolesList } from "../hooks";
 import { ROLES_PAGINATION_LIMIT } from "../constants";
 import CreateNewRoleModal from "../modals/CreateNewRoleModal";
+import { withOverride } from "@plugins";
 
-export default function RolesList() {
+const RolesList = withOverride("RolesList", function RolesList() {
 	const { showErrorToast, showSuccessToast } = useToast();
 	const { roles, isFeatureEnabled, isLoading, error, refetch, createRole, searchQuery, setSearchQuery } =
 		useRolesList();
@@ -127,4 +128,6 @@ export default function RolesList() {
 			/>
 		</PageContainer>
 	);
-}
+});
+
+export default RolesList;

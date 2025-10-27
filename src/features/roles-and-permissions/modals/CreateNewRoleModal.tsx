@@ -23,6 +23,7 @@ import Button from "@shared/components/button";
 import { AssignPermission } from "@shared/components/assignPermission";
 
 import { useRolesList } from "../hooks";
+import { withOverride } from "@plugins";
 
 type CreateNewRoleModalProps = {
 	handleClose: () => void;
@@ -30,70 +31,75 @@ type CreateNewRoleModalProps = {
 	onCreateRole: (roleName: string, permissions: string[]) => Promise<void>;
 };
 
-export default function CreateNewRoleModal({ handleClose, open, onCreateRole }: CreateNewRoleModalProps) {
-	const { allRoles } = useRolesList();
-	const [roleName, setRoleName] = useState("");
-	const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
+const CreateNewRoleModal = withOverride(
+	"CreateNewRoleModal",
+	function CreateNewRoleModal({ handleClose, open, onCreateRole }: CreateNewRoleModalProps) {
+		const { allRoles } = useRolesList();
+		const [roleName, setRoleName] = useState("");
+		const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+		const [isLoading, setIsLoading] = useState(false);
 
-	// Get all available permissions from all roles
-	const availablePermissions = Array.from(new Set(allRoles.flatMap((role) => role.permissions || []))).sort();
+		// Get all available permissions from all roles
+		const availablePermissions = Array.from(new Set(allRoles.flatMap((role) => role.permissions || []))).sort();
 
-	const handleSave = async () => {
-		if (!roleName.trim()) return;
+		const handleSave = async () => {
+			if (!roleName.trim()) return;
 
-		setIsLoading(true);
-		try {
-			await onCreateRole(roleName.trim(), selectedPermissions);
-			setRoleName("");
-			setSelectedPermissions([]);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+			setIsLoading(true);
+			try {
+				await onCreateRole(roleName.trim(), selectedPermissions);
+				setRoleName("");
+				setSelectedPermissions([]);
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-	const handleCloseModal = () => {
-		if (!isLoading) {
-			setRoleName("");
-			setSelectedPermissions([]);
-			handleClose();
-		}
-	};
+		const handleCloseModal = () => {
+			if (!isLoading) {
+				setRoleName("");
+				setSelectedPermissions([]);
+				handleClose();
+			}
+		};
 
-	return (
-		<Modal
-			open={open}
-			handleClose={handleCloseModal}
-			title="Add New Role"
-			size="lg">
-			<Form className="create-new-role-modal">
-				<Form.Paper>
-					<Form.Item>
-						<ItemLabel mb="2">Role Name</ItemLabel>
-						<TextField.Root
-							value={roleName}
-							onChange={(e) => setRoleName(e.target.value)}
-							disabled={isLoading}
-							placeholder="Enter role name"
-						/>
-					</Form.Item>
-				</Form.Paper>
-				<AssignPermission
-					availablePermissions={availablePermissions}
-					onPermissionsChange={setSelectedPermissions}
-					disabled={isLoading}
-				/>
-				<Flex
-					justify="end"
-					mt="4">
-					<Button
-						size="3"
-						onClick={handleSave}
-						disabled={!roleName.trim() || isLoading}>
-						{isLoading ? "Creating..." : "Save"}
-					</Button>
-				</Flex>
-			</Form>
-		</Modal>
-	);
-}
+		return (
+			<Modal
+				open={open}
+				handleClose={handleCloseModal}
+				title="Add New Role"
+				size="lg">
+				<Form className="create-new-role-modal">
+					<Form.Paper>
+						<Form.Item>
+							<ItemLabel mb="2">Role Name</ItemLabel>
+							<TextField.Root
+								value={roleName}
+								onChange={(e) => setRoleName(e.target.value)}
+								disabled={isLoading}
+								placeholder="Enter role name"
+							/>
+						</Form.Item>
+					</Form.Paper>
+					<AssignPermission
+						availablePermissions={availablePermissions}
+						onPermissionsChange={setSelectedPermissions}
+						disabled={isLoading}
+					/>
+					<Flex
+						justify="end"
+						mt="4">
+						<Button
+							size="3"
+							onClick={handleSave}
+							disabled={!roleName.trim() || isLoading}>
+							{isLoading ? "Creating..." : "Save"}
+						</Button>
+					</Flex>
+				</Form>
+			</Modal>
+		);
+	}
+);
+
+export default CreateNewRoleModal;

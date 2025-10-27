@@ -17,8 +17,9 @@ import useAuthService from "@api";
 
 import styles from "./SignOutBtn.module.scss";
 import Loader from "@shared/components/loader";
+import { withOverride } from "@plugins";
 
-export default function SignOutBtn() {
+const SignOutBtn = withOverride("SignOutBtn", function SignOutBtn() {
 	const { logout, isLoading } = useAuthService();
 
 	return (
@@ -32,4 +33,6 @@ export default function SignOutBtn() {
 			{isLoading && <Loader type="page" />}
 		</>
 	);
-}
+});
+
+export default SignOutBtn;

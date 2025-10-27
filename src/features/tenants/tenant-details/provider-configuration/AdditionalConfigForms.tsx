@@ -20,6 +20,7 @@ import Button from "@shared/components/button";
 import ItemLabel from "@shared/components/itemLabel";
 import { getImageUrl, isValidHttpUrl } from "@shared/utils/index";
 import { IN_BUILT_THIRD_PARTY_PROVIDERS, SAML_PROVIDER_ID } from "@shared/constants";
+import { withOverride } from "@plugins";
 
 import styles from "./AdditionalConfigForms.module.scss";
 
@@ -30,97 +31,102 @@ interface AdditionalConfigFormsProps {
 	currentAdditionalConfig?: Record<string, string>;
 }
 
-export const AdditionalConfigForms = ({
-	providerId,
-	onContinue,
-	onCancel,
-	currentAdditionalConfig,
-}: AdditionalConfigFormsProps) => {
-	const renderForm = () => {
-		switch (providerId) {
-			case "google-workspaces":
-				return (
-					<GoogleWorkspacesForm
-						onContinue={onContinue}
-						onCancel={onCancel}
-					/>
-				);
-			case "active-directory":
-				return (
-					<ActiveDirectoryForm
-						onContinue={onContinue}
-						onCancel={onCancel}
-					/>
-				);
-			case "okta":
-				return (
-					<OktaForm
-						onContinue={onContinue}
-						onCancel={onCancel}
-					/>
-				);
-			case "boxy-saml":
-				return (
-					<BoxySamlForm
-						onContinue={onContinue}
-						onCancel={onCancel}
-						currentAdditionalConfig={currentAdditionalConfig}
-					/>
-				);
-			default:
-				return null;
-		}
-	};
+export const AdditionalConfigForms = withOverride(
+	"AdditionalConfigForms",
+	function AdditionalConfigForms({
+		providerId,
+		onContinue,
+		onCancel,
+		currentAdditionalConfig,
+	}: AdditionalConfigFormsProps) {
+		const renderForm = () => {
+			switch (providerId) {
+				case "google-workspaces":
+					return (
+						<GoogleWorkspacesForm
+							onContinue={onContinue}
+							onCancel={onCancel}
+						/>
+					);
+				case "active-directory":
+					return (
+						<ActiveDirectoryForm
+							onContinue={onContinue}
+							onCancel={onCancel}
+						/>
+					);
+				case "okta":
+					return (
+						<OktaForm
+							onContinue={onContinue}
+							onCancel={onCancel}
+						/>
+					);
+				case "boxy-saml":
+					return (
+						<BoxySamlForm
+							onContinue={onContinue}
+							onCancel={onCancel}
+							currentAdditionalConfig={currentAdditionalConfig}
+						/>
+					);
+				default:
+					return null;
+			}
+		};
 
-	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId.startsWith(provider.id));
-	const isSAML = providerId.startsWith(SAML_PROVIDER_ID);
+		const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) =>
+			providerId.startsWith(provider.id)
+		);
+		const isSAML = providerId.startsWith(SAML_PROVIDER_ID);
 
-	const providerLabel = isSAML ? "SAML Provider" : inBuiltProviderInfo?.label ?? providerId;
-	const providerIcon = isSAML ? "saml.svg" : inBuiltProviderInfo?.icon;
+		const providerLabel = isSAML ? "SAML Provider" : inBuiltProviderInfo?.label ?? providerId;
+		const providerIcon = isSAML ? "saml.svg" : inBuiltProviderInfo?.icon;
 
-	return (
-		<Flex
-			width="100%"
-			direction="column"
-			className={styles["additional-config"]}>
+		return (
 			<Flex
-				className={styles["additional-config__header"]}
-				justify="between"
-				align="center"
-				p="3">
+				width="100%"
+				direction="column"
+				className={styles["additional-config"]}>
 				<Flex
-					gap="3"
-					align="center">
-					<ItemLabel
-						size="2"
-						className={styles["additional-config__header__label"]}>
-						Configure new provider
-					</ItemLabel>
-					{providerIcon && (
-						<Badge
+					className={styles["additional-config__header"]}
+					justify="between"
+					align="center"
+					p="3">
+					<Flex
+						gap="3"
+						align="center">
+						<ItemLabel
 							size="2"
-							variant="soft"
-							color="gray"
-							className={styles["additional-config__header__badge"]}>
-							<img
-								src={getImageUrl(providerIcon)}
-								alt={providerLabel}
-								width="16px"
-								height="16px"
-							/>
-							<Text
+							className={styles["additional-config__header__label"]}>
+							Configure new provider
+						</ItemLabel>
+						{providerIcon && (
+							<Badge
 								size="2"
-								weight="medium">
-								{providerLabel}
-							</Text>
-						</Badge>
-					)}
+								variant="soft"
+								color="gray"
+								className={styles["additional-config__header__badge"]}>
+								<img
+									src={getImageUrl(providerIcon)}
+									alt={providerLabel}
+									width="16px"
+									height="16px"
+								/>
+								<Text
+									size="2"
+									weight="medium">
+									{providerLabel}
+								</Text>
+							</Badge>
+						)}
+					</Flex>
 				</Flex>
+				{renderForm()}
 			</Flex>
-			{renderForm()}
-		</Flex>
-	);
-};
+		);
+	}
+);
 
 interface FormProps {
 	onContinue: (additionalConfig: Record<string, string>) => void;

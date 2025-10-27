@@ -18,6 +18,7 @@ import { Flex, Text } from "@radix-ui/themes";
 import Form from "@shared/components/form";
 import { Modal } from "@shared/components/modal";
 import Button from "@shared/components/button";
+import { withOverride } from "@plugins";
 
 import "./RemoveAccessModal.module.scss";
 
@@ -28,39 +29,44 @@ interface RemoveAccessModalProps {
 	isRemoving: boolean;
 }
 
-export default function RemoveAccessModal({ open, handleClose, onConfirmRemove, isRemoving }: RemoveAccessModalProps) {
-	return (
-		<Modal
-			title="Remove Access"
-			open={open}
-			handleClose={handleClose}>
-			<Form.Paper
-				className="remove-access-modal__paper"
-				gap="3">
-				<Text className="remove-access-modal__text">
-					Are you sure you want to remove access for this user? This action is irreversible.
-				</Text>
-			</Form.Paper>
-			<Flex
-				justify="end"
-				mt="4"
-				gap="3">
-				<Button
-					size="3"
-					variant="outline"
-					color="gray"
-					onClick={handleClose}
-					disabled={isRemoving}>
-					Cancel
-				</Button>
-				<Button
-					color="red"
-					size="3"
-					onClick={onConfirmRemove}
-					disabled={isRemoving}>
-					{isRemoving ? "Removing..." : "Remove"}
-				</Button>
-			</Flex>
-		</Modal>
-	);
-}
+const RemoveAccessModal = withOverride(
+	"RemoveAccessModal",
+	function RemoveAccessModal({ open, handleClose, onConfirmRemove, isRemoving }: RemoveAccessModalProps) {
+		return (
+			<Modal
+				title="Remove Access"
+				open={open}
+				handleClose={handleClose}>
+				<Form.Paper
+					className="remove-access-modal__paper"
+					gap="3">
+					<Text className="remove-access-modal__text">
+						Are you sure you want to remove access for this user? This action is irreversible.
+					</Text>
+				</Form.Paper>
+				<Flex
+					justify="end"
+					mt="4"
+					gap="3">
+					<Button
+						size="3"
+						variant="outline"
+						color="gray"
+						onClick={handleClose}
+						disabled={isRemoving}>
+						Cancel
+					</Button>
+					<Button
+						color="red"
+						size="3"
+						onClick={onConfirmRemove}
+						disabled={isRemoving}>
+						{isRemoving ? "Removing..." : "Remove"}
+					</Button>
+				</Flex>
+			</Modal>
+		);
+	}
+);
+
+export default RemoveAccessModal;

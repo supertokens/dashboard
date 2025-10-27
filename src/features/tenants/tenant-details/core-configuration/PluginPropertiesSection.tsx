@@ -17,6 +17,7 @@ import { useState } from "react";
 import { Flex, Text } from "@radix-ui/themes";
 
 import type { CoreConfigFieldInfo } from "@api/tenants/types";
+import { withOverride } from "@plugins";
 
 import { EditPluginPropertyModal } from "@features/tenants/modals";
 
@@ -30,55 +31,56 @@ interface PluginPropertiesSectionProps {
 	databaseType: "postgres" | "mysql" | null;
 }
 
-export default function PluginPropertiesSection({
-	tenantId,
-	pluginProperties,
-	databaseType,
-}: PluginPropertiesSectionProps) {
-	const [showPluginDialog, setShowPluginDialog] = useState(false);
+const PluginPropertiesSection = withOverride(
+	"PluginPropertiesSection",
+	function PluginPropertiesSection({ tenantId, pluginProperties, databaseType }: PluginPropertiesSectionProps) {
+		const [showPluginDialog, setShowPluginDialog] = useState(false);
 
-	return (
-		<Flex
-			direction="column"
-			gap="3">
+		return (
 			<Flex
 				direction="column"
-				gap="2"
-				m="4"
-				className={styles["plugin-properties-section"]}>
-				<Text
-					size="4"
-					weight="bold"
-					className={styles["plugin-properties-section__title"]}>
-					Database Properties
-				</Text>
-				<Text
-					size="2"
-					className={styles["plugin-properties-section__description"]}>
-					Some of these properties need to be modified together, hence they cannot be directly modified from
-					the UI, instead you can make an API request to core to modify these properties.{" "}
-					<strong
-						onClick={() => setShowPluginDialog(true)}
-						className={styles["plugin-properties-section__link"]}>
-						Click here
-					</strong>{" "}
-					to see an example.
-				</Text>
-			</Flex>
+				gap="3">
+				<Flex
+					direction="column"
+					gap="2"
+					m="4"
+					className={styles["plugin-properties-section"]}>
+					<Text
+						size="4"
+						weight="bold"
+						className={styles["plugin-properties-section__title"]}>
+						Database Properties
+					</Text>
+					<Text
+						size="2"
+						className={styles["plugin-properties-section__description"]}>
+						Some of these properties need to be modified together, hence they cannot be directly modified
+						from the UI, instead you can make an API request to core to modify these properties.{" "}
+						<strong
+							onClick={() => setShowPluginDialog(true)}
+							className={styles["plugin-properties-section__link"]}>
+							Click here
+						</strong>{" "}
+						to see an example.
+					</Text>
+				</Flex>
 
-			<CoreConfigurationTable
-				tenantId={tenantId}
-				coreConfig={pluginProperties}
-			/>
-
-			{showPluginDialog && databaseType !== null && (
-				<EditPluginPropertyModal
-					open={showPluginDialog}
-					handleClose={() => setShowPluginDialog(false)}
+				<CoreConfigurationTable
 					tenantId={tenantId}
-					databaseType={databaseType}
+					coreConfig={pluginProperties}
 				/>
-			)}
-		</Flex>
-	);
-}
+
+				{showPluginDialog && databaseType !== null && (
+					<EditPluginPropertyModal
+						open={showPluginDialog}
+						handleClose={() => setShowPluginDialog(false)}
+						tenantId={tenantId}
+						databaseType={databaseType}
+					/>
+				)}
+			</Flex>
+		);
+	}
+);
+
+export default PluginPropertiesSection;

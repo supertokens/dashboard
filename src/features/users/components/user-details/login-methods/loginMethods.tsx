@@ -30,7 +30,7 @@ import { assertNever } from "@shared/utils/assertNever";
 
 import LoginMethodCard from "./LoginMethodCard";
 
-import styles from "./LoginMethods.module.scss";
+import styles from "./loginMethods.module.scss";
 
 interface LoginMethodsProps {
 	readonly userId: string;

@@ -14,6 +14,7 @@
  */
 
 import { Flex, Text, TextField } from "@radix-ui/themes";
+import { withOverride } from "@plugins";
 
 import style from "./ProviderConfigInput.module.scss";
 
@@ -27,38 +28,43 @@ interface ProviderConfigInputProps {
 	className?: string;
 }
 
-export const ProviderConfigInput = ({
-	disabled = false,
-	readonly = false,
-	value,
-	onChange,
-	placeholder,
-	error,
-	className,
-}: ProviderConfigInputProps) => (
-	<Flex
-		direction="column"
-		gap="1"
-		style={{ flex: 1 }}>
-		<TextField.Root
-			size="3"
-			variant="surface"
-			disabled={disabled}
-			readOnly={readonly}
-			value={value}
-			onChange={onChange}
-			placeholder={placeholder}
-			className={`${style["provider-config-input"]} ${disabled ? style["provider-config-input--disabled"] : ""} ${
-				readonly ? style["provider-config-input--disabled"] : ""
-			} ${className || ""}`}
-		/>
-		{error && (
-			<Text
-				className={`${style["provider-config-input__error"]}`}
-				size="1"
-				color="red">
-				{error}
-			</Text>
-		)}
-	</Flex>
+export const ProviderConfigInput = withOverride(
+	"ProviderConfigInput",
+	function ProviderConfigInput({
+		disabled = false,
+		readonly = false,
+		value,
+		onChange,
+		placeholder,
+		error,
+		className,
+	}: ProviderConfigInputProps) {
+		return (
+			<Flex
+				direction="column"
+				gap="1"
+				style={{ flex: 1 }}>
+				<TextField.Root
+					size="3"
+					variant="surface"
+					disabled={disabled}
+					readOnly={readonly}
+					value={value}
+					onChange={onChange}
+					placeholder={placeholder}
+					className={`${style["provider-config-input"]} ${
+						disabled ? style["provider-config-input--disabled"] : ""
+					} ${readonly ? style["provider-config-input--disabled"] : ""} ${className || ""}`}
+				/>
+				{error && (
+					<Text
+						className={`${style["provider-config-input__error"]}`}
+						size="1"
+						color="red">
+						{error}
+					</Text>
+				)}
+			</Flex>
+		);
+	}
 );

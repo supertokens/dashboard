@@ -18,6 +18,7 @@ import { InfoCircledIcon, Pencil1Icon, QuestionMarkIcon } from "@radix-ui/react-
 
 import type { CoreConfigFieldInfo } from "@api/tenants/types";
 import { PUBLIC_TENANT_ID } from "@shared/constants";
+import { withOverride } from "@plugins";
 
 import styles from "./CoreConfigTableRow.module.scss";
 
@@ -28,75 +29,75 @@ interface CoreConfigTableRowProps {
 	onUneditableClick: () => void;
 }
 
-export default function CoreConfigTableRow({
-	tenantId,
-	config,
-	onEditClick,
-	onUneditableClick,
-}: CoreConfigTableRowProps) {
-	const isPublicTenant = tenantId === PUBLIC_TENANT_ID;
+const CoreConfigTableRow = withOverride(
+	"CoreConfigTableRow",
+	function CoreConfigTableRow({ tenantId, config, onEditClick, onUneditableClick }: CoreConfigTableRowProps) {
+		const isPublicTenant = tenantId === PUBLIC_TENANT_ID;
 
-	// Determine if the property is editable
-	const isUneditable =
-		isPublicTenant || // config of public tenant are not editable
-		(config.isPluginProperty && !config.isPluginPropertyEditable) || // plugin property that is marked as not editable
-		(!isPublicTenant && !config.isDifferentAcrossTenants); // in a non-public tenant, config that's not different across tenants are not editable
+		// Determine if the property is editable
+		const isUneditable =
+			isPublicTenant || // config of public tenant are not editable
+			(config.isPluginProperty && !config.isPluginPropertyEditable) || // plugin property that is marked as not editable
+			(!isPublicTenant && !config.isDifferentAcrossTenants); // in a non-public tenant, config that's not different across tenants are not editable
 
-	// Display value - show the actual value, matching old implementation
-	const displayValue = `${config.value}`;
+		// Display value - show the actual value, matching old implementation
+		const displayValue = `${config.value}`;
 
-	return (
-		<>
-			<Flex
-				width="100%"
-				className={styles["core-config-table-row"]}
-				p="3">
+		return (
+			<>
 				<Flex
-					align="center"
-					className={styles["core-config-table-row__property-name"]}
-					gap="1">
-					{config.description && (
-						<Tooltip content={config.description}>
-							<InfoCircledIcon />
-						</Tooltip>
-					)}
-					<Text
-						weight="regular"
-						size="2">
-						{config.key}
-					</Text>
-				</Flex>
-				<Flex
-					align="center"
-					className={styles["core-config-table-row__value"]}
-					justify="between">
-					<Badge
-						radius="large"
-						className={styles["core-config-table-row__value__badge"]}>
+					width="100%"
+					className={styles["core-config-table-row"]}
+					p="3">
+					<Flex
+						align="center"
+						className={styles["core-config-table-row__property-name"]}
+						gap="1">
+						{config.description && (
+							<Tooltip content={config.description}>
+								<InfoCircledIcon />
+							</Tooltip>
+						)}
 						<Text
-							weight="medium"
+							weight="regular"
 							size="2">
-							{displayValue}
+							{config.key}
 						</Text>
-					</Badge>
-					{isUneditable ? (
-						<IconButton
-							size="2"
-							variant="soft"
-							onClick={onUneditableClick}>
-							<QuestionMarkIcon />
-						</IconButton>
-					) : (
-						<IconButton
-							size="2"
-							variant="soft"
-							color="gray"
-							onClick={() => onEditClick(config)}>
-							<Pencil1Icon />
-						</IconButton>
-					)}
+					</Flex>
+					<Flex
+						align="center"
+						className={styles["core-config-table-row__value"]}
+						justify="between">
+						<Badge
+							radius="large"
+							className={styles["core-config-table-row__value__badge"]}>
+							<Text
+								weight="medium"
+								size="2">
+								{displayValue}
+							</Text>
+						</Badge>
+						{isUneditable ? (
+							<IconButton
+								size="2"
+								variant="soft"
+								onClick={onUneditableClick}>
+								<QuestionMarkIcon />
+							</IconButton>
+						) : (
+							<IconButton
+								size="2"
+								variant="soft"
+								color="gray"
+								onClick={() => onEditClick(config)}>
+								<Pencil1Icon />
+							</IconButton>
+						)}
+					</Flex>
 				</Flex>
-			</Flex>
-		</>
-	);
-}
+			</>
+		);
+	}
+);
+
+export default CoreConfigTableRow;

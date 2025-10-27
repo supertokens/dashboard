@@ -20,54 +20,60 @@ import { useApiKeyValidation } from "../hooks/useApiKeyValidation";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 
 import styles from "./SignInWithApiKeyContent.module.scss";
+import { withOverride } from "@plugins";
 
 interface SignInWithApiKeyContentProps {
 	onSuccess: () => void;
 }
 
-const SignInWithApiKeyContent: React.FC<SignInWithApiKeyContentProps> = ({ onSuccess }) => {
-	const { apiKey, apiKeyFieldError, loading, handleSubmit, handleApiKeyFieldChange } = useApiKeyValidation(onSuccess);
+const SignInWithApiKeyContent = withOverride(
+	"SignInWithApiKeyContent",
+	function SignInWithApiKeyContent(props: SignInWithApiKeyContentProps) {
+		const { onSuccess } = props;
+		const { apiKey, apiKeyFieldError, loading, handleSubmit, handleApiKeyFieldChange } =
+			useApiKeyValidation(onSuccess);
 
-	return (
-		<Flex
-			direction="column"
-			className={styles["api-key-form"]}>
-			<Text className={styles["api-key-form__title"]}>Enter your API Key</Text>
-			<Text
-				size="2"
-				className={styles["api-key-form__subtitle"]}>
-				Please enter the API key that you used to connect with your backend
-			</Text>
-			<form
-				className={styles["api-key-form__main"]}
-				onSubmit={handleSubmit}>
-				<Flex
-					direction="column"
-					gap="4">
-					<TextField
-						onChange={handleApiKeyFieldChange}
-						name="apiKey"
-						type="password"
-						error={apiKeyFieldError}
-						value={apiKey}
-						size="2"
-						placeholder="Your API Key"
-					/>
+		return (
+			<Flex
+				direction="column"
+				className={styles["api-key-form"]}>
+				<Text className={styles["api-key-form__title"]}>Enter your API Key</Text>
+				<Text
+					size="2"
+					className={styles["api-key-form__subtitle"]}>
+					Please enter the API key that you used to connect with your backend
+				</Text>
+				<form
+					className={styles["api-key-form__main"]}
+					onSubmit={handleSubmit}>
+					<Flex
+						direction="column"
+						gap="4">
+						<TextField
+							onChange={handleApiKeyFieldChange}
+							name="apiKey"
+							type="password"
+							error={apiKeyFieldError}
+							value={apiKey}
+							size="2"
+							placeholder="Your API Key"
+						/>
 
-					<Button
-						mt="2"
-						type="submit"
-						disabled={loading}
-						loading={loading}
-						size="2"
-						className={styles["api-key-form__button"]}>
-						Continue
-						<ArrowRightIcon />
-					</Button>
-				</Flex>
-			</form>
-		</Flex>
-	);
-};
+						<Button
+							mt="2"
+							type="submit"
+							disabled={loading}
+							loading={loading}
+							size="2"
+							className={styles["api-key-form__button"]}>
+							Continue
+							<ArrowRightIcon />
+						</Button>
+					</Flex>
+				</form>
+			</Flex>
+		);
+	}
+);
 
 export default SignInWithApiKeyContent;

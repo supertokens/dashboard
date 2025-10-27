@@ -15,6 +15,7 @@
 
 import { Flex, Text, Tooltip } from "@radix-ui/themes";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { withOverride } from "@plugins";
 
 import styles from "../ProviderConfiguration.module.scss";
 
@@ -25,45 +26,48 @@ interface ProviderConfigInputLabelProps {
 	tooltip?: string;
 }
 
-export const ProviderConfigInputLabel = ({
-	label,
-	withIcon = true,
-	required = false,
-	tooltip,
-}: ProviderConfigInputLabelProps) => {
-	const content = (
-		<Flex
-			align="center"
-			gap="2"
-			className={styles["provider-config-input-label"]}>
-			{withIcon && (
-				<InfoCircledIcon
-					width={16}
-					height={16}
-					className={styles["provider-config-input-label__icon"]}
-				/>
-			)}
-			<Text
-				size="2"
-				weight="regular"
-				className={styles["provider-config-input-label__text"]}>
-				{label}
-				{required && (
-					<Text
-						size="2"
-						weight="regular"
-						color="red">
-						*
-					</Text>
+export const ProviderConfigInputLabel = withOverride(
+	"ProviderConfigInputLabel",
+	function ProviderConfigInputLabel({
+		label,
+		withIcon = true,
+		required = false,
+		tooltip,
+	}: ProviderConfigInputLabelProps) {
+		const content = (
+			<Flex
+				align="center"
+				gap="2"
+				className={styles["provider-config-input-label"]}>
+				{withIcon && (
+					<InfoCircledIcon
+						width={16}
+						height={16}
+						className={styles["provider-config-input-label__icon"]}
+					/>
 				)}
-				:
-			</Text>
-		</Flex>
-	);
+				<Text
+					size="2"
+					weight="regular"
+					className={styles["provider-config-input-label__text"]}>
+					{label}
+					{required && (
+						<Text
+							size="2"
+							weight="regular"
+							color="red">
+							*
+						</Text>
+					)}
+					:
+				</Text>
+			</Flex>
+		);
 
-	if (tooltip) {
-		return <Tooltip content={<Text size="2">{tooltip}</Text>}>{content}</Tooltip>;
+		if (tooltip) {
+			return <Tooltip content={<Text size="2">{tooltip}</Text>}>{content}</Tooltip>;
+		}
+
+		return content;
 	}
-
-	return content;
-};
+);

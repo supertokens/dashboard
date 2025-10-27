@@ -22,6 +22,7 @@ import { getImageUrl } from "@shared/utils/index";
 import TabSelector from "@shared/components/tabSelector";
 import ItemLabel from "@shared/components/itemLabel";
 import { useToast } from "@shared/components/toast";
+import { withOverride } from "@plugins";
 
 import { useTenantDetails } from "../hooks/useTenantDetails";
 import styles from "./SecondaryFactors.module.scss";
@@ -31,128 +32,131 @@ type SecondaryFactor = "totp" | "otp-email" | "otp-phone";
 
 type MFAError = null | "MFA_NOT_INITIALIZED" | "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN";
 
-export const SecondaryFactors = ({ tenantInfo }: { tenantInfo: TenantInfo }) => {
-	const [requiredSecondaryFactors, setRequiredSecondaryFactors] = useState<SecondaryFactor[]>(
-		(tenantInfo.requiredSecondaryFactors as SecondaryFactor[]) || []
-	);
-	const [mfaError, setMfaError] = useState<MFAError>(null);
+export const SecondaryFactors = withOverride(
+	"SecondaryFactors",
+	function SecondaryFactors({ tenantInfo }: { tenantInfo: TenantInfo }) {
+		const [requiredSecondaryFactors, setRequiredSecondaryFactors] = useState<SecondaryFactor[]>(
+			(tenantInfo.requiredSecondaryFactors as SecondaryFactor[]) || []
+		);
+		const [mfaError, setMfaError] = useState<MFAError>(null);
 
-	const handleSecondaryFactorToggle = (factorId: string, enable: boolean) => {
-		setRequiredSecondaryFactors((prev) => {
-			if (enable) {
-				return [...prev, factorId as SecondaryFactor];
-			} else {
-				return prev.filter((id) => id !== factorId);
-			}
-		});
-	};
+		const handleSecondaryFactorToggle = (factorId: string, enable: boolean) => {
+			setRequiredSecondaryFactors((prev) => {
+				if (enable) {
+					return [...prev, factorId as SecondaryFactor];
+				} else {
+					return prev.filter((id) => id !== factorId);
+				}
+			});
+		};
 
-	return (
-		<Flex
-			width="100%"
-			direction="column"
-			className={styles["secondary-factors"]}>
-			<TabSelector.ContentHeading>
-				<ItemLabel>
-					The secondary factors necessary for successful authentication for this tenant post-login.
-				</ItemLabel>
-			</TabSelector.ContentHeading>
-
-			{mfaError === "MFA_NOT_INITIALIZED" && (
-				<Callout.Root
-					color="red"
-					size="1"
-					my="3"
-					mx="4">
-					<Callout.Text size="2">
-						You need to initialize the MFA recipe to use secondary factors.{" "}
-						<Link
-							href="https://supertokens.com/docs/mfa/backend-setup"
-							target="_blank"
-							rel="noreferrer noopener"
-							className={styles["secondary-factors__callout__link"]}>
-							Click here
-						</Link>{" "}
-						to see MFA docs for more info.
-					</Callout.Text>
-				</Callout.Root>
-			)}
-
-			{mfaError === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" && (
-				<Callout.Root
-					color="yellow"
-					size="1"
-					my="3"
-					mx="4">
-					<Callout.Text size="2">
-						Please note that the MFA functions are overridden in the SDK and the required secondary factors
-						settings will be based on the overridden logic.
-					</Callout.Text>
-				</Callout.Root>
-			)}
-
+		return (
 			<Flex
-				className={styles["secondary-factors__content"]}
 				width="100%"
-				p="4"
-				gap="3">
-				<Flex
-					className={styles["secondary-factors__content__main"]}
-					direction="column">
-					{SECONDARY_FACTOR_IDS.map((factor) => {
-						const isRequired = requiredSecondaryFactors.includes(factor.id as SecondaryFactor);
-						return (
-							<SecondaryFactorItem
-								key={factor.id}
-								factorId={factor.id}
-								label={factor.label}
-								description={factor.description}
-								isRequired={isRequired}
-								tenantId={tenantInfo.tenantId}
-								setMfaError={setMfaError}
-								onToggle={handleSecondaryFactorToggle}
-							/>
-						);
-					})}
-				</Flex>
-				<Flex className={styles["secondary-factors__content__preview"]}>
-					<Badge
+				direction="column"
+				className={styles["secondary-factors"]}>
+				<TabSelector.ContentHeading>
+					<ItemLabel>
+						The secondary factors necessary for successful authentication for this tenant post-login.
+					</ItemLabel>
+				</TabSelector.ContentHeading>
+
+				{mfaError === "MFA_NOT_INITIALIZED" && (
+					<Callout.Root
+						color="red"
 						size="1"
-						variant="solid"
-						radius="small"
-						className={styles["secondary-factors__content__preview__badge"]}>
-						Preview
-					</Badge>
-					{requiredSecondaryFactors.length === 0 ? (
-						<Flex
-							gap="2"
-							direction="column"
-							justify="center"
-							align="center"
-							className={styles["secondary-factors__content__preview__empty"]}>
-							<img
-								src={getImageUrl("shield.svg")}
-								alt="Shield"
-								width="14px"
-								height="14px"
-							/>
-							<Text
-								size="1"
-								weight="regular"
-								className={styles["secondary-factors__content__preview__empty__text"]}>
-								Select secondary factor to see preview
-							</Text>
-						</Flex>
-					) : (
-						<Flex className={styles["secondary-factors__content__preview__content"]}>
-							<SecondFactorPreview secondaryFactors={requiredSecondaryFactors} />
-						</Flex>
-					)}
+						my="3"
+						mx="4">
+						<Callout.Text size="2">
+							You need to initialize the MFA recipe to use secondary factors.{" "}
+							<Link
+								href="https://supertokens.com/docs/mfa/backend-setup"
+								target="_blank"
+								rel="noreferrer noopener"
+								className={styles["secondary-factors__callout__link"]}>
+								Click here
+							</Link>{" "}
+							to see MFA docs for more info.
+						</Callout.Text>
+					</Callout.Root>
+				)}
+
+				{mfaError === "MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN" && (
+					<Callout.Root
+						color="yellow"
+						size="1"
+						my="3"
+						mx="4">
+						<Callout.Text size="2">
+							Please note that the MFA functions are overridden in the SDK and the required secondary
+							factors settings will be based on the overridden logic.
+						</Callout.Text>
+					</Callout.Root>
+				)}
+
+				<Flex
+					className={styles["secondary-factors__content"]}
+					width="100%"
+					p="4"
+					gap="3">
+					<Flex
+						className={styles["secondary-factors__content__main"]}
+						direction="column">
+						{SECONDARY_FACTOR_IDS.map((factor) => {
+							const isRequired = requiredSecondaryFactors.includes(factor.id as SecondaryFactor);
+							return (
+								<SecondaryFactorItem
+									key={factor.id}
+									factorId={factor.id}
+									label={factor.label}
+									description={factor.description}
+									isRequired={isRequired}
+									tenantId={tenantInfo.tenantId}
+									setMfaError={setMfaError}
+									onToggle={handleSecondaryFactorToggle}
+								/>
+							);
+						})}
+					</Flex>
+					<Flex className={styles["secondary-factors__content__preview"]}>
+						<Badge
+							size="1"
+							variant="solid"
+							radius="small"
+							className={styles["secondary-factors__content__preview__badge"]}>
+							Preview
+						</Badge>
+						{requiredSecondaryFactors.length === 0 ? (
+							<Flex
+								gap="2"
+								direction="column"
+								justify="center"
+								align="center"
+								className={styles["secondary-factors__content__preview__empty"]}>
+								<img
+									src={getImageUrl("shield.svg")}
+									alt="Shield"
+									width="14px"
+									height="14px"
+								/>
+								<Text
+									size="1"
+									weight="regular"
+									className={styles["secondary-factors__content__preview__empty__text"]}>
+									Select secondary factor to see preview
+								</Text>
+							</Flex>
+						) : (
+							<Flex className={styles["secondary-factors__content__preview__content"]}>
+								<SecondFactorPreview secondaryFactors={requiredSecondaryFactors} />
+							</Flex>
+						)}
+					</Flex>
 				</Flex>
 			</Flex>
-		</Flex>
-	);
-};
+		);
+	}
+);
 
 interface SecondaryFactorItemProps {
 	factorId: string;
@@ -164,100 +168,105 @@ interface SecondaryFactorItemProps {
 	onToggle: (factorId: string, enable: boolean) => void;
 }
 
-const SecondaryFactorItem = ({
-	factorId,
-	label,
-	description,
-	isRequired,
-	tenantId,
-	setMfaError,
-	onToggle,
-}: SecondaryFactorItemProps) => {
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const { updateRequiredSecondaryFactor } = useTenantDetails(tenantId);
-	const { showErrorToast } = useToast();
+export const SecondaryFactorItem = withOverride(
+	"SecondaryFactorItem",
+	function SecondaryFactorItem({
+		factorId,
+		label,
+		description,
+		isRequired,
+		tenantId,
+		setMfaError,
+		onToggle,
+	}: SecondaryFactorItemProps) {
+		const [isLoading, setIsLoading] = useState(false);
+		const [error, setError] = useState<string | null>(null);
+		const { updateRequiredSecondaryFactor } = useTenantDetails(tenantId);
+		const { showErrorToast } = useToast();
 
-	const handleToggle = async () => {
-		try {
-			setIsLoading(true);
-			const newState = !isRequired;
-			const response = await updateRequiredSecondaryFactor({ factorId, enable: newState });
+		const handleToggle = async () => {
+			try {
+				setIsLoading(true);
+				const newState = !isRequired;
+				const response = await updateRequiredSecondaryFactor({ factorId, enable: newState });
 
-			if (response.status !== "OK") {
-				if (response.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
-					setError(response.message);
-				} else if (response.status === "MFA_NOT_INITIALIZED_ERROR") {
-					setMfaError("MFA_NOT_INITIALIZED");
+				if (response.status !== "OK") {
+					if (response.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR") {
+						setError(response.message);
+					} else if (response.status === "MFA_NOT_INITIALIZED_ERROR") {
+						setMfaError("MFA_NOT_INITIALIZED");
+					} else {
+						throw new Error(response.status);
+					}
 				} else {
-					throw new Error(response.status);
+					// Update local state when the backend update is successful
+					onToggle(factorId, newState);
+					if (response.isMFARequirementsForAuthOverridden) {
+						setMfaError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
+					} else {
+						setError(null);
+					}
 				}
-			} else {
-				// Update local state when the backend update is successful
-				onToggle(factorId, newState);
-				if (response.isMFARequirementsForAuthOverridden) {
-					setMfaError("MFA_REQUIREMENTS_FOR_AUTH_OVERRIDDEN");
-				} else {
-					setError(null);
+
+				// If this is not a MFA related error then clear the error
+				if (
+					(response.status === "OK" && !response.isMFARequirementsForAuthOverridden) ||
+					response.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"
+				) {
+					setMfaError(null);
 				}
+			} catch (error) {
+				const errorMessage = (error as Error).message;
+				showErrorToast(
+					errorMessage === "UNKNOWN_TENANT_ERROR" ? "Tenant does not exist" : "Something went wrong!"
+				);
+			} finally {
+				setIsLoading(false);
 			}
+		};
 
-			// If this is not a MFA related error then clear the error
-			if (
-				(response.status === "OK" && !response.isMFARequirementsForAuthOverridden) ||
-				response.status === "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"
-			) {
-				setMfaError(null);
-			}
-		} catch (error) {
-			const errorMessage = (error as Error).message;
-			showErrorToast(errorMessage === "UNKNOWN_TENANT_ERROR" ? "Tenant does not exist" : "Something went wrong!");
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	return (
-		<Flex direction="column">
-			<Flex
-				justify="between"
-				className={styles["secondary-factors__content__main__item"]}
-				align="center"
-				mx="4"
-				py="4"
-				gap="2">
+		return (
+			<Flex direction="column">
 				<Flex
-					direction="column"
-					gap="1">
-					<Text
-						size="2"
-						weight="medium"
-						className={styles["secondary-factors__content__main__item__name"]}>
-						{label}
-					</Text>
-					<Text
-						size="2"
-						weight="regular"
-						className={styles["secondary-factors__content__main__item__description"]}>
-						{description}
-					</Text>
-					{error && (
+					justify="between"
+					className={styles["secondary-factors__content__main__item"]}
+					align="center"
+					mx="4"
+					py="4"
+					gap="2">
+					<Flex
+						direction="column"
+						gap="1">
 						<Text
-							size="1"
-							color="red">
-							⚠️ {error}
+							size="2"
+							weight="medium"
+							className={styles["secondary-factors__content__main__item__name"]}>
+							{label}
 						</Text>
-					)}
+						<Text
+							size="2"
+							weight="regular"
+							className={styles["secondary-factors__content__main__item__description"]}>
+							{description}
+						</Text>
+						{error && (
+							<Text
+								size="1"
+								color="red">
+								⚠️ {error}
+							</Text>
+						)}
+					</Flex>
+					<Switch
+						size="2"
+						variant="classic"
+						checked={isRequired}
+						disabled={isLoading}
+						onCheckedChange={handleToggle}
+						className={styles["secondary-factors__content__main__method__switch"]}
+					/>
 				</Flex>
-				<Switch
-					size="2"
-					variant="classic"
-					checked={isRequired}
-					disabled={isLoading}
-					onCheckedChange={handleToggle}
-					className={styles["secondary-factors__content__main__method__switch"]}
-				/>
 			</Flex>
-		</Flex>
-	);
-};
+		);
+	}
+);

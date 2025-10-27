@@ -19,6 +19,7 @@ import { MagnifyingGlassIcon, PlusIcon } from "@radix-ui/react-icons";
 import Button from "@shared/components/button";
 
 import styles from "./TenantsListHeader.module.scss";
+import { withOverride } from "@plugins";
 
 interface TenantsListHeaderProps {
 	searchQuery: string;
@@ -27,46 +28,46 @@ interface TenantsListHeaderProps {
 	isLoading: boolean;
 }
 
-export default function TenantsListHeader({
-	searchQuery,
-	setSearchQuery,
-	onAddTenant,
-	isLoading,
-}: TenantsListHeaderProps) {
-	return (
-		<Flex
-			justify="between"
-			gap="8"
-			mb="4"
-			className={styles["tenants-list-header"]}>
+const TenantsListHeader = withOverride(
+	"TenantsListHeader",
+	function TenantsListHeader({ searchQuery, setSearchQuery, onAddTenant, isLoading }: TenantsListHeaderProps) {
+		return (
 			<Flex
-				flexGrow="1"
-				gap="2">
-				<Box className={styles["tenants-list-header__search"]}>
-					<TextField.Root
-						placeholder="Search Tenant"
-						size="2"
-						variant="surface"
-						value={searchQuery}
-						onChange={(e) => setSearchQuery(e.target.value)}>
-						<TextField.Slot>
-							<MagnifyingGlassIcon
-								height="16"
-								width="16"
-							/>
-						</TextField.Slot>
-					</TextField.Root>
-				</Box>
+				justify="between"
+				gap="8"
+				mb="4"
+				className={styles["tenants-list-header"]}>
+				<Flex
+					flexGrow="1"
+					gap="2">
+					<Box className={styles["tenants-list-header__search"]}>
+						<TextField.Root
+							placeholder="Search Tenant"
+							size="2"
+							variant="surface"
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}>
+							<TextField.Slot>
+								<MagnifyingGlassIcon
+									height="16"
+									width="16"
+								/>
+							</TextField.Slot>
+						</TextField.Root>
+					</Box>
+				</Flex>
+				<Button
+					size="2"
+					variant="solid"
+					className={styles["tenants-list-header__btn"]}
+					onClick={onAddTenant}
+					disabled={isLoading}>
+					<PlusIcon />
+					Add Tenant
+				</Button>
 			</Flex>
-			<Button
-				size="2"
-				variant="solid"
-				className={styles["tenants-list-header__btn"]}
-				onClick={onAddTenant}
-				disabled={isLoading}>
-				<PlusIcon />
-				Add Tenant
-			</Button>
-		</Flex>
-	);
-}
+		);
+	}
+);
+
+export default TenantsListHeader;

@@ -22,6 +22,7 @@ import { TENANTS_PAGINATION_LIMIT } from "../constants";
 import TenantsListItem from "./TenantsListItem";
 
 import styles from "./TenantsListTable.module.scss";
+import { withOverride } from "@plugins";
 
 interface TenantsListTableProps {
 	tenants: Tenant[];
@@ -29,63 +30,68 @@ interface TenantsListTableProps {
 	isSearching: boolean;
 }
 
-export default function TenantsListTable({ tenants, currentPage, isSearching }: TenantsListTableProps) {
-	const startIndex = (currentPage - 1) * TENANTS_PAGINATION_LIMIT;
-	const endIndex = startIndex + TENANTS_PAGINATION_LIMIT;
-	const paginatedTenants = tenants.slice(startIndex, endIndex);
+const TenantsListTable = withOverride(
+	"TenantsListTable",
+	function TenantsListTable({ tenants, currentPage, isSearching }: TenantsListTableProps) {
+		const startIndex = (currentPage - 1) * TENANTS_PAGINATION_LIMIT;
+		const endIndex = startIndex + TENANTS_PAGINATION_LIMIT;
+		const paginatedTenants = tenants.slice(startIndex, endIndex);
 
-	const getEmptyStateContent = () => {
-		if (isSearching) {
+		const getEmptyStateContent = () => {
+			if (isSearching) {
+				return {
+					iconUrl: "tenant.svg",
+					title: "No tenants found",
+					description: "No tenants match your search criteria. Try adjusting your search.",
+				};
+			}
+
 			return {
 				iconUrl: "tenant.svg",
-				title: "No tenants found",
-				description: "No tenants match your search criteria. Try adjusting your search.",
+				title: "There are no tenants created",
+				description: "Once added, all tenants will be found here",
 			};
-		}
-
-		return {
-			iconUrl: "tenant.svg",
-			title: "There are no tenants created",
-			description: "Once added, all tenants will be found here",
 		};
-	};
 
-	const emptyState = getEmptyStateContent();
+		const emptyState = getEmptyStateContent();
 
-	return (
-		<Box className={styles["tenants-list-table"]}>
-			<Flex
-				align="center"
-				className={styles["tenants-list-table__header"]}>
-				<Text
-					size="2"
-					weight="medium"
-					className={styles["tenants-list-table__header__tenant-id"]}>
-					Tenant ID
-				</Text>
-				<Text
-					size="2"
-					weight="medium"
-					className={styles["tenants-list-table__header__login-methods"]}>
-					Login Methods
-				</Text>
-			</Flex>
-			{tenants.length === 0 ? (
-				<EmptyList
-					iconUrl={emptyState.iconUrl}
-					title={emptyState.title}
-					description={emptyState.description}
-				/>
-			) : (
-				<Flex direction="column">
-					{paginatedTenants.map((tenant) => (
-						<TenantsListItem
-							key={tenant.tenantId}
-							tenant={tenant}
-						/>
-					))}
+		return (
+			<Box className={styles["tenants-list-table"]}>
+				<Flex
+					align="center"
+					className={styles["tenants-list-table__header"]}>
+					<Text
+						size="2"
+						weight="medium"
+						className={styles["tenants-list-table__header__tenant-id"]}>
+						Tenant ID
+					</Text>
+					<Text
+						size="2"
+						weight="medium"
+						className={styles["tenants-list-table__header__login-methods"]}>
+						Login Methods
+					</Text>
 				</Flex>
-			)}
-		</Box>
-	);
-}
+				{tenants.length === 0 ? (
+					<EmptyList
+						iconUrl={emptyState.iconUrl}
+						title={emptyState.title}
+						description={emptyState.description}
+					/>
+				) : (
+					<Flex direction="column">
+						{paginatedTenants.map((tenant) => (
+							<TenantsListItem
+								key={tenant.tenantId}
+								tenant={tenant}
+							/>
+						))}
+					</Flex>
+				)}
+			</Box>
+		);
+	}
+);
+
+export default TenantsListTable;

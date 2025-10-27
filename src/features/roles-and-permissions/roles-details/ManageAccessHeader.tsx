@@ -16,10 +16,11 @@
 import { Flex } from "@radix-ui/themes";
 
 import ItemLabel from "@shared/components/itemLabel";
+import { withOverride } from "@plugins";
 
 import styles from "./ManageAccessHeader.module.scss";
 
-export default function ManageAccessHeader() {
+const ManageAccessHeader = withOverride("ManageAccessHeader", function ManageAccessHeader() {
 	return (
 		<Flex
 			className={styles["manage-access-header"]}
@@ -27,4 +28,6 @@ export default function ManageAccessHeader() {
 			<ItemLabel>List of users who have access to this role</ItemLabel>
 		</Flex>
 	);
-}
+});
+
+export default ManageAccessHeader;
