@@ -36,6 +36,20 @@ const ERROR_MESSAGES = {
 	INVALID_URL: "should be a valid URL",
 } as const;
 
+// Generic string validation for required fields
+const validateRequiredString = (
+	value: string | undefined | null,
+	fieldName: string,
+	errorMessage: string,
+	errors: ValidationErrors
+): boolean => {
+	if (typeof value !== "string" || value.trim() === "") {
+		errors[fieldName] = errorMessage;
+		return false;
+	}
+	return true;
+};
+
 const validateThirdPartyId = (
 	thirdPartyId: string,
 	existingProviderIds: string[],
@@ -60,8 +74,8 @@ const validateThirdPartyId = (
 };
 
 const validateProviderName = (thirdPartyId: string, name: string, errors: ValidationErrors): void => {
-	if (!isKnownThirdPartyId(thirdPartyId) && name.trim() === "") {
-		errors.name = ERROR_MESSAGES.NAME_REQUIRED;
+	if (!isKnownThirdPartyId(thirdPartyId)) {
+		validateRequiredString(name, "name", ERROR_MESSAGES.NAME_REQUIRED, errors);
 	}
 };
 
@@ -74,24 +88,41 @@ const validateClient = (
 	errors: ValidationErrors
 ): void => {
 	// Validate client ID
-	if (typeof client.clientId !== "string" || client.clientId.trim() === "") {
-		errors[`clients.${clientIndex}.clientId`] = ERROR_MESSAGES.CLIENT_ID_REQUIRED;
-	}
+	validateRequiredString(
+		client.clientId,
+		`clients.${clientIndex}.clientId`,
+		ERROR_MESSAGES.CLIENT_ID_REQUIRED,
+		errors
+	);
 
 	// Validate client secret (not required for Apple)
-	if (!isAppleProvider && (client.clientSecret === undefined || client.clientSecret.trim() === "")) {
-		errors[`clients.${clientIndex}.clientSecret`] = ERROR_MESSAGES.CLIENT_SECRET_REQUIRED;
+	if (!isAppleProvider) {
+		validateRequiredString(
+			client.clientSecret,
+			`clients.${clientIndex}.clientSecret`,
+			ERROR_MESSAGES.CLIENT_SECRET_REQUIRED,
+			errors
+		);
 	}
 
 	// Validate client type (required if multiple clients)
 	if (totalClients > 1) {
-		if (client.clientType === undefined || client.clientType.trim() === "") {
-			errors[`clients.${clientIndex}.clientType`] = ERROR_MESSAGES.CLIENT_TYPE_REQUIRED;
-		} else {
-			if (clientTypes.has(client.clientType)) {
+		if (
+			validateRequiredString(
+				client.clientType,
+				`clients.${clientIndex}.clientType`,
+				ERROR_MESSAGES.CLIENT_TYPE_REQUIRED,
+				errors
+			)
+		) {
+			// Only check for uniqueness if the field is valid
+			const clientType = client.clientType;
+			if (clientType && clientTypes.has(clientType)) {
 				errors[`clients.${clientIndex}.clientType`] = ERROR_MESSAGES.CLIENT_TYPE_UNIQUE;
 			}
-			clientTypes.add(client.clientType);
+			if (clientType) {
+				clientTypes.add(clientType);
+			}
 		}
 	}
 };
@@ -106,9 +137,12 @@ const validateCustomFields = (
 			if (!field.required) return;
 
 			const fieldValue = client.additionalConfig.find(([key]) => key === field.id)?.[1];
-			if (typeof fieldValue !== "string" || fieldValue.trim() === "") {
-				errors[`clients.${clientIndex}.additionalConfig.${field.id}`] = `${field.label} is required`;
-			}
+			validateRequiredString(
+				fieldValue,
+				`clients.${clientIndex}.additionalConfig.${field.id}`,
+				`${field.label} is required`,
+				errors
+			);
 		});
 	});
 };

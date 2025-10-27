@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge, Flex, Switch, Text } from "@radix-ui/themes";
 import { Pencil1Icon, PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 
@@ -64,162 +64,166 @@ interface ProviderConfigurationProps {
 export const ProviderConfiguration = withOverride(
 	"ProviderConfiguration",
 	function ProviderConfiguration({
-		tenantId,
-		providerId,
-		isAddingNewProvider,
-		onDelete,
-		onSave,
-		onCancel,
-		providerConfigResponse: initialProviderConfigResponse,
-		additionalConfig,
-	}: ProviderConfigurationProps) {
-		const [isLoading, setIsLoading] = useState(!initialProviderConfigResponse);
-		const [isEditing, setIsEditing] = useState(isAddingNewProvider);
-		const [isSaving, setIsSaving] = useState(false);
-		const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-		const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>(
-			initialProviderConfigResponse
-		);
-		const [providerConfigState, setProviderConfigState] = useState<ProviderConfigState | null>(null);
-		const [errors, setErrors] = useState<Record<string, string>>({});
-		const [emailSelectValue, setEmailSelectValue] = useState<EmailSelectState>("always");
-		const [isSuffixFieldVisible, setIsSuffixFieldVisible] = useState(false);
+	tenantId,
+	providerId,
+	isAddingNewProvider,
+	onDelete,
+	onSave,
+	onCancel,
+	providerConfigResponse: initialProviderConfigResponse,
+	additionalConfig,
+}: ProviderConfigurationProps) {
+	const [isLoading, setIsLoading] = useState(!initialProviderConfigResponse);
+	const [isEditing, setIsEditing] = useState(isAddingNewProvider);
+	const [isSaving, setIsSaving] = useState(false);
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [providerConfigResponse, setProviderConfigResponse] = useState<ProviderConfigResponse | undefined>(
+		initialProviderConfigResponse
+	);
+	const [providerConfigState, setProviderConfigState] = useState<ProviderConfigState | null>(null);
+	const [errors, setErrors] = useState<Record<string, string>>({});
+	const [emailSelectValue, setEmailSelectValue] = useState<EmailSelectState>("always");
+	const [isSuffixFieldVisible, setIsSuffixFieldVisible] = useState(false);
 
-		const getThirdPartyProviderInfo = useGetThirdPartyProviderInfoService();
-		const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProviderService();
-		const { tenantInfo, refetch } = useTenantDetails(tenantId);
-		const { showSuccessToast, showErrorToast } = useToast();
+	const getThirdPartyProviderInfo = useGetThirdPartyProviderInfoService();
+	const createOrUpdateThirdPartyProvider = useCreateOrUpdateThirdPartyProviderService();
+	const { tenantInfo, refetch } = useTenantDetails(tenantId);
+	const { showSuccessToast, showErrorToast } = useToast();
 
-		const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
-		const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) =>
-			providerId?.startsWith(provider.id)
-		);
-		const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
-		const shouldUseSuffixField = isAddingNewProvider && (Boolean(inBuiltProviderInfo) || isSAMLProvider);
+	const isSAMLProvider = providerId?.startsWith(SAML_PROVIDER_ID);
+	const inBuiltProviderInfo = IN_BUILT_THIRD_PARTY_PROVIDERS.find((provider) => providerId?.startsWith(provider.id));
+	const baseProviderId = isSAMLProvider ? SAML_PROVIDER_ID : inBuiltProviderInfo?.id ?? "";
+	const shouldUseSuffixField = isAddingNewProvider && (Boolean(inBuiltProviderInfo) || isSAMLProvider);
 
-		const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT).find((id) =>
-			providerId?.startsWith(id)
-		);
-		const customFields = customFieldProviderKey
-			? IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT[customFieldProviderKey]
-			: undefined;
+	const customFieldProviderKey = Object.keys(IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT).find((id) =>
+		providerId?.startsWith(id)
+	);
+	const customFields = customFieldProviderKey
+		? IN_BUILT_PROVIDERS_CUSTOM_FIELDS_FOR_CLIENT[customFieldProviderKey]
+		: undefined;
 
-		useEffect(() => {
-			// If we already have provider config response (passed from parent), use it
-			if (initialProviderConfigResponse) {
-				const initialState = getInitialProviderState(initialProviderConfigResponse, providerId);
-				setProviderConfigState(initialState);
+	useEffect(() => {
+		// If we already have provider config response (passed from parent), use it
+		if (initialProviderConfigResponse) {
+			const initialState = getInitialProviderState(initialProviderConfigResponse, providerId);
+			setProviderConfigState(initialState);
 
-				// Set email select value
-				if (initialProviderConfigResponse.requireEmail === false) {
-					setEmailSelectValue("sometimes");
-				} else {
-					setEmailSelectValue("always");
-				}
-				setIsLoading(false);
-				return;
+			// Set email select value
+			if (initialProviderConfigResponse.requireEmail === false) {
+				setEmailSelectValue("sometimes");
+			} else {
+				setEmailSelectValue("always");
 			}
+			setIsLoading(false);
+			return;
+		}
 
-			// Otherwise fetch provider info
-			const fetchProviderInfo = async () => {
-				try {
-					setIsLoading(true);
-					const response = await getThirdPartyProviderInfo(tenantId, providerId, additionalConfig);
-					if (response.status === "OK") {
-						setProviderConfigResponse(response.providerConfig);
-						const initialState = getInitialProviderState(response.providerConfig, providerId);
-						setProviderConfigState(initialState);
+		// Otherwise fetch provider info
+		const fetchProviderInfo = async () => {
+			try {
+				setIsLoading(true);
+				const response = await getThirdPartyProviderInfo(tenantId, providerId, additionalConfig);
+				if (response.status === "OK") {
+					setProviderConfigResponse(response.providerConfig);
+					const initialState = getInitialProviderState(response.providerConfig, providerId);
+					setProviderConfigState(initialState);
 
-						// Set email select value
-						if (response.providerConfig.requireEmail === false) {
-							setEmailSelectValue("sometimes");
-						} else {
-							setEmailSelectValue("always");
-						}
+					// Set email select value
+					if (response.providerConfig.requireEmail === false) {
+						setEmailSelectValue("sometimes");
+					} else {
+						setEmailSelectValue("always");
 					}
-				} catch (error) {
-					showErrorToast("Error", "Failed to fetch provider configuration");
-				} finally {
-					setIsLoading(false);
 				}
-			};
-
-			if (!isAddingNewProvider) {
-				void fetchProviderInfo();
-			} else {
-				const initialState = getInitialProviderState(undefined, providerId);
-				setProviderConfigState(initialState);
+			} catch (error) {
+				showErrorToast("Error", "Failed to fetch provider configuration");
+			} finally {
 				setIsLoading(false);
 			}
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [tenantId, providerId, isAddingNewProvider, initialProviderConfigResponse]);
+		};
 
-		const handleThirdPartyIdSuffixChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-			if (!providerConfigState) return;
+		if (!isAddingNewProvider) {
+			void fetchProviderInfo();
+		} else {
+			const initialState = getInitialProviderState(undefined, providerId);
+			setProviderConfigState(initialState);
+			setIsLoading(false);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [tenantId, providerId, isAddingNewProvider, initialProviderConfigResponse]);
 
+	const handleThirdPartyIdSuffixChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
 			const suffixValue = e.target.value.trim();
-			if (suffixValue === "") {
-				setProviderConfigState({ ...providerConfigState, thirdPartyId: baseProviderId });
-			} else {
-				setProviderConfigState({
-					...providerConfigState,
-					thirdPartyId: `${baseProviderId}-${suffixValue}`,
-				});
-			}
-		};
+			setProviderConfigState((prevState) => {
+				if (!prevState) return prevState;
 
-		const showSuffixField = () => {
-			if (!providerConfigState) return;
+				if (suffixValue === "") {
+					return { ...prevState, thirdPartyId: baseProviderId };
+				} else {
+					return {
+						...prevState,
+						thirdPartyId: `${baseProviderId}-${suffixValue}`,
+					};
+				}
+			});
+		},
+		[baseProviderId]
+	);
 
-			setIsSuffixFieldVisible(true);
-			setProviderConfigState({
-				...providerConfigState,
+	const showSuffixField = useCallback(() => {
+		setIsSuffixFieldVisible(true);
+		setProviderConfigState((prevState) => {
+			if (!prevState) return prevState;
+			return {
+				...prevState,
 				thirdPartyId: baseProviderId,
-			});
-			// Clear any thirdPartyId errors when showing suffix field
-			setErrors((prev) => {
-				const { thirdPartyId, ...rest } = prev;
-				return rest;
-			});
-		};
+			};
+		});
+		// Clear any thirdPartyId errors when showing suffix field
+		setErrors((prev) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { thirdPartyId, ...rest } = prev;
+			return rest;
+		});
+	}, [baseProviderId]);
 
-		const handleUserInfoFieldChange = ({
-			name,
-			key,
-			value,
-		}: {
-			name: "fromIdTokenPayload" | "fromUserInfoAPI";
-			key: string;
-			value: string;
-		}) => {
-			if (!providerConfigState) return;
-			setProviderConfigState({
-				...providerConfigState,
-				userInfoMap: {
-					...providerConfigState.userInfoMap,
-					[name]: {
-						...providerConfigState.userInfoMap[name],
-						[key]: value,
+	const handleUserInfoFieldChange = useCallback(
+		({ name, key, value }: { name: "fromIdTokenPayload" | "fromUserInfoAPI"; key: string; value: string }) => {
+			setProviderConfigState((prevState) => {
+				if (!prevState) return prevState;
+				return {
+					...prevState,
+					userInfoMap: {
+						...prevState.userInfoMap,
+						[name]: {
+							...prevState.userInfoMap[name],
+							[key]: value,
+						},
 					},
-				},
+				};
 			});
-		};
+		},
+		[]
+	);
 
-		const handleEmailSelectChange = (value: EmailSelectState) => {
-			if (!providerConfigState) return;
-			setEmailSelectValue(value);
-			if (value === "never") {
-				setProviderConfigState({ ...providerConfigState, requireEmail: false });
-			} else {
-				setProviderConfigState({ ...providerConfigState, requireEmail: true });
-			}
-		};
+	const handleEmailSelectChange = useCallback((value: EmailSelectState) => {
+		setEmailSelectValue(value);
+		setProviderConfigState((prevState) => {
+			if (!prevState) return prevState;
+			return {
+				...prevState,
+				requireEmail: value !== "never",
+			};
+		});
+	}, []);
 
-		const handleAddNewClient = () => {
-			if (!providerConfigState) return;
+	const handleAddNewClient = useCallback(() => {
+		setProviderConfigState((prevState) => {
+			if (!prevState) return prevState;
 
-			let additionalConfig: [string, string | null][] = providerConfigState.clients[0]?.additionalConfig
-				? [...providerConfigState.clients[0].additionalConfig]
+			let additionalConfig: [string, string | null][] = prevState.clients[0]?.additionalConfig
+				? [...prevState.clients[0].additionalConfig]
 				: [["", ""]];
 
 			// Apply custom fields if needed
@@ -227,635 +231,656 @@ export const ProviderConfiguration = withOverride(
 				additionalConfig = customFields.map((field) => [field.id, ""] as [string, string | null]);
 			}
 
-			setProviderConfigState({
-				...providerConfigState,
+			return {
+				...prevState,
 				clients: [
-					...(providerConfigState?.clients ?? []),
+					...(prevState?.clients ?? []),
 					{
 						clientId: "",
 						clientSecret: "",
 						clientType: "",
-						scope: providerConfigState.clients[0]?.scope ? [...providerConfigState.clients[0].scope] : [""],
+						scope: prevState.clients[0]?.scope ? [...prevState.clients[0].scope] : [""],
 						additionalConfig,
-						forcePKCE: providerConfigState.clients[0]?.forcePKCE || false,
+						forcePKCE: prevState.clients[0]?.forcePKCE || false,
 						key: crypto.randomUUID(),
 					},
 				],
-			});
-		};
+			};
+		});
+	}, [customFields]);
 
-		const handleSave = async () => {
-			if (!providerConfigState || !tenantInfo) return;
+	const handleSave = async () => {
+		if (!providerConfigState || !tenantInfo) return;
 
-			setErrors({});
+		setErrors({});
 
-			const existingProviderIds = tenantInfo.thirdParty.providers.map((p) => p.thirdPartyId);
-			const validationErrors = validateProviderConfig(
-				providerConfigState,
-				existingProviderIds,
-				isAddingNewProvider,
-				customFields
-			);
+		const existingProviderIds = tenantInfo.thirdParty.providers.map((p) => p.thirdPartyId);
+		const validationErrors = validateProviderConfig(
+			providerConfigState,
+			existingProviderIds,
+			isAddingNewProvider,
+			customFields
+		);
 
-			if (Object.keys(validationErrors).length > 0) {
-				setErrors(validationErrors);
-				showErrorToast("Validation Error", "Please ensure all fields are correctly filled out before saving.");
-				return;
-			}
-
-			try {
-				setIsSaving(true);
-				const normalizedConfig = normalizeProviderConfig(providerConfigState);
-				const response = await createOrUpdateThirdPartyProvider(tenantId, normalizedConfig);
-
-				if (response.status === "OK") {
-					showSuccessToast("Success", "Provider configuration saved successfully");
-					setIsEditing(false);
-					await refetch();
-					if (onSave) {
-						onSave();
-					}
-				} else if (response.status === "BOXY_ERROR") {
-					showErrorToast("Error", response.message);
-				}
-			} catch (error) {
-				showErrorToast("Error", "Failed to save provider configuration");
-			} finally {
-				setIsSaving(false);
-			}
-		};
-
-		if (isLoading || !providerConfigState) {
-			return <Loader type="list" />;
+		if (Object.keys(validationErrors).length > 0) {
+			setErrors(validationErrors);
+			showErrorToast("Validation Error", "Please ensure all fields are correctly filled out before saving.");
+			return;
 		}
 
-		const formHasError = Object.values(errors).some((error) => error !== "");
+		try {
+			setIsSaving(true);
+			const normalizedConfig = normalizeProviderConfig(providerConfigState);
+			const response = await createOrUpdateThirdPartyProvider(tenantId, normalizedConfig);
 
-		return (
+			if (response.status === "OK") {
+				showSuccessToast("Success", "Provider configuration saved successfully");
+				setIsEditing(false);
+				await refetch();
+				if (onSave) {
+					onSave();
+				}
+			} else if (response.status === "BOXY_ERROR") {
+				showErrorToast("Error", response.message);
+			}
+		} catch (error) {
+			showErrorToast("Error", "Failed to save provider configuration");
+		} finally {
+			setIsSaving(false);
+		}
+	};
+
+	if (isLoading || !providerConfigState) {
+		return <Loader type="list" />;
+	}
+
+	const formHasError = Object.values(errors).some((error) => error !== "");
+
+	return (
+		<Flex
+			width="100%"
+			direction="column"
+			className={styles["provider-configuration"]}>
+			{/* Header */}
 			<Flex
-				width="100%"
-				direction="column"
-				className={styles["provider-configuration"]}>
-				{/* Header */}
+				className={styles["provider-configuration__header"]}
+				justify="between"
+				align="center">
 				<Flex
-					className={styles["provider-configuration__header"]}
-					justify="between"
-					align="center">
-					<Flex
-						align="center"
-						gap="3">
-						<ItemLabel
+					align="center"
+					gap="3">
+					<ItemLabel
+						size="2"
+						className={styles["provider-configuration__header__label"]}>
+						{isAddingNewProvider ? "Configure new provider" : "Provider Configuration"}
+					</ItemLabel>
+					{inBuiltProviderInfo && (
+						<Badge
 							size="2"
-							className={styles["provider-configuration__header__label"]}>
-							{isAddingNewProvider ? "Configure new provider" : "Provider Configuration"}
-						</ItemLabel>
-						{inBuiltProviderInfo && (
-							<Badge
+							variant="soft"
+							color="gray"
+							className={styles["provider-configuration__header__badge"]}>
+							<img
+								src={getImageUrl(inBuiltProviderInfo.icon)}
+								alt={inBuiltProviderInfo.label}
+								width="16px"
+								height="16px"
+							/>
+							<Text
 								size="2"
-								variant="soft"
-								color="gray"
-								className={styles["provider-configuration__header__badge"]}>
-								<img
-									src={getImageUrl(inBuiltProviderInfo.icon)}
-									alt={inBuiltProviderInfo.label}
-									width="16px"
-									height="16px"
-								/>
-								<Text
-									size="2"
-									weight="medium"
-									className={styles["provider-configuration__header__badge__text"]}>
-									{inBuiltProviderInfo.label}
-								</Text>
-							</Badge>
-						)}
-					</Flex>
-
-					{/* Action buttons in header */}
-					{isAddingNewProvider ? (
-						<Flex
-							align="center"
-							gap="2">
-							<Button
-								variant="outline"
-								color="gray"
-								size="2"
-								onClick={() => {
-									// Reset suffix field visibility if no suffix was added
-									if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
-										setIsSuffixFieldVisible(false);
-									}
-									if (onCancel) {
-										onCancel();
-									}
-								}}
-								disabled={isSaving}>
-								Cancel
-							</Button>
-							<Button
-								size="2"
-								onClick={handleSave}
-								disabled={isSaving}>
-								{isSaving ? "Saving..." : "Save"}
-							</Button>
-						</Flex>
-					) : isEditing ? (
-						<Flex
-							align="center"
-							gap="2">
-							<Button
-								variant="outline"
-								color="gray"
-								size="2"
-								onClick={() => {
-									setIsEditing(false);
-									setErrors({});
-									// Reset state
-									if (providerConfigResponse) {
-										setProviderConfigState(
-											getInitialProviderState(providerConfigResponse, providerId)
-										);
-									}
-									// Reset suffix field visibility if no suffix was added
-									if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
-										setIsSuffixFieldVisible(false);
-									}
-								}}
-								disabled={isSaving}>
-								Cancel
-							</Button>
-							<Button
-								size="2"
-								onClick={handleSave}
-								disabled={isSaving}>
-								{isSaving ? "Saving..." : "Save"}
-							</Button>
-						</Flex>
-					) : (
-						<Flex
-							align="center"
-							gap="2">
-							<Button
-								variant="outline"
-								size="2"
-								onClick={() => setIsEditing(true)}>
-								<Pencil1Icon />
-								Edit
-							</Button>
-
-							<Button
-								size="2"
-								variant="soft"
-								color="red"
-								onClick={() => setIsDeleteModalOpen(true)}>
-								<TrashIcon />
-								Delete
-							</Button>
-						</Flex>
+								weight="medium"
+								className={styles["provider-configuration__header__badge__text"]}>
+								{inBuiltProviderInfo.label}
+							</Text>
+						</Badge>
 					)}
 				</Flex>
 
-				{/* Form Content */}
-				<Flex
-					className={styles["provider-configuration__form"]}
-					width="100%"
-					direction="column"
-					gap="4">
-					{/* Provider Information */}
+				{/* Action buttons in header */}
+				{isAddingNewProvider ? (
 					<Flex
-						width="100%"
-						direction="column"
-						gap="4"
-						px="3"
-						pt="4">
-						{/* Third Party ID - with suffix support for built-in and SAML providers */}
-						{shouldUseSuffixField ? (
-							<ProviderConfigSuffixInput
-								baseProviderId={baseProviderId}
-								suffixValue={
-									providerConfigState.thirdPartyId.length > baseProviderId.length + 1
-										? providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)
-										: ""
-								}
-								onSuffixChange={handleThirdPartyIdSuffixChange}
-								onShowSuffixField={showSuffixField}
-								isSuffixFieldVisible={isSuffixFieldVisible}
-								error={errors.thirdPartyId}
-								disabled={!isEditing}
-							/>
-						) : (
-							<ProviderConfigInputRow
-								label="Third Party ID"
-								tooltip="The ID of the provider"
-								required
-								disabled={!isEditing || !isAddingNewProvider}
-								value={providerConfigState.thirdPartyId}
-								onChange={(e) =>
-									setProviderConfigState({ ...providerConfigState, thirdPartyId: e.target.value })
-								}
-								error={errors.thirdPartyId}
-							/>
-						)}
-
-						{/* Name */}
-						{isSAMLProvider ? (
-							<Flex
-								direction="column"
-								gap="1">
-								<Flex
-									align="center"
-									gap="2">
-									<ProviderConfigInputLabel
-										label="Name"
-										tooltip="The name of the provider"
-										required={!isKnownThirdPartyId(providerConfigState.thirdPartyId)}
-									/>
-									<select
-										disabled={!isEditing}
-										value={providerConfigState.name}
-										onChange={(e) =>
-											setProviderConfigState({ ...providerConfigState, name: e.target.value })
-										}
-										className={styles["provider-configuration__saml-select"]}>
-										<option value="">Select a name</option>
-										{SAML_NAME_OPTIONS.map((option) => (
-											<option
-												key={option}
-												value={option}>
-												{option}
-											</option>
-										))}
-									</select>
-								</Flex>
-								{errors.name && (
-									<Text
-										size="1"
-										color="red"
-										ml="2">
-										{errors.name}
-									</Text>
-								)}
-							</Flex>
-						) : (
-							<ProviderConfigInputRow
-								label="Name"
-								tooltip="The name of the provider"
-								disabled={!isEditing}
-								required={!isKnownThirdPartyId(providerConfigState.thirdPartyId)}
-								value={providerConfigState.name}
-								onChange={(e) =>
-									setProviderConfigState({ ...providerConfigState, name: e.target.value })
-								}
-								error={errors.name}
-							/>
-						)}
-					</Flex>
-
-					{/* Clients Section */}
-					<Text
-						size="3"
-						weight="medium"
-						className={styles["provider-configuration__form__clients__header"]}>
-						Clients
-					</Text>
-					<Flex
-						direction="column"
-						gap="3"
-						mt="3"
-						mx="3">
-						{providerConfigState.clients.map((client, index) => (
-							<ClientConfigSection
-								key={client.key}
-								client={client}
-								clientIndex={index}
-								clientsCount={providerConfigState.clients.length}
-								providerId={providerConfigState.thirdPartyId}
-								errors={errors}
-								customFields={customFields}
-								setClient={(updatedClient) => {
-									const newClients = [...providerConfigState.clients];
-									newClients[index] = updatedClient;
-									setProviderConfigState({ ...providerConfigState, clients: newClients });
-								}}
-								handleDeleteClient={() => {
-									setProviderConfigState({
-										...providerConfigState,
-										clients: providerConfigState.clients.filter((_, i) => i !== index),
-									});
-								}}
-								disabled={!isEditing}
-							/>
-						))}
+						align="center"
+						gap="2">
 						<Button
-							variant="soft"
+							variant="outline"
+							color="gray"
 							size="2"
-							onClick={handleAddNewClient}
-							disabled={!isEditing}
-							className={styles["provider-configuration__add-new-client"]}>
-							<PlusIcon />
-							Add New Client
+							onClick={() => {
+								// Reset suffix field visibility if no suffix was added
+								if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
+									setIsSuffixFieldVisible(false);
+								}
+								if (onCancel) {
+									onCancel();
+								}
+							}}
+							disabled={isSaving}>
+							Cancel
+						</Button>
+						<Button
+							size="2"
+							onClick={handleSave}
+							disabled={isSaving}>
+							{isSaving ? "Saving..." : "Save"}
 						</Button>
 					</Flex>
-					<ProviderConfigSeparator />
+				) : isEditing ? (
 					<Flex
-						direction="column"
-						gap="4"
-						px="3"
-						pb="4">
-						{/* OIDC Discovery Endpoint */}
-						<ProviderConfigInputRow
-							label="OIDC Discovery Endpoint"
-							tooltip="The OIDC discovery endpoint of the provider"
+						align="center"
+						gap="2">
+						<Button
+							variant="outline"
+							color="gray"
+							size="2"
+							onClick={() => {
+								setIsEditing(false);
+								setErrors({});
+								// Reset state
+								if (providerConfigResponse) {
+									setProviderConfigState(getInitialProviderState(providerConfigResponse, providerId));
+								}
+								// Reset suffix field visibility if no suffix was added
+								if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
+									setIsSuffixFieldVisible(false);
+								}
+							}}
+							disabled={isSaving}>
+							Cancel
+						</Button>
+						<Button
+							size="2"
+							onClick={handleSave}
+							disabled={isSaving}>
+							{isSaving ? "Saving..." : "Save"}
+						</Button>
+					</Flex>
+				) : (
+					<Flex
+						align="center"
+						gap="2">
+						<Button
+							variant="outline"
+							size="2"
+							onClick={() => setIsEditing(true)}>
+							<Pencil1Icon />
+							Edit
+						</Button>
+
+						<Button
+							size="2"
+							variant="soft"
+							color="red"
+							onClick={() => setIsDeleteModalOpen(true)}>
+							<TrashIcon />
+							Delete
+						</Button>
+					</Flex>
+				)}
+			</Flex>
+
+			{/* Form Content */}
+			<Flex
+				className={styles["provider-configuration__form"]}
+				width="100%"
+				direction="column"
+				gap="4">
+				{/* Provider Information */}
+				<Flex
+					width="100%"
+					direction="column"
+					gap="4"
+					px="3"
+					pt="4">
+					{/* Third Party ID - with suffix support for built-in and SAML providers */}
+					{shouldUseSuffixField ? (
+						<ProviderConfigSuffixInput
+							baseProviderId={baseProviderId}
+							suffixValue={
+								providerConfigState.thirdPartyId.length > baseProviderId.length + 1
+									? providerConfigState.thirdPartyId.slice(baseProviderId.length + 1)
+									: ""
+							}
+							onSuffixChange={handleThirdPartyIdSuffixChange}
+							onShowSuffixField={showSuffixField}
+							isSuffixFieldVisible={isSuffixFieldVisible}
+							error={errors.thirdPartyId}
 							disabled={!isEditing}
-							value={providerConfigState.oidcDiscoveryEndpoint}
-							onChange={(e) =>
-								setProviderConfigState({
-									...providerConfigState,
-									oidcDiscoveryEndpoint: e.target.value,
-								})
-							}
-							error={errors.oidcDiscoveryEndpoint}
 						/>
-
-						<ProviderConfigSeparator />
-
-						{/* Authorization Endpoint */}
+					) : (
 						<ProviderConfigInputRow
-							label="Authorization Endpoint"
-							tooltip="The authorization endpoint of the provider"
-							disabled={!isEditing || providerConfigResponse?.isGetAuthorisationRedirectUrlOverridden}
-							value={
-								providerConfigResponse?.isGetAuthorisationRedirectUrlOverridden
-									? "Cannot edit this because you have provided a custom override"
-									: providerConfigState.authorizationEndpoint
-							}
+							label="Third Party ID"
+							tooltip="The ID of the provider"
+							required
+							disabled={!isEditing || !isAddingNewProvider}
+							value={providerConfigState.thirdPartyId}
 							onChange={(e) =>
-								setProviderConfigState({
-									...providerConfigState,
-									authorizationEndpoint: e.target.value,
-								})
+								setProviderConfigState((prevState) =>
+									prevState ? { ...prevState, thirdPartyId: e.target.value } : prevState
+								)
 							}
-							error={errors.authorizationEndpoint}
+							error={errors.thirdPartyId}
 						/>
+					)}
 
-						<ProviderConfigKeyValue
-							label="Authorization Endpoint Query Params"
-							tooltip="The query params to be sent to the authorization endpoint"
-							items={providerConfigState.authorizationEndpointQueryParams}
-							setItems={(items) =>
-								setProviderConfigState({
-									...providerConfigState,
-									authorizationEndpointQueryParams: items,
-								})
-							}
-							disabled={!isEditing || providerConfigResponse?.isGetAuthorisationRedirectUrlOverridden}
-						/>
-
-						{providerConfigResponse?.isGetAuthorisationRedirectUrlOverridden && (
-							<Text
-								size="2"
-								color="orange"
-								className={styles["provider-configuration__warning-text"]}>
-								<strong>Note:</strong> You cannot edit the above fields because this provider is using a
-								custom override for <code>getAuthorisationRedirectUrl</code>
-							</Text>
-						)}
-
-						<ProviderConfigSeparator />
-
-						{/* Token Endpoint */}
-						<ProviderConfigInputRow
-							label="Token Endpoint"
-							tooltip="The token endpoint of the provider"
-							disabled={!isEditing || providerConfigResponse?.isExchangeAuthCodeForOAuthTokensOverridden}
-							value={
-								providerConfigResponse?.isExchangeAuthCodeForOAuthTokensOverridden
-									? "Cannot edit this because you have provided a custom override"
-									: providerConfigState.tokenEndpoint
-							}
-							onChange={(e) =>
-								setProviderConfigState({ ...providerConfigState, tokenEndpoint: e.target.value })
-							}
-							error={errors.tokenEndpoint}
-						/>
-
-						<ProviderConfigKeyValue
-							label="Token Endpoint Body Params"
-							tooltip="The body params to be sent to the token endpoint"
-							items={providerConfigState.tokenEndpointBodyParams}
-							setItems={(items) =>
-								setProviderConfigState({ ...providerConfigState, tokenEndpointBodyParams: items })
-							}
-							disabled={!isEditing || providerConfigResponse?.isExchangeAuthCodeForOAuthTokensOverridden}
-						/>
-
-						{providerConfigResponse?.isExchangeAuthCodeForOAuthTokensOverridden && (
-							<Text
-								size="2"
-								color="orange"
-								className={styles["provider-configuration__warning-text"]}>
-								<strong>Note:</strong> You cannot edit the above fields because this provider is using a
-								custom override for <code>exchangeAuthCodeForOAuthTokens</code>
-							</Text>
-						)}
-
-						<ProviderConfigSeparator />
-
-						{/* User Info Endpoint */}
-						<ProviderConfigInputRow
-							label="User Info Endpoint"
-							tooltip="The user info endpoint of the provider"
-							disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
-							value={
-								providerConfigResponse?.isGetUserInfoOverridden
-									? "Cannot edit this because you have provided a custom override"
-									: providerConfigState.userInfoEndpoint
-							}
-							onChange={(e) =>
-								setProviderConfigState({ ...providerConfigState, userInfoEndpoint: e.target.value })
-							}
-							error={errors.userInfoEndpoint}
-						/>
-
-						<ProviderConfigKeyValue
-							label="User Info Endpoint Query Params"
-							tooltip="The query params to be sent to the user info endpoint"
-							items={providerConfigState.userInfoEndpointQueryParams}
-							setItems={(items) =>
-								setProviderConfigState({ ...providerConfigState, userInfoEndpointQueryParams: items })
-							}
-							disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
-						/>
-
-						<ProviderConfigKeyValue
-							label="User Info Endpoint Headers"
-							tooltip="The headers to be sent to the user info endpoint"
-							items={providerConfigState.userInfoEndpointHeaders}
-							setItems={(items) =>
-								setProviderConfigState({ ...providerConfigState, userInfoEndpointHeaders: items })
-							}
-							disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
-						/>
-
-						{/* Email Frequency */}
+					{/* Name */}
+					{isSAMLProvider ? (
 						<Flex
-							align="center"
-							gap="2">
-							<ProviderConfigInputLabel label="How often does the provider return email?" />
-							<EmailSelect
-								value={emailSelectValue}
-								setValue={handleEmailSelectChange}
-								disabled={!isEditing}
-							/>
-						</Flex>
-
-						{emailSelectValue === "never" && (
-							<Text
-								size="2"
-								color="orange"
-								className={styles["provider-configuration__warning-text"]}>
-								<strong>Note:</strong> We will generate a fake email for the end users automatically
-								using their user id.
-							</Text>
-						)}
-
-						{emailSelectValue === "sometimes" && (
+							direction="column"
+							gap="1">
 							<Flex
 								align="center"
 								gap="2">
-								<ProviderConfigInputLabel label="Do you want to generate a fake email when the provider doesn't return an email?" />
-								<Switch
-									checked={!providerConfigState.requireEmail}
-									onCheckedChange={(checked) =>
-										setProviderConfigState({ ...providerConfigState, requireEmail: !checked })
-									}
-									disabled={!isEditing}
+								<ProviderConfigInputLabel
+									label="Name"
+									tooltip="The name of the provider"
+									required={!isKnownThirdPartyId(providerConfigState.thirdPartyId)}
 								/>
+								<select
+									disabled={!isEditing}
+									value={providerConfigState.name}
+									onChange={(e) =>
+										setProviderConfigState((prevState) =>
+											prevState ? { ...prevState, name: e.target.value } : prevState
+										)
+									}
+									className={styles["provider-configuration__saml-select"]}>
+									<option value="">Select a name</option>
+									{SAML_NAME_OPTIONS.map((option) => (
+										<option
+											key={option}
+											value={option}>
+											{option}
+										</option>
+									))}
+								</select>
 							</Flex>
-						)}
-
-						{/* User Info Maps */}
-						<UserInfoMapSection
-							label="User Info Map from UserInfo API"
-							tooltip="The mapping of the user info fields to the user info API"
-							name="fromUserInfoAPI"
-							value={
-								providerConfigState.userInfoMap.fromUserInfoAPI ?? {
-									userId: "",
-									email: "",
-									emailVerified: "",
-								}
-							}
-							handleChange={handleUserInfoFieldChange}
-							disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
-							isOverridden={providerConfigResponse?.isGetUserInfoOverridden}
-						/>
-
-						<UserInfoMapSection
-							label="User Info Map from Id Token Payload"
-							tooltip="The mapping of the user info fields to the id token payload"
-							name="fromIdTokenPayload"
-							value={
-								providerConfigState.userInfoMap.fromIdTokenPayload ?? {
-									userId: "",
-									email: "",
-									emailVerified: "",
-								}
-							}
-							handleChange={handleUserInfoFieldChange}
-							disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
-							isOverridden={providerConfigResponse?.isGetUserInfoOverridden}
-						/>
-
-						{providerConfigResponse?.isGetUserInfoOverridden && (
-							<Text
-								size="2"
-								color="orange"
-								className={styles["provider-configuration__warning-text"]}>
-								<strong>Note:</strong> You cannot edit the above fields because this provider is using a
-								custom override for <code>getUserInfo</code>
-							</Text>
-						)}
-
-						<ProviderConfigSeparator />
-
-						{/* JWKS URI */}
-						<ProviderConfigInputRow
-							label="JWKS URI"
-							tooltip="The JWKS URI of the provider"
-							disabled={!isEditing}
-							value={providerConfigState.jwksURI}
-							onChange={(e) =>
-								setProviderConfigState({ ...providerConfigState, jwksURI: e.target.value })
-							}
-							error={errors.jwksURI}
-						/>
-					</Flex>
-				</Flex>
-
-				{/* Delete Modal */}
-				<DeleteProviderConfigModal
-					open={isDeleteModalOpen}
-					handleClose={() => setIsDeleteModalOpen(false)}
-					tenantId={tenantId}
-					providerId={providerId}
-					onSuccess={() => {
-						setIsDeleteModalOpen(false);
-						if (onDelete) {
-							onDelete();
-						}
-					}}
-				/>
-				{/* Footer - Save button for when editing */}
-				{isEditing && (
-					<>
-						<ProviderConfigSeparator
-							mx="0"
-							my="0"
-						/>
-						<Flex
-							justify="end"
-							p="4"
-							gap="2"
-							align="center">
-							{formHasError && (
+							{errors.name && (
 								<Text
-									size="2"
-									color="red">
-									Please ensure all fields are correctly filled out before saving.
+									size="1"
+									color="red"
+									ml="2">
+									{errors.name}
 								</Text>
 							)}
-							<Button
-								size="2"
-								variant="outline"
-								color="gray"
-								onClick={() => {
-									// Reset suffix field visibility if no suffix was added
-									if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
-										setIsSuffixFieldVisible(false);
-									}
-
-									if (isAddingNewProvider && onCancel) {
-										// When adding new provider, call onCancel to go back
-										onCancel();
-									} else {
-										// When editing existing provider, just exit edit mode
-										setIsEditing(false);
-									}
-								}}>
-								Cancel
-							</Button>
-
-							<Button
-								size="2"
-								onClick={handleSave}
-								disabled={isSaving}>
-								{isSaving ? "Saving..." : "Save"}
-							</Button>
 						</Flex>
-					</>
-				)}
+					) : (
+						<ProviderConfigInputRow
+							label="Name"
+							tooltip="The name of the provider"
+							disabled={!isEditing}
+							required={!isKnownThirdPartyId(providerConfigState.thirdPartyId)}
+							value={providerConfigState.name}
+							onChange={(e) =>
+								setProviderConfigState((prevState) =>
+									prevState ? { ...prevState, name: e.target.value } : prevState
+								)
+							}
+							error={errors.name}
+						/>
+					)}
+				</Flex>
+
+				{/* Clients Section */}
+				<Text
+					size="3"
+					weight="medium"
+					className={styles["provider-configuration__form__clients__header"]}>
+					Clients
+				</Text>
+				<Flex
+					direction="column"
+					gap="3"
+					mt="3"
+					mx="3">
+					{providerConfigState.clients.map((client, index) => (
+						<ClientConfigSection
+							key={client.key}
+							client={client}
+							clientIndex={index}
+							clientsCount={providerConfigState.clients.length}
+							providerId={providerConfigState.thirdPartyId}
+							errors={errors}
+							customFields={customFields}
+							setClient={(updatedClient) => {
+								setProviderConfigState((prevState) => {
+									if (!prevState) return prevState;
+									const newClients = [...prevState.clients];
+									newClients[index] = updatedClient;
+									return { ...prevState, clients: newClients };
+								});
+							}}
+							handleDeleteClient={() => {
+								setProviderConfigState((prevState) => {
+									if (!prevState) return prevState;
+									return {
+										...prevState,
+										clients: prevState.clients.filter((_, i) => i !== index),
+									};
+								});
+							}}
+							disabled={!isEditing}
+						/>
+					))}
+					<Button
+						variant="soft"
+						size="2"
+						onClick={handleAddNewClient}
+						disabled={!isEditing}
+						className={styles["provider-configuration__add-new-client"]}>
+						<PlusIcon />
+						Add New Client
+					</Button>
+				</Flex>
+				<ProviderConfigSeparator />
+				<Flex
+					direction="column"
+					gap="4"
+					px="3"
+					pb="4">
+					{/* OIDC Discovery Endpoint */}
+					<ProviderConfigInputRow
+						label="OIDC Discovery Endpoint"
+						tooltip="The OIDC discovery endpoint of the provider"
+						disabled={!isEditing}
+						value={providerConfigState.oidcDiscoveryEndpoint}
+						onChange={(e) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, oidcDiscoveryEndpoint: e.target.value } : prevState
+							)
+						}
+						error={errors.oidcDiscoveryEndpoint}
+					/>
+
+					<ProviderConfigSeparator />
+
+					{/* Authorization Endpoint */}
+					<ProviderConfigInputRow
+						label="Authorization Endpoint"
+						tooltip="The authorization endpoint of the provider"
+						disabled={!isEditing || providerConfigResponse?.isGetAuthorisationRedirectUrlOverridden}
+						value={
+							providerConfigResponse?.isGetAuthorisationRedirectUrlOverridden
+								? "Cannot edit this because you have provided a custom override"
+								: providerConfigState.authorizationEndpoint
+						}
+						onChange={(e) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, authorizationEndpoint: e.target.value } : prevState
+							)
+						}
+						error={errors.authorizationEndpoint}
+					/>
+
+					<ProviderConfigKeyValue
+						label="Authorization Endpoint Query Params"
+						tooltip="The query params to be sent to the authorization endpoint"
+						items={providerConfigState.authorizationEndpointQueryParams}
+						setItems={(items) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, authorizationEndpointQueryParams: items } : prevState
+							)
+						}
+						disabled={!isEditing || providerConfigResponse?.isGetAuthorisationRedirectUrlOverridden}
+					/>
+
+					{providerConfigResponse?.isGetAuthorisationRedirectUrlOverridden && (
+						<Text
+							size="2"
+							color="orange"
+							className={styles["provider-configuration__warning-text"]}>
+							<strong>Note:</strong> You cannot edit the above fields because this provider is using a
+							custom override for <code>getAuthorisationRedirectUrl</code>
+						</Text>
+					)}
+
+					<ProviderConfigSeparator />
+
+					{/* Token Endpoint */}
+					<ProviderConfigInputRow
+						label="Token Endpoint"
+						tooltip="The token endpoint of the provider"
+						disabled={!isEditing || providerConfigResponse?.isExchangeAuthCodeForOAuthTokensOverridden}
+						value={
+							providerConfigResponse?.isExchangeAuthCodeForOAuthTokensOverridden
+								? "Cannot edit this because you have provided a custom override"
+								: providerConfigState.tokenEndpoint
+						}
+						onChange={(e) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, tokenEndpoint: e.target.value } : prevState
+							)
+						}
+						error={errors.tokenEndpoint}
+					/>
+
+					<ProviderConfigKeyValue
+						label="Token Endpoint Body Params"
+						tooltip="The body params to be sent to the token endpoint"
+						items={providerConfigState.tokenEndpointBodyParams}
+						setItems={(items) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, tokenEndpointBodyParams: items } : prevState
+							)
+						}
+						disabled={!isEditing || providerConfigResponse?.isExchangeAuthCodeForOAuthTokensOverridden}
+					/>
+
+					{providerConfigResponse?.isExchangeAuthCodeForOAuthTokensOverridden && (
+						<Text
+							size="2"
+							color="orange"
+							className={styles["provider-configuration__warning-text"]}>
+							<strong>Note:</strong> You cannot edit the above fields because this provider is using a
+							custom override for <code>exchangeAuthCodeForOAuthTokens</code>
+						</Text>
+					)}
+
+					<ProviderConfigSeparator />
+
+					{/* User Info Endpoint */}
+					<ProviderConfigInputRow
+						label="User Info Endpoint"
+						tooltip="The user info endpoint of the provider"
+						disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
+						value={
+							providerConfigResponse?.isGetUserInfoOverridden
+								? "Cannot edit this because you have provided a custom override"
+								: providerConfigState.userInfoEndpoint
+						}
+						onChange={(e) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, userInfoEndpoint: e.target.value } : prevState
+							)
+						}
+						error={errors.userInfoEndpoint}
+					/>
+
+					<ProviderConfigKeyValue
+						label="User Info Endpoint Query Params"
+						tooltip="The query params to be sent to the user info endpoint"
+						items={providerConfigState.userInfoEndpointQueryParams}
+						setItems={(items) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, userInfoEndpointQueryParams: items } : prevState
+							)
+						}
+						disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
+					/>
+
+					<ProviderConfigKeyValue
+						label="User Info Endpoint Headers"
+						tooltip="The headers to be sent to the user info endpoint"
+						items={providerConfigState.userInfoEndpointHeaders}
+						setItems={(items) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, userInfoEndpointHeaders: items } : prevState
+							)
+						}
+						disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
+					/>
+
+					{/* Email Frequency */}
+					<Flex
+						align="center"
+						gap="2">
+						<ProviderConfigInputLabel label="How often does the provider return email?" />
+						<EmailSelect
+							value={emailSelectValue}
+							setValue={handleEmailSelectChange}
+							disabled={!isEditing}
+						/>
+					</Flex>
+
+					{emailSelectValue === "never" && (
+						<Text
+							size="2"
+							color="orange"
+							className={styles["provider-configuration__warning-text"]}>
+							<strong>Note:</strong> We will generate a fake email for the end users automatically using
+							their user id.
+						</Text>
+					)}
+
+					{emailSelectValue === "sometimes" && (
+						<Flex
+							align="center"
+							gap="2">
+							<ProviderConfigInputLabel label="Do you want to generate a fake email when the provider doesn't return an email?" />
+							<Switch
+								checked={!providerConfigState.requireEmail}
+								onCheckedChange={(checked) =>
+									setProviderConfigState((prevState) =>
+										prevState ? { ...prevState, requireEmail: !checked } : prevState
+									)
+								}
+								disabled={!isEditing}
+							/>
+						</Flex>
+					)}
+
+					{/* User Info Maps */}
+					<UserInfoMapSection
+						label="User Info Map from UserInfo API"
+						tooltip="The mapping of the user info fields to the user info API"
+						name="fromUserInfoAPI"
+						value={
+							providerConfigState.userInfoMap.fromUserInfoAPI ?? {
+								userId: "",
+								email: "",
+								emailVerified: "",
+							}
+						}
+						handleChange={handleUserInfoFieldChange}
+						disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
+						isOverridden={providerConfigResponse?.isGetUserInfoOverridden}
+					/>
+
+					<UserInfoMapSection
+						label="User Info Map from Id Token Payload"
+						tooltip="The mapping of the user info fields to the id token payload"
+						name="fromIdTokenPayload"
+						value={
+							providerConfigState.userInfoMap.fromIdTokenPayload ?? {
+								userId: "",
+								email: "",
+								emailVerified: "",
+							}
+						}
+						handleChange={handleUserInfoFieldChange}
+						disabled={!isEditing || providerConfigResponse?.isGetUserInfoOverridden}
+						isOverridden={providerConfigResponse?.isGetUserInfoOverridden}
+					/>
+
+					{providerConfigResponse?.isGetUserInfoOverridden && (
+						<Text
+							size="2"
+							color="orange"
+							className={styles["provider-configuration__warning-text"]}>
+							<strong>Note:</strong> You cannot edit the above fields because this provider is using a
+							custom override for <code>getUserInfo</code>
+						</Text>
+					)}
+
+					<ProviderConfigSeparator />
+
+					{/* JWKS URI */}
+					<ProviderConfigInputRow
+						label="JWKS URI"
+						tooltip="The JWKS URI of the provider"
+						disabled={!isEditing}
+						value={providerConfigState.jwksURI}
+						onChange={(e) =>
+							setProviderConfigState((prevState) =>
+								prevState ? { ...prevState, jwksURI: e.target.value } : prevState
+							)
+						}
+						error={errors.jwksURI}
+					/>
+				</Flex>
 			</Flex>
-		);
-	}
-);
+
+			{/* Delete Modal */}
+			<DeleteProviderConfigModal
+				open={isDeleteModalOpen}
+				handleClose={() => setIsDeleteModalOpen(false)}
+				tenantId={tenantId}
+				providerId={providerId}
+				onSuccess={() => {
+					setIsDeleteModalOpen(false);
+					if (onDelete) {
+						onDelete();
+					}
+				}}
+			/>
+			{/* Footer - Save button for when editing */}
+			{isEditing && (
+				<>
+					<ProviderConfigSeparator
+						mx="0"
+						my="0"
+					/>
+					<Flex
+						justify="end"
+						p="4"
+						gap="2"
+						align="center">
+						{formHasError && (
+							<Text
+								size="2"
+								color="red">
+								Please ensure all fields are correctly filled out before saving.
+							</Text>
+						)}
+						<Button
+							size="2"
+							variant="outline"
+							color="gray"
+							onClick={() => {
+								// Reset suffix field visibility if no suffix was added
+								if (providerConfigState && providerConfigState.thirdPartyId === baseProviderId) {
+									setIsSuffixFieldVisible(false);
+								}
+
+								if (isAddingNewProvider && onCancel) {
+									// When adding new provider, call onCancel to go back
+									onCancel();
+								} else {
+									// When editing existing provider, just exit edit mode
+									setIsEditing(false);
+								}
+							}}>
+							Cancel
+						</Button>
+
+						<Button
+							size="2"
+							onClick={handleSave}
+							disabled={isSaving}>
+							{isSaving ? "Saving..." : "Save"}
+						</Button>
+					</Flex>
+				</>
+			)}
+		</Flex>
+	);
+})

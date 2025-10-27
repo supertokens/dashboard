@@ -16,19 +16,18 @@
 import { Cross1Icon } from "@radix-ui/react-icons";
 
 import IconButton from "@shared/components/iconButton";
-import { NOOP } from "@shared/utils/noop";
 import { withOverride } from "@plugins";
 
 import style from "./ProviderConfigCancelButton.module.scss";
 
 interface ProviderConfigCancelButtonProps {
-	onClick?: () => void;
+	onClick: () => void;
 	disabled?: boolean;
 }
 
 export const ProviderConfigCancelButton = withOverride(
 	"ProviderConfigCancelButton",
-	function ProviderConfigCancelButton({ onClick = NOOP, disabled = false }: ProviderConfigCancelButtonProps) {
+	function ProviderConfigCancelButton({ onClick, disabled = false }: ProviderConfigCancelButtonProps) {
 		return (
 			<IconButton
 				size="2"
