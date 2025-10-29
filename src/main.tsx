@@ -21,9 +21,58 @@ import reportWebVitals from "./reportWebVitals";
 import "./shared/styles";
 import { SuperTokens } from "./supertokens";
 
+// todo remove this - example only
 SuperTokens.init({
 	apiPath: "/api",
-	plugins: [],
+	plugins: [
+		{
+			id: "test",
+			version: "1.0.0",
+			componentOverrides: (originalComponentOverrides) => {
+				return {
+					...originalComponentOverrides,
+					Layout_Override: ({ DefaultComponent, ...props }) => {
+						return (
+							<>
+								{originalComponentOverrides.Layout_Override && (
+									<originalComponentOverrides.Layout_Override
+										DefaultComponent={DefaultComponent}
+										{...props}
+									/>
+								)}
+								<div>Plugin override</div>
+							</>
+						);
+					},
+				};
+			},
+		},
+	],
+	override: {
+		functions: (originalImplementation) => {
+			return {
+				...originalImplementation,
+				testMethod: async () => {
+					await originalImplementation.testMethod();
+					console.log("overridden testMethod");
+
+					return true;
+				},
+			};
+		},
+		components: (originalComponentOverrides) => {
+			return {
+				...originalComponentOverrides,
+				Layout_Override: ({ DefaultComponent, ...props }) => {
+					return (
+						<>
+							<DefaultComponent {...props} /> <div>Config override</div>
+						</>
+					);
+				},
+			};
+		},
+	},
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);

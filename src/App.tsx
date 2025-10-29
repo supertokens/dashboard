@@ -36,6 +36,7 @@ import { AccessDeniedModal } from "@shared/components/accessDenied";
 import { ComponentOverrideContext } from "@plugins";
 import React, { useMemo } from "react";
 import { SuperTokens } from "./supertokens";
+import { Implementation } from "./implementation";
 
 const genericContext = React.createContext({});
 
@@ -47,6 +48,9 @@ function App() {
 			...contextValue,
 		};
 	}, [contextValue]);
+
+	// todo remove this - example only
+	Implementation.getInstanceOrThrow().testMethod();
 
 	return (
 		<HelmetProvider>

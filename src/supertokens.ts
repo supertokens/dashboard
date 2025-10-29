@@ -1,7 +1,13 @@
 import { ComponentOverrideMap, PluginRouteHandler, SuperTokensPlugin, SuperTokensPublicPlugin } from "@plugins";
+import { Implementation } from "./implementation";
+
 type SuperTokensConfig = {
 	apiPath: string;
 	plugins: SuperTokensPlugin[];
+	override?: {
+		components?: (originalComponentOverrides: ComponentOverrideMap) => ComponentOverrideMap;
+		functions?: (originalImplementation: Implementation) => Implementation;
+	};
 };
 
 type SuperTokensPublicConfig = Pick<SuperTokensConfig, "apiPath">;
@@ -13,25 +19,25 @@ export class SuperTokens {
 	public pluginRouteHandlers: PluginRouteHandler[] = [];
 
 	private constructor(config: SuperTokensConfig) {
+		const publicConfig = getPublicConfig(config);
+
 		const { plugins } = config;
 
-		this.componentOverrides = {};
+		this.pluginList = plugins.map(getPublicPlugin);
+
+		this.componentOverrides = config.override?.components ? config.override.components({}) : {};
 
 		for (const plugin of plugins) {
 			if (plugin.componentOverrides !== undefined) {
 				this.componentOverrides = {
 					...this.componentOverrides,
-					...plugin.componentOverrides,
+					...plugin.componentOverrides(this.componentOverrides),
 				};
 			}
 		}
 
-		this.pluginList = plugins.map(getPublicPlugin);
-
-		const publicConfig = getPublicConfig(config);
-
 		// iterated separately so we can pass the instance plugins  as reference so they always have access to the latest
-		for (let pluginIndex = 0; pluginIndex < this.pluginList.length; pluginIndex += 1) {
+		for (let pluginIndex = 0; pluginIndex < plugins.length; pluginIndex += 1) {
 			const pluginRouteHandlers = plugins[pluginIndex].routeHandlers;
 			if (pluginRouteHandlers) {
 				let handlers: PluginRouteHandler[] = [];
@@ -48,6 +54,8 @@ export class SuperTokens {
 				this.pluginRouteHandlers.push(...handlers);
 			}
 		}
+
+		Implementation.init({ override: config.override?.functions ?? undefined });
 	}
 
 	public static getInstanceOrThrow(): SuperTokens {

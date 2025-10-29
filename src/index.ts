@@ -1,4 +1,4 @@
-import { SuperTokens } from "supertokens";
+import { SuperTokens } from "./supertokens";
 
 import Dashboard from "./App";
 

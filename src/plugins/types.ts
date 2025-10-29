@@ -54,6 +54,10 @@ import { ProviderConfigKeyValue } from "@features/tenants/tenant-details/provide
 import { ProviderConfigSeparator } from "@features/tenants/tenant-details/provider-configuration/components/ProviderConfigSeparator";
 import { ProviderConfigSuffixInput } from "@features/tenants/tenant-details/provider-configuration/components/ProviderConfigSuffixInput";
 import { UserInfoMapSection } from "@features/tenants/tenant-details/provider-configuration/components/UserInfoMapSection";
+import { OverrideableBuilder } from "supertokens-js-override";
+import { Implementation } from "../implementation";
+
+export type ImplType<O> = { [K in keyof O]: (...args: any[]) => any };
 
 type SuperTokensPublicConfig = {
 	apiPath: string;
@@ -72,7 +76,11 @@ export type SuperTokensPlugin = {
 		pluginsAbove: SuperTokensPublicPlugin[],
 		dashboardVersion: string
 	) => { status: "OK"; pluginsToAdd?: SuperTokensPlugin[] } | { status: "ERROR"; message: string };
-	componentOverrides?: ComponentOverrideMap;
+	override?: (
+		originalImplementation: Implementation,
+		builder: OverrideableBuilder<ImplType<Implementation>>
+	) => Implementation;
+	componentOverrides?: (originalComponentOverrides: ComponentOverrideMap) => ComponentOverrideMap;
 	routeHandlers?:
 		| ((
 				config: SuperTokensPublicConfig,
