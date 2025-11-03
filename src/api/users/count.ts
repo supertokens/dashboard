@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,8 +13,8 @@
  * under the License.
  */
 
-import { UserListCount } from "../../ui/pages/usersList/types";
-import { getApiUrl, useFetchData } from "../../utils";
+import { UserListCount } from "@features/users/types";
+import { getApiUrl, useFetchData } from "@shared/utils";
 
 interface IUseFetchCountService {
 	fetchCount: (tenantid?: string) => Promise<UserListCount | undefined>;

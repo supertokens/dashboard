@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -13,65 +13,68 @@
  * under the License.
  */
 
+import { Theme } from "@radix-ui/themes";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import UsersListPage from "./ui/pages/usersList/UsersList";
-import { getDashboardAppBasePath } from "./utils";
+import { HelmetProvider } from "react-helmet-async";
+
+import { getDashboardAppBasePath } from "@shared/utils";
 
 // This is to make sure that images are packed in the build folder
 import "./images";
-import AuthWrapper from "./ui/components/authWrapper";
-import ErrorBoundary from "./ui/components/errorboundary";
-import { AccessDeniedModal } from "./ui/components/layout/accessDeniedModal";
-import { LayoutModalContainer } from "./ui/components/layout/layoutModal";
-import SafeAreaView from "./ui/components/safeAreaView/SafeAreaView";
-import { ToastNotificationContainer } from "./ui/components/toast/toastNotification";
-import { AccessDeniedContextProvider } from "./ui/contexts/AccessDeniedContext";
-import { PopupContentContextProvider } from "./ui/contexts/PopupContentContext";
-import { TenantsListContextProvider } from "./ui/contexts/TenantsListContext";
-import MainLayout from "./ui/layouts/mainLayout";
-import TenantManagement from "./ui/pages/tenants";
-import UserRolesList from "./ui/pages/userroles";
+
+import TenantManagement from "@features/tenants/Page";
+import { UserManagement } from "@features/users/Page";
+import { ToastProvider } from "@shared/components/toast";
+import { QueryProvider } from "@shared/providers/QueryProvider";
+import { ROUTES } from "@shared/navigation";
+import RolesAndPermissions from "@features/roles-and-permissions/Page";
+import { Layout } from "@features/layout";
+import AuthWrapper from "@features/auth/components/AuthWrapper";
+import SafeAreaView from "@shared/components/safeAreaView/SafeAreaView";
+import ErrorBoundary from "@shared/components/errorboundary";
+import { AccessDeniedModal } from "@shared/components/accessDenied";
 
 function App() {
 	return (
-		<>
+		<HelmetProvider>
 			<SafeAreaView />
 			<ErrorBoundary>
-				<PopupContentContextProvider>
-					<AccessDeniedContextProvider>
-						<TenantsListContextProvider>
+				<Theme
+					radius="medium"
+					accentColor="indigo"
+					appearance="light">
+					<QueryProvider>
+						<ToastProvider>
 							<AuthWrapper>
 								<Router basename={getDashboardAppBasePath()}>
-									<MainLayout>
+									<Layout>
 										<Routes>
 											<Route
-												path="/"
-												element={<UsersListPage />}
+												path={ROUTES.USERS}
+												element={<UserManagement />}
 											/>
 											<Route
-												path="/roles"
-												element={<UserRolesList />}
+												path={ROUTES.ROLES}
+												element={<RolesAndPermissions />}
 											/>
 											<Route
-												path="/tenants"
+												path={ROUTES.TENANTS}
 												element={<TenantManagement />}
 											/>
 											<Route
 												path="*"
-												element={<UsersListPage />}
+												element={<UserManagement />}
 											/>
 										</Routes>
-									</MainLayout>
+									</Layout>
 								</Router>
 								<AccessDeniedModal />
-								<ToastNotificationContainer />
-								<LayoutModalContainer />
 							</AuthWrapper>
-						</TenantsListContextProvider>
-					</AccessDeniedContextProvider>
-				</PopupContentContextProvider>
+						</ToastProvider>
+					</QueryProvider>
+				</Theme>
 			</ErrorBoundary>
-		</>
+		</HelmetProvider>
 	);
 }
 

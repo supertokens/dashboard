@@ -1,0 +1,275 @@
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.provider-button {
+	height: 45px !important;
+	border: 1px solid var(--color-neutral-alpha-7) !important;
+	background: #fff !important;
+	outline: none !important;
+	box-shadow: none !important;
+
+	&--active {
+		border: 1px solid var(--color-accent-alpha-7) !important;
+		background: var(--color-accent-2) !important;
+		color: var(--color-neutral-alpha-12) !important;
+	}
+
+	&__label {
+		color: var(--color-neutral-alpha-11);
+		&--active {
+			color: var(--color-neutral-alpha-12);
+		}
+	}
+}
+
+.providers-content {
+	&__active-providers {
+		border-bottom: 1px solid var(--color-neutral-6);
+	}
+
+	&__form {
+		border-radius: var(--radius-max-4);
+	}
+}
+
+.provider-setup {
+	border-radius: var(--radius-max-4);
+	border: 1px solid var(--color-neutral-8);
+	background: var(--color-sand-1);
+
+	&__header {
+		border-bottom: 1px solid var(--color-neutral-8);
+		background: var(--color-sand-2);
+		border-radius: var(--radius-max-4) var(--radius-max-4) 0 0;
+
+		&__title {
+			color: var(--color-accent-9);
+			font-size: 14px;
+			font-style: normal;
+			font-weight: 600;
+			line-height: 20px;
+		}
+
+		&__badge {
+			height: 32px !important;
+
+			&__text {
+				color: var(--color-neutral-alpha-11);
+			}
+		}
+	}
+
+	&__main {
+		padding: 14px 20px;
+
+		&__title {
+			color: var(--color-neutral-11);
+			margin-bottom: 14px;
+		}
+
+		&__form {
+			margin-bottom: 14px;
+			padding: 14px 12px;
+			border-radius: var(--radius-max-3);
+			border: 1px solid var(--color-neutral-6);
+			background: var(--color-sand-2);
+
+			&__label {
+				color: var(--color-neutral-11);
+			}
+
+			&__input {
+				flex: 1;
+			}
+		}
+
+		&__footer {
+			color: var(--color-neutral-11);
+			font-size: 14px;
+			font-weight: 500;
+			line-height: 20px;
+		}
+	}
+}
+
+.provider-configuration {
+	border: 1px solid var(--color-neutral-8);
+	border-radius: var(--radius-max-4);
+
+	&__header {
+		border-bottom: 1px solid var(--color-neutral-8);
+		background: var(--color-sand-2);
+		border-radius: var(--radius-max-4) var(--radius-max-4) 0 0;
+		padding: 12px;
+
+		&__main {
+			&__label {
+				color: var(--color-accent-9);
+				font-weight: 600;
+			}
+			&__badge {
+				height: 32px !important;
+				&__text {
+					color: var(--color-neutral-alpha-11);
+				}
+			}
+		}
+	}
+}
+
+.provider-config-input {
+	color: var(--color-neutral-12) !important;
+	&--grow {
+		flex: 1;
+	}
+	&--disabled {
+		background: var(--color-neutral-alpha-3) !important;
+	}
+	&--readonly {
+		color: var(--color-neutral-alpha-9) !important;
+	}
+}
+
+.provider-config-input-label {
+	&__text {
+		color: var(--color-neutral-11);
+	}
+	&__text--required {
+		color: var(--color-red-9);
+		margin-left: 4px;
+	}
+	&--sm {
+		min-width: 150px;
+	}
+	&--md {
+		min-width: 200px;
+	}
+}
+
+.provider-config-suffix-input {
+	&__button {
+		border: 1px solid var(--color-neutral-alpha-3) !important;
+		background: var(--color-neutral-alpha-6) !important;
+		color: var(--color-neutral-alpha-9) !important;
+		outline: none !important;
+		box-shadow: none !important;
+	}
+	&__add-suffix {
+		color: var(--color-accent-alpha-11);
+		&__text {
+			margin-right: 4px;
+			cursor: pointer;
+		}
+	}
+	&--active {
+		.provider-config-suffix-input__button {
+			border-top-right-radius: 0 !important;
+			border-bottom-right-radius: 0 !important;
+		}
+		.provider-config-input {
+			border-top-left-radius: 0 !important;
+			border-bottom-left-radius: 0 !important;
+		}
+	}
+}
+
+.provider-configuration__form {
+	&__thirdparty {
+		padding: 20px 12px;
+	}
+	&__clients {
+		&__header {
+			border-top: 1px solid var(--color-neutral-8);
+			border-bottom: 1px solid var(--color-neutral-8);
+			background: var(--color-sand-2);
+			padding: 8px 12px;
+			color: var(--color-neutral-11);
+		}
+	}
+	&__user-info {
+		border-radius: var(--radius-max-3);
+		border: 1px solid var(--color-neutral-6);
+		background: var(--color-sand-2);
+	}
+}
+
+.provider-configuration-client {
+	border-radius: var(--radius-max-3);
+	border: 1px solid var(--color-neutral-6);
+	background: var(--color-sand-2);
+
+	&__delete {
+		border-radius: var(--radius-max-3) var(--radius-max-3) 0 0;
+		border-bottom: 1px solid var(--color-neutral-6);
+		background: var(--color-sand-2);
+	}
+}
+
+.provider-config-scope {
+	.provider-config-button {
+		width: fit-content;
+	}
+}
+
+.provider-config-key-value {
+	border-radius: var(--radius-max-3);
+	border: 1px solid var(--color-neutral-6);
+	background: var(--color-sand-2);
+	&__item {
+		border-bottom: 1px solid var(--color-neutral-6);
+		border-radius: var(--radius-max-3);
+		border: 1px solid var(--color-neutral-6);
+		background: var(--color-sand-2);
+		color: var(--color-neutral-11);
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: 20px;
+		&__key {
+			flex: 1;
+		}
+		&__value {
+			flex: 1;
+		}
+	}
+
+	.provider-config-button {
+		width: fit-content;
+	}
+}
+
+.provider-config-segmented-control {
+	flex: 1;
+	color: var(--color-neutral-11) !important;
+	border: 1px solid var(--color-neutral-6) !important;
+	background: #ffffff !important;
+
+	[data-state="on"] {
+		background: var(--color-accent-alpha-4);
+		color: var(--color-accent-11);
+		border: 1px solid var(--color-accent-9) !important;
+		box-shadow: none !important;
+	}
+	span {
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 20px;
+	}
+}
+
+.provider-config-separator {
+	background: var(--color-neutral-6) !important ;
+	flex: 1;
+}

@@ -295,6 +295,16 @@ module.exports = function (webpackEnv) {
 					"react-dom$": "react-dom/profiling",
 					"scheduler/tracing": "scheduler/tracing-profiling",
 				}),
+				// Path aliases
+				"@api": path.resolve(paths.appSrc, "api"),
+				"@components": path.resolve(paths.appSrc, "shared/components"),
+				"@styles": path.resolve(paths.appSrc, "shared/styles"),
+				"@services": path.resolve(paths.appSrc, "shared/services"),
+				"@features": path.resolve(paths.appSrc, "features"),
+				"@shared": path.resolve(paths.appSrc, "shared"),
+				"@assets": path.resolve(paths.appSrc, "assets"),
+				"@constants": path.resolve(paths.appSrc, "shared/constants"),
+				"@version": path.resolve(paths.appSrc, "shared/version.ts"),
 				...(modules.webpackAliases || {}),
 			},
 			plugins: [

@@ -1,0 +1,61 @@
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.permissions {
+	&__header {
+		border-bottom: 1px solid var(--color-neutral-6);
+		background: var(--color-sand-2);
+		padding: 12px;
+	}
+	&__table {
+		&__paper {
+			border-radius: var(--radius-max-4);
+		}
+		&__item {
+			padding: 20px 14px;
+			background: var(--color-sand-2);
+			&__text {
+				color: var(--color-accent-alpha-11);
+				padding: 4px 8px;
+			}
+		}
+		&__item:not(:last-child) {
+			border-bottom: 1px solid var(--color-neutral-alpha-8);
+		}
+		&__item:hover {
+			background: var(--color-accent-alpha-2);
+		}
+		&__item--selected {
+			background: var(--color-accent-alpha-3);
+		}
+		&__item:first-child {
+			border-radius: var(--radius-max-4) var(--radius-max-4) 0 0 !important;
+		}
+		&__item:last-child {
+			border-radius: 0 0 var(--radius-max-4) var(--radius-max-4) !important;
+		}
+
+		&__item__badge {
+			&--selected {
+				background: var(--color-accent-alpha-4) !important;
+			}
+		}
+		&__item__text {
+			&--selected {
+				color: var(--color-accent-alpha-11) !important;
+			}
+		}
+	}
+}

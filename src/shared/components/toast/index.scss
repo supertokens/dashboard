@@ -1,0 +1,154 @@
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.toast__viewport {
+	--viewport-padding: 25px;
+	position: fixed;
+	top: var(--viewport-padding);
+	right: var(--viewport-padding);
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+	gap: 10px;
+	width: 390px;
+	max-width: calc(100vw - var(--viewport-padding) * 2);
+	margin: 0;
+	list-style: none;
+	z-index: 2147483647;
+	outline: none;
+	pointer-events: none;
+}
+
+.toast__root {
+	background-color: white;
+	border-radius: 12px;
+	box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08), 0px 2px 8px rgba(0, 0, 0, 0.04);
+	padding: 16px;
+	pointer-events: auto;
+	min-width: 280px;
+	max-width: 320px;
+	border: 1px solid #e5e7eb;
+}
+
+.toast__root[data-state="open"] {
+	animation: slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.toast__root[data-state="closed"] {
+	animation: hide 100ms ease-in;
+}
+.toast__root[data-swipe="move"] {
+	transform: translateX(var(--radix-toast-swipe-move-x));
+}
+.toast__root[data-swipe="cancel"] {
+	transform: translateX(0);
+	transition: transform 200ms ease-out;
+}
+.toast__root[data-swipe="end"] {
+	animation: swipeOut 100ms ease-out;
+}
+
+@keyframes hide {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes slideIn {
+	from {
+		transform: translateX(calc(100% + var(--viewport-padding)));
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+@keyframes swipeOut {
+	from {
+		transform: translateX(var(--radix-toast-swipe-end-x));
+	}
+	to {
+		transform: translateX(calc(100% + var(--viewport-padding)));
+	}
+}
+
+.toast__content {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	width: 100%;
+}
+
+.toast__icon-container {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	height: 24px;
+}
+
+.toast__icon {
+	width: 24px;
+	height: 24px;
+}
+
+.toast__text-content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.toast__title {
+	font-size: 14px;
+	font-weight: 600;
+	color: #111827;
+	line-height: 1.4;
+	margin: 0;
+}
+
+.toast__description {
+	font-size: 13px;
+	color: #6b7280;
+	line-height: 1.4;
+	margin: 0;
+}
+
+.toast__close {
+	background: transparent;
+	border: none;
+	padding: 4px;
+	color: #9ca3af;
+	cursor: pointer;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	transition: all 0.15s ease;
+	flex-shrink: 0;
+	margin-top: 0;
+}
+
+.toast__close:hover {
+	background-color: #f3f4f6;
+	color: #374151;
+}
+
+.toast__close:active {
+	background-color: #e5e7eb;
+}

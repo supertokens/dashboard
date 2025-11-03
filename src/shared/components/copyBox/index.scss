@@ -1,0 +1,63 @@
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
+ *
+ * This software is licensed under the Apache License, Version 2.0 (the
+ * "License") as published by the Apache Software Foundation.
+ *
+ * You may not use this file except in compliance with the License. You may
+ * obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+.copy-box {
+	&__container {
+		border-radius: 6px;
+		border: 1px solid rgba(1, 1, 46, 0.13);
+		background: rgba(0, 0, 59, 0.05);
+		height: 32px;
+		padding: 6px 4px 6px 8px;
+		max-width: 100%;
+	}
+
+	&__text {
+		color: var(--color-neutral-alpha-11);
+		font-size: 14px;
+		font-style: normal;
+		font-weight: 500;
+		line-height: 20px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		width: 300px;
+	}
+
+	&__text--active {
+		color: var(--color-plum-alpha-11);
+	}
+
+	&__container__copy-icon {
+		border-radius: 4px;
+		background: rgba(0, 0, 59, 0.05);
+		height: 24px !important;
+		width: 24px !important;
+	}
+
+	&__eye-icon-container {
+		border-radius: 4px;
+		background: rgba(0, 0, 59, 0.05);
+		padding: 8px;
+		cursor: pointer;
+		border: solid red 1px !important;
+	}
+
+	&__eye-icon {
+		border-radius: 4px;
+		background: rgba(0, 0, 59, 0.05);
+		padding: 8px;
+		cursor: pointer;
+	}
+}

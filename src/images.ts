@@ -1,4 +1,4 @@
-/* Copyright (c) 2022, VRAI Labs and/or its affiliates. All rights reserved.
+/* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
  *
  * This software is licensed under the Apache License, Version 2.0 (the
  * "License") as published by the Apache Software Foundation.
@@ -44,6 +44,9 @@ import "./assets/envelope-green.svg";
 import "./assets/eye-stroke.svg";
 import "./assets/eye.svg";
 import "./assets/favicon.ico";
+import "./assets/filter-icon.svg";
+import "./assets/sort-ascending.svg";
+import "./assets/sort-descending.svg";
 import "./assets/form-field-error-icon.svg";
 import "./assets/hamburger-menu.svg";
 import "./assets/help-circle.svg";
@@ -94,5 +97,32 @@ import "./assets/triangle-down.svg";
 import "./assets/Union-yellow.png";
 import "./assets/Union.png";
 import "./assets/unlink-login-method.png";
-import "./assets/user-managment.svg";
+import "./assets/permission.svg";
+import "./assets/user.svg";
+import "./assets/cross-2.svg";
+import "./assets/danger.svg";
+import "./assets/success-icon.svg";
+import "./assets/error-icon.svg";
+import "./assets/key-shield.svg";
+import "./assets/permissions.svg";
+import "./assets/tenant.svg";
+import "./assets/shield.svg";
+import "./assets/apple.svg";
+import "./assets/active-directory.png";
+import "./assets/discord.png";
+import "./assets/facebook.png";
+import "./assets/github.png";
+import "./assets/google.png";
+import "./assets/linkedin.png";
+import "./assets/x.png";
+import "./assets/okta.png";
+import "./assets/bitbucket.png";
+import "./assets/gitlab.png";
 import "./logo.svg";
+import "./assets/totp.svg";
+import "./assets/otp-email.svg";
+import "./assets/otp-phone.svg";
+import "./assets/back-arrow.svg";
+import "./assets/user-nav-icon.svg";
+import "./assets/role-nav-icon.svg";
+import "./assets/tenant-nav-icon.svg";

@@ -1,0 +1,418 @@
+# Cursor and Code Style Guidelines
+
+## Core Development Principles
+
+### Code Quality Standards
+
+1. **Type Safety**
+
+    - Always use explicit TypeScript types (avoid `any`, `unknown`, or `object`)
+    - Define interfaces for all data structures
+    - Use strict null checks and handle undefined/null cases
+    - Prefer type unions over enums when possible
+
+2. **Error Handling**
+
+    - Implement proper error boundaries for React components
+    - Use try-catch blocks for async operations
+    - Provide meaningful error messages to users
+    - Log errors appropriately for debugging
+
+3. **Code Clarity**
+
+    - Write self-documenting code with meaningful variable and function names
+    - Keep functions small and focused (single responsibility principle)
+    - Use JSDoc comments for complex logic
+    - Avoid deep nesting (max 3 levels)
+
+4. **Performance**
+    - Implement lazy loading for large components and routes
+    - Use React.memo, useMemo, and useCallback appropriately
+    - Optimize bundle size and loading times
+    - Monitor and measure performance metrics
+
+### Security Guidelines
+
+1. **Input Validation**
+
+    - Validate all user inputs on both client and server
+    - Sanitize data before rendering to prevent XSS
+    - Use proper form validation libraries
+    - Never trust client-side validation alone
+
+2. **Authentication & Authorization**
+
+    - Implement proper authentication checks
+    - Use role-based access control (RBAC)
+    - Secure API endpoints with proper authorization
+    - Follow OWASP security guidelines
+
+3. **Data Protection**
+    - Never expose sensitive data in client-side code
+    - Use environment variables for configuration
+    - Implement proper CORS policies
+    - Encrypt sensitive data in transit and at rest
+
+### Architecture Principles
+
+1. **Separation of Concerns**
+
+    - Keep business logic separate from UI components
+    - Use custom hooks for reusable logic
+    - Implement proper data flow patterns
+    - Maintain clear boundaries between layers
+
+2. **SOLID Principles**
+
+    - Single Responsibility: Each module/component has one reason to change
+    - Open/Closed: Open for extension, closed for modification
+    - Liskov Substitution: Derived classes must be substitutable for base classes
+    - Interface Segregation: Many specific interfaces are better than one general
+    - Dependency Inversion: Depend on abstractions, not concretions
+
+3. **DRY (Don't Repeat Yourself)**
+    - Extract common functionality into shared utilities
+    - Use composition over inheritance
+    - Create reusable components and hooks
+    - Avoid code duplication across features
+
+### Testing Principles
+
+1. **Test Coverage**
+
+    - Write unit tests for all utility functions and custom hooks
+    - Implement integration tests for feature workflows
+    - Use end-to-end tests for critical user journeys
+    - Maintain minimum 80% code coverage
+
+2. **Testing Best Practices**
+
+    - Follow AAA pattern (Arrange, Act, Assert)
+    - Test behavior, not implementation details
+    - Use descriptive test names that explain the scenario
+    - Mock external dependencies appropriately
+
+3. **Test Organization**
+    - Co-locate tests with source files when possible
+    - Use consistent naming conventions (`*.test.ts`, `*.spec.ts`)
+    - Group related tests using `describe` blocks
+    - Keep tests independent and isolated
+
+### Accessibility Standards
+
+1. **WCAG Compliance**
+
+    - Follow WCAG 2.1 AA guidelines
+    - Ensure proper color contrast ratios (4.5:1 minimum)
+    - Implement keyboard navigation for all interactive elements
+    - Provide alternative text for images and icons
+
+2. **Semantic HTML**
+
+    - Use proper HTML elements for their intended purpose
+    - Implement proper heading hierarchy (h1, h2, h3, etc.)
+    - Use ARIA attributes when necessary
+    - Ensure form labels are properly associated
+
+3. **User Experience**
+    - Provide loading states and feedback for async operations
+    - Implement proper focus management
+    - Support screen readers and assistive technologies
+    - Test with keyboard-only navigation
+
+## File Structure
+
+### Directory Organization
+
+-   `src/`: Main source code directory
+
+    -   `features/`: Feature-based modules (self-contained business logic)
+        -   `auth/`: Authentication feature
+        -   `tenants/`: Tenant management feature
+        -   `users/`: User management feature
+        -   `roles-and-permissions/`: Roles and permissions feature
+        -   `analytics/`: Analytics feature
+        -   `layout/`: Application layout feature
+        -   Each feature contains:
+            -   `components/`: Feature-specific components
+            -   `hooks/`: Feature-specific hooks
+            -   `services/`: Feature API calls
+            -   `types/`: Feature type definitions
+            -   `utils/`: Feature utilities
+            -   `constants/`: Feature constants
+            -   `index.ts`: Public API exports
+    -   `shared/`: Shared utilities and components
+        -   `components/`: Reusable UI components
+            -   `ui/`: Basic UI components (Button, Modal, etc.)
+            -   `forms/`: Form-related components
+            -   `layout/`: Layout components
+        -   `hooks/`: Shared custom hooks
+        -   `services/`: Shared services (network, storage)
+        -   `utils/`: Shared utility functions
+        -   `types/`: Shared type definitions
+        -   `constants/`: Shared constants
+        -   `styles/`: Global styles and themes
+        -   `providers/`: Global providers (QueryProvider, etc.)
+        -   `navigation/`: Navigation utilities
+        -   `events/`: Event definitions
+    -   `api/`: API layer
+        -   `analytics/`: Analytics API endpoints
+        -   `tenants/`: Tenant API endpoints
+        -   `users/`: User API endpoints
+        -   `userroles/`: User roles API endpoints
+        -   `search/`: Search API endpoints
+    -   `assets/`: Static assets (images, icons, etc.)
+
+-   `server/`: Backend server code
+-   `build/`: Production build output
+-   `docs/`: Documentation files
+
+### Path Aliases
+
+Use the following path aliases for imports:
+
+-   `@api/*`: API endpoints and services
+-   `@components/*`: Shared components
+-   `@features/*`: Feature modules
+-   `@shared/*`: Shared utilities and components
+-   `@styles/*`: Global styles
+-   `@services/*`: Shared services
+-   `@assets/*`: Static assets
+-   `@constants`: Shared constants
+-   `@version`: Version information
+
+### Import Conventions
+
+1. **Feature imports**: Use `@features/feature-name/...` for feature-specific imports
+2. **Shared imports**: Use `@shared/...` for shared utilities and components
+3. **API imports**: Use `@api/...` for API calls and endpoints
+4. **Asset imports**: Use `@assets/...` for static assets
+5. **Relative imports**: Only use relative imports within the same feature directory
+
+### UI Library Conventions
+
+1. **Radix UI**: Use `@radix-ui/themes` for UI components and `@radix-ui/react-icons` for icons
+2. **TanStack Query**: Use for data fetching and caching with proper query keys
+3. **Component Composition**: Prefer composition over inheritance when building complex components
+4. **Accessibility**: Leverage Radix UI's built-in accessibility features
+
+### Data Fetching Patterns
+
+1. **Query Keys**: Use consistent, hierarchical query keys (e.g., `['users', userId]`)
+2. **Custom Hooks**: Create custom hooks for data fetching logic (e.g., `useUsers`, `useTenantDetails`)
+3. **Error Handling**: Implement proper error boundaries and loading states
+4. **Optimistic Updates**: Use mutations with optimistic updates when appropriate
+5. **Cache Management**: Implement proper cache invalidation strategies
+
+### Required File Header
+
+All source files must begin with the following copyright header:
+/\* Copyright (c) 2025, VRAI Labs and/or its affiliates. All rights reserved.
+
+-   This software is licensed under the Apache License, Version 2.0 (the
+-   "License") as published by the Apache Software Foundation.
+-   You may not use this file except in compliance with the License. You may
+-   obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+-   Unless required by applicable law or agreed to in writing, software
+-   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+-   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+-   License for the specific language governing permissions and limitations
+-   under the License.
+    \*/
+
+## Styling Guidelines
+
+### File Naming Conventions
+
+1. **Component-specific styles**: Use `index.scss` for shared components
+2. **Scoped component styles**: Use `ComponentName.module.scss` for component-specific styles
+3. **Global styles**: Use `index.scss` in the `@styles` directory
+4. **Feature-specific styles**: Use `index.scss` within feature directories
+
+### CSS Modules Usage
+
+-   Use `.module.scss` for component-scoped styles that need CSS modules
+-   Import as: `import styles from "./ComponentName.module.scss"`
+-   Access classes as: `className={styles.className}`
+
+### BEM Naming Convention (for non-module styles)
+
+-   Block: Standalone component (e.g., `section-container`)
+-   Element: Parts of a block (prefixed with `__`) (e.g., `section-container__header`)
+-   Modifier: Variations (prefixed with `--`) (e.g., `section-container--large`)
+
+### BEM Rules
+
+1. Use kebab-case for all BEM classes
+2. Never nest BEM elements (no `block__element1__element2`)
+3. Keep modifiers simple and boolean-like
+4. Use semantic class names
+
+### Example
+
+```scss
+// For regular .scss files (BEM)
+.section-container {
+	// Block styles
+	&__header {
+		// Element styles
+	}
+	&--large {
+		// Modifier styles
+	}
+}
+
+// For .module.scss files (CSS Modules)
+.container {
+	// Component-scoped styles
+}
+
+.header {
+	// Component-scoped styles
+}
+```
+
+## Feature Organization Guidelines
+
+### Feature Structure
+
+Each feature should follow this consistent structure:
+
+```
+feature-name/
+├── components/          # Feature-specific components
+├── hooks/              # Feature-specific hooks
+├── services/           # Feature API calls
+├── types/              # Feature types
+├── utils/              # Feature utilities
+├── constants/          # Feature constants
+└── index.ts            # Public API exports
+```
+
+### Feature Best Practices
+
+1. **Self-contained**: Features should be independent and not depend on other features
+2. **Public API**: Use `index.ts` to export only what other features need
+3. **Internal organization**: Keep feature internals private, only expose through index.ts
+4. **Shared code**: Move reusable code to `@shared/` when used by multiple features
+5. **API calls**: Keep feature-specific API calls in `services/` directory
+
+## TypeScript Component Guidelines
+
+### Component Structure
+
+1. Use functional components with explicit type definitions
+2. Props interface must be defined above component
+3. Export components as default when they're the main export
+4. Use React.FC for functional components with children
+
+### Example
+
+```typescript
+interface SectionContainerProps {
+	children: React.ReactNode;
+	className?: string;
+	variant?: "default" | "large";
+}
+
+export default function SectionContainer({ children, className, variant = "default" }: SectionContainerProps) {
+	const baseClass = "section-container";
+	const modifierClass = variant !== "default" ? `${baseClass}--${variant}` : "";
+	const combinedClass = [baseClass, modifierClass, className].filter(Boolean).join(" ");
+
+	return <div className={combinedClass}>{children}</div>;
+}
+```
+
+## Best Practices
+
+### General
+
+1. Use meaningful variable and function names
+2. Keep components focused and single-responsibility
+3. Implement proper error boundaries
+4. Use proper TypeScript types (avoid `any`)
+5. Document complex logic with JSDoc comments
+
+### Styling
+
+1. Use CSS variables for theming
+2. Implement responsive design using mixins
+3. Follow mobile-first approach
+4. Use semantic HTML elements
+
+### Performance
+
+1. Implement proper memoization (useMemo, useCallback)
+2. Lazy load components when appropriate
+3. Optimize re-renders
+4. Use proper key props in lists
+
+### Accessibility
+
+1. Use proper ARIA attributes
+2. Ensure keyboard navigation
+3. Maintain proper color contrast
+4. Support screen readers
+
+## Code Review Checklist
+
+### File Organization
+
+-   [ ] Copyright header present
+-   [ ] File placed in correct directory structure
+-   [ ] Path aliases used correctly (`@features/*`, `@shared/*`, etc.)
+-   [ ] Feature boundaries respected (no cross-feature dependencies)
+-   [ ] Public API properly exported through `index.ts`
+
+### Code Quality
+
+-   [ ] TypeScript types properly defined (no `any`, `unknown`, or `object`)
+-   [ ] Props interface documented
+-   [ ] Styling conventions followed (BEM for .scss, CSS Modules for .module.scss)
+-   [ ] No unused imports or variables
+-   [ ] Code properly formatted
+-   [ ] Functions are small and focused (single responsibility)
+-   [ ] Error handling implemented for async operations
+-   [ ] Meaningful variable and function names used
+
+### Security
+
+-   [ ] Input validation implemented
+-   [ ] No sensitive data exposed in client code
+-   [ ] Proper authentication/authorization checks
+-   [ ] XSS prevention measures in place
+-   [ ] Environment variables used for configuration
+
+### Performance
+
+-   [ ] Lazy loading implemented where appropriate
+-   [ ] React.memo, useMemo, useCallback used correctly
+-   [ ] Bundle size optimized
+-   [ ] No unnecessary re-renders
+-   [ ] Loading states provided for async operations
+
+### Accessibility
+
+-   [ ] WCAG 2.1 AA compliance met
+-   [ ] Proper color contrast ratios (4.5:1 minimum)
+-   [ ] Keyboard navigation implemented
+-   [ ] ARIA attributes used when necessary
+-   [ ] Semantic HTML elements used
+-   [ ] Screen reader compatibility tested
+
+### Testing
+
+-   [ ] Unit tests written and passing
+-   [ ] Integration tests cover feature workflows
+-   [ ] Test coverage meets minimum requirements (80%)
+-   [ ] Tests follow AAA pattern (Arrange, Act, Assert)
+-   [ ] Tests are independent and isolated
+
+### Architecture
+
+-   [ ] SOLID principles followed
+-   [ ] Separation of concerns maintained
+-   [ ] DRY principle applied (no code duplication)
+-   [ ] Business logic separated from UI components
+-   [ ] Proper data flow patterns implemented
