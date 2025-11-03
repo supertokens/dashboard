@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import useCreateUserService from "@api/user/create";
 import { useToast } from "@shared/components/toast";
 import { useUsersList } from "@features/users/hooks/useUsers";
@@ -38,50 +38,53 @@ export function useCreateEmailPasswordUser({ tenantId, onSuccess }: UseCreateEma
 	const { showErrorToast, showSuccessToast } = useToast();
 	const { invalidateQueries } = useUsersList({ tenantId });
 
-	const clearErrors = () => {
+	const clearErrors = useCallback(() => {
 		setEmailError(undefined);
 		setPasswordError(undefined);
-	};
+	}, []);
 
-	const createUser = async (formData: CreateEmailPasswordUserForm) => {
-		setIsCreating(true);
-		setEmailError(undefined);
-		setPasswordError(undefined);
+	const createUser = useCallback(
+		async (formData: CreateEmailPasswordUserForm) => {
+			setIsCreating(true);
+			setEmailError(undefined);
+			setPasswordError(undefined);
 
-		try {
-			const response = await createEmailPasswordUser(tenantId, formData.email, formData.password);
+			try {
+				const response = await createEmailPasswordUser(tenantId, formData.email, formData.password);
 
-			if (response.status === STATUS.EMAIL_ALREADY_EXISTS_ERROR) {
-				showErrorToast(MESSAGES.EMAIL_ALREADY_EXISTS);
-				return;
+				if (response.status === STATUS.EMAIL_ALREADY_EXISTS_ERROR) {
+					showErrorToast(MESSAGES.EMAIL_ALREADY_EXISTS);
+					return;
+				}
+
+				if (response.status === STATUS.EMAIL_VALIDATION_ERROR) {
+					setEmailError(response.message);
+					return;
+				}
+
+				if (response.status === STATUS.PASSWORD_VALIDATION_ERROR) {
+					setPasswordError(response.message);
+					return;
+				}
+
+				if (response.status === STATUS.FEATURE_NOT_ENABLED_ERROR) {
+					showErrorToast(MESSAGES.FEATURE_NOT_ENABLED);
+					return;
+				}
+
+				if (response.status === STATUS.OK) {
+					showSuccessToast(MESSAGES.SUCCESS);
+					await invalidateQueries();
+					onSuccess?.(response.user.id);
+				}
+			} catch (_) {
+				showErrorToast(MESSAGES.GENERIC_ERROR);
+			} finally {
+				setIsCreating(false);
 			}
-
-			if (response.status === STATUS.EMAIL_VALIDATION_ERROR) {
-				setEmailError(response.message);
-				return;
-			}
-
-			if (response.status === STATUS.PASSWORD_VALIDATION_ERROR) {
-				setPasswordError(response.message);
-				return;
-			}
-
-			if (response.status === STATUS.FEATURE_NOT_ENABLED_ERROR) {
-				showErrorToast(MESSAGES.FEATURE_NOT_ENABLED);
-				return;
-			}
-
-			if (response.status === STATUS.OK) {
-				showSuccessToast(MESSAGES.SUCCESS);
-				await invalidateQueries();
-				onSuccess?.(response.user.id);
-			}
-		} catch (_) {
-			showErrorToast(MESSAGES.GENERIC_ERROR);
-		} finally {
-			setIsCreating(false);
-		}
-	};
+		},
+		[createEmailPasswordUser, tenantId, showErrorToast, showSuccessToast, invalidateQueries, onSuccess]
+	);
 
 	return {
 		isCreating,

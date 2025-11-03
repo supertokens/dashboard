@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { PasswordlessContactMethod } from "@api/tenants/types";
 import useCreateUserService, { CreatePasswordlessUserPayload } from "@api/user/create";
 import { useToast } from "@shared/components/toast";
@@ -41,99 +41,121 @@ export function useCreatePasswordlessUser({ tenantId, authMethod, onSuccess }: U
 	const { showErrorToast, showSuccessToast } = useToast();
 	const { invalidateQueries } = useUsersList({ tenantId });
 
-	const clearError = () => setFormError(undefined);
+	const clearError = useCallback(() => setFormError(undefined), []);
 
-	const buildPayload = (formData: CreatePasswordlessUserForm): CreatePasswordlessUserPayload | null => {
-		const payload: CreatePasswordlessUserPayload = {};
+	const buildPayload = useCallback(
+		(formData: CreatePasswordlessUserForm): CreatePasswordlessUserPayload | null => {
+			const payload: CreatePasswordlessUserPayload = {};
 
-		if (authMethod === "EMAIL") {
-			payload.email = formData.email;
-		} else if (authMethod === "PHONE") {
-			payload.phoneNumber = formData.phoneNumber;
-		} else if (authMethod === "EMAIL_OR_PHONE") {
-			if (isPhoneNumber(formData.emailOrPhone)) {
-				const normalizedPhone = normalizePhoneNumber(formData.emailOrPhone);
-				payload.phoneNumber = normalizedPhone;
-				setShowPhoneInput(true);
-			} else {
-				payload.email = formData.emailOrPhone;
-			}
-		} else {
-			showErrorToast(MESSAGES.NO_AUTH_METHOD);
-			return null;
-		}
-
-		return payload;
-	};
-
-	const getExistingUserErrorMessage = (emailOrPhone?: string): string => {
-		if (authMethod === "EMAIL") {
-			return MESSAGES.EMAIL_ALREADY_EXISTS;
-		} else if (authMethod === "PHONE") {
-			return MESSAGES.PHONE_ALREADY_EXISTS;
-		} else {
-			return emailOrPhone && isPhoneNumber(emailOrPhone)
-				? MESSAGES.PHONE_ALREADY_EXISTS
-				: MESSAGES.EMAIL_ALREADY_EXISTS;
-		}
-	};
-
-	const handleValidationError = (response: { status: string; message: string }, emailOrPhone?: string): void => {
-		if (
-			authMethod === "EMAIL_OR_PHONE" &&
-			response.status === STATUS.EMAIL_VALIDATION_ERROR &&
-			emailOrPhone &&
-			!isPhoneNumber(emailOrPhone)
-		) {
-			setFormError(MESSAGES.INVALID_EMAIL_OR_PHONE);
-		} else {
-			setFormError(response.message);
-		}
-	};
-
-	const createUser = async (formData: CreatePasswordlessUserForm) => {
-		setIsCreating(true);
-		setFormError(undefined);
-
-		try {
-			const payload = buildPayload(formData);
-			if (!payload) {
-				return;
-			}
-
-			const response = await createPasswordlessUser(tenantId, payload);
-
-			// Handle validation errors
-			if (
-				response.status === STATUS.EMAIL_VALIDATION_ERROR ||
-				response.status === STATUS.PHONE_VALIDATION_ERROR
-			) {
-				handleValidationError(response, formData.emailOrPhone);
-				return;
-			}
-
-			// Handle feature not enabled error
-			if (response.status === STATUS.FEATURE_NOT_ENABLED_ERROR) {
-				showErrorToast(MESSAGES.FEATURE_NOT_ENABLED);
-				return;
-			}
-
-			// Handle successful response
-			if (response.status === STATUS.OK) {
-				if (response.createdNewRecipeUser === false) {
-					showErrorToast(getExistingUserErrorMessage(formData.emailOrPhone));
+			if (authMethod === "EMAIL") {
+				payload.email = formData.email;
+			} else if (authMethod === "PHONE") {
+				payload.phoneNumber = formData.phoneNumber;
+			} else if (authMethod === "EMAIL_OR_PHONE") {
+				if (isPhoneNumber(formData.emailOrPhone)) {
+					const normalizedPhone = normalizePhoneNumber(formData.emailOrPhone);
+					payload.phoneNumber = normalizedPhone;
+					setShowPhoneInput(true);
 				} else {
-					showSuccessToast(MESSAGES.SUCCESS);
-					await invalidateQueries();
-					onSuccess?.(response.user.id);
+					payload.email = formData.emailOrPhone;
 				}
+			} else {
+				showErrorToast(MESSAGES.NO_AUTH_METHOD);
+				return null;
 			}
-		} catch (_) {
-			showErrorToast(MESSAGES.GENERIC_ERROR);
-		} finally {
-			setIsCreating(false);
-		}
-	};
+
+			return payload;
+		},
+		[authMethod, showErrorToast]
+	);
+
+	const getExistingUserErrorMessage = useCallback(
+		(emailOrPhone?: string): string => {
+			if (authMethod === "EMAIL") {
+				return MESSAGES.EMAIL_ALREADY_EXISTS;
+			} else if (authMethod === "PHONE") {
+				return MESSAGES.PHONE_ALREADY_EXISTS;
+			} else {
+				return emailOrPhone && isPhoneNumber(emailOrPhone)
+					? MESSAGES.PHONE_ALREADY_EXISTS
+					: MESSAGES.EMAIL_ALREADY_EXISTS;
+			}
+		},
+		[authMethod]
+	);
+
+	const handleValidationError = useCallback(
+		(response: { status: string; message: string }, emailOrPhone?: string): void => {
+			if (
+				authMethod === "EMAIL_OR_PHONE" &&
+				response.status === STATUS.EMAIL_VALIDATION_ERROR &&
+				emailOrPhone &&
+				!isPhoneNumber(emailOrPhone)
+			) {
+				setFormError(MESSAGES.INVALID_EMAIL_OR_PHONE);
+			} else {
+				setFormError(response.message);
+			}
+		},
+		[authMethod]
+	);
+
+	const createUser = useCallback(
+		async (formData: CreatePasswordlessUserForm) => {
+			setIsCreating(true);
+			setFormError(undefined);
+
+			try {
+				const payload = buildPayload(formData);
+				if (!payload) {
+					return;
+				}
+
+				const response = await createPasswordlessUser(tenantId, payload);
+
+				// Handle validation errors
+				if (
+					response.status === STATUS.EMAIL_VALIDATION_ERROR ||
+					response.status === STATUS.PHONE_VALIDATION_ERROR
+				) {
+					handleValidationError(response, formData.emailOrPhone);
+					return;
+				}
+
+				// Handle feature not enabled error
+				if (response.status === STATUS.FEATURE_NOT_ENABLED_ERROR) {
+					showErrorToast(MESSAGES.FEATURE_NOT_ENABLED);
+					return;
+				}
+
+				// Handle successful response
+				if (response.status === STATUS.OK) {
+					if (response.createdNewRecipeUser === false) {
+						showErrorToast(getExistingUserErrorMessage(formData.emailOrPhone));
+					} else {
+						showSuccessToast(MESSAGES.SUCCESS);
+						await invalidateQueries();
+						onSuccess?.(response.user.id);
+					}
+				}
+			} catch (_) {
+				showErrorToast(MESSAGES.GENERIC_ERROR);
+			} finally {
+				setIsCreating(false);
+			}
+		},
+		[
+			buildPayload,
+			createPasswordlessUser,
+			tenantId,
+			handleValidationError,
+			showErrorToast,
+			getExistingUserErrorMessage,
+			showSuccessToast,
+			invalidateQueries,
+			onSuccess,
+		]
+	);
 
 	return {
 		isCreating,
