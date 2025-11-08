@@ -1,10 +1,15 @@
-import { ImplType } from "@plugins";
+import { ImplType } from "./types";
 import { OverrideableBuilder } from "supertokens-js-override";
 
 export class Implementation implements ImplType<Implementation> {
 	static instance: Implementation | undefined;
 
-	static init(config: { override?: (originalImplementation: Implementation) => Implementation }): void {
+	static init(config: {
+		override?: (
+			originalImplementation: Implementation,
+			builder: OverrideableBuilder<ImplType<Implementation>>
+		) => Implementation;
+	}): void {
 		if (Implementation.instance) {
 			return;
 		}
@@ -32,7 +37,7 @@ export class Implementation implements ImplType<Implementation> {
 	constructor() {}
 
 	testMethod = async function (this: Implementation): Promise<boolean> {
-		console.log("og testMethod");
+		// console.log("og testMethod");
 		return true;
 	};
 }

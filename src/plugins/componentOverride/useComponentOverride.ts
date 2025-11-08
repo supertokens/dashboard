@@ -1,20 +1,12 @@
-import { useContext } from "react";
 import type React from "react";
 
-import { ComponentOverrideContext } from "./componentOverrideContext";
-
 import type { ComponentOverride } from "./types";
+import { SuperTokens } from "../../supertokens";
 
-export const useComponentOverride = <TComponent extends React.ComponentType<any>>(
+export const useComponentOverride = <TComponent extends React.FunctionComponent<any>>(
 	overrideKey: string
 ): ComponentOverride<TComponent> | null => {
-	const ctx = useContext(ComponentOverrideContext);
+	const OverrideComponent = SuperTokens.overridableComponents[overrideKey];
 
-	if (ctx === "IS_DEFAULT") {
-		throw new Error("Cannot use component override outside ComponentOverrideContext provider.");
-	}
-
-	const OverrideComponent = ctx[overrideKey];
-
-	return OverrideComponent === undefined ? null : OverrideComponent;
+	return OverrideComponent ?? null;
 };

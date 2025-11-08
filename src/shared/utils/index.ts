@@ -22,23 +22,18 @@ import { HttpMethod } from "@features/auth/types";
 import { ForbiddenError } from "@shared/utils/customErrors";
 import { localStorageHandler } from "@shared/services/storage";
 import { UserRecipeType } from "@features/users/types";
+import { SuperTokens } from "../../supertokens";
 
 export function getStaticBasePath(): string {
-	return (window as any).staticBasePath;
+	return SuperTokens.getInstanceOrThrow().getPublicConfig().appInfo.staticBasePath;
 }
 
 export function getDashboardAppBasePath(): string {
-	return (window as any).dashboardAppPath;
+	return SuperTokens.getInstanceOrThrow().getPublicConfig().appInfo.dashboardBasePath;
 }
 
 export function isSearchEnabled(): boolean {
-	const searchFlag = (window as any).isSearchEnabled;
-
-	if (searchFlag !== undefined) {
-		return searchFlag === "true";
-	}
-
-	return false;
+	return SuperTokens.getInstanceOrThrow().getPublicConfig().isSearchEnabled;
 }
 
 export function getImageUrl(imageName: string): string {
@@ -50,17 +45,19 @@ export function getApiUrl(path: string, tenantId?: string): string {
 		path = "/" + path;
 	}
 
-	let dashboardBasePathToUse = getDashboardAppBasePath();
+	const apiRecipePath = `${tenantId ? `/${tenantId}` : ""}/dashboard`;
 
-	if (tenantId !== undefined) {
-		dashboardBasePathToUse = dashboardBasePathToUse.replace("/dashboard", `/${tenantId}/dashboard`);
-	}
+	const { apiBasePath, apiDomain } = SuperTokens.getInstanceOrThrow().getPublicConfig().appInfo;
 
-	return window.location.origin + dashboardBasePathToUse + path;
+	const url = [apiDomain, apiBasePath, apiRecipePath, path]
+		.map((part) => part.replace(/^\/+/, "").replace(/\/+$/, ""))
+		.join("/");
+
+	return url;
 }
 
 export function getConnectionUri() {
-	return (window as any).connectionURI;
+	return SuperTokens.getInstanceOrThrow().getPublicConfig().appInfo.connectionURI;
 }
 
 const DEMO_CONNECTION_URIS = ["try.supertokens.io", "try.supertokens.com"];
@@ -293,8 +290,7 @@ export const getRecipeNameFromid = (id: UserRecipeType): string => {
 };
 
 export const getAuthMode = (): "api-key" | "email-password" => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return (window as any).authMode; // for now, either "api-key" or "email-password"
+	return SuperTokens.getInstanceOrThrow().getPublicConfig().authMode;
 };
 
 export const useQuery = () => {

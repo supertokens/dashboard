@@ -1,12 +1,15 @@
+import "./shared/styles";
+
 import { SuperTokens } from "./supertokens";
 
 import Dashboard from "./App";
+import { SuperTokensConfig, SuperTokensPlugin } from "./types";
 
-export const init = () => {
-	SuperTokens.init({
-		apiPath: "/api",
-		plugins: [],
-	});
+// Import styles to ensure they're bundled
+
+export const init = (props: SuperTokensConfig) => {
+	SuperTokens.init(props);
 };
 
 export { Dashboard };
+export type { SuperTokensPlugin };
