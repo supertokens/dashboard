@@ -15,14 +15,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { FactorIds, HTTPStatusCodes, StorageKeys } from "@shared/constants";
-import { getAccessDeniedEvent } from "@shared/events/accessDenied";
-import NetworkManager from "@services/network";
-import { HttpMethod } from "@features/auth/types";
-import { ForbiddenError } from "@shared/utils/customErrors";
-import { localStorageHandler } from "@shared/services/storage";
+import { HTTPStatusCodes } from "@shared/constants";
 import { UserRecipeType } from "@features/users/types";
 import { SuperTokens } from "../../supertokens";
+import { Implementation } from "../../implementation";
 
 export function getStaticBasePath(): string {
 	return SuperTokens.getInstanceOrThrow().getPublicConfig().appInfo.staticBasePath;
@@ -60,83 +56,18 @@ export function getConnectionUri() {
 	return SuperTokens.getInstanceOrThrow().getPublicConfig().appInfo.connectionURI;
 }
 
-const DEMO_CONNECTION_URIS = ["try.supertokens.io", "try.supertokens.com"];
+export const DEMO_CONNECTION_URIS = ["try.supertokens.io", "try.supertokens.com"];
 
 export const isUsingDemoConnectionUri = (connectionURI: string) => {
 	return DEMO_CONNECTION_URIS.some((domains) => connectionURI.includes(domains));
 };
 
-interface IFetchDataArgs {
-	url: string;
-	method: HttpMethod;
-	query?: { [key: string]: string };
-	config?: RequestInit;
-	shouldRedirectOnUnauthorised?: boolean;
-	ignoreErrors?: boolean;
-}
+export const getAuthMode = (): "api-key" | "email-password" => {
+	return SuperTokens.getInstanceOrThrow().getPublicConfig().authMode;
+};
 
 export const useFetchData = (skipTriggeringErrorBoundary = false) => {
 	const [statusCode, setStatusCode] = useState<number>(0);
-
-	const fetchData = async ({
-		url,
-		method,
-		query,
-		config,
-		shouldRedirectOnUnauthorised = true,
-		ignoreErrors = false,
-	}: IFetchDataArgs) => {
-		const apiKeyInStorage = localStorageHandler.getItem(StorageKeys.AUTH_KEY);
-
-		let additionalHeaders: { [key: string]: string } = {};
-
-		if (apiKeyInStorage !== undefined) {
-			additionalHeaders = {
-				...additionalHeaders,
-				authorization: `Bearer ${apiKeyInStorage}`,
-			};
-		}
-
-		const response: Response = await NetworkManager.doRequest({
-			url,
-			method,
-			query,
-			config: {
-				...config,
-				headers: {
-					...config?.headers,
-					...additionalHeaders,
-				},
-			},
-		});
-
-		if (ignoreErrors) {
-			return response;
-		}
-
-		if (response.status === HTTPStatusCodes.FORBIDDEN) {
-			let message = (await response.clone().json())?.message;
-			if (message === undefined) {
-				message = "You do not have access to this page";
-			}
-			window.dispatchEvent(getAccessDeniedEvent(message));
-
-			/*	throwing this error just to make sure that this case is handled in some places in the application.
-				global search for ForbiddenError.isThisError to see those places
-			*/
-
-			throw new ForbiddenError(message);
-		}
-
-		const logoutAndRedirect = shouldRedirectOnUnauthorised && HTTPStatusCodes.UNAUTHORIZED === response.status;
-		if (logoutAndRedirect) {
-			window.localStorage.removeItem(StorageKeys.AUTH_KEY);
-			window.location.reload();
-		} else {
-			setStatusCode(ignoreErrors ? 200 : response.status);
-		}
-		return response;
-	};
 
 	if (
 		statusCode < 300 ||
@@ -144,20 +75,17 @@ export const useFetchData = (skipTriggeringErrorBoundary = false) => {
 		statusCode === HTTPStatusCodes.FORBIDDEN ||
 		skipTriggeringErrorBoundary === true
 	) {
-		return fetchData;
+		return async (...args: Parameters<typeof Implementation["prototype"]["fetchData"]>) => {
+			const { response, statusCode } = await Implementation.getInstanceOrThrow().fetchData(...args);
+
+			if (statusCode) setStatusCode(statusCode);
+
+			return response;
+		};
 	}
 
 	throw Error(`Error: ${statusCode}. Some error Occurred`);
 };
-
-// Language Utils
-const getLanguage = () =>
-	(navigator as any).userLanguage ||
-	(navigator.languages && navigator.languages.length && navigator.languages[0]) ||
-	navigator.language ||
-	(navigator as any).browserLanguage ||
-	(navigator as any).systemLanguage ||
-	"en";
 
 // Number Utils
 
@@ -179,7 +107,7 @@ export const ordinal = (num: number) => {
  ** example: 100000 -> "100,000"
  */
 export const formatNumber = (num: number) => {
-	return num.toLocaleString(getLanguage());
+	return num.toLocaleString(Implementation.getInstanceOrThrow().getLanguage());
 };
 
 // Date Utils
@@ -289,10 +217,6 @@ export const getRecipeNameFromid = (id: UserRecipeType): string => {
 	return "Third Party";
 };
 
-export const getAuthMode = (): "api-key" | "email-password" => {
-	return SuperTokens.getInstanceOrThrow().getPublicConfig().authMode;
-};
-
 export const useQuery = () => {
 	const { search } = useLocation();
 
@@ -310,14 +234,6 @@ export const isValidHttpUrl = (urlToBeValidated: string) => {
 
 	// To ensure that the URL is an HTTP URL
 	return url.protocol === "http:" || url.protocol === "https:";
-};
-export const doesTenantHavePasswordlessEnabled = (tenantFirstFactors: string[]): boolean => {
-	return (
-		tenantFirstFactors.includes(FactorIds.OTP_EMAIL) ||
-		tenantFirstFactors.includes(FactorIds.OTP_PHONE) ||
-		tenantFirstFactors.includes(FactorIds.LINK_EMAIL) ||
-		tenantFirstFactors.includes(FactorIds.LINK_PHONE)
-	);
 };
 
 export function usePrevious<T>(value: T) {

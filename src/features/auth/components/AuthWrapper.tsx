@@ -15,10 +15,10 @@
 
 import React, { useEffect, useState } from "react";
 import { StorageKeys } from "@shared/constants";
-import { localStorageHandler } from "@shared/services/storage";
 import Loader from "@shared/components/loader";
 import Auth from "./Auth";
 import { withOverride } from "@plugins";
+import { Implementation } from "../../../implementation";
 
 interface AuthWrapperProps {
 	children: React.ReactNode;
@@ -27,6 +27,7 @@ interface AuthWrapperProps {
 const AuthWrapper = withOverride("AuthWrapper", function AuthWrapper({ children }: AuthWrapperProps): JSX.Element {
 	const [shouldShowAuthForm, setShouldShowAuthForm] = useState<boolean>(false);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const localStorageHandler = Implementation.getInstanceOrThrow().getLocalStorageHandler();
 
 	useEffect(() => {
 		const apiKey = localStorageHandler.getItem(StorageKeys.AUTH_KEY);

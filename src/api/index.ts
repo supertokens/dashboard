@@ -15,12 +15,13 @@
 
 import { useState } from "react";
 import { StorageKeys } from "@shared/constants";
-import { localStorageHandler } from "@shared/services/storage";
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../implementation";
 
 const useAuthService = () => {
 	const fetchData = useFetchData();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const localStorageHandler = Implementation.getInstanceOrThrow().getLocalStorageHandler();
 
 	const logout = async () => {
 		setIsLoading(true);

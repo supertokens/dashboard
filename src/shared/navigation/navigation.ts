@@ -15,34 +15,11 @@
 
 import { useNavigate } from "react-router-dom";
 
-import { QUERY_PARAMS, ROUTES } from "./routes";
+import { Implementation } from "../../implementation";
 
 export const useNavigationHelpers = () => {
 	const navigate = useNavigate();
+	const { helpers } = Implementation.getInstanceOrThrow().getNavigation();
 
-	return {
-		goToUserDetail: (userId: string) => {
-			navigate(`${ROUTES.USERS}?${QUERY_PARAMS.USER_ID}=${userId}`, { replace: true });
-		},
-
-		goToTenantDetail: (tenantId: string) => {
-			navigate(`${ROUTES.TENANTS}?${QUERY_PARAMS.TENANT_ID}=${tenantId}`);
-		},
-
-		goToUsersList: () => {
-			navigate(ROUTES.USERS);
-		},
-
-		goToTenantsList: () => {
-			navigate(ROUTES.TENANTS);
-		},
-
-		goToRoles: () => {
-			navigate(ROUTES.ROLES);
-		},
-
-		goToRoleDetails: (roleId: string) => {
-			navigate(`${ROUTES.ROLES}?${QUERY_PARAMS.ROLE_ID}=${roleId}`);
-		},
-	};
+	return helpers(navigate);
 };

@@ -13,5 +13,4 @@
  * under the License.
  */
 
-export * from "./routes";
 export * from "./navigation";

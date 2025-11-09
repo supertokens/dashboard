@@ -15,7 +15,7 @@
 
 import { useCallback } from "react";
 import { getApiUrl, useFetchData } from "@shared/utils";
-import { package_version } from "@shared/version";
+import { version } from "../../version";
 
 export const useAnalyticsService = () => {
 	const fetchData = useFetchData();
@@ -28,7 +28,7 @@ export const useAnalyticsService = () => {
 				config: {
 					body: JSON.stringify({
 						...data,
-						dashboardVersion: package_version,
+						dashboardVersion: version,
 					}),
 				},
 				// We dont want to trigger the error boundary if this API fails

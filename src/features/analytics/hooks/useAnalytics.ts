@@ -15,14 +15,15 @@
 
 import { useAnalyticsService } from "@api/analytics";
 import { getAuthMode } from "@shared/utils";
-import { localStorageHandler } from "@shared/services/storage";
 import { StorageKeys } from "@shared/constants";
-import { package_version } from "@shared/version";
+import { Implementation } from "../../../implementation";
+import { version } from "../../../version";
 
 let isAnalyticsFired = false;
 
 export const useAnalytics = () => {
 	const { fireEvent } = useAnalyticsService();
+	const localStorageHandler = Implementation.getInstanceOrThrow().getLocalStorageHandler();
 
 	const fireOneTimeEvent = async (tenantId?: string): Promise<void> => {
 		if (isAnalyticsFired) {
@@ -40,7 +41,7 @@ export const useAnalytics = () => {
 
 			await fireEvent({
 				email: email || null,
-				dashboardVersion: package_version,
+				dashboardVersion: version,
 				tenantId,
 			});
 		} catch (error) {

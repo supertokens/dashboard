@@ -15,14 +15,15 @@
 
 import { useState } from "react";
 import { HTTPStatusCodes, StorageKeys } from "@shared/constants";
-import { localStorageHandler } from "@shared/services/storage";
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../../implementation";
 
 export const useApiKeyValidation = (onSuccess: () => void) => {
 	const [apiKeyFieldError, setApiKeyFieldError] = useState("");
 	const [apiKey, setApiKey] = useState("");
 	const [loading, setIsLoading] = useState<boolean>(false);
 	const fetchData = useFetchData();
+	const localStorageHandler = Implementation.getInstanceOrThrow().getLocalStorageHandler();
 
 	const validateKey = async () => {
 		setIsLoading(true);

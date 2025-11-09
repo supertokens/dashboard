@@ -16,8 +16,8 @@
 import { useEffect, useState } from "react";
 import useAuthService from "@api";
 import { HTTPStatusCodes, StorageKeys } from "@shared/constants";
-import { localStorageHandler } from "@shared/services/storage";
 import { validateEmail } from "@shared/utils/form";
+import { Implementation } from "../../../implementation";
 
 interface IErrorObject {
 	email: string;
@@ -28,6 +28,7 @@ export const useSignIn = (onSuccess: () => void) => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
 	const { signIn } = useAuthService();
+	const localStorageHandler = Implementation.getInstanceOrThrow().getLocalStorageHandler();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");

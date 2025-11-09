@@ -26,7 +26,6 @@ import TenantManagement from "@features/tenants/Page";
 import { UserManagement } from "@features/users/page";
 import { ToastProvider } from "@shared/components/toast";
 import { QueryProvider } from "@shared/providers/QueryProvider";
-import { ROUTES } from "@shared/navigation";
 import RolesAndPermissions from "@features/roles-and-permissions/Page";
 import { Layout } from "@features/layout";
 import AuthWrapper from "@features/auth/components/AuthWrapper";
@@ -48,6 +47,7 @@ function App() {
 			/>
 		));
 	}, []);
+	const { ROUTES } = Implementation.getInstanceOrThrow().getNavigation();
 
 	return (
 		<HelmetProvider>
@@ -77,21 +77,22 @@ function App() {
 													element={<TenantManagement />}
 												/>
 
-											{pluginRoutes}
+												{pluginRoutes}
 
-											<Route
-												path="*"
-												element={<UserManagement />}
-											/>
-										</Routes>
-									</Layout>
-								</Router>
-								<AccessDeniedModal />
-							</AuthWrapper>
-						</ToastProvider>
-					</QueryProvider>
-				</Theme>
-			</ErrorBoundary>
+												<Route
+													path="*"
+													element={<UserManagement />}
+												/>
+											</Routes>
+										</Layout>
+									</Router>
+									<AccessDeniedModal />
+								</AuthWrapper>
+							</ToastProvider>
+						</QueryProvider>
+					</Theme>
+				</ErrorBoundary>
+			</ComponentOverrideContext.Provider>
 		</HelmetProvider>
 	);
 }
