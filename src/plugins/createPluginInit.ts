@@ -21,7 +21,7 @@ export type OverridableFunctions<A> = {
 	[K in keyof A]: A[K] extends Function ? A[K] : never;
 };
 
-export const createPluginInitFunction = <
+export const createPluginInit = <
 	SupertokensPlugin,
 	PluginConfig extends Record<string, any> | undefined,
 	PluginImplementation extends ImplType<PluginImplementation> = {},

@@ -13,3 +13,5 @@ export const init = (props: SuperTokensConfig) => {
 
 export { Dashboard };
 export type { SuperTokensPlugin };
+
+export { createPluginInit } from "./plugins";
