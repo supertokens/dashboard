@@ -1,5 +1,5 @@
 import { Layout } from "@features/layout";
-import type { ComponentOverride } from "./componentOverride";
+import type { ComponentOverride, GenericComponentOverrideMap } from "./componentOverride";
 import { Header, Sidebar } from "@features/layout/components";
 import {
 	Auth,
@@ -54,8 +54,9 @@ import { ProviderConfigKeyValue } from "@features/tenants/tenant-details/provide
 import { ProviderConfigSeparator } from "@features/tenants/tenant-details/provider-configuration/components/ProviderConfigSeparator";
 import { ProviderConfigSuffixInput } from "@features/tenants/tenant-details/provider-configuration/components/ProviderConfigSuffixInput";
 import { UserInfoMapSection } from "@features/tenants/tenant-details/provider-configuration/components/UserInfoMapSection";
+import { UserManagement } from "@features/users/page";
 
-export interface ComponentOverrideMap {
+export interface ComponentOverrideMap extends GenericComponentOverrideMap {
 	// layout
 	Layout_Override?: ComponentOverride<typeof Layout>;
 	Header_Override?: ComponentOverride<typeof Header>;
@@ -124,4 +125,7 @@ export interface ComponentOverrideMap {
 	ProviderConfigSeparator_Override?: ComponentOverride<typeof ProviderConfigSeparator>;
 	ProviderConfigSuffixInput_Override?: ComponentOverride<typeof ProviderConfigSuffixInput>;
 	UserInfoMapSection_Override?: ComponentOverride<typeof UserInfoMapSection>;
+
+	// users - components
+	UserManagement_Override?: ComponentOverride<typeof UserManagement>;
 }

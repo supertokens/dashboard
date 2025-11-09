@@ -17,16 +17,25 @@ import UserDetails from "@features/users/components/user-details/page";
 import { useSearchParams } from "react-router-dom";
 import { UsersList } from "./components/user-list/UsersList";
 import { Implementation } from "../../implementation";
+import { withSplitOverride } from "@plugins";
 
 /**
  * This is the main component for the user management tab.
  * It renders the user-detail page if a userid search param is provided in the URL,
  * otherwise it renders the users-list page.
  */
-export function UserManagement() {
-	const [searchParams] = useSearchParams();
-	const { QUERY_PARAMS } = Implementation.getInstanceOrThrow().getNavigation();
-	const userId = searchParams.get(QUERY_PARAMS.USER_ID);
+const UserManagement = withSplitOverride(
+	"UserManagement",
+	function UserManagementRendererParams(props) {
+		const [searchParams] = useSearchParams();
+		const { QUERY_PARAMS } = Implementation.getInstanceOrThrow().getNavigation();
+		const userId = searchParams.get(QUERY_PARAMS.USER_ID);
 
-	return userId ? <UserDetails userId={userId} /> : <UsersList />;
-}
+		return { userId };
+	},
+	function UserManagementRenderer({ userId }: { userId: string | undefined | null }) {
+		return userId ? <UserDetails userId={userId} /> : <UsersList />;
+	}
+);
+
+export { UserManagement };

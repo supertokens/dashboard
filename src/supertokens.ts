@@ -9,7 +9,7 @@ import {
 } from "./types";
 import { getNormalizedSuperTokensConfig, getPublicConfig, getPublicPlugin } from "./utils";
 import { OverrideableBuilder } from "supertokens-js-override";
-import { ComponentOverrideMap, GenericComponentOverrideMap } from "@plugins";
+import { ComponentOverrideMap } from "@plugins";
 
 export class SuperTokens {
 	private static instance: SuperTokens | undefined;
@@ -17,7 +17,7 @@ export class SuperTokens {
 	private config: NormalizedSuperTokensConfig;
 
 	public pluginRouteHandlers: SuperTokensPluginRouteHandler[] = [];
-	public overridableComponents: GenericComponentOverrideMap<ComponentOverrideMap> = {};
+	public overridableComponents: ComponentOverrideMap = {};
 
 	private constructor(config: SuperTokensConfig) {
 		const normalizedConfig = getNormalizedSuperTokensConfig(config);
