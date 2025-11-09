@@ -39,9 +39,6 @@ import { Implementation } from "./implementation";
 import { ComponentOverrideContext } from "@plugins";
 
 function App() {
-	// todo remove this - example only
-	Implementation.getInstanceOrThrow().testMethod();
-
 	const pluginRoutes = useMemo(() => {
 		return SuperTokens.getInstanceOrThrow().pluginRouteHandlers.map(({ path, handler: RouteComponent }, index) => (
 			<Route
