@@ -1,11 +1,5 @@
 import React from "react";
 
-import type { ComponentOverride } from "./types";
-
-export type GenericComponentOverrideMap<T> = {
-	[K in keyof T]?: ComponentOverride<any>;
-};
-
-type ContextType<T> = GenericComponentOverrideMap<T> | "IS_DEFAULT";
+import type { ContextType } from "./types";
 
 export const ComponentOverrideContext = React.createContext<ContextType<any>>("IS_DEFAULT");

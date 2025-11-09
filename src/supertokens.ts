@@ -9,15 +9,15 @@ import {
 } from "./types";
 import { getNormalizedSuperTokensConfig, getPublicConfig, getPublicPlugin } from "./utils";
 import { OverrideableBuilder } from "supertokens-js-override";
-import { ComponentOverrideMap } from "@plugins";
+import { ComponentOverrideMap, GenericComponentOverrideMap } from "@plugins";
 
 export class SuperTokens {
 	private static instance: SuperTokens | undefined;
-	static overridableComponents: any = {};
 
 	private config: NormalizedSuperTokensConfig;
 
 	public pluginRouteHandlers: SuperTokensPluginRouteHandler[] = [];
+	public overridableComponents: GenericComponentOverrideMap<ComponentOverrideMap> = {};
 
 	private constructor(config: SuperTokensConfig) {
 		const normalizedConfig = getNormalizedSuperTokensConfig(config);
@@ -31,10 +31,7 @@ export class SuperTokens {
 		Implementation.init({ override: this.config.override?.functions });
 
 		if (this.config.override?.components) {
-			const builder = new OverrideableBuilder<ComponentOverrideMap>(SuperTokens.overridableComponents);
-
-			builder.override(this.config.override?.components as any);
-			SuperTokens.overridableComponents = builder.build();
+			this.overridableComponents = this.config.override?.components(this.overridableComponents);
 		}
 
 		const publicPlugins = loadedPlugins.map(getPublicPlugin);
@@ -89,9 +86,9 @@ export function applyPlugins(
 	config: NormalizedSuperTokensConfig,
 	plugins: SuperTokensPlugin[]
 ): NormalizedSuperTokensConfig {
-	let configLayers = [];
-	let componentsLayers = [];
-	let functionsLayers = [];
+	const configLayers = [];
+	const componentsLayers = [];
+	const functionsLayers = [];
 
 	for (const { overrides } of plugins) {
 		if (!overrides) continue;
@@ -108,16 +105,20 @@ export function applyPlugins(
 	}
 
 	let overriddenConfig = { ...config };
-	for (const layer of configLayers) {
-		overriddenConfig = { ...overriddenConfig, ...layer(getPublicConfig(overriddenConfig)) };
+
+	if (configLayers.length > 0) {
+		overriddenConfig = configLayers
+			.reverse()
+			.reduce((acc, layer) => ({ ...acc, ...getPublicConfig(layer(getPublicConfig(acc))) }), overriddenConfig);
 	}
 
-	functionsLayers = functionsLayers.filter((layer) => layer !== undefined);
-	if (functionsLayers.length > 0) {
+	functionsLayers.push(config.override?.functions);
+	const filteredFunctionsLayers = functionsLayers.filter((layer) => layer !== undefined).reverse();
+	if (filteredFunctionsLayers.length > 0) {
 		overriddenConfig.override = {
 			...overriddenConfig.override,
 			functions: (oI: any, builder: OverrideableBuilder<any>) => {
-				for (const layer of functionsLayers) {
+				for (const layer of filteredFunctionsLayers) {
 					builder.override(layer as any);
 				}
 				return oI;
@@ -125,22 +126,17 @@ export function applyPlugins(
 		};
 	}
 
-	componentsLayers = componentsLayers.filter((layer) => layer !== undefined);
-	if (componentsLayers.length > 0) {
+	componentsLayers.push(config.override?.components);
+	const filteredComponentsLayers = componentsLayers.filter((layer) => layer !== undefined).reverse();
+	if (filteredComponentsLayers.length > 0) {
 		overriddenConfig.override = {
 			...overriddenConfig.override,
-			components: (oI: any, builder: OverrideableBuilder<any>) => {
-				// Wrap each layer to provide bound functions
-				for (const layer of componentsLayers) {
-					builder.override(layer);
-				}
-
-				return oI;
+			components: (oI: any) => {
+				// compose the layers here bcause we can't use the builder for react components
+				return filteredComponentsLayers.reduce((acc, layer) => ({ ...acc, ...layer(acc) }), oI);
 			},
 		};
 	}
-	functionsLayers.push(config.override?.functions);
-	componentsLayers.push(config.override?.components);
 
 	return overriddenConfig;
 }

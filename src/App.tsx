@@ -36,6 +36,7 @@ import { AccessDeniedModal } from "@shared/components/accessDenied";
 import React, { useMemo } from "react";
 import { SuperTokens } from "./supertokens";
 import { Implementation } from "./implementation";
+import { ComponentOverrideContext } from "@plugins";
 
 function App() {
 	// todo remove this - example only
@@ -53,30 +54,31 @@ function App() {
 
 	return (
 		<HelmetProvider>
-			<SafeAreaView />
-			<ErrorBoundary>
-				<Theme
-					radius="medium"
-					accentColor="indigo"
-					appearance="light">
-					<QueryProvider>
-						<ToastProvider>
-							<AuthWrapper>
-								<Router basename={getDashboardAppBasePath()}>
-									<Layout>
-										<Routes>
-											<Route
-												path={ROUTES.USERS}
-												element={<UserManagement />}
-											/>
-											<Route
-												path={ROUTES.ROLES}
-												element={<RolesAndPermissions />}
-											/>
-											<Route
-												path={ROUTES.TENANTS}
-												element={<TenantManagement />}
-											/>
+			<ComponentOverrideContext.Provider value={SuperTokens.getInstanceOrThrow().overridableComponents}>
+				<SafeAreaView />
+				<ErrorBoundary>
+					<Theme
+						radius="medium"
+						accentColor="indigo"
+						appearance="light">
+						<QueryProvider>
+							<ToastProvider>
+								<AuthWrapper>
+									<Router basename={getDashboardAppBasePath()}>
+										<Layout>
+											<Routes>
+												<Route
+													path={ROUTES.USERS}
+													element={<UserManagement />}
+												/>
+												<Route
+													path={ROUTES.ROLES}
+													element={<RolesAndPermissions />}
+												/>
+												<Route
+													path={ROUTES.TENANTS}
+													element={<TenantManagement />}
+												/>
 
 											{pluginRoutes}
 

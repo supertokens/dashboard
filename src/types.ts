@@ -25,10 +25,7 @@ export type SuperTokensPlugin = {
 			originalImplementation: Implementation,
 			builder: OverrideableBuilder<ImplType<Implementation>>
 		) => Implementation;
-		components?: (
-			originalComponentOverrides: ComponentOverrideMap,
-			builder: OverrideableBuilder<ImplType<ComponentOverrideMap>>
-		) => ComponentOverrideMap;
+		components?: (originalComponentOverrides: ComponentOverrideMap) => ComponentOverrideMap;
 		config?: (config: SuperTokensPublicConfig) => SuperTokensPublicConfig;
 	};
 	routeHandlers?:
@@ -82,10 +79,7 @@ export type SuperTokensConfig = {
 
 	plugins: SuperTokensPlugin[];
 	override?: {
-		components?: (
-			originalComponentOverrides: ComponentOverrideMap,
-			builder: OverrideableBuilder<ImplType<ComponentOverrideMap>>
-		) => ComponentOverrideMap;
+		components?: (originalComponentOverrides: ComponentOverrideMap) => ComponentOverrideMap;
 		functions?: (
 			originalImplementation: Implementation,
 			builder: OverrideableBuilder<ImplType<Implementation>>

@@ -1,6 +1,6 @@
 import { withOverride } from "./withOverride";
 
-export type { ComponentOverride } from "./types";
+export type { ComponentOverride, GenericComponentOverrideMap } from "./types";
 
 export { ComponentOverrideContext } from "./componentOverrideContext";
 export { withOverride };
