@@ -69,10 +69,6 @@ export default function ChangePasswordModal({
 	}, [open]);
 
 	const handleChangePassword = async () => {
-		setNewPasswordError("");
-		setConfirmPasswordError("");
-		setNoValidTenantError(false);
-
 		let hasError = false;
 
 		if (!newPassword) {
@@ -91,6 +87,10 @@ export default function ChangePasswordModal({
 		if (hasError) {
 			return;
 		}
+
+		setNewPasswordError("");
+		setConfirmPasswordError("");
+		setNoValidTenantError(false);
 
 		// Check if user belongs to a tenant with emailpassword enabled
 		const userTenants = tenants?.filter((tenant) => tenantIds.includes(tenant.tenantId)) || [];

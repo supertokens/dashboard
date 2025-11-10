@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { PasswordlessContactMethod } from "@api/tenants/types";
 import useCreateUserService, { CreatePasswordlessUserPayload } from "@api/user/create";
 import { useToast } from "@shared/components/toast";
@@ -41,56 +41,70 @@ export function useCreatePasswordlessUser({ tenantId, authMethod, onSuccess }: U
 	const { showErrorToast, showSuccessToast } = useToast();
 	const { invalidateQueries } = useUsersList({ tenantId });
 
-	const clearError = () => setFormError(undefined);
+	const clearError = useCallback(() => setFormError(undefined), []);
 
-	const buildPayload = (formData: CreatePasswordlessUserForm): CreatePasswordlessUserPayload | null => {
-		const payload = Implementation.getInstanceOrThrow().buildPasswordlessPayload({
-			authMethod,
-			email: formData.email,
-			phoneNumber: formData.phoneNumber,
-			emailOrPhone: formData.emailOrPhone,
-			setShowPhoneInput,
-		});
+	const buildPayload = useCallback(
+		(formData: CreatePasswordlessUserForm): CreatePasswordlessUserPayload | null => {
+			const payload = Implementation.getInstanceOrThrow().buildPasswordlessPayload({
+				authMethod,
+				email: formData.email,
+				phoneNumber: formData.phoneNumber,
+				emailOrPhone: formData.emailOrPhone,
+				setShowPhoneInput,
+			});
 
-		if (!payload) {
-			const { MESSAGES } = require("@features/users/constants/createUser");
-			showErrorToast(MESSAGES.NO_AUTH_METHOD);
-			return null;
-		}
-
-		return payload;
-	};
-
-	const createUser = async (formData: CreatePasswordlessUserForm) => {
-		setIsCreating(true);
-		setFormError(undefined);
-
-		try {
-			const payload = buildPayload(formData);
 			if (!payload) {
-				setIsCreating(false);
-				return;
+				const { MESSAGES } = require("@features/users/constants/createUser");
+				showErrorToast(MESSAGES.NO_AUTH_METHOD);
+				return null;
 			}
 
-			await Implementation.getInstanceOrThrow().createPasswordlessUser({
-				tenantId,
-				payload,
-				authMethod,
-				emailOrPhone: formData.emailOrPhone,
-				createPasswordlessUserService: createPasswordlessUser,
-				showErrorToast,
-				showSuccessToast,
-				setFormError,
-				invalidateQueries,
-				onSuccess,
-			});
-		} catch (_) {
-			const { MESSAGES } = await import("@features/users/constants/createUser");
-			showErrorToast(MESSAGES.GENERIC_ERROR);
-		} finally {
-			setIsCreating(false);
-		}
-	};
+			return payload;
+		},
+		[authMethod, showErrorToast]
+	);
+
+	const createUser = useCallback(
+		async (formData: CreatePasswordlessUserForm) => {
+			setIsCreating(true);
+			setFormError(undefined);
+
+			try {
+				const payload = buildPayload(formData);
+				if (!payload) {
+					setIsCreating(false);
+					return;
+				}
+
+				await Implementation.getInstanceOrThrow().createPasswordlessUser({
+					tenantId,
+					payload,
+					authMethod,
+					emailOrPhone: formData.emailOrPhone,
+					createPasswordlessUserService: createPasswordlessUser,
+					showErrorToast,
+					showSuccessToast,
+					setFormError,
+					invalidateQueries,
+					onSuccess,
+				});
+			} catch (_) {
+				const { MESSAGES } = await import("@features/users/constants/createUser");
+				showErrorToast(MESSAGES.GENERIC_ERROR);
+			} finally {
+				setIsCreating(false);
+			}
+		},
+		[
+			buildPayload,
+			createPasswordlessUser,
+			tenantId,
+			showErrorToast,
+			showSuccessToast,
+			invalidateQueries,
+			onSuccess,
+		]
+	);
 
 	return {
 		isCreating,

@@ -33,7 +33,7 @@ export const DemoCallout = ({ connectionURI }: { connectionURI: string }) => {
 				connectionURI set to:{" "}
 				<span className={styles["users-list__demo-callout__text--highlighted"]}>
 					{" "}
-					https://try.supertokens.com/appid-demo-dashboard{" "}
+					https://try.supertokens.com{" "}
 				</span>
 				You are connected to an instance of SuperTokens core hosted for demo purposes, this instance should not
 				be used for production apps.

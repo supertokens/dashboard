@@ -33,12 +33,10 @@ interface SessionListProps {
 }
 
 export default function SessionList({ userId, paginatedSessions }: SessionListProps) {
-	const [openRevokeSessionModal, setOpenRevokeSessionModal] = useState(false);
 	const [selectedSessionHandle, setSelectedSessionHandle] = useState<string>("");
 
 	const handleRevokeClick = (sessionHandle: string) => {
 		setSelectedSessionHandle(sessionHandle);
-		setOpenRevokeSessionModal(true);
 	};
 
 	if (paginatedSessions.length === 0) {
@@ -96,8 +94,8 @@ export default function SessionList({ userId, paginatedSessions }: SessionListPr
 				);
 			})}
 			<RevokeSessionModal
-				open={openRevokeSessionModal}
-				handleClose={() => setOpenRevokeSessionModal(false)}
+				open={selectedSessionHandle !== ""}
+				handleClose={() => setSelectedSessionHandle("")}
 				sessionHandle={selectedSessionHandle}
 				userId={userId}
 			/>

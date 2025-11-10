@@ -13,7 +13,7 @@
  * under the License.
  */
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import useCreateUserService from "@api/user/create";
 import { useToast } from "@shared/components/toast";
 import { useUsersList } from "@features/users/hooks/useUsers";
@@ -38,36 +38,39 @@ export function useCreateEmailPasswordUser({ tenantId, onSuccess }: UseCreateEma
 	const { showErrorToast, showSuccessToast } = useToast();
 	const { invalidateQueries } = useUsersList({ tenantId });
 
-	const clearErrors = () => {
+	const clearErrors = useCallback(() => {
 		setEmailError(undefined);
 		setPasswordError(undefined);
-	};
+	}, []);
 
-	const createUser = async (formData: CreateEmailPasswordUserForm) => {
-		setIsCreating(true);
-		setEmailError(undefined);
-		setPasswordError(undefined);
+	const createUser = useCallback(
+		async (formData: CreateEmailPasswordUserForm) => {
+			setIsCreating(true);
+			setEmailError(undefined);
+			setPasswordError(undefined);
 
-		try {
-			await Implementation.getInstanceOrThrow().createEmailPasswordUser({
-				tenantId,
-				email: formData.email,
-				password: formData.password,
-				createEmailPasswordUserService: createEmailPasswordUser,
-				showErrorToast,
-				showSuccessToast,
-				setEmailError,
-				setPasswordError,
-				invalidateQueries,
-				onSuccess,
-			});
-		} catch (_) {
-			const { MESSAGES } = await import("@features/users/constants/createUser");
-			showErrorToast(MESSAGES.GENERIC_ERROR);
-		} finally {
-			setIsCreating(false);
-		}
-	};
+			try {
+				await Implementation.getInstanceOrThrow().createEmailPasswordUser({
+					tenantId,
+					email: formData.email,
+					password: formData.password,
+					createEmailPasswordUserService: createEmailPasswordUser,
+					showErrorToast,
+					showSuccessToast,
+					setEmailError,
+					setPasswordError,
+					invalidateQueries,
+					onSuccess,
+				});
+			} catch (_) {
+				const { MESSAGES } = await import("@features/users/constants/createUser");
+				showErrorToast(MESSAGES.GENERIC_ERROR);
+			} finally {
+				setIsCreating(false);
+			}
+		},
+		[createEmailPasswordUser, tenantId, showErrorToast, showSuccessToast, invalidateQueries, onSuccess]
+	);
 
 	return {
 		isCreating,

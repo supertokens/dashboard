@@ -50,7 +50,7 @@ export const UserListItem = ({ user }: { user: User }) => {
 					</Text>
 				)}
 				<Text
-					className={styles["user-list__item__details__email"]}
+					className={styles["user-list__item__details__contact"]}
 					size="2"
 					weight="medium">
 					{email || phone}

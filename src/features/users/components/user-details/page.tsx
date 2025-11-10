@@ -41,6 +41,37 @@ export default function UserDetailsPage({ userId }: UserDetailsProps) {
 		goToUsersList();
 	};
 
+	function getContent() {
+		if (isLoading) return <Loader type="table-with-list" />;
+		if (error) return <DashboardError />;
+		if (!userDetails) return null;
+
+		switch (userDetails.status) {
+			case "OK":
+				return <UserDetailContent user={userDetails.user} />;
+			case "NO_USER_FOUND_ERROR":
+				return (
+					<Paper withBackground>
+						<EmptyList
+							iconUrl="user.svg"
+							title="User not found"
+							description="We couldn't locate this user in our system. They may have been deleted or you might not have permission to view their details."
+						/>
+					</Paper>
+				);
+			case "RECIPE_NOT_INITIALISED":
+				return (
+					<EmptyList
+						iconUrl="user.svg"
+						title="Recipe not initialised"
+						description="The required authentication recipes have not been initialized in your SuperTokens configuration. Please refer to our documentation for instructions on enabling and configuring recipes."
+					/>
+				);
+			default:
+				return assertNever(userDetails);
+		}
+	}
+
 	return (
 		<PageContainer>
 			<Flex
@@ -53,48 +84,7 @@ export default function UserDetailsPage({ userId }: UserDetailsProps) {
 					breadcrumbChild="User Details"
 				/>
 
-				{(() => {
-					if (isLoading) {
-						return <Loader type="table-with-list" />;
-					}
-
-					if (error) {
-						return <DashboardError />;
-					}
-
-					if (!userDetails) {
-						return null;
-					}
-
-					switch (userDetails.status) {
-						case "OK":
-							return (
-								<>
-									<UserDetailContent user={userDetails.user} />
-								</>
-							);
-						case "NO_USER_FOUND_ERROR":
-							return (
-								<Paper withBackground>
-									<EmptyList
-										iconUrl="user.svg"
-										title="User not found"
-										description="We couldn't locate this user in our system. They may have been deleted or you might not have permission to view their details."
-									/>
-								</Paper>
-							);
-						case "RECIPE_NOT_INITIALISED":
-							return (
-								<EmptyList
-									iconUrl="user.svg"
-									title="Recipe not initialised"
-									description="The required authentication recipes have not been initialized in your SuperTokens configuration. Please refer to our documentation for instructions on enabling and configuring recipes."
-								/>
-							);
-						default:
-							return assertNever(userDetails);
-					}
-				})()}
+				{getContent()}
 			</Flex>
 		</PageContainer>
 	);

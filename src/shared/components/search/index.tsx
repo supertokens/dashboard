@@ -14,7 +14,7 @@
  */
 
 import { parsePhoneNumber } from "libphonenumber-js/max";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { getImageUrl } from "@shared/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useFetchSearchTags } from "@api/search/searchTags";
@@ -122,11 +122,13 @@ export const Search: React.FC<SearchProps> = ({ onSearch, placeholder = "Type he
 		return availableTags.includes(DEFAULT_TAG) ? DEFAULT_TAG : availableTags[0] || DEFAULT_TAG;
 	}, [availableTags]);
 
-	// Trigger search when search entries change
-	useEffect(() => {
-		const criteria = searchEntries.length === 0 ? null : convertSearchEntriesToCriteria(searchEntries);
-		onSearch(criteria);
-	}, [searchEntries, onSearch]);
+	const notifySearch = useCallback(
+		(entries: SearchEntry[]) => {
+			const criteria = entries.length === 0 ? null : convertSearchEntriesToCriteria(entries);
+			onSearch(criteria);
+		},
+		[onSearch]
+	);
 
 	useEffect(() => {
 		if (initialCriteria && availableTags.length > 0) {
@@ -143,8 +145,9 @@ export const Search: React.FC<SearchProps> = ({ onSearch, placeholder = "Type he
 				}
 			});
 			setSearchEntries(entries);
+			notifySearch(entries);
 		}
-	}, [initialCriteria, availableTags]);
+	}, [initialCriteria, availableTags, notifySearch]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -155,28 +158,42 @@ export const Search: React.FC<SearchProps> = ({ onSearch, placeholder = "Type he
 
 			if (e.key === "Enter") {
 				e.preventDefault();
-				setSearchEntries((prev) => [...prev, { tag: defaultTag as keyof SearchCriteria, value }]);
+				setSearchEntries((prev) => {
+					const newEntries = [...prev, { tag: defaultTag as keyof SearchCriteria, value }];
+					// Notify parent immediately with computed criteria
+					notifySearch(newEntries);
+					return newEntries;
+				});
 				target.value = "";
 			}
 		},
-		[defaultTag]
+		[defaultTag, notifySearch]
 	);
 
-	const handleEntryUpdate = useCallback((action: SearchAction, entry: SearchEntry, index: number) => {
-		setSearchEntries((prev) => {
-			switch (action) {
-				case "change": {
-					const updated = [...prev];
-					updated[index] = entry;
-					return updated;
+	const handleEntryUpdate = useCallback(
+		(action: SearchAction, entry: SearchEntry, index: number) => {
+			setSearchEntries((prev) => {
+				let newEntries: SearchEntry[];
+				switch (action) {
+					case "change": {
+						const updated = [...prev];
+						updated[index] = entry;
+						newEntries = updated;
+						break;
+					}
+					case "delete":
+						newEntries = prev.filter((_, i) => i !== index);
+						break;
+					default:
+						return prev;
 				}
-				case "delete":
-					return prev.filter((_, i) => i !== index);
-				default:
-					return prev;
-			}
-		});
-	}, []);
+
+				notifySearch(newEntries);
+				return newEntries;
+			});
+		},
+		[notifySearch]
+	);
 
 	return (
 		<div className={styles.searchInput}>
