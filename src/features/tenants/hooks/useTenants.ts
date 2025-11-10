@@ -62,16 +62,7 @@ export const useTenants = () => {
 		queryKey: queryKeys.tenants(),
 		queryFn: async () => {
 			const response = await fetchTenants();
-
-			if (!response) {
-				throw new Error("Failed to fetch tenants");
-			}
-
-			if (response.status === "OK") {
-				return response.tenants;
-			}
-
-			throw new Error("Failed to fetch tenants");
+			return await Implementation.getInstanceOrThrow().processFetchTenantsResponse({ response });
 		},
 		staleTime: STALE_TIME.TENANTS,
 		retry: false,
@@ -93,13 +84,7 @@ export const useTenants = () => {
 
 	const filteredTenants = useMemo(() => {
 		const tenants = tenantsQuery.data || [];
-
-		if (!searchQuery.trim()) {
-			return tenants;
-		}
-
-		const query = searchQuery.toLowerCase().trim();
-		return tenants.filter((tenant: Tenant) => tenant.tenantId.toLowerCase().includes(query));
+		return Implementation.getInstanceOrThrow().filterTenantsBySearchQuery({ tenants, searchQuery });
 	}, [tenantsQuery.data, searchQuery]);
 
 	useEffect(() => {

@@ -742,4 +742,150 @@ export class Implementation implements ImplType<Implementation> {
 			tenantId: tenants[0]?.tenantId || "public",
 		};
 	};
+
+	// Tenant management methods
+	processFetchTenantsResponse = async function (
+		this: Implementation,
+		input: {
+			response: any;
+		}
+	): Promise<any[]> {
+		const { response } = input;
+
+		if (!response) {
+			throw new Error("Failed to fetch tenants");
+		}
+
+		if (response.status === "OK") {
+			return response.tenants;
+		}
+
+		throw new Error("Failed to fetch tenants");
+	};
+
+	filterTenantsBySearchQuery = function (
+		this: Implementation,
+		input: {
+			tenants: any[];
+			searchQuery: string;
+		}
+	): any[] {
+		const { tenants, searchQuery } = input;
+
+		if (!searchQuery.trim()) {
+			return tenants;
+		}
+
+		const query = searchQuery.toLowerCase().trim();
+		return tenants.filter((tenant: any) => tenant.tenantId.toLowerCase().includes(query));
+	};
+
+	processFetchTenantDetailsResponse = async function (
+		this: Implementation,
+		input: {
+			response: any;
+		}
+	): Promise<any> {
+		const { response } = input;
+
+		if (!response) {
+			throw new Error("Failed to fetch tenant details");
+		}
+
+		if (response.status === "OK") {
+			return response.tenant;
+		}
+
+		if (response.status === "UNKNOWN_TENANT_ERROR") {
+			throw new Error("Tenant not found");
+		}
+
+		throw new Error("Failed to fetch tenant details");
+	};
+
+	// Roles and Permissions methods
+	processFetchRolesResponse = async function (
+		this: Implementation,
+		input: {
+			response: any;
+		}
+	): Promise<{ roles: any[]; isFeatureEnabled: boolean }> {
+		const { response } = input;
+
+		if (!response) {
+			throw new Error("Failed to fetch roles");
+		}
+
+		if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+			return {
+				roles: [],
+				isFeatureEnabled: false,
+			};
+		}
+
+		const rolesWithUndefinedPermissions = response.roles.reverse().map((role: string) => ({
+			role,
+			permissions: undefined,
+		}));
+
+		return {
+			roles: rolesWithUndefinedPermissions,
+			isFeatureEnabled: true,
+		};
+	};
+
+	filterRolesBySearchQuery = function (
+		this: Implementation,
+		input: {
+			roles: any[];
+			searchQuery: string;
+		}
+	): any[] {
+		const { roles, searchQuery } = input;
+
+		if (!searchQuery.trim()) {
+			return roles;
+		}
+
+		const query = searchQuery.toLowerCase().trim();
+		return roles.filter((role: any) => role.role.toLowerCase().includes(query));
+	};
+
+	processPermissionsResponse = async function (
+		this: Implementation,
+		input: {
+			response: any;
+		}
+	): Promise<string[]> {
+		const { response } = input;
+
+		if (!response) {
+			throw new Error("Failed to fetch permissions");
+		}
+
+		if (response.status === "OK") {
+			return response.permissions;
+		}
+
+		if (response.status === "UNKNOWN_ROLE_ERROR") {
+			throw new Error("Role not found");
+		}
+
+		if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+			throw new Error("Feature not enabled");
+		}
+
+		throw new Error("Failed to fetch permissions");
+	};
+
+	mergePermissionsWithDeduplication = function (
+		this: Implementation,
+		input: {
+			currentPermissions: string[];
+			newPermissions: string[];
+		}
+	): string[] {
+		const { currentPermissions, newPermissions } = input;
+		return Array.from(new Set([...currentPermissions, ...newPermissions]));
+	};
 }

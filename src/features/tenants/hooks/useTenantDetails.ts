@@ -24,6 +24,7 @@ import {
 } from "@api/tenants";
 
 import { QUERY_KEYS, STALE_TIME } from "../constants";
+import { Implementation } from "../../../implementation";
 
 const queryKeys = {
 	tenantDetails: (tenantId: string) => [QUERY_KEYS.TENANT_DETAILS, tenantId] as const,
@@ -42,20 +43,7 @@ export const useTenantDetails = (tenantId: string) => {
 		queryKey: queryKeys.tenantDetails(tenantId),
 		queryFn: async () => {
 			const response = await getTenantInfo(tenantId);
-
-			if (!response) {
-				throw new Error("Failed to fetch tenant details");
-			}
-
-			if (response.status === "OK") {
-				return response.tenant;
-			}
-
-			if (response.status === "UNKNOWN_TENANT_ERROR") {
-				throw new Error("Tenant not found");
-			}
-
-			throw new Error("Failed to fetch tenant details");
+			return await Implementation.getInstanceOrThrow().processFetchTenantDetailsResponse({ response });
 		},
 		staleTime: STALE_TIME.TENANT_DETAILS,
 		enabled: !!tenantId,
