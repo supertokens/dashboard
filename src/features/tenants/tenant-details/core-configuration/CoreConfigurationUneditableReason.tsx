@@ -15,10 +15,6 @@
 
 import { getConnectionUri } from "@shared/utils";
 
-const connectionURI = getConnectionUri();
-const isUsingSaaS = connectionURI.includes("aws.supertokens.io");
-const isUsingPublicApp = !/appid-.*$/.test(connectionURI);
-
 /**
  * Determines the reason why a property cannot be edited based on the environment
  * and tenant configuration.
@@ -27,6 +23,10 @@ const isUsingPublicApp = !/appid-.*$/.test(connectionURI);
  * @returns JSX element or string explaining why the property cannot be edited
  */
 export function getUneditableReason(isPublicTenant: boolean): React.ReactNode {
+	const connectionURI = getConnectionUri();
+	const isUsingSaaS = connectionURI.includes("aws.supertokens.io");
+	const isUsingPublicApp = !/appid-.*$/.test(connectionURI);
+
 	if (isUsingSaaS) {
 		if (isUsingPublicApp) {
 			if (isPublicTenant) {

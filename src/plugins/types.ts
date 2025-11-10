@@ -1,5 +1,5 @@
 import { Layout } from "@features/layout";
-import type { ComponentOverride } from "./componentOverride";
+import type { ComponentOverride, GenericComponentOverrideMap } from "./componentOverride";
 import { Header, Sidebar } from "@features/layout/components";
 import {
 	Auth,
@@ -54,47 +54,9 @@ import { ProviderConfigKeyValue } from "@features/tenants/tenant-details/provide
 import { ProviderConfigSeparator } from "@features/tenants/tenant-details/provider-configuration/components/ProviderConfigSeparator";
 import { ProviderConfigSuffixInput } from "@features/tenants/tenant-details/provider-configuration/components/ProviderConfigSuffixInput";
 import { UserInfoMapSection } from "@features/tenants/tenant-details/provider-configuration/components/UserInfoMapSection";
-import { OverrideableBuilder } from "supertokens-js-override";
-import { Implementation } from "../implementation";
+import { UserManagement } from "@features/users/page";
 
-export type ImplType<O> = { [K in keyof O]: (...args: any[]) => any };
-
-type SuperTokensPublicConfig = {
-	apiPath: string;
-};
-export type PluginRouteHandler = {
-	path: string; // this is appended to apiBasePath
-	handler: () => JSX.Element;
-};
-
-export type SuperTokensPlugin = {
-	id: string;
-	version?: string;
-	init?: (config: SuperTokensPublicConfig, allPlugins: SuperTokensPublicPlugin[], sdkVersion: string) => void;
-	dependencies?: (
-		config: SuperTokensPublicConfig,
-		pluginsAbove: SuperTokensPublicPlugin[],
-		dashboardVersion: string
-	) => { status: "OK"; pluginsToAdd?: SuperTokensPlugin[] } | { status: "ERROR"; message: string };
-	override?: (
-		originalImplementation: Implementation,
-		builder: OverrideableBuilder<ImplType<Implementation>>
-	) => Implementation;
-	componentOverrides?: (originalComponentOverrides: ComponentOverrideMap) => ComponentOverrideMap;
-	routeHandlers?:
-		| ((
-				config: SuperTokensPublicConfig,
-				allPlugins: SuperTokensPublicPlugin[]
-		  ) => { status: "OK"; routeHandlers: PluginRouteHandler[] } | { status: "ERROR"; message: string })
-		| PluginRouteHandler[];
-
-	config?: (config: SuperTokensPublicConfig) => SuperTokensPublicConfig | undefined;
-	exports?: Record<string, any>;
-};
-
-export type SuperTokensPublicPlugin = Pick<SuperTokensPlugin, "id" | "version" | "exports"> & { initialized: boolean };
-
-export type ComponentOverrideMap = {
+export interface ComponentOverrideMap extends GenericComponentOverrideMap {
 	// layout
 	Layout_Override?: ComponentOverride<typeof Layout>;
 	Header_Override?: ComponentOverride<typeof Header>;
@@ -163,4 +125,7 @@ export type ComponentOverrideMap = {
 	ProviderConfigSeparator_Override?: ComponentOverride<typeof ProviderConfigSeparator>;
 	ProviderConfigSuffixInput_Override?: ComponentOverride<typeof ProviderConfigSuffixInput>;
 	UserInfoMapSection_Override?: ComponentOverride<typeof UserInfoMapSection>;
-};
+
+	// users - components
+	UserManagement_Override?: ComponentOverride<typeof UserManagement>;
+}

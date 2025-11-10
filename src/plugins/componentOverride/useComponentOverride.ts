@@ -3,10 +3,10 @@ import type React from "react";
 
 import { ComponentOverrideContext } from "./componentOverrideContext";
 
-import type { ComponentOverride } from "./types";
+import type { ComponentOverride, PropsOverride } from "./types";
 
 export const useComponentOverride = <TComponent extends React.ComponentType<any>>(
-	overrideKey: string
+	overrideKey: `${string}_Override`
 ): ComponentOverride<TComponent> | null => {
 	const ctx = useContext(ComponentOverrideContext);
 
@@ -14,7 +14,29 @@ export const useComponentOverride = <TComponent extends React.ComponentType<any>
 		throw new Error("Cannot use component override outside ComponentOverrideContext provider.");
 	}
 
-	const OverrideComponent = ctx[overrideKey];
+	return ctx[overrideKey] ?? null;
+};
 
-	return OverrideComponent === undefined ? null : OverrideComponent;
+export const usePropsOverride = <TComponent extends React.ComponentType<any>>(
+	overrideKey: `${string}_Override_Props`
+): PropsOverride<TComponent> => {
+	const ctx = useContext(ComponentOverrideContext);
+
+	if (ctx === "IS_DEFAULT") {
+		throw new Error("Cannot use component override outside ComponentOverrideContext provider.");
+	}
+
+	return ctx[overrideKey] as PropsOverride<TComponent>;
+};
+
+export const useRendererOverride = <TComponent extends React.ComponentType<any>>(
+	overrideKey: `${string}_Override_Renderer`
+): ComponentOverride<TComponent> | null => {
+	const ctx = useContext(ComponentOverrideContext);
+
+	if (ctx === "IS_DEFAULT") {
+		throw new Error("Cannot use component override outside ComponentOverrideContext provider.");
+	}
+
+	return ctx[overrideKey] ?? null;
 };

@@ -21,9 +21,16 @@ import reportWebVitals from "./reportWebVitals";
 import "./shared/styles";
 import { SuperTokens } from "./supertokens";
 
-// todo remove this - example only
 SuperTokens.init({
-	apiPath: "/api",
+	appInfo: {
+		apiDomain: new URL((window as any).dashboardAppPath).origin,
+		connectionURI: (window as any).connectionURI,
+		apiBasePath: "/auth",
+		staticBasePath: (window as any).staticBasePath,
+		dashboardBasePath: new URL((window as any).dashboardAppPath).pathname,
+	},
+	authMode: (window as any).authMode,
+	isSearchEnabled: (window as any).isSearchEnabled === "true",
 	plugins: [
 		{
 			id: "test",

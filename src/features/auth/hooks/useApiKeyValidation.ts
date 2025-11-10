@@ -22,6 +22,7 @@ export const useApiKeyValidation = (onSuccess: () => void) => {
 	const [apiKey, setApiKey] = useState("");
 	const [loading, setIsLoading] = useState<boolean>(false);
 	const fetchData = useFetchData();
+	const localStorageHandler = Implementation.getInstanceOrThrow().getLocalStorageHandler();
 
 	const validateKey = async () => {
 		setIsLoading(true);

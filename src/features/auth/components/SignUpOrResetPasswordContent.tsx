@@ -22,6 +22,7 @@ import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
 import { copyToClipboard } from "@shared/utils/copyToClipboard";
 import { useToast } from "@shared/components/toast";
 import { withOverride } from "@plugins";
+import { getConnectionUri } from "@shared/utils";
 
 interface ISignUpOrResetPasswordContentProps {
 	contentMode: Exclude<ContentMode, "sign-in">;
@@ -80,10 +81,7 @@ const SignUpOrResetPasswordContent = withOverride(
 
 		const { title, subtitle, endpoint, method, rawData } = getContentForMode();
 
-		const command = `curl --location --request ${method} '${
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(window as any).connectionURI
-		}${endpoint}' \\
+		const command = `curl --location --request ${method} '${getConnectionUri()}${endpoint}' \\
 ${commonHeaders.trim()}
 --data-raw '{${rawData}}'`;
 

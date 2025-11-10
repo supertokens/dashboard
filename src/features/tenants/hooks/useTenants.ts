@@ -21,7 +21,7 @@ import { useCreateTenantService, useDeleteTenantService, useListTenantsService }
 import type { Tenant } from "@api/tenants/types";
 
 import { QUERY_KEYS, STALE_TIME } from "../constants";
-import { getSelectedTenantIdFromLocalStorage, setSelectedTenantIdToLocalStorage } from "@shared/utils/storage";
+import { Implementation } from "../../../implementation";
 
 const queryKeys = {
 	tenants: () => [QUERY_KEYS.TENANTS] as const,
@@ -37,12 +37,12 @@ const useTenantStore = create<TenantStore>((set) => ({
 	selectedTenant: undefined,
 
 	setSelectedTenant: (tenantId: string) => {
-		setSelectedTenantIdToLocalStorage(tenantId);
+		Implementation.getInstanceOrThrow().setSelectedTenantIdToLocalStorage(tenantId);
 		set({ selectedTenant: tenantId });
 	},
 
 	initializeTenant: () => {
-		const storedTenant = getSelectedTenantIdFromLocalStorage();
+		const storedTenant = Implementation.getInstanceOrThrow().getSelectedTenantIdFromLocalStorage();
 		if (storedTenant) {
 			set({ selectedTenant: storedTenant });
 		}

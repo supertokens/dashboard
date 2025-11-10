@@ -29,8 +29,6 @@ const SEARCH_TAGS_QUERY_KEY = "search-tags";
 const SEARCH_TAGS_STALE_TIME = 10 * 60 * 1000; // 10 minutes
 const DEFAULT_TAG = "email";
 
-const deleteIcon = getImageUrl("close.svg");
-
 // Types
 export interface SearchCriteria {
 	readonly email?: string;
@@ -245,7 +243,7 @@ const SearchTag: React.FC<SearchTagProps> = ({ entry, availableTags, onUpdate })
 				justify="between">
 				{entry.value}
 				<img
-					src={deleteIcon}
+					src={getImageUrl("close.svg")}
 					alt="Remove search term"
 					onClick={handleDelete}
 					style={{ cursor: "pointer" }}

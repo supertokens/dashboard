@@ -18,7 +18,6 @@ import { Flex } from "@radix-ui/themes";
 
 import { Tenant } from "@api/tenants/types";
 import { FactorIds } from "@shared/constants";
-import { doesTenantHavePasswordlessEnabled } from "@shared/utils";
 import { useTenants } from "@features/tenants/hooks/useTenants";
 import { CreateUserDialogStepType } from "./CreateUserModal";
 
@@ -63,6 +62,15 @@ const renderAlertMessage = (selectedAuthMethod: AuthMethod | undefined) => {
 		default:
 			return null;
 	}
+};
+
+export const doesTenantHavePasswordlessEnabled = (tenantFirstFactors: string[]): boolean => {
+	return (
+		tenantFirstFactors.includes(FactorIds.OTP_EMAIL) ||
+		tenantFirstFactors.includes(FactorIds.OTP_PHONE) ||
+		tenantFirstFactors.includes(FactorIds.LINK_EMAIL) ||
+		tenantFirstFactors.includes(FactorIds.LINK_PHONE)
+	);
 };
 
 const getSelectableAuthMethods = (selectedTenantObject: Tenant | undefined) => {

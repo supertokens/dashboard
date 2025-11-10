@@ -26,6 +26,7 @@ export const useSignIn = (onSuccess: () => void) => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
 	const { signIn } = useAuthService();
+	const localStorageHandler = Implementation.getInstanceOrThrow().getLocalStorageHandler();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");

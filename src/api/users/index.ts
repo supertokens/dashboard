@@ -27,6 +27,7 @@ interface IUseFetchUsersService {
 
 export const useFetchUsersService = (): IUseFetchUsersService => {
 	const fetchData = useFetchData();
+
 	const fetchUsers = async (
 		param?: { paginationToken?: string; limit?: number },
 		search?: object,
