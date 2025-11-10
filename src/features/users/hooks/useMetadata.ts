@@ -16,6 +16,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import useMetadataService from "@api/user/metadata";
+import { Implementation } from "../../../implementation";
 
 const QUERY_KEY = "user-metadata";
 const STALE_TIME = 60 * 1000; // 1 minute
@@ -32,20 +33,7 @@ export const useMetadata = (userId: string) => {
 		queryKey: queryKeys.metadata(userId),
 		queryFn: async () => {
 			const data = await getUserMetaData(userId);
-
-			if (data === "FEATURE_NOT_ENABLED_ERROR") {
-				return "Feature Not Enabled";
-			}
-
-			if (data === undefined) {
-				return undefined;
-			}
-
-			if (typeof data === "string") {
-				return data;
-			}
-
-			return JSON.stringify(data);
+			return await Implementation.getInstanceOrThrow().processUserMetadata({ data });
 		},
 		staleTime: STALE_TIME,
 		enabled: !!userId,

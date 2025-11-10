@@ -17,7 +17,7 @@ import { useState } from "react";
 import useCreateUserService from "@api/user/create";
 import { useToast } from "@shared/components/toast";
 import { useUsersList } from "@features/users/hooks/useUsers";
-import { MESSAGES, STATUS } from "@features/users/constants/createUser";
+import { Implementation } from "../../../implementation";
 
 interface UseCreateEmailPasswordUserParams {
 	tenantId: string;
@@ -49,34 +49,20 @@ export function useCreateEmailPasswordUser({ tenantId, onSuccess }: UseCreateEma
 		setPasswordError(undefined);
 
 		try {
-			const response = await createEmailPasswordUser(tenantId, formData.email, formData.password);
-
-			if (response.status === STATUS.EMAIL_ALREADY_EXISTS_ERROR) {
-				showErrorToast(MESSAGES.EMAIL_ALREADY_EXISTS);
-				return;
-			}
-
-			if (response.status === STATUS.EMAIL_VALIDATION_ERROR) {
-				setEmailError(response.message);
-				return;
-			}
-
-			if (response.status === STATUS.PASSWORD_VALIDATION_ERROR) {
-				setPasswordError(response.message);
-				return;
-			}
-
-			if (response.status === STATUS.FEATURE_NOT_ENABLED_ERROR) {
-				showErrorToast(MESSAGES.FEATURE_NOT_ENABLED);
-				return;
-			}
-
-			if (response.status === STATUS.OK) {
-				showSuccessToast(MESSAGES.SUCCESS);
-				await invalidateQueries();
-				onSuccess?.(response.user.id);
-			}
+			await Implementation.getInstanceOrThrow().createEmailPasswordUser({
+				tenantId,
+				email: formData.email,
+				password: formData.password,
+				createEmailPasswordUserService: createEmailPasswordUser,
+				showErrorToast,
+				showSuccessToast,
+				setEmailError,
+				setPasswordError,
+				invalidateQueries,
+				onSuccess,
+			});
 		} catch (_) {
+			const { MESSAGES } = await import("@features/users/constants/createUser");
 			showErrorToast(MESSAGES.GENERIC_ERROR);
 		} finally {
 			setIsCreating(false);
