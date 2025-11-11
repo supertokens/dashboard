@@ -888,4 +888,81 @@ export class Implementation implements ImplType<Implementation> {
 		const { currentPermissions, newPermissions } = input;
 		return Array.from(new Set([...currentPermissions, ...newPermissions]));
 	};
+
+	// Analytics methods
+	fireAnalyticsEvent = async function (
+		this: Implementation,
+		input: {
+			data: Record<string, unknown>;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string) => string;
+			dashboardVersion: string;
+		}
+	): Promise<void> {
+		const { data, fetchData, getApiUrl, dashboardVersion } = input;
+
+		await fetchData({
+			url: getApiUrl("/api/analytics"),
+			method: "POST",
+			config: {
+				body: JSON.stringify({
+					...data,
+					dashboardVersion,
+				}),
+			},
+			// We dont want to trigger the error boundary if this API fails
+			ignoreErrors: true,
+		});
+	};
+
+	// Search methods
+	processSearchTagsResponse = async function (
+		this: Implementation,
+		input: {
+			response: Response;
+		}
+	): Promise<{ status: string; tags: string[] } | undefined> {
+		const { response } = input;
+		return response.ok ? await response.json() : undefined;
+	};
+
+	// Tenant sorting
+	sortTenants = function (
+		this: Implementation,
+		input: {
+			tenants: any[];
+		}
+	): any[] {
+		const { tenants } = input;
+		// Ensure the public tenant is the first result, followed by all other tenants in alphabetical order
+		return tenants.sort((a: any, b: any) =>
+			(a.tenantId === "public" ? "" : a.tenantId).localeCompare(b.tenantId === "public" ? "" : b.tenantId)
+		);
+	};
+
+	// Third Party Provider URL building
+	buildThirdPartyProviderUrl = function (
+		this: Implementation,
+		input: {
+			providerId: string;
+			additionalConfig?: Record<string, string>;
+		}
+	): string {
+		const { providerId, additionalConfig } = input;
+		const additionalConfigQueryParams = new URLSearchParams(additionalConfig).toString();
+
+		return `/api/thirdparty/config?thirdPartyId=${providerId}${
+			additionalConfigQueryParams ? `&${additionalConfigQueryParams}` : ""
+		}`;
+	};
+
+	buildDeleteThirdPartyProviderUrl = function (
+		this: Implementation,
+		input: {
+			providerId: string;
+		}
+	): string {
+		const { providerId } = input;
+		return `/api/thirdparty/config?thirdPartyId=${providerId}`;
+	};
 }

@@ -14,6 +14,7 @@
  */
 import { getApiUrl, useFetchData } from "@shared/utils";
 import { ProviderConfig, ProviderConfigResponse, Tenant, TenantInfo } from "./types";
+import { Implementation } from "../../implementation";
 
 export const useListTenantsService = () => {
 	const fetchData = useFetchData();
@@ -29,10 +30,8 @@ export const useListTenantsService = () => {
 
 		const result = response.ok ? await response.json() : undefined;
 
-		// Ensure the public tenant is the first result, followed by all other tenants in alphabetical order
-		result.tenants.sort((a: Tenant, b: Tenant) =>
-			(a.tenantId === "public" ? "" : a.tenantId).localeCompare(b.tenantId === "public" ? "" : b.tenantId)
-		);
+		// Sort tenants using Implementation method
+		result.tenants = Implementation.getInstanceOrThrow().sortTenants({ tenants: result.tenants });
 
 		return result;
 	};
@@ -244,15 +243,13 @@ export const useGetThirdPartyProviderInfoService = () => {
 				status: "UNKNOWN_TENANT_ERROR";
 		  }
 	> => {
-		const additionalConfigQueryParams = new URLSearchParams(additionalConfig).toString();
+		const url = Implementation.getInstanceOrThrow().buildThirdPartyProviderUrl({
+			providerId,
+			additionalConfig,
+		});
 
 		const response = await fetchData({
-			url: getApiUrl(
-				`/api/thirdparty/config?thirdPartyId=${providerId}${
-					additionalConfigQueryParams ? `&${additionalConfigQueryParams}` : ""
-				}`,
-				tenantId
-			),
+			url: getApiUrl(url, tenantId),
 			method: "GET",
 		});
 
@@ -301,8 +298,12 @@ export const useDeleteThirdPartyProviderService = () => {
 		tenantId: string,
 		providerId: string
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
+		const url = Implementation.getInstanceOrThrow().buildDeleteThirdPartyProviderUrl({
+			providerId,
+		});
+
 		const response = await fetchData({
-			url: getApiUrl(`/api/thirdparty/config?thirdPartyId=${providerId}`, tenantId),
+			url: getApiUrl(url, tenantId),
 			method: "DELETE",
 		});
 

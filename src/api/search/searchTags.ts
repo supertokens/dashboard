@@ -14,6 +14,7 @@
  */
 
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../implementation";
 
 type resp = {
 	status: string;
@@ -31,7 +32,7 @@ export const useFetchSearchTags = (): IUseFetchSearchTagsService => {
 			url: getApiUrl("/api/search/tags"),
 			method: "GET",
 		});
-		return response.ok ? ((await response?.json()) as resp) : undefined;
+		return await Implementation.getInstanceOrThrow().processSearchTagsResponse({ response });
 	};
 	return { fetchSearchTags };
 };

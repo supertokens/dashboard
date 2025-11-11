@@ -16,23 +16,18 @@
 import { useCallback } from "react";
 import { getApiUrl, useFetchData } from "@shared/utils";
 import { version } from "../../version";
+import { Implementation } from "../../implementation";
 
 export const useAnalyticsService = () => {
 	const fetchData = useFetchData();
 
 	const fireEvent = useCallback(
 		async (data: Record<string, unknown>) => {
-			await fetchData({
-				url: getApiUrl("/api/analytics"),
-				method: "POST",
-				config: {
-					body: JSON.stringify({
-						...data,
-						dashboardVersion: version,
-					}),
-				},
-				// We dont want to trigger the error boundary if this API fails
-				ignoreErrors: true,
+			await Implementation.getInstanceOrThrow().fireAnalyticsEvent({
+				data,
+				fetchData,
+				getApiUrl,
+				dashboardVersion: version,
 			});
 		},
 		[fetchData]
