@@ -15,6 +15,7 @@
 
 import { User } from "@features/users/types";
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../implementation";
 
 interface IUseUserService {
 	updateUserInformation: (args: IUpdateUserInformationArgs) => Promise<UpdateUserInformationResponse>;
@@ -65,27 +66,7 @@ export const useUserService = (): IUseUserService => {
 			},
 		});
 
-		if (response.ok) {
-			const body = await response.json();
-
-			if (body.status === "NO_USER_FOUND_ERROR") {
-				return {
-					status: "NO_USER_FOUND_ERROR",
-				};
-			}
-
-			if (body.status === "RECIPE_NOT_INITIALISED") {
-				return {
-					status: "RECIPE_NOT_INITIALISED",
-				};
-			}
-
-			return body;
-		}
-
-		return {
-			status: "NO_USER_FOUND_ERROR",
-		};
+		return await Implementation.getInstanceOrThrow().processGetUserResponse({ response });
 	};
 
 	const updateUserInformation = async ({
@@ -98,28 +79,21 @@ export const useUserService = (): IUseUserService => {
 		lastName,
 		tenantId,
 	}: IUpdateUserInformationArgs): Promise<UpdateUserInformationResponse> => {
-		let emailToSend = email === undefined ? "" : email;
-		const phoneToSend = phone === undefined ? "" : phone;
-		const firstNameToSend = firstName === undefined ? "" : firstName;
-		const lastNameToSend = lastName === undefined ? "" : lastName;
-
-		if (recipeId === "thirdparty") {
-			emailToSend = "";
-		}
+		const payload = Implementation.getInstanceOrThrow().prepareUserUpdatePayload({
+			userId,
+			recipeId,
+			recipeUserId,
+			email,
+			phone,
+			firstName,
+			lastName,
+		});
 
 		const response = await fetchData({
 			url: getApiUrl("/api/user", tenantId),
 			method: "PUT",
 			config: {
-				body: JSON.stringify({
-					recipeId,
-					userId,
-					recipeUserId,
-					phone: phoneToSend,
-					email: emailToSend,
-					firstName: firstNameToSend,
-					lastName: lastNameToSend,
-				}),
+				body: JSON.stringify(payload),
 			},
 		});
 

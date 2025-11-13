@@ -965,4 +965,101 @@ export class Implementation implements ImplType<Implementation> {
 		const { providerId } = input;
 		return `/api/thirdparty/config?thirdPartyId=${providerId}`;
 	};
+
+	// Users query building
+	buildUsersQueryParams = function (
+		this: Implementation,
+		input: {
+			param?: { paginationToken?: string; limit?: number };
+			search?: object;
+			defaultLimit: number;
+		}
+	): Record<string, any> {
+		const { param, search, defaultLimit } = input;
+		let query: Record<string, any> = {};
+
+		if (search) {
+			query = { ...search };
+		}
+
+		if (param && Object.keys(param).includes("paginationToken")) {
+			query = { ...query, paginationToken: param?.paginationToken };
+		}
+
+		if (param && Object.keys(param).includes("limit")) {
+			query = { ...query, limit: param?.limit };
+		} else {
+			query = { ...query, limit: defaultLimit };
+		}
+
+		return query;
+	};
+
+	// User response processing
+	processGetUserResponse = async function (
+		this: Implementation,
+		input: {
+			response: Response;
+		}
+	): Promise<any> {
+		const { response } = input;
+
+		if (response.ok) {
+			const body = await response.json();
+
+			if (body.status === "NO_USER_FOUND_ERROR") {
+				return {
+					status: "NO_USER_FOUND_ERROR",
+				};
+			}
+
+			if (body.status === "RECIPE_NOT_INITIALISED") {
+				return {
+					status: "RECIPE_NOT_INITIALISED",
+				};
+			}
+
+			return body;
+		}
+
+		return {
+			status: "NO_USER_FOUND_ERROR",
+		};
+	};
+
+	// User update logic
+	prepareUserUpdatePayload = function (
+		this: Implementation,
+		input: {
+			userId: string;
+			recipeId: string;
+			recipeUserId: string;
+			email?: string;
+			phone?: string;
+			firstName?: string;
+			lastName?: string;
+		}
+	): any {
+		const { userId, recipeId, recipeUserId, email, phone, firstName, lastName } = input;
+
+		let emailToSend = email === undefined ? "" : email;
+		const phoneToSend = phone === undefined ? "" : phone;
+		const firstNameToSend = firstName === undefined ? "" : firstName;
+		const lastNameToSend = lastName === undefined ? "" : lastName;
+
+		// Special handling for thirdparty: don't update email
+		if (recipeId === "thirdparty") {
+			emailToSend = "";
+		}
+
+		return {
+			recipeId,
+			userId,
+			recipeUserId,
+			phone: phoneToSend,
+			email: emailToSend,
+			firstName: firstNameToSend,
+			lastName: lastNameToSend,
+		};
+	};
 }

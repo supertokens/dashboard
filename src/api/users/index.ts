@@ -16,6 +16,7 @@
 import { LIST_DEFAULT_LIMIT } from "@shared/constants";
 import { UserPaginationList } from "@features/users/types";
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../implementation";
 
 interface IUseFetchUsersService {
 	fetchUsers: (
@@ -33,18 +34,12 @@ export const useFetchUsersService = (): IUseFetchUsersService => {
 		search?: object,
 		tenantId?: string
 	) => {
-		let query = {};
-		if (search) {
-			query = { ...search };
-		}
-		if (param && Object.keys(param).includes("paginationToken")) {
-			query = { ...query, paginationToken: param?.paginationToken };
-		}
-		if (param && Object.keys(param).includes("limit")) {
-			query = { ...query, limit: param?.limit };
-		} else {
-			query = { ...query, limit: LIST_DEFAULT_LIMIT };
-		}
+		const query = Implementation.getInstanceOrThrow().buildUsersQueryParams({
+			param,
+			search,
+			defaultLimit: LIST_DEFAULT_LIMIT,
+		});
+
 		const response = await fetchData({
 			url: getApiUrl("/api/users", tenantId),
 			method: "GET",
