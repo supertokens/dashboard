@@ -15,6 +15,7 @@
 
 import { SessionInfo } from "@features/users/types";
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../implementation";
 
 interface IUseSessionsForUserService {
 	getSessionsForUser: (userId: string) => Promise<SessionInfo[] | undefined>;
@@ -25,12 +26,10 @@ const useSessionsForUserService = (): IUseSessionsForUserService => {
 	const fetchData = useFetchData();
 
 	const getSessionsForUser = async (userId: string): Promise<SessionInfo[] | undefined> => {
-		const { Implementation } = await import("../../implementation");
 		return await Implementation.getInstanceOrThrow().getSessionsForUser({ userId, fetchData, getApiUrl });
 	};
 
 	const deleteSessionsForUser = async (sessionHandles: string[]): Promise<void> => {
-		const { Implementation } = await import("../../implementation");
 		return await Implementation.getInstanceOrThrow().deleteSessionsForUser({
 			sessionHandles,
 			fetchData,

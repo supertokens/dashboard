@@ -18,6 +18,7 @@ import useCreateUserService from "@api/user/create";
 import { useToast } from "@shared/components/toast";
 import { useUsersList } from "@features/users/hooks/useUsers";
 import { Implementation } from "../../../implementation";
+import { MESSAGES as USER_CREATE_MESSAGES } from "@features/users/constants/createUser";
 
 interface UseCreateEmailPasswordUserParams {
 	tenantId: string;
@@ -63,8 +64,7 @@ export function useCreateEmailPasswordUser({ tenantId, onSuccess }: UseCreateEma
 					onSuccess,
 				});
 			} catch (_) {
-				const { MESSAGES } = await import("@features/users/constants/createUser");
-				showErrorToast(MESSAGES.GENERIC_ERROR);
+				showErrorToast(USER_CREATE_MESSAGES.GENERIC_ERROR);
 			} finally {
 				setIsCreating(false);
 			}

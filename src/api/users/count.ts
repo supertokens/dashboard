@@ -15,6 +15,7 @@
 
 import { UserListCount } from "@features/users/types";
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../implementation";
 
 interface IUseFetchCountService {
 	fetchCount: (tenantid?: string) => Promise<UserListCount | undefined>;
@@ -24,7 +25,6 @@ const useFetchCountService = (): IUseFetchCountService => {
 	const fetchData = useFetchData();
 
 	const fetchCount = async (tenantId?: string) => {
-		const { Implementation } = await import("../../implementation");
 		return await Implementation.getInstanceOrThrow().fetchUsersCount({ tenantId, fetchData, getApiUrl });
 	};
 

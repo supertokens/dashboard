@@ -14,6 +14,7 @@
  */
 
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../implementation";
 
 interface IUseMetadataService {
 	getUserMetaData: (userId: string) => Promise<string | any>;
@@ -24,12 +25,10 @@ const useMetadataService = (): IUseMetadataService => {
 	const fetchData = useFetchData();
 
 	const getUserMetaData = async (userId: string): Promise<string | any> => {
-		const { Implementation } = await import("../../implementation");
 		return await Implementation.getInstanceOrThrow().getUserMetaData({ userId, fetchData, getApiUrl });
 	};
 
 	const updateUserMetaData = async (userId: string, data: string) => {
-		const { Implementation } = await import("../../implementation");
 		return await Implementation.getInstanceOrThrow().updateUserMetaData({ userId, data, fetchData, getApiUrl });
 	};
 

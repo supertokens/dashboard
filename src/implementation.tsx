@@ -7,6 +7,9 @@ import { getAccessDeniedEvent } from "@shared/events/accessDenied";
 import { HTTPStatusCodes, StorageKeys } from "@shared/constants";
 import { HttpMethod } from "@features/auth/types";
 import { ForbiddenError } from "@shared/utils/customErrors";
+import { validateEmail } from "@shared/utils/form";
+import { getApiUrl } from "@shared/utils";
+import { STATUS as USER_CREATE_STATUS, MESSAGES as USER_CREATE_MESSAGES } from "@features/users/constants/createUser";
 
 import { ReactComponent as PermissionsIcon } from "@assets/role-nav-icon.svg";
 import { ReactComponent as TenantManagementIcon } from "@assets/tenant-nav-icon.svg";
@@ -405,13 +408,13 @@ export class Implementation implements ImplType<Implementation> {
 		const body = await response.json();
 		if (response.status === 200) {
 			switch (body.status) {
-				case "OK":
-					const { localStorageHandler } = await import("@shared/services/storage");
-					const { StorageKeys } = await import("@shared/constants");
+				case "OK": {
+					const localStorageHandler = this.getLocalStorageHandler();
 					localStorageHandler.setItem(StorageKeys.AUTH_KEY, body.sessionId);
 					localStorageHandler.setItem(StorageKeys.EMAIL, email);
 					onSuccess();
 					break;
+				}
 				case "USER_LIMIT_REACHED_ERROR":
 					setServerValidationError(body.message);
 					break;
@@ -437,7 +440,6 @@ export class Implementation implements ImplType<Implementation> {
 		}
 	): Promise<{ email: string; password: string }> {
 		const { email, password } = input;
-		const { validateEmail } = await import("@shared/utils/form");
 		const errors: { email: string; password: string } = {
 			email: "",
 			password: "",
@@ -458,9 +460,7 @@ export class Implementation implements ImplType<Implementation> {
 		}
 	): Promise<void> {
 		const { apiKey, fetchData, onSuccess, setApiKeyFieldError } = input;
-		const { getApiUrl } = await import("@shared/utils");
-		const { HTTPStatusCodes, StorageKeys } = await import("@shared/constants");
-		const { localStorageHandler } = await import("@shared/services/storage");
+		const localStorageHandler = this.getLocalStorageHandler();
 
 		const response = await fetchData({
 			url: getApiUrl("/api/key/validate"),
@@ -518,32 +518,30 @@ export class Implementation implements ImplType<Implementation> {
 			onSuccess,
 		} = input;
 
-		const { STATUS, MESSAGES } = await import("@features/users/constants/createUser");
-
 		const response = await createEmailPasswordUserService(tenantId, email, password);
 
-		if (response.status === STATUS.EMAIL_ALREADY_EXISTS_ERROR) {
-			showErrorToast(MESSAGES.EMAIL_ALREADY_EXISTS);
+		if (response.status === USER_CREATE_STATUS.EMAIL_ALREADY_EXISTS_ERROR) {
+			showErrorToast(USER_CREATE_MESSAGES.EMAIL_ALREADY_EXISTS);
 			return;
 		}
 
-		if (response.status === STATUS.EMAIL_VALIDATION_ERROR) {
+		if (response.status === USER_CREATE_STATUS.EMAIL_VALIDATION_ERROR) {
 			setEmailError(response.message);
 			return;
 		}
 
-		if (response.status === STATUS.PASSWORD_VALIDATION_ERROR) {
+		if (response.status === USER_CREATE_STATUS.PASSWORD_VALIDATION_ERROR) {
 			setPasswordError(response.message);
 			return;
 		}
 
-		if (response.status === STATUS.FEATURE_NOT_ENABLED_ERROR) {
-			showErrorToast(MESSAGES.FEATURE_NOT_ENABLED);
+		if (response.status === USER_CREATE_STATUS.FEATURE_NOT_ENABLED_ERROR) {
+			showErrorToast(USER_CREATE_MESSAGES.FEATURE_NOT_ENABLED);
 			return;
 		}
 
-		if (response.status === STATUS.OK) {
-			showSuccessToast(MESSAGES.SUCCESS);
+		if (response.status === USER_CREATE_STATUS.OK) {
+			showSuccessToast(USER_CREATE_MESSAGES.SUCCESS);
 			await invalidateQueries();
 			onSuccess?.(response.user.id);
 		}
@@ -580,19 +578,20 @@ export class Implementation implements ImplType<Implementation> {
 			onSuccess,
 		} = input;
 
-		const { STATUS, MESSAGES } = await import("@features/users/constants/createUser");
-
 		const response = await createPasswordlessUserService(tenantId, payload);
 
 		// Handle validation errors
-		if (response.status === STATUS.EMAIL_VALIDATION_ERROR || response.status === STATUS.PHONE_VALIDATION_ERROR) {
+		if (
+			response.status === USER_CREATE_STATUS.EMAIL_VALIDATION_ERROR ||
+			response.status === USER_CREATE_STATUS.PHONE_VALIDATION_ERROR
+		) {
 			if (
 				authMethod === "EMAIL_OR_PHONE" &&
-				response.status === STATUS.EMAIL_VALIDATION_ERROR &&
+				response.status === USER_CREATE_STATUS.EMAIL_VALIDATION_ERROR &&
 				emailOrPhone &&
 				!this.isPhoneNumber(emailOrPhone)
 			) {
-				setFormError(MESSAGES.INVALID_EMAIL_OR_PHONE);
+				setFormError(USER_CREATE_MESSAGES.INVALID_EMAIL_OR_PHONE);
 			} else {
 				setFormError(response.message);
 			}
@@ -600,18 +599,18 @@ export class Implementation implements ImplType<Implementation> {
 		}
 
 		// Handle feature not enabled error
-		if (response.status === STATUS.FEATURE_NOT_ENABLED_ERROR) {
-			showErrorToast(MESSAGES.FEATURE_NOT_ENABLED);
+		if (response.status === USER_CREATE_STATUS.FEATURE_NOT_ENABLED_ERROR) {
+			showErrorToast(USER_CREATE_MESSAGES.FEATURE_NOT_ENABLED);
 			return;
 		}
 
 		// Handle successful response
-		if (response.status === STATUS.OK) {
+		if (response.status === USER_CREATE_STATUS.OK) {
 			if (response.createdNewRecipeUser === false) {
 				const errorMessage = this.getPasswordlessExistingUserErrorMessage(authMethod, emailOrPhone);
 				showErrorToast(errorMessage);
 			} else {
-				showSuccessToast(MESSAGES.SUCCESS);
+				showSuccessToast(USER_CREATE_MESSAGES.SUCCESS);
 				await invalidateQueries();
 				onSuccess?.(response.user.id);
 			}
@@ -1450,8 +1449,8 @@ export class Implementation implements ImplType<Implementation> {
 		};
 	};
 
-	// User Create API methods
-	createEmailPasswordUser = async function (
+	// User Create API methods (low-level API wrappers)
+	createEmailPasswordUserViaApi = async function (
 		this: Implementation,
 		input: {
 			tenantId: string | undefined;
@@ -1480,7 +1479,7 @@ export class Implementation implements ImplType<Implementation> {
 		throw new Error("Something went wrong!");
 	};
 
-	createPasswordlessUser = async function (
+	createPasswordlessUserViaApi = async function (
 		this: Implementation,
 		input: {
 			tenantId: string;

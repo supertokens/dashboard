@@ -14,6 +14,7 @@
  */
 
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../../../implementation";
 
 interface IUseVerifyUserTokenService {
 	sendUserEmailVerification: (userId: string, tenantId?: string) => Promise<boolean>;
@@ -23,7 +24,6 @@ const useVerifyUserTokenService = (): IUseVerifyUserTokenService => {
 	const fetchData = useFetchData();
 
 	const sendUserEmailVerification = async (userId: string, tenantId?: string) => {
-		const { Implementation } = await import("../../../../implementation");
 		return await Implementation.getInstanceOrThrow().sendUserEmailVerification({
 			userId,
 			tenantId,

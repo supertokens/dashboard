@@ -19,6 +19,7 @@ import useCreateUserService, { CreatePasswordlessUserPayload } from "@api/user/c
 import { useToast } from "@shared/components/toast";
 import { useUsersList } from "@features/users/hooks/useUsers";
 import { Implementation } from "../../../implementation";
+import { MESSAGES as USER_CREATE_MESSAGES } from "@features/users/constants/createUser";
 
 interface UseCreatePasswordlessUserParams {
 	tenantId: string;
@@ -54,8 +55,7 @@ export function useCreatePasswordlessUser({ tenantId, authMethod, onSuccess }: U
 			});
 
 			if (!payload) {
-				const { MESSAGES } = require("@features/users/constants/createUser");
-				showErrorToast(MESSAGES.NO_AUTH_METHOD);
+				showErrorToast(USER_CREATE_MESSAGES.NO_AUTH_METHOD);
 				return null;
 			}
 
@@ -89,8 +89,7 @@ export function useCreatePasswordlessUser({ tenantId, authMethod, onSuccess }: U
 					onSuccess,
 				});
 			} catch (_) {
-				const { MESSAGES } = await import("@features/users/constants/createUser");
-				showErrorToast(MESSAGES.GENERIC_ERROR);
+				showErrorToast(USER_CREATE_MESSAGES.GENERIC_ERROR);
 			} finally {
 				setIsCreating(false);
 			}

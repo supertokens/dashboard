@@ -14,6 +14,7 @@
  */
 
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../../../implementation";
 
 interface IUsePasswordResetService {
 	updatePassword: (
@@ -25,12 +26,12 @@ interface IUsePasswordResetService {
 
 type UpdatePasswordResponse =
 	| {
-			status: "OK";
-	  }
+		status: "OK";
+	}
 	| {
-			status: "INVALID_PASSWORD_ERROR";
-			error: string;
-	  };
+		status: "INVALID_PASSWORD_ERROR";
+		error: string;
+	};
 
 const usePasswordResetService = (): IUsePasswordResetService => {
 	const fetchData = useFetchData();
@@ -40,7 +41,6 @@ const usePasswordResetService = (): IUsePasswordResetService => {
 		newPassword: string,
 		tenantId: string | undefined
 	): Promise<UpdatePasswordResponse> => {
-		const { Implementation } = await import("../../../../implementation");
 		return await Implementation.getInstanceOrThrow().updatePassword({
 			userId,
 			newPassword,

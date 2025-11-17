@@ -15,6 +15,7 @@
 
 import { EmailVerificationStatus } from "@features/auth/types";
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../../../implementation";
 
 interface IUseVerifyUserEmailService {
 	getUserEmailVerificationStatus: (userId: string) => Promise<EmailVerificationStatus>;
@@ -29,7 +30,6 @@ const useVerifyUserEmail = (): IUseVerifyUserEmailService => {
 	const fetchData = useFetchData();
 
 	const getUserEmailVerificationStatus = async (userId: string): Promise<EmailVerificationStatus> => {
-		const { Implementation } = await import("../../../../implementation");
 		return await Implementation.getInstanceOrThrow().getUserEmailVerificationStatus({
 			userId,
 			fetchData,
@@ -42,7 +42,6 @@ const useVerifyUserEmail = (): IUseVerifyUserEmailService => {
 		isEmailVerified: boolean,
 		tenantId: string | undefined
 	) => {
-		const { Implementation } = await import("../../../../implementation");
 		return await Implementation.getInstanceOrThrow().updateUserEmailVerificationStatus({
 			userId,
 			isEmailVerified,

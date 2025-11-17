@@ -14,8 +14,9 @@
  */
 
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../implementation";
 
-type TUnlinkUserResponse = Promise<{ status: "OK" } | undefined>;
+type TUnlinkUserResponse = Promise<{ status: "OK"; } | undefined>;
 
 interface IUseUnlinkService {
 	unlinkUser: (userId: string) => TUnlinkUserResponse;
@@ -24,8 +25,7 @@ interface IUseUnlinkService {
 const useUnlinkService = (): IUseUnlinkService => {
 	const fetchData = useFetchData();
 
-	const unlinkUser = async (recipeUserId: string): Promise<{ status: "OK" } | undefined> => {
-		const { Implementation } = await import("../../implementation");
+	const unlinkUser = async (recipeUserId: string): Promise<{ status: "OK"; } | undefined> => {
 		return await Implementation.getInstanceOrThrow().unlinkUser({ recipeUserId, fetchData, getApiUrl });
 	};
 
