@@ -78,22 +78,14 @@ const useCreateUserService = (): ICreateUserService => {
 		email: string,
 		password: string
 	): Promise<CreateEmailPasswordUserResponse> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user/emailpassword", tenantId),
-			method: "POST",
-			config: {
-				body: JSON.stringify({
-					email,
-					password,
-				}),
-			},
+		const { Implementation } = await import("../../../implementation");
+		return await Implementation.getInstanceOrThrow().createEmailPasswordUser({
+			tenantId,
+			email,
+			password,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Something went wrong!");
 	};
 
 	const createPasswordlessUser = async (
@@ -103,21 +95,13 @@ const useCreateUserService = (): ICreateUserService => {
 			phoneNumber?: string;
 		}
 	): Promise<CreatePasswordlessUserResponse> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user/passwordless", tenantId),
-			method: "POST",
-			config: {
-				body: JSON.stringify({
-					...data,
-				}),
-			},
+		const { Implementation } = await import("../../../implementation");
+		return await Implementation.getInstanceOrThrow().createPasswordlessUser({
+			tenantId,
+			data,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Something went wrong!");
 	};
 
 	return { createEmailPasswordUser, createPasswordlessUser };

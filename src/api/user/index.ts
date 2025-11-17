@@ -58,15 +58,7 @@ export const useUserService = (): IUseUserService => {
 	const fetchData = useFetchData();
 
 	const getUser = async (userId: string): Promise<GetUserInfoResult> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user"),
-			method: "GET",
-			query: {
-				userId,
-			},
-		});
-
-		return await Implementation.getInstanceOrThrow().processGetUserResponse({ response });
+		return await Implementation.getInstanceOrThrow().getUser({ userId, fetchData, getApiUrl });
 	};
 
 	const updateUserInformation = async ({
@@ -79,7 +71,7 @@ export const useUserService = (): IUseUserService => {
 		lastName,
 		tenantId,
 	}: IUpdateUserInformationArgs): Promise<UpdateUserInformationResponse> => {
-		const payload = Implementation.getInstanceOrThrow().prepareUserUpdatePayload({
+		return await Implementation.getInstanceOrThrow().updateUserInformation({
 			userId,
 			recipeId,
 			recipeUserId,
@@ -87,17 +79,10 @@ export const useUserService = (): IUseUserService => {
 			phone,
 			firstName,
 			lastName,
+			tenantId,
+			fetchData,
+			getApiUrl,
 		});
-
-		const response = await fetchData({
-			url: getApiUrl("/api/user", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify(payload),
-			},
-		});
-
-		return await response.json();
 	};
 
 	return {

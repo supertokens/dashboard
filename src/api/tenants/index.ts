@@ -23,17 +23,7 @@ export const useListTenantsService = () => {
 		status: "OK";
 		tenants: Tenant[];
 	}> => {
-		const response = await fetchData({
-			method: "GET",
-			url: getApiUrl("/api/tenants"),
-		});
-
-		const result = response.ok ? await response.json() : undefined;
-
-		// Sort tenants using Implementation method
-		result.tenants = Implementation.getInstanceOrThrow().sortTenants({ tenants: result.tenants });
-
-		return result;
+		return await Implementation.getInstanceOrThrow().fetchTenants({ fetchData, getApiUrl });
 	};
 
 	return {
@@ -59,22 +49,7 @@ export const useCreateTenantService = () => {
 				message: string;
 		  }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant"),
-			method: "POST",
-			config: {
-				body: JSON.stringify({
-					tenantId,
-				}),
-			},
-		});
-
-		if (response.ok) {
-			const body = await response.json();
-			return body;
-		}
-
-		throw new Error("Unknown error");
+		return await Implementation.getInstanceOrThrow().createTenant({ tenantId, fetchData, getApiUrl });
 	};
 
 	return createTenant;
@@ -94,17 +69,7 @@ export const useGetTenantInfoService = () => {
 				status: "UNKNOWN_TENANT_ERROR";
 		  }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant", tenantId),
-			method: "GET",
-		});
-
-		if (response.ok) {
-			const body = await response.json();
-			return body;
-		}
-
-		throw new Error("Unknown error");
+		return await Implementation.getInstanceOrThrow().getTenantInfo({ tenantId, fetchData, getApiUrl });
 	};
 
 	return getTenantInfo;
@@ -114,16 +79,7 @@ export const useDeleteTenantService = () => {
 	const fetchData = useFetchData();
 
 	const deleteTenant = async (tenantId: string): Promise<{ status: "OK" }> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant", tenantId),
-			method: "DELETE",
-		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
+		return await Implementation.getInstanceOrThrow().deleteTenant({ tenantId, fetchData, getApiUrl });
 	};
 
 	return deleteTenant;
@@ -141,22 +97,13 @@ export const useUpdateFirstFactorService = () => {
 		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"; message: string }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant/first-factor", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({
-					factorId,
-					enable,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().updateFirstFactor({
+			tenantId,
+			factorId,
+			enable,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return updateFirstFactor;
@@ -175,22 +122,13 @@ export const useUpdateRequiredSecondaryFactorService = () => {
 		| { status: "MFA_NOT_INITIALIZED_ERROR" }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant/required-secondary-factor", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({
-					factorId,
-					enable,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().updateRequiredSecondaryFactor({
+			tenantId,
+			factorId,
+			enable,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return updateRequiredSecondaryFactor;
@@ -206,22 +144,13 @@ export const useUpdateCoreConfigService = () => {
 	): Promise<
 		{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "INVALID_CONFIG_ERROR"; message: string }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant/core-config", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({
-					name,
-					value,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().updateCoreConfig({
+			tenantId,
+			name,
+			value,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return updateCoreConfig;
@@ -243,21 +172,13 @@ export const useGetThirdPartyProviderInfoService = () => {
 				status: "UNKNOWN_TENANT_ERROR";
 		  }
 	> => {
-		const url = Implementation.getInstanceOrThrow().buildThirdPartyProviderUrl({
+		return await Implementation.getInstanceOrThrow().getThirdPartyProviderInfo({
+			tenantId,
 			providerId,
 			additionalConfig,
+			fetchData,
+			getApiUrl,
 		});
-
-		const response = await fetchData({
-			url: getApiUrl(url, tenantId),
-			method: "GET",
-		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return getThirdPartyProviderInfo;
@@ -270,22 +191,12 @@ export const useCreateOrUpdateThirdPartyProviderService = () => {
 		tenantId: string,
 		providerConfig: ProviderConfig
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "BOXY_ERROR"; message: string }> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/thirdparty/config", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({
-					providerConfig,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().createOrUpdateThirdPartyProvider({
+			tenantId,
+			providerConfig,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			const body = await response.json();
-			return body;
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return createOrUpdateThirdPartyProvider;
@@ -298,22 +209,12 @@ export const useDeleteThirdPartyProviderService = () => {
 		tenantId: string,
 		providerId: string
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
-		const url = Implementation.getInstanceOrThrow().buildDeleteThirdPartyProviderUrl({
+		return await Implementation.getInstanceOrThrow().deleteThirdPartyProvider({
+			tenantId,
 			providerId,
+			fetchData,
+			getApiUrl,
 		});
-
-		const response = await fetchData({
-			url: getApiUrl(url, tenantId),
-			method: "DELETE",
-		});
-
-		if (response.ok) {
-			return {
-				status: "OK",
-			};
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return deleteThirdPartyProvider;

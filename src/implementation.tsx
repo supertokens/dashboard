@@ -915,14 +915,19 @@ export class Implementation implements ImplType<Implementation> {
 		});
 	};
 
-	// Search methods
-	processSearchTagsResponse = async function (
+	// Search API methods
+	fetchSearchTags = async function (
 		this: Implementation,
 		input: {
-			response: Response;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
 		}
 	): Promise<{ status: string; tags: string[] } | undefined> {
-		const { response } = input;
+		const { fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/search/tags"),
+			method: "GET",
+		});
 		return response.ok ? await response.json() : undefined;
 	};
 
@@ -966,7 +971,329 @@ export class Implementation implements ImplType<Implementation> {
 		return `/api/thirdparty/config?thirdPartyId=${providerId}`;
 	};
 
-	// Users query building
+	// Tenant API methods
+	fetchTenants = async function (
+		this: Implementation,
+		input: {
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<{ status: "OK"; tenants: any[] }> {
+		const { fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			method: "GET",
+			url: getApiUrl("/api/tenants"),
+		});
+
+		const result = response.ok ? await response.json() : undefined;
+
+		// Sort tenants using existing helper method
+		result.tenants = this.sortTenants({ tenants: result.tenants });
+
+		return result;
+	};
+
+	createTenant = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<
+		| { status: "OK"; createdNew: boolean }
+		| { status: "MULTITENANCY_NOT_ENABLED_IN_CORE_ERROR" | "TENANT_ID_ALREADY_EXISTS_ERROR" }
+		| { status: "INVALID_TENANT_ID_ERROR"; message: string }
+	> {
+		const { tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant"),
+			method: "POST",
+			config: {
+				body: JSON.stringify({
+					tenantId,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	getTenantInfo = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<{ status: "OK"; tenant: any } | { status: "UNKNOWN_TENANT_ERROR" }> {
+		const { tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant", tenantId),
+			method: "GET",
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	deleteTenant = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<{ status: "OK" }> {
+		const { tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant", tenantId),
+			method: "DELETE",
+		});
+
+		if (response.ok) {
+			return await response.json();
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	updateFirstFactor = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			factorId: string;
+			enable: boolean;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<
+		| { status: "OK" }
+		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"; message: string }
+		| { status: "UNKNOWN_TENANT_ERROR" }
+	> {
+		const { tenantId, factorId, enable, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant/first-factor", tenantId),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					factorId,
+					enable,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			return await response.json();
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	updateRequiredSecondaryFactor = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			factorId: string;
+			enable: boolean;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<
+		| { status: "OK"; isMFARequirementsForAuthOverridden: boolean }
+		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"; message: string }
+		| { status: "MFA_NOT_INITIALIZED_ERROR" }
+		| { status: "UNKNOWN_TENANT_ERROR" }
+	> {
+		const { tenantId, factorId, enable, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant/required-secondary-factor", tenantId),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					factorId,
+					enable,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			return await response.json();
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	updateCoreConfig = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			name: string;
+			value: string | number | boolean | null;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<
+		{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "INVALID_CONFIG_ERROR"; message: string }
+	> {
+		const { tenantId, name, value, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/tenant/core-config", tenantId),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					name,
+					value,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			return await response.json();
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	getThirdPartyProviderInfo = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			providerId: string;
+			additionalConfig?: Record<string, string>;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<{ status: "OK"; providerConfig: any } | { status: "UNKNOWN_TENANT_ERROR" }> {
+		const { tenantId, providerId, additionalConfig, fetchData, getApiUrl } = input;
+		const url = this.buildThirdPartyProviderUrl({
+			providerId,
+			additionalConfig,
+		});
+
+		const response = await fetchData({
+			url: getApiUrl(url, tenantId),
+			method: "GET",
+		});
+
+		if (response.ok) {
+			return await response.json();
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	createOrUpdateThirdPartyProvider = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			providerConfig: any;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "BOXY_ERROR"; message: string }> {
+		const { tenantId, providerConfig, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/thirdparty/config", tenantId),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					providerConfig,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	deleteThirdPartyProvider = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			providerId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> {
+		const { tenantId, providerId, fetchData, getApiUrl } = input;
+		const url = this.buildDeleteThirdPartyProviderUrl({
+			providerId,
+		});
+
+		const response = await fetchData({
+			url: getApiUrl(url, tenantId),
+			method: "DELETE",
+		});
+
+		if (response.ok) {
+			return {
+				status: "OK",
+			};
+		}
+
+		throw new Error("Unknown error");
+	};
+
+	// Users API methods
+	fetchUsers = async function (
+		this: Implementation,
+		input: {
+			param?: { paginationToken?: string; limit?: number };
+			search?: object;
+			tenantId?: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+			defaultLimit: number;
+		}
+	): Promise<any | undefined> {
+		const { param, search, tenantId, fetchData, getApiUrl, defaultLimit } = input;
+		const query = this.buildUsersQueryParams({
+			param,
+			search,
+			defaultLimit,
+		});
+
+		const response = await fetchData({
+			url: getApiUrl("/api/users", tenantId),
+			method: "GET",
+			query: query,
+		});
+		return response.ok ? await response.json() : undefined;
+	};
+
+	fetchUsersCount = async function (
+		this: Implementation,
+		input: {
+			tenantId?: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any | undefined> {
+		const { tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/users/count", tenantId),
+			method: "GET",
+		});
+
+		return response.ok ? await response.json() : undefined;
+	};
+
+	// Users query building (helper method)
 	buildUsersQueryParams = function (
 		this: Implementation,
 		input: {
@@ -995,7 +1322,67 @@ export class Implementation implements ImplType<Implementation> {
 		return query;
 	};
 
-	// User response processing
+	// User API methods
+	getUser = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any> {
+		const { userId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user"),
+			method: "GET",
+			query: {
+				userId,
+			},
+		});
+
+		return await this.processGetUserResponse({ response });
+	};
+
+	updateUserInformation = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			recipeId: string;
+			recipeUserId: string;
+			email?: string;
+			phone?: string;
+			firstName?: string;
+			lastName?: string;
+			tenantId?: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any> {
+		const { userId, recipeId, recipeUserId, email, phone, firstName, lastName, tenantId, fetchData, getApiUrl } =
+			input;
+
+		const payload = this.prepareUserUpdatePayload({
+			userId,
+			recipeId,
+			recipeUserId,
+			email,
+			phone,
+			firstName,
+			lastName,
+		});
+
+		const response = await fetchData({
+			url: getApiUrl("/api/user", tenantId),
+			method: "PUT",
+			config: {
+				body: JSON.stringify(payload),
+			},
+		});
+
+		return await response.json();
+	};
+
+	// User response processing (helper method)
 	processGetUserResponse = async function (
 		this: Implementation,
 		input: {
@@ -1027,7 +1414,7 @@ export class Implementation implements ImplType<Implementation> {
 		};
 	};
 
-	// User update logic
+	// User update logic (helper method)
 	prepareUserUpdatePayload = function (
 		this: Implementation,
 		input: {
@@ -1061,5 +1448,554 @@ export class Implementation implements ImplType<Implementation> {
 			firstName: firstNameToSend,
 			lastName: lastNameToSend,
 		};
+	};
+
+	// User Create API methods
+	createEmailPasswordUser = async function (
+		this: Implementation,
+		input: {
+			tenantId: string | undefined;
+			email: string;
+			password: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any> {
+		const { tenantId, email, password, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user/emailpassword", tenantId),
+			method: "POST",
+			config: {
+				body: JSON.stringify({
+					email,
+					password,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			return await response.json();
+		}
+
+		throw new Error("Something went wrong!");
+	};
+
+	createPasswordlessUser = async function (
+		this: Implementation,
+		input: {
+			tenantId: string;
+			data: { email?: string; phoneNumber?: string };
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any> {
+		const { tenantId, data, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user/passwordless", tenantId),
+			method: "POST",
+			config: {
+				body: JSON.stringify({
+					...data,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			return await response.json();
+		}
+
+		throw new Error("Something went wrong!");
+	};
+
+	// User Delete API method
+	deleteUser = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			removeAllLinkedAccounts: boolean;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<{ status: "OK" } | undefined> {
+		const { userId, removeAllLinkedAccounts, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user"),
+			method: "DELETE",
+			query: {
+				userId,
+				removeAllLinkedAccounts: String(removeAllLinkedAccounts),
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+
+			if (body.status !== "OK") {
+				return undefined;
+			}
+
+			return body;
+		}
+
+		return undefined;
+	};
+
+	// User Metadata API methods
+	getUserMetaData = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<string | any> {
+		const { userId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user/metadata"),
+			method: "GET",
+			query: {
+				userId,
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+
+			if (body.status === "FEATURE_NOT_ENABLED_ERROR") {
+				return "FEATURE_NOT_ENABLED_ERROR";
+			}
+
+			if (body.status !== "OK") {
+				return undefined;
+			}
+
+			return body.data;
+		}
+
+		return undefined;
+	};
+
+	updateUserMetaData = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			data: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any> {
+		const { userId, fetchData, getApiUrl } = input;
+		let { data } = input;
+		data = data.replaceAll("\n", "");
+		const response = await fetchData({
+			url: getApiUrl("/api/user/metadata"),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					userId,
+					data,
+				}),
+			},
+		});
+
+		if (response.status === 200) {
+			return await response.json();
+		}
+
+		if (response.status === 400) {
+			throw new Error("Invalid meta data");
+		}
+
+		throw new Error("Something went wrong");
+	};
+
+	// User Sessions API methods
+	getSessionsForUser = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any[] | undefined> {
+		const { userId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user/sessions"),
+			method: "GET",
+			query: {
+				userId,
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+
+			if (body.status !== "OK") {
+				return undefined;
+			}
+
+			return body.sessions;
+		}
+
+		return undefined;
+	};
+
+	deleteSessionsForUser = async function (
+		this: Implementation,
+		input: {
+			sessionHandles: string[];
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<void> {
+		const { sessionHandles, fetchData, getApiUrl } = input;
+		await fetchData({
+			url: getApiUrl("/api/user/sessions"),
+			method: "POST",
+			config: {
+				body: JSON.stringify({
+					sessionHandles,
+				}),
+			},
+		});
+
+		return;
+	};
+
+	// User Unlink API method
+	unlinkUser = async function (
+		this: Implementation,
+		input: {
+			recipeUserId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<{ status: "OK" } | undefined> {
+		const { recipeUserId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user/unlink"),
+			method: "GET",
+			query: {
+				recipeUserId: recipeUserId,
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+
+			if (body.status !== "OK") {
+				return undefined;
+			}
+
+			return body;
+		}
+
+		return undefined;
+	};
+
+	// User Email Verification API methods
+	getUserEmailVerificationStatus = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any> {
+		const { userId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user/email/verify"),
+			method: "GET",
+			query: { recipeUserId: userId },
+		});
+
+		const body = await response.json();
+		return body;
+	};
+
+	updateUserEmailVerificationStatus = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			isEmailVerified: boolean;
+			tenantId: string | undefined;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<boolean> {
+		const { userId, isEmailVerified, tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user/email/verify", tenantId),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({ verified: isEmailVerified, recipeUserId: userId }),
+			},
+		});
+		return response?.ok;
+	};
+
+	// User Email Verification Token API method
+	sendUserEmailVerification = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			tenantId?: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<boolean> {
+		const { userId, tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user/email/verify/token", tenantId),
+			method: "POST",
+			config: {
+				body: JSON.stringify({
+					recipeUserId: userId,
+				}),
+			},
+		});
+		return response?.ok;
+	};
+
+	// User Password Reset API method
+	updatePassword = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			newPassword: string;
+			tenantId: string | undefined;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any> {
+		const { userId, newPassword, tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/user/password", tenantId),
+			method: "PUT",
+			query: { userId },
+			config: {
+				body: JSON.stringify({
+					recipeUserId: userId,
+					newPassword,
+				}),
+			},
+		});
+		return await response.json();
+	};
+
+	// User Roles API methods
+	getRoles = async function (
+		this: Implementation,
+		input: {
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any | undefined> {
+		const { fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/userroles/roles"),
+			method: "GET",
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
+	};
+
+	createRoleOrUpdateARole = async function (
+		this: Implementation,
+		input: {
+			role: string;
+			permissions: string[];
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any | undefined> {
+		const { role, permissions, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/userroles/role"),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					role,
+					permissions,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
+	};
+
+	deleteRole = async function (
+		this: Implementation,
+		input: {
+			role: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any | undefined> {
+		const { role, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/userroles/role"),
+			method: "DELETE",
+			query: {
+				role,
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
+	};
+
+	// User Roles Permissions API methods
+	getPermissionsForRole = async function (
+		this: Implementation,
+		input: {
+			role: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any | undefined> {
+		const { role, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/userroles/role/permissions"),
+			method: "GET",
+			query: {
+				role,
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
+	};
+
+	removePermissionsFromRole = async function (
+		this: Implementation,
+		input: {
+			role: string;
+			permissions: string[];
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any | undefined> {
+		const { role, permissions, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/userroles/role/permissions/remove"),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					role,
+					permissions,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
+	};
+
+	// User Roles for User API methods
+	addRoleToUser = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			role: string;
+			tenantId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any | undefined> {
+		const { userId, role, tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/userroles/user/roles", tenantId),
+			method: "PUT",
+			config: {
+				body: JSON.stringify({
+					userId,
+					role,
+				}),
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
+	};
+
+	getRolesForUser = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			tenantId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any | undefined> {
+		const { userId, tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/userroles/user/roles", tenantId),
+			method: "GET",
+			query: {
+				userId,
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
+	};
+
+	removeUserRole = async function (
+		this: Implementation,
+		input: {
+			userId: string;
+			role: string;
+			tenantId: string;
+			fetchData: (params: any) => Promise<any>;
+			getApiUrl: (path: string, tenantId?: string) => string;
+		}
+	): Promise<any | undefined> {
+		const { userId, role, tenantId, fetchData, getApiUrl } = input;
+		const response = await fetchData({
+			url: getApiUrl("/api/userroles/user/roles", tenantId),
+			method: "DELETE",
+			query: {
+				userId,
+				role,
+			},
+		});
+
+		if (response.ok) {
+			const body = await response.json();
+			return body;
+		}
+
+		return undefined;
 	};
 }

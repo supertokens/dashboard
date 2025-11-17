@@ -23,16 +23,13 @@ const useVerifyUserTokenService = (): IUseVerifyUserTokenService => {
 	const fetchData = useFetchData();
 
 	const sendUserEmailVerification = async (userId: string, tenantId?: string) => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user/email/verify/token", tenantId),
-			method: "POST",
-			config: {
-				body: JSON.stringify({
-					recipeUserId: userId,
-				}),
-			},
+		const { Implementation } = await import("../../../../implementation");
+		return await Implementation.getInstanceOrThrow().sendUserEmailVerification({
+			userId,
+			tenantId,
+			fetchData,
+			getApiUrl,
 		});
-		return response?.ok;
 	};
 
 	return { sendUserEmailVerification };

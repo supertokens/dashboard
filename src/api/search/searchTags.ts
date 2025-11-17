@@ -28,11 +28,7 @@ interface IUseFetchSearchTagsService {
 export const useFetchSearchTags = (): IUseFetchSearchTagsService => {
 	const fetchData = useFetchData();
 	const fetchSearchTags = async () => {
-		const response = await fetchData({
-			url: getApiUrl("/api/search/tags"),
-			method: "GET",
-		});
-		return await Implementation.getInstanceOrThrow().processSearchTagsResponse({ response });
+		return await Implementation.getInstanceOrThrow().fetchSearchTags({ fetchData, getApiUrl });
 	};
 	return { fetchSearchTags };
 };

@@ -34,18 +34,14 @@ export const useFetchUsersService = (): IUseFetchUsersService => {
 		search?: object,
 		tenantId?: string
 	) => {
-		const query = Implementation.getInstanceOrThrow().buildUsersQueryParams({
+		return await Implementation.getInstanceOrThrow().fetchUsers({
 			param,
 			search,
+			tenantId,
+			fetchData,
+			getApiUrl,
 			defaultLimit: LIST_DEFAULT_LIMIT,
 		});
-
-		const response = await fetchData({
-			url: getApiUrl("/api/users", tenantId),
-			method: "GET",
-			query: query,
-		});
-		return response.ok ? ((await response?.json()) as UserPaginationList) : undefined;
 	};
 	return { fetchUsers };
 };

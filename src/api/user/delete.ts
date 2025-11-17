@@ -28,26 +28,13 @@ const useDeleteUserService = (): IUseDeleteUserService => {
 		userId: string,
 		removeAllLinkedAccounts: boolean
 	): Promise<{ status: "OK" } | undefined> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user"),
-			method: "DELETE",
-			query: {
-				userId,
-				removeAllLinkedAccounts: String(removeAllLinkedAccounts),
-			},
+		const { Implementation } = await import("../../implementation");
+		return await Implementation.getInstanceOrThrow().deleteUser({
+			userId,
+			removeAllLinkedAccounts,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			const body = await response.json();
-
-			if (body.status !== "OK") {
-				return undefined;
-			}
-
-			return body;
-		}
-
-		return undefined;
 	};
 
 	return {

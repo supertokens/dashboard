@@ -24,12 +24,8 @@ const useFetchCountService = (): IUseFetchCountService => {
 	const fetchData = useFetchData();
 
 	const fetchCount = async (tenantId?: string) => {
-		const response = await fetchData({
-			url: getApiUrl("/api/users/count", tenantId),
-			method: "GET",
-		});
-
-		return response.ok ? ((await response?.json()) as UserListCount) : undefined;
+		const { Implementation } = await import("../../implementation");
+		return await Implementation.getInstanceOrThrow().fetchUsersCount({ tenantId, fetchData, getApiUrl });
 	};
 
 	return {

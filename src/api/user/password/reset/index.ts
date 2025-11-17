@@ -40,18 +40,14 @@ const usePasswordResetService = (): IUsePasswordResetService => {
 		newPassword: string,
 		tenantId: string | undefined
 	): Promise<UpdatePasswordResponse> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user/password", tenantId),
-			method: "PUT",
-			query: { userId },
-			config: {
-				body: JSON.stringify({
-					recipeUserId: userId,
-					newPassword,
-				}),
-			},
+		const { Implementation } = await import("../../../../implementation");
+		return await Implementation.getInstanceOrThrow().updatePassword({
+			userId,
+			newPassword,
+			tenantId,
+			fetchData,
+			getApiUrl,
 		});
-		return await response.json();
 	};
 
 	return { updatePassword };
