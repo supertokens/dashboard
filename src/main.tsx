@@ -35,38 +35,29 @@ SuperTokens.init({
 		{
 			id: "test",
 			version: "1.0.0",
-			componentOverrides: (originalComponentOverrides) => {
-				return {
-					...originalComponentOverrides,
-					Layout_Override: ({ DefaultComponent, ...props }) => {
-						return (
-							<>
-								{originalComponentOverrides.Layout_Override && (
-									<originalComponentOverrides.Layout_Override
-										DefaultComponent={DefaultComponent}
-										{...props}
-									/>
-								)}
-								<div>Plugin override</div>
-							</>
-						);
-					},
-				};
+			overrides: {
+				components: (originalComponentOverrides) => {
+					return {
+						...originalComponentOverrides,
+						Layout_Override: ({ DefaultComponent, ...props }) => {
+							return (
+								<>
+									{originalComponentOverrides.Layout_Override && (
+										<originalComponentOverrides.Layout_Override
+											DefaultComponent={DefaultComponent}
+											{...props}
+										/>
+									)}
+									<div>Plugin override</div>
+								</>
+							);
+						},
+					};
+				},
 			},
 		},
 	],
 	override: {
-		functions: (originalImplementation) => {
-			return {
-				...originalImplementation,
-				testMethod: async () => {
-					await originalImplementation.testMethod();
-					console.log("overridden testMethod");
-
-					return true;
-				},
-			};
-		},
 		components: (originalComponentOverrides) => {
 			return {
 				...originalComponentOverrides,

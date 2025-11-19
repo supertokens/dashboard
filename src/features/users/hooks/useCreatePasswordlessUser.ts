@@ -94,15 +94,7 @@ export function useCreatePasswordlessUser({ tenantId, authMethod, onSuccess }: U
 				setIsCreating(false);
 			}
 		},
-		[
-			buildPayload,
-			createPasswordlessUser,
-			tenantId,
-			showErrorToast,
-			showSuccessToast,
-			invalidateQueries,
-			onSuccess,
-		]
+		[buildPayload, createPasswordlessUser, tenantId, showErrorToast, showSuccessToast, invalidateQueries, onSuccess]
 	);
 
 	return {

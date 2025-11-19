@@ -21,7 +21,7 @@ export const withSplitOverride = <
 
 		let rendererProps: TProps;
 		if (overrideRendererProps) {
-			rendererProps = overrideRendererProps({ defaultGetRendererProps, ...(defaultProps || {}) }) as TProps;
+			rendererProps = overrideRendererProps({ defaultGetRendererProps, ...(defaultProps as object) }) as TProps;
 		} else {
 			rendererProps = defaultGetRendererProps(defaultProps) as TProps;
 		}

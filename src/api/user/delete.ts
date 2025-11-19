@@ -16,7 +16,7 @@
 import { getApiUrl, useFetchData } from "@shared/utils";
 import { Implementation } from "../../implementation";
 
-type TDeleteUserResponse = Promise<{ status: "OK"; } | undefined>;
+type TDeleteUserResponse = Promise<{ status: "OK" } | undefined>;
 
 interface IUseDeleteUserService {
 	deleteUser: (userId: string, removeAllLinkedAccounts: boolean) => TDeleteUserResponse;
@@ -28,7 +28,7 @@ const useDeleteUserService = (): IUseDeleteUserService => {
 	const deleteUser = async (
 		userId: string,
 		removeAllLinkedAccounts: boolean
-	): Promise<{ status: "OK"; } | undefined> => {
+	): Promise<{ status: "OK" } | undefined> => {
 		return await Implementation.getInstanceOrThrow().deleteUser({
 			userId,
 			removeAllLinkedAccounts,

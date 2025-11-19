@@ -26,12 +26,12 @@ interface IUsePasswordResetService {
 
 type UpdatePasswordResponse =
 	| {
-		status: "OK";
-	}
+			status: "OK";
+	  }
 	| {
-		status: "INVALID_PASSWORD_ERROR";
-		error: string;
-	};
+			status: "INVALID_PASSWORD_ERROR";
+			error: string;
+	  };
 
 const usePasswordResetService = (): IUsePasswordResetService => {
 	const fetchData = useFetchData();

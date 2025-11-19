@@ -37,7 +37,7 @@ export class SuperTokens {
 		const publicPlugins = loadedPlugins.map(getPublicPlugin);
 		const pluginsRouteHandlers = loadedPlugins
 			.map((plugin) => plugin.routeHandlers)
-			.filter((handler) => handler !== undefined);
+			.filter((handler): handler is NonNullable<typeof handler> => handler !== undefined);
 		for (const pluginRouteHandlers of pluginsRouteHandlers) {
 			let handlers: SuperTokensPluginRouteHandler[] = [];
 

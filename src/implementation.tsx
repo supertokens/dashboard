@@ -492,11 +492,7 @@ export class Implementation implements ImplType<Implementation> {
 			tenantId: string;
 			email: string;
 			password: string;
-			createEmailPasswordUserService: (
-				tenantId: string,
-				email: string,
-				password: string
-			) => Promise<any>;
+			createEmailPasswordUserService: (tenantId: string, email: string, password: string) => Promise<any>;
 			showErrorToast: (message: string) => void;
 			showSuccessToast: (message: string) => void;
 			setEmailError: (error: string | undefined) => void;

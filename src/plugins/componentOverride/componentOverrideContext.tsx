@@ -1,5 +1,5 @@
 import React from "react";
 
-import type { ContextType } from "./types";
+import type { GenericComponentOverrideMap } from "./types";
 
-export const ComponentOverrideContext = React.createContext<ContextType<any>>("IS_DEFAULT");
+export const ComponentOverrideContext = React.createContext<GenericComponentOverrideMap | "IS_DEFAULT">("IS_DEFAULT");

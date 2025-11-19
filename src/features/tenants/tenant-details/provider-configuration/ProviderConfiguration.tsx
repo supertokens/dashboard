@@ -256,7 +256,7 @@ export const ProviderConfiguration = withOverride(
 
 			setErrors({});
 
-			const existingProviderIds = tenantInfo.thirdParty.providers.map((p) => p.thirdPartyId);
+			const existingProviderIds = tenantInfo.thirdParty.providers.map((p: any) => p.thirdPartyId);
 			const validationErrors = validateProviderConfig(
 				providerConfigState,
 				existingProviderIds,

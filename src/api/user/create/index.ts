@@ -36,40 +36,40 @@ interface ICreateUserService {
 
 type CreateEmailPasswordUserResponse =
 	| {
-		status: "OK";
-		user: User;
-		recipeUserId: string;
-	}
+			status: "OK";
+			user: User;
+			recipeUserId: string;
+	  }
 	| {
-		status: "EMAIL_ALREADY_EXISTS_ERROR" | "FEATURE_NOT_ENABLED_ERROR";
-	}
+			status: "EMAIL_ALREADY_EXISTS_ERROR" | "FEATURE_NOT_ENABLED_ERROR";
+	  }
 	| {
-		status: "EMAIL_VALIDATION_ERROR";
-		message: string;
-	}
+			status: "EMAIL_VALIDATION_ERROR";
+			message: string;
+	  }
 	| {
-		status: "PASSWORD_VALIDATION_ERROR";
-		message: string;
-	};
+			status: "PASSWORD_VALIDATION_ERROR";
+			message: string;
+	  };
 
 type CreatePasswordlessUserResponse =
 	| {
-		status: "OK";
-		createdNewRecipeUser: boolean;
-		user: User;
-		recipeUserId: string;
-	}
+			status: "OK";
+			createdNewRecipeUser: boolean;
+			user: User;
+			recipeUserId: string;
+	  }
 	| {
-		status: "FEATURE_NOT_ENABLED_ERROR";
-	}
+			status: "FEATURE_NOT_ENABLED_ERROR";
+	  }
 	| {
-		status: "EMAIL_VALIDATION_ERROR";
-		message: string;
-	}
+			status: "EMAIL_VALIDATION_ERROR";
+			message: string;
+	  }
 	| {
-		status: "PHONE_VALIDATION_ERROR";
-		message: string;
-	};
+			status: "PHONE_VALIDATION_ERROR";
+			message: string;
+	  };
 
 const useCreateUserService = (): ICreateUserService => {
 	const fetchData = useFetchData(true);
