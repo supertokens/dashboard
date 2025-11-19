@@ -19,40 +19,17 @@ import { TriangleLeftIcon, TriangleRightIcon } from "@radix-ui/react-icons";
 
 import styles from "./Sidebar.module.scss";
 
-import { ReactComponent as PermissionsIcon } from "@assets/role-nav-icon.svg";
-import { ReactComponent as TenantManagementIcon } from "@assets/tenant-nav-icon.svg";
-import { ReactComponent as UserManagementIcon } from "@assets/user-nav-icon.svg";
-
-import { ROUTES } from "@shared/navigation";
-
-export const NAVIGATION_ITEMS = [
-	{
-		id: "user-management",
-		label: "User Management",
-		href: ROUTES.USERS,
-		icon: <UserManagementIcon />,
-	},
-	{
-		id: "roles-and-permissions",
-		label: "Roles and Permissions",
-		href: ROUTES.ROLES,
-		icon: <PermissionsIcon />,
-	},
-	{
-		id: "tenant-management",
-		label: "Tenant Management",
-		href: ROUTES.TENANTS,
-		icon: <TenantManagementIcon />,
-	},
-];
+import { withOverride } from "@plugins";
+import { Implementation } from "../../../../implementation";
 
 interface SidebarProps {
 	readonly isCollapsed: boolean;
 	readonly onToggle: () => void;
 }
 
-export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
+const Sidebar = withOverride("Sidebar", function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 	const location = useLocation();
+	const { ITEMS } = Implementation.getInstanceOrThrow().getNavigation();
 
 	const isItemActive = (href: string) => {
 		return location.pathname === href;
@@ -66,7 +43,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 				{/* Main Navigation */}
 				<nav className={styles["sidebar__nav"]}>
 					<ul className={styles["sidebar__list"]}>
-						{NAVIGATION_ITEMS.map((item) => {
+						{ITEMS.map((item) => {
 							const isActive = isItemActive(item.href);
 
 							return (
@@ -79,7 +56,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 											isActive ? styles["sidebar__link--active"] : ""
 										}`}
 										title={isCollapsed ? item.label : undefined}>
-										<span className={styles["sidebar__link-icon"]}>{item.icon}</span>
+										{item.icon && <span className={styles["sidebar__link-icon"]}>{item.icon}</span>}
 										{!isCollapsed && (
 											<span className={styles["sidebar__link-text"]}>{item.label}</span>
 										)}
@@ -99,4 +76,6 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 			</Box>
 		</aside>
 	);
-}
+});
+
+export default Sidebar;

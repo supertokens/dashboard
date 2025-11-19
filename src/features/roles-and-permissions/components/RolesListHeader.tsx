@@ -19,6 +19,7 @@ import { MagnifyingGlassIcon, PlusIcon } from "@radix-ui/react-icons";
 import Button from "@shared/components/button";
 
 import styles from "./RolesListHeader.module.scss";
+import { withOverride } from "@plugins";
 
 interface RolesListHeaderProps {
 	isLoading: boolean;
@@ -27,48 +28,48 @@ interface RolesListHeaderProps {
 	onAddRoleClick: () => void;
 }
 
-export default function RolesListHeader({
-	isLoading,
-	searchQuery,
-	onSearchChange,
-	onAddRoleClick,
-}: RolesListHeaderProps) {
-	return (
-		<Flex
-			justify="between"
-			align="center"
-			gap="8"
-			mb="4"
-			className={styles.header}>
+const RolesListHeader = withOverride(
+	"RolesListHeader",
+	function RolesListHeader({ isLoading, searchQuery, onSearchChange, onAddRoleClick }: RolesListHeaderProps) {
+		return (
 			<Flex
-				flexGrow="1"
-				gap="2"
+				justify="between"
 				align="center"
-				maxWidth="600px">
-				<TextField.Root
-					placeholder="Search by role name"
+				gap="8"
+				mb="4"
+				className={styles.header}>
+				<Flex
+					flexGrow="1"
+					gap="2"
+					align="center"
+					maxWidth="600px">
+					<TextField.Root
+						placeholder="Search by role name"
+						size="2"
+						variant="surface"
+						value={searchQuery}
+						onChange={(e) => onSearchChange(e.target.value)}
+						disabled={isLoading}
+						className={styles.header__search}>
+						<TextField.Slot>
+							<MagnifyingGlassIcon
+								height="16"
+								width="16"
+							/>
+						</TextField.Slot>
+					</TextField.Root>
+				</Flex>
+				<Button
 					size="2"
-					variant="surface"
-					value={searchQuery}
-					onChange={(e) => onSearchChange(e.target.value)}
+					variant="solid"
 					disabled={isLoading}
-					className={styles.header__search}>
-					<TextField.Slot>
-						<MagnifyingGlassIcon
-							height="16"
-							width="16"
-						/>
-					</TextField.Slot>
-				</TextField.Root>
+					onClick={onAddRoleClick}>
+					<PlusIcon />
+					Add Role
+				</Button>
 			</Flex>
-			<Button
-				size="2"
-				variant="solid"
-				disabled={isLoading}
-				onClick={onAddRoleClick}>
-				<PlusIcon />
-				Add Role
-			</Button>
-		</Flex>
-	);
-}
+		);
+	}
+);
+
+export default RolesListHeader;

@@ -20,6 +20,7 @@ import Button from "@shared/components/button";
 import Form from "@shared/components/form";
 import { Modal } from "@shared/components/modal";
 import { useToast } from "@shared/components/toast";
+import { withOverride } from "@plugins";
 
 import { useRoleDetails } from "../hooks";
 
@@ -32,69 +33,75 @@ interface DeleteRoleModalProps {
 	onDeleteSuccess: () => void;
 }
 
-export default function DeleteRoleModal({ open, handleClose, roleId, onDeleteSuccess }: DeleteRoleModalProps) {
-	const { showErrorToast } = useToast();
-	const { deleteRole } = useRoleDetails(roleId);
-	const [isDeleting, setIsDeleting] = useState(false);
+const DeleteRoleModal = withOverride(
+	"DeleteRoleModal",
+	function DeleteRoleModal({ open, handleClose, roleId, onDeleteSuccess }: DeleteRoleModalProps) {
+		const { showErrorToast } = useToast();
+		const { deleteRole } = useRoleDetails(roleId);
+		const [isDeleting, setIsDeleting] = useState(false);
 
-	const handleDelete = async () => {
-		setIsDeleting(true);
-		try {
-			const response = await deleteRole();
+		const handleDelete = async () => {
+			setIsDeleting(true);
+			try {
+				const response = await deleteRole();
 
-			if (!response) {
-				throw new Error("Failed to delete role");
+				if (!response) {
+					throw new Error("Failed to delete role");
+				}
+
+				if (response.status === "OK") {
+					handleClose();
+					onDeleteSuccess();
+				} else if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
+					showErrorToast("Feature is not enabled");
+				} else {
+					throw new Error("Failed to delete role");
+				}
+			} catch {
+				showErrorToast("Something went wrong. Please try again!");
+			} finally {
+				setIsDeleting(false);
 			}
+		};
 
-			if (response.status === "OK") {
-				handleClose();
-				onDeleteSuccess();
-			} else if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				showErrorToast("Feature is not enabled");
-			} else {
-				throw new Error("Failed to delete role");
-			}
-		} catch {
-			showErrorToast("Something went wrong. Please try again!");
-		} finally {
-			setIsDeleting(false);
-		}
-	};
+		return (
+			<Modal
+				title="Delete Role"
+				open={open}
+				handleClose={handleClose}>
+				<Form className="delete-role-modal">
+					<Form.Paper>
+						<Text
+							size="2"
+							className="delete-role-modal__disclaimer">
+							Are you certain you want to delete role <span>"{roleId}"</span>? This action is
+							irreversible.
+						</Text>
+					</Form.Paper>
+					<Flex
+						justify="end"
+						mt="4"
+						gap="3">
+						<Button
+							size="3"
+							variant="outline"
+							color="gray"
+							onClick={handleClose}
+							disabled={isDeleting}>
+							Cancel
+						</Button>
+						<Button
+							color="red"
+							size="3"
+							onClick={handleDelete}
+							disabled={isDeleting}>
+							{isDeleting ? "Deleting..." : "Delete"}
+						</Button>
+					</Flex>
+				</Form>
+			</Modal>
+		);
+	}
+);
 
-	return (
-		<Modal
-			title="Delete Role"
-			open={open}
-			handleClose={handleClose}>
-			<Form className="delete-role-modal">
-				<Form.Paper>
-					<Text
-						size="2"
-						className="delete-role-modal__disclaimer">
-						Are you certain you want to delete role <span>"{roleId}"</span>? This action is irreversible.
-					</Text>
-				</Form.Paper>
-				<Flex
-					justify="end"
-					mt="4"
-					gap="3">
-					<Button
-						size="3"
-						variant="outline"
-						color="gray"
-						onClick={handleClose}
-						disabled={isDeleting}>
-						Cancel
-					</Button>
-					<Button
-						color="red"
-						size="3"
-						onClick={handleDelete}
-						disabled={isDeleting}>
-						{isDeleting ? "Deleting..." : "Delete"}
-					</Button>
-				</Flex>
-			</Form>
-		</Modal>
-	);
-}
+export default DeleteRoleModal;

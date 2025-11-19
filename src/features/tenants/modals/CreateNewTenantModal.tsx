@@ -19,6 +19,7 @@ import { Flex, Text, TextField } from "@radix-ui/themes";
 import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
 import Button from "@shared/components/button";
+import { withOverride } from "@plugins";
 
 import styles from "./CreateNewTenantModal.module.scss";
 import ItemLabel from "@shared/components/itemLabel";
@@ -30,86 +31,86 @@ interface CreateNewTenantModalProps {
 	isCreating: boolean;
 }
 
-export default function CreateNewTenantModal({
-	open,
-	handleClose,
-	onCreateTenant,
-	isCreating,
-}: CreateNewTenantModalProps) {
-	const [tenantId, setTenantId] = useState("");
-	const [error, setError] = useState<string | undefined>(undefined);
+const CreateNewTenantModal = withOverride(
+	"CreateNewTenantModal",
+	function CreateNewTenantModal({ open, handleClose, onCreateTenant, isCreating }: CreateNewTenantModalProps) {
+		const [tenantId, setTenantId] = useState("");
+		const [error, setError] = useState<string | undefined>(undefined);
 
-	const handleSubmit = async () => {
-		if (tenantId.trim().length === 0) {
-			setError("Please enter a valid Tenant Id!");
-			return;
-		}
+		const handleSubmit = async () => {
+			if (tenantId.trim().length === 0) {
+				setError("Please enter a valid Tenant Id!");
+				return;
+			}
 
-		try {
-			await onCreateTenant(tenantId.trim());
+			try {
+				await onCreateTenant(tenantId.trim());
+				setTenantId("");
+				setError(undefined);
+				handleClose();
+			} catch (err) {
+				if (err instanceof Error) {
+					setError(err.message);
+				} else {
+					setError("Something went wrong. Please try again later.");
+				}
+			}
+		};
+
+		const handleInputChange = (value: string) => {
+			setTenantId(value);
+			setError(undefined);
+		};
+
+		const handleModalClose = () => {
 			setTenantId("");
 			setError(undefined);
 			handleClose();
-		} catch (err) {
-			if (err instanceof Error) {
-				setError(err.message);
-			} else {
-				setError("Something went wrong. Please try again later.");
-			}
-		}
-	};
+		};
 
-	const handleInputChange = (value: string) => {
-		setTenantId(value);
-		setError(undefined);
-	};
+		return (
+			<Modal
+				title="Create New Tenant"
+				open={open}
+				handleClose={handleModalClose}>
+				<Form className={styles["create-new-tenant-modal"]}>
+					<Form.Paper>
+						<Form.Item>
+							<ItemLabel
+								mb="2"
+								htmlFor="tenant-id">
+								Tenant Id
+							</ItemLabel>
+							<TextField.Root
+								id="tenant-id"
+								value={tenantId}
+								onChange={(e) => handleInputChange(e.target.value)}
+								autoFocus
+								disabled={isCreating}
+							/>
+							{error && (
+								<Text
+									size="2"
+									className={styles["create-new-tenant-modal__error"]}>
+									{error}
+								</Text>
+							)}
+						</Form.Item>
+					</Form.Paper>
+					<Flex
+						justify="end"
+						mt="5">
+						<Button
+							size="3"
+							onClick={handleSubmit}
+							disabled={isCreating}>
+							{isCreating ? "Creating..." : "Create Tenant"}
+						</Button>
+					</Flex>
+				</Form>
+			</Modal>
+		);
+	}
+);
 
-	const handleModalClose = () => {
-		setTenantId("");
-		setError(undefined);
-		handleClose();
-	};
-
-	return (
-		<Modal
-			title="Create New Tenant"
-			open={open}
-			handleClose={handleModalClose}>
-			<Form className={styles["create-new-tenant-modal"]}>
-				<Form.Paper>
-					<Form.Item>
-						<ItemLabel
-							mb="2"
-							htmlFor="tenant-id">
-							Tenant Id
-						</ItemLabel>
-						<TextField.Root
-							id="tenant-id"
-							value={tenantId}
-							onChange={(e) => handleInputChange(e.target.value)}
-							autoFocus
-							disabled={isCreating}
-						/>
-						{error && (
-							<Text
-								size="2"
-								className={styles["create-new-tenant-modal__error"]}>
-								{error}
-							</Text>
-						)}
-					</Form.Item>
-				</Form.Paper>
-				<Flex
-					justify="end"
-					mt="5">
-					<Button
-						size="3"
-						onClick={handleSubmit}
-						disabled={isCreating}>
-						{isCreating ? "Creating..." : "Create Tenant"}
-					</Button>
-				</Flex>
-			</Form>
-		</Modal>
-	);
-}
+export default CreateNewTenantModal;

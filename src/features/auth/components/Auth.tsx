@@ -22,13 +22,11 @@ import { type ContentMode } from "./types";
 
 import styles from "./Auth.module.scss";
 import { assertNever } from "@shared/utils/assertNever";
+import { withOverride } from "@plugins";
 
 const INITIAL_CONTENT_TO_SHOW: ContentMode = "sign-in";
-export const LOGO_ICON_LIGHT = getImageUrl("ST_full_logo_light_theme.svg");
 
-const Auth: React.FC<{
-	onSuccess: () => void;
-}> = (props) => {
+const Auth = withOverride("Auth", function Auth(props: { onSuccess: () => void }) {
 	const [contentMode, setContentMode] = useState<ContentMode>(INITIAL_CONTENT_TO_SHOW);
 
 	const getContentToRender = () => {
@@ -71,7 +69,7 @@ const Auth: React.FC<{
 					} ${contentMode !== "sign-in" ? styles[`auth-container__content--${contentMode}`] : ""}`}>
 					<img
 						className={`${styles["title-image-smaller"]} ${styles["auth-container__logo"]}`}
-						src={LOGO_ICON_LIGHT}
+						src={getImageUrl("ST_full_logo_light_theme.svg")}
 						alt="Auth Page"
 					/>
 					{getContentToRender()}
@@ -79,6 +77,6 @@ const Auth: React.FC<{
 			</div>
 		</>
 	);
-};
+});
 
 export default Auth;

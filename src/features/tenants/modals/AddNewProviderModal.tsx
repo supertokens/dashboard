@@ -19,6 +19,7 @@ import { PlusIcon } from "@radix-ui/react-icons";
 import { Modal } from "@shared/components/modal";
 import Button from "@shared/components/button";
 import { getImageUrl } from "@shared/utils/index";
+import { withOverride } from "@plugins";
 
 import styles from "./AddNewProviderModal.module.scss";
 
@@ -95,102 +96,111 @@ interface AddNewProviderModalProps {
 	onProviderSelected: (providerId: string) => void;
 }
 
-export default function AddNewProviderModal({ open, handleClose, onProviderSelected }: AddNewProviderModalProps) {
-	const handleSelectProvider = (providerId: string) => {
-		onProviderSelected(providerId);
-		handleClose();
-	};
-	return (
-		<Modal
-			title="Add New Provider"
-			open={open}
-			handleClose={handleClose}
-			size="lg">
-			<Flex
-				direction="column"
-				className={styles["add-new-provider-modal"]}>
-				<Flex className={styles["add-new-provider-modal__heading"]}>
-					<Text className={styles["add-new-provider-modal__heading__text"]}>
-						Select the Provider that you want to add for you tenant from the list below
-					</Text>
-				</Flex>
+const AddNewProviderModal = withOverride(
+	"AddNewProviderModal",
+	function AddNewProviderModal({ open, handleClose, onProviderSelected }: AddNewProviderModalProps) {
+		const handleSelectProvider = (providerId: string) => {
+			onProviderSelected(providerId);
+			handleClose();
+		};
+		return (
+			<Modal
+				title="Add New Provider"
+				open={open}
+				handleClose={handleClose}
+				size="lg">
 				<Flex
 					direction="column"
-					className={styles["add-new-provider-modal__providers"]}>
-					<Text className={styles["add-new-provider-modal__providers__label"]}>
-						Enterprise Providers (OAuth)
-					</Text>
-					<Flex className={styles["add-new-provider-modal__providers__list"]}>
-						{ENTERPRISE_PROVIDERS.map((provider) => (
-							<Box
-								key={provider.id}
-								className={styles["add-new-provider-modal__providers__list__item"]}>
-								<Button
-									variant="outline"
-									color="gray"
-									radius="large"
-									onClick={() => handleSelectProvider(provider.id)}
-									className={styles["add-new-provider-modal__providers__list__item__button"]}>
-									<img
-										src={getImageUrl(provider.icon)}
-										alt={provider.label}
-										width="30px"
-										height="30px"
-									/>
-									{provider.label}
-								</Button>
-							</Box>
-						))}
+					className={styles["add-new-provider-modal"]}>
+					<Flex className={styles["add-new-provider-modal__heading"]}>
+						<Text className={styles["add-new-provider-modal__heading__text"]}>
+							Select the Provider that you want to add for you tenant from the list below
+						</Text>
+					</Flex>
+					<Flex
+						direction="column"
+						className={styles["add-new-provider-modal__providers"]}>
+						<Text className={styles["add-new-provider-modal__providers__label"]}>
+							Enterprise Providers (OAuth)
+						</Text>
+						<Flex className={styles["add-new-provider-modal__providers__list"]}>
+							{ENTERPRISE_PROVIDERS.map((provider) => (
+								<Box
+									key={provider.id}
+									className={styles["add-new-provider-modal__providers__list__item"]}>
+									<Button
+										variant="outline"
+										color="gray"
+										radius="large"
+										onClick={() => handleSelectProvider(provider.id)}
+										className={styles["add-new-provider-modal__providers__list__item__button"]}>
+										<img
+											src={getImageUrl(provider.icon)}
+											alt={provider.label}
+											width="30px"
+											height="30px"
+										/>
+										{provider.label}
+									</Button>
+								</Box>
+							))}
+						</Flex>
+					</Flex>
+					<Flex className={styles["add-new-provider-modal__providers"]}>
+						<Text className={styles["add-new-provider-modal__providers__label"]}>
+							Social Providers (OAuth)
+						</Text>
+						<Flex className={styles["add-new-provider-modal__providers__list"]}>
+							{SOCIAL_PROVIDERS.map((provider) => (
+								<Box
+									key={provider.id}
+									className={styles["add-new-provider-modal__providers__list__item"]}>
+									<Button
+										variant="outline"
+										color="gray"
+										radius="large"
+										onClick={() => handleSelectProvider(provider.id)}
+										className={styles["add-new-provider-modal__providers__list__item__button"]}>
+										<img
+											src={getImageUrl(provider.icon)}
+											alt={provider.label}
+											width="30px"
+											height="30px"
+										/>
+										{provider.label}
+									</Button>
+								</Box>
+							))}
+						</Flex>
+					</Flex>
+					<Flex className={styles["add-new-provider-modal__providers"]}>
+						<Text className={styles["add-new-provider-modal__providers__label"]}>
+							Custom OAuth Providers
+						</Text>
+						<Button
+							variant="outline"
+							color="gray"
+							radius="large"
+							onClick={() => handleSelectProvider("custom")}
+							className={styles["add-new-provider-modal__providers__list__item__button"]}>
+							<PlusIcon /> Add Custom Provider
+						</Button>
+					</Flex>
+					<Flex className={styles["add-new-provider-modal__providers"]}>
+						<Text className={styles["add-new-provider-modal__providers__label"]}>SAML Providers</Text>
+						<Button
+							variant="outline"
+							radius="large"
+							color="gray"
+							onClick={() => handleSelectProvider("boxy-saml")}
+							className={styles["add-new-provider-modal__providers__list__item__button"]}>
+							<PlusIcon /> Add SAML Provider
+						</Button>
 					</Flex>
 				</Flex>
-				<Flex className={styles["add-new-provider-modal__providers"]}>
-					<Text className={styles["add-new-provider-modal__providers__label"]}>Social Providers (OAuth)</Text>
-					<Flex className={styles["add-new-provider-modal__providers__list"]}>
-						{SOCIAL_PROVIDERS.map((provider) => (
-							<Box
-								key={provider.id}
-								className={styles["add-new-provider-modal__providers__list__item"]}>
-								<Button
-									variant="outline"
-									color="gray"
-									radius="large"
-									onClick={() => handleSelectProvider(provider.id)}
-									className={styles["add-new-provider-modal__providers__list__item__button"]}>
-									<img
-										src={getImageUrl(provider.icon)}
-										alt={provider.label}
-										width="30px"
-										height="30px"
-									/>
-									{provider.label}
-								</Button>
-							</Box>
-						))}
-					</Flex>
-				</Flex>
-				<Flex className={styles["add-new-provider-modal__providers"]}>
-					<Text className={styles["add-new-provider-modal__providers__label"]}>Custom OAuth Providers</Text>
-					<Button
-						variant="outline"
-						color="gray"
-						radius="large"
-						onClick={() => handleSelectProvider("custom")}
-						className={styles["add-new-provider-modal__providers__list__item__button"]}>
-						<PlusIcon /> Add Custom Provider
-					</Button>
-				</Flex>
-				<Flex className={styles["add-new-provider-modal__providers"]}>
-					<Text className={styles["add-new-provider-modal__providers__label"]}>SAML Providers</Text>
-					<Button
-						variant="outline"
-						radius="large"
-						color="gray"
-						onClick={() => handleSelectProvider("boxy-saml")}
-						className={styles["add-new-provider-modal__providers__list__item__button"]}>
-						<PlusIcon /> Add SAML Provider
-					</Button>
-				</Flex>
-			</Flex>
-		</Modal>
-	);
-}
+			</Modal>
+		);
+	}
+);
+
+export default AddNewProviderModal;

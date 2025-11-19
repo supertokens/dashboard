@@ -22,6 +22,7 @@ import Button from "@shared/components/button";
 import { useToast } from "@shared/components/toast";
 import { useDeleteThirdPartyProviderService } from "@api/tenants";
 import { useTenantDetails } from "@features/tenants/hooks/useTenantDetails";
+import { withOverride } from "@plugins";
 
 import styles from "./DeleteProviderConfigModal.module.scss";
 
@@ -33,75 +34,80 @@ interface DeleteProviderConfigModalProps {
 	onSuccess?: () => void;
 }
 
-export default function DeleteProviderConfigModal({
-	open,
-	handleClose,
-	tenantId,
-	providerId,
-	onSuccess,
-}: DeleteProviderConfigModalProps) {
-	const [isDeleting, setIsDeleting] = useState(false);
-	const deleteThirdPartyProvider = useDeleteThirdPartyProviderService();
-	const { refetch } = useTenantDetails(tenantId);
-	const { showSuccessToast, showErrorToast } = useToast();
+const DeleteProviderConfigModal = withOverride(
+	"DeleteProviderConfigModal",
+	function DeleteProviderConfigModal({
+		open,
+		handleClose,
+		tenantId,
+		providerId,
+		onSuccess,
+	}: DeleteProviderConfigModalProps) {
+		const [isDeleting, setIsDeleting] = useState(false);
+		const deleteThirdPartyProvider = useDeleteThirdPartyProviderService();
+		const { refetch } = useTenantDetails(tenantId);
+		const { showSuccessToast, showErrorToast } = useToast();
 
-	const handleDelete = async () => {
-		try {
-			setIsDeleting(true);
-			const response = await deleteThirdPartyProvider(tenantId, providerId);
+		const handleDelete = async () => {
+			try {
+				setIsDeleting(true);
+				const response = await deleteThirdPartyProvider(tenantId, providerId);
 
-			if (response.status === "OK") {
-				showSuccessToast("Success", "Provider deleted successfully");
-				await refetch();
-				handleClose();
-				if (onSuccess) {
-					onSuccess();
+				if (response.status === "OK") {
+					showSuccessToast("Success", "Provider deleted successfully");
+					await refetch();
+					handleClose();
+					if (onSuccess) {
+						onSuccess();
+					}
+				} else {
+					showErrorToast("Error", "Failed to delete provider");
 				}
-			} else {
-				showErrorToast("Error", "Failed to delete provider");
+			} catch (error) {
+				showErrorToast("Error", "An unexpected error occurred");
+			} finally {
+				setIsDeleting(false);
 			}
-		} catch (error) {
-			showErrorToast("Error", "An unexpected error occurred");
-		} finally {
-			setIsDeleting(false);
-		}
-	};
+		};
 
-	return (
-		<Modal
-			title="Delete Provider"
-			size="md"
-			open={open}
-			handleClose={handleClose}>
-			<Form className={styles["delete-provider-config-modal"]}>
-				<Form.Paper>
-					<Text
-						size="2"
-						className={styles["delete-provider-config-modal__disclaimer"]}>
-						Are you certain you want to delete this provider? This action is irreversible.
-					</Text>
-				</Form.Paper>
-				<Flex
-					justify="end"
-					gap="2"
-					mt="4">
-					<Button
-						variant="outline"
-						color="gray"
-						size="3"
-						onClick={handleClose}
-						disabled={isDeleting}>
-						Cancel
-					</Button>
-					<Button
-						color="red"
-						size="3"
-						onClick={handleDelete}
-						disabled={isDeleting}>
-						{isDeleting ? "Deleting..." : "Delete"}
-					</Button>
-				</Flex>
-			</Form>
-		</Modal>
-	);
-}
+		return (
+			<Modal
+				title="Delete Provider"
+				size="md"
+				open={open}
+				handleClose={handleClose}>
+				<Form className={styles["delete-provider-config-modal"]}>
+					<Form.Paper>
+						<Text
+							size="2"
+							className={styles["delete-provider-config-modal__disclaimer"]}>
+							Are you certain you want to delete this provider? This action is irreversible.
+						</Text>
+					</Form.Paper>
+					<Flex
+						justify="end"
+						gap="2"
+						mt="4">
+						<Button
+							variant="outline"
+							color="gray"
+							size="3"
+							onClick={handleClose}
+							disabled={isDeleting}>
+							Cancel
+						</Button>
+						<Button
+							color="red"
+							size="3"
+							onClick={handleDelete}
+							disabled={isDeleting}>
+							{isDeleting ? "Deleting..." : "Delete"}
+						</Button>
+					</Flex>
+				</Form>
+			</Modal>
+		);
+	}
+);
+
+export default DeleteProviderConfigModal;

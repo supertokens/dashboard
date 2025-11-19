@@ -22,6 +22,7 @@ import Form from "@shared/components/form";
 import { useToast } from "@shared/components/toast";
 import { copyToClipboard } from "@shared/utils/copyToClipboard";
 import Button from "@shared/components/button";
+import { withOverride } from "@plugins";
 
 import styles from "./EditPluginPropertyModal.module.scss";
 
@@ -32,15 +33,12 @@ interface EditPluginPropertyModalProps {
 	databaseType: "postgres" | "mysql";
 }
 
-export default function EditPluginPropertyModal({
-	open,
-	handleClose,
-	tenantId,
-	databaseType,
-}: EditPluginPropertyModalProps) {
-	const { showSuccessToast, showErrorToast } = useToast();
+const EditPluginPropertyModal = withOverride(
+	"EditPluginPropertyModal",
+	function EditPluginPropertyModal({ open, handleClose, tenantId, databaseType }: EditPluginPropertyModalProps) {
+		const { showSuccessToast, showErrorToast } = useToast();
 
-	const command = `curl --location --request PUT '${getConnectionUri()}/recipe/multitenancy/tenant/v2' \\
+		const command = `curl --location --request PUT '${getConnectionUri()}/recipe/multitenancy/tenant/v2' \\
 --header 'api-key: <YOUR-API-KEY>' \\
 --header 'Content-Type: application/json' \\
 --data-raw '{
@@ -54,58 +52,61 @@ export default function EditPluginPropertyModal({
     }
 }'`;
 
-	const handleCopy = async () => {
-		await copyToClipboard(
-			command,
-			() => {
-				showSuccessToast("Copied", "Command copied to clipboard");
-			},
-			() => {
-				showErrorToast("Failed", "Could not copy to clipboard");
-			}
-		);
-	};
+		const handleCopy = async () => {
+			await copyToClipboard(
+				command,
+				() => {
+					showSuccessToast("Copied", "Command copied to clipboard");
+				},
+				() => {
+					showErrorToast("Failed", "Could not copy to clipboard");
+				}
+			);
+		};
 
-	return (
-		<Modal
-			size="lg"
-			open={open}
-			handleClose={handleClose}
-			title="Edit Database Properties">
-			<Form className={styles["edit-plugin-property-modal"]}>
-				<Form.Paper>
-					<Text
-						size="2"
-						mb="4"
-						className={styles["edit-plugin-property-modal__description"]}>
-						Use the following curl request to modify multiple database properties at once.
-					</Text>
-					<Flex
-						direction="column"
-						className={styles["edit-plugin-property-modal__command"]}>
+		return (
+			<Modal
+				size="lg"
+				open={open}
+				handleClose={handleClose}
+				title="Edit Database Properties">
+				<Form className={styles["edit-plugin-property-modal"]}>
+					<Form.Paper>
+						<Text
+							size="2"
+							mb="4"
+							className={styles["edit-plugin-property-modal__description"]}>
+							Use the following curl request to modify multiple database properties at once.
+						</Text>
 						<Flex
-							justify="between"
-							align="center"
-							mb="2">
-							<Text
-								size="2"
-								weight="bold">
-								cURL Command
-							</Text>
-							<Button
-								size="1"
-								variant="soft"
-								onClick={handleCopy}>
-								<CopyIcon />
-								Copy
-							</Button>
+							direction="column"
+							className={styles["edit-plugin-property-modal__command"]}>
+							<Flex
+								justify="between"
+								align="center"
+								mb="2">
+								<Text
+									size="2"
+									weight="bold">
+									cURL Command
+								</Text>
+								<Button
+									size="1"
+									variant="soft"
+									onClick={handleCopy}>
+									<CopyIcon />
+									Copy
+								</Button>
+							</Flex>
+							<pre className={styles["edit-plugin-property-modal__command__code"]}>
+								<code>{command}</code>
+							</pre>
 						</Flex>
-						<pre className={styles["edit-plugin-property-modal__command__code"]}>
-							<code>{command}</code>
-						</pre>
-					</Flex>
-				</Form.Paper>
-			</Form>
-		</Modal>
-	);
-}
+					</Form.Paper>
+				</Form>
+			</Modal>
+		);
+	}
+);
+
+export default EditPluginPropertyModal;

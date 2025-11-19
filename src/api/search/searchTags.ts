@@ -14,6 +14,7 @@
  */
 
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../implementation";
 
 type resp = {
 	status: string;
@@ -27,11 +28,7 @@ interface IUseFetchSearchTagsService {
 export const useFetchSearchTags = (): IUseFetchSearchTagsService => {
 	const fetchData = useFetchData();
 	const fetchSearchTags = async () => {
-		const response = await fetchData({
-			url: getApiUrl("/api/search/tags"),
-			method: "GET",
-		});
-		return response.ok ? ((await response?.json()) as resp) : undefined;
+		return await Implementation.getInstanceOrThrow().fetchSearchTags({ fetchData, getApiUrl });
 	};
 	return { fetchSearchTags };
 };

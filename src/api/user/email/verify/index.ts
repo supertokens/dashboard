@@ -15,6 +15,7 @@
 
 import { EmailVerificationStatus } from "@features/auth/types";
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../../../implementation";
 
 interface IUseVerifyUserEmailService {
 	getUserEmailVerificationStatus: (userId: string) => Promise<EmailVerificationStatus>;
@@ -29,14 +30,11 @@ const useVerifyUserEmail = (): IUseVerifyUserEmailService => {
 	const fetchData = useFetchData();
 
 	const getUserEmailVerificationStatus = async (userId: string): Promise<EmailVerificationStatus> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user/email/verify"),
-			method: "GET",
-			query: { recipeUserId: userId },
+		return await Implementation.getInstanceOrThrow().getUserEmailVerificationStatus({
+			userId,
+			fetchData,
+			getApiUrl,
 		});
-
-		const body = await response.json();
-		return body;
 	};
 
 	const updateUserEmailVerificationStatus = async (
@@ -44,14 +42,13 @@ const useVerifyUserEmail = (): IUseVerifyUserEmailService => {
 		isEmailVerified: boolean,
 		tenantId: string | undefined
 	) => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user/email/verify", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({ verified: isEmailVerified, recipeUserId: userId }),
-			},
+		return await Implementation.getInstanceOrThrow().updateUserEmailVerificationStatus({
+			userId,
+			isEmailVerified,
+			tenantId,
+			fetchData,
+			getApiUrl,
 		});
-		return response?.ok;
 	};
 
 	return {

@@ -18,6 +18,7 @@ import { ArrowRightIcon } from "@radix-ui/react-icons";
 import TextField from "@shared/components/text";
 import { useSignIn } from "../hooks/useSignIn";
 import styles from "./SignInContent.module.scss";
+import { withOverride } from "@plugins";
 
 interface SignInContentProps {
 	onSuccess: () => void;
@@ -25,11 +26,8 @@ interface SignInContentProps {
 	onForgotPasswordBtnClick: () => void;
 }
 
-const SignInContent: React.FC<SignInContentProps> = ({
-	onSuccess,
-	onCreateNewUserClick,
-	onForgotPasswordBtnClick,
-}): JSX.Element => {
+const SignInContent = withOverride("SignInContent", function SignInContent(props: SignInContentProps) {
+	const { onSuccess, onCreateNewUserClick, onForgotPasswordBtnClick } = props;
 	const {
 		isLoading,
 		userTriedToSubmit,
@@ -125,6 +123,6 @@ const SignInContent: React.FC<SignInContentProps> = ({
 			</form>
 		</Flex>
 	);
-};
+});
 
 export default SignInContent;

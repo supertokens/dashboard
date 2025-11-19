@@ -18,7 +18,8 @@ import { PasswordlessContactMethod } from "@api/tenants/types";
 import useCreateUserService, { CreatePasswordlessUserPayload } from "@api/user/create";
 import { useToast } from "@shared/components/toast";
 import { useUsersList } from "@features/users/hooks/useUsers";
-import { MESSAGES, STATUS } from "@features/users/constants/createUser";
+import { Implementation } from "../../../implementation";
+import { MESSAGES as USER_CREATE_MESSAGES } from "@features/users/constants/createUser";
 
 interface UseCreatePasswordlessUserParams {
 	tenantId: string;
@@ -45,59 +46,22 @@ export function useCreatePasswordlessUser({ tenantId, authMethod, onSuccess }: U
 
 	const buildPayload = useCallback(
 		(formData: CreatePasswordlessUserForm): CreatePasswordlessUserPayload | null => {
-			const payload: CreatePasswordlessUserPayload = {};
+			const payload = Implementation.getInstanceOrThrow().buildPasswordlessPayload({
+				authMethod,
+				email: formData.email,
+				phoneNumber: formData.phoneNumber,
+				emailOrPhone: formData.emailOrPhone,
+				setShowPhoneInput,
+			});
 
-			if (authMethod === "EMAIL") {
-				payload.email = formData.email;
-			} else if (authMethod === "PHONE") {
-				payload.phoneNumber = formData.phoneNumber;
-			} else if (authMethod === "EMAIL_OR_PHONE") {
-				if (isPhoneNumber(formData.emailOrPhone)) {
-					const normalizedPhone = normalizePhoneNumber(formData.emailOrPhone);
-					payload.phoneNumber = normalizedPhone;
-					setShowPhoneInput(true);
-				} else {
-					payload.email = formData.emailOrPhone;
-				}
-			} else {
-				showErrorToast(MESSAGES.NO_AUTH_METHOD);
+			if (!payload) {
+				showErrorToast(USER_CREATE_MESSAGES.NO_AUTH_METHOD);
 				return null;
 			}
 
 			return payload;
 		},
 		[authMethod, showErrorToast]
-	);
-
-	const getExistingUserErrorMessage = useCallback(
-		(emailOrPhone?: string): string => {
-			if (authMethod === "EMAIL") {
-				return MESSAGES.EMAIL_ALREADY_EXISTS;
-			} else if (authMethod === "PHONE") {
-				return MESSAGES.PHONE_ALREADY_EXISTS;
-			} else {
-				return emailOrPhone && isPhoneNumber(emailOrPhone)
-					? MESSAGES.PHONE_ALREADY_EXISTS
-					: MESSAGES.EMAIL_ALREADY_EXISTS;
-			}
-		},
-		[authMethod]
-	);
-
-	const handleValidationError = useCallback(
-		(response: { status: string; message: string }, emailOrPhone?: string): void => {
-			if (
-				authMethod === "EMAIL_OR_PHONE" &&
-				response.status === STATUS.EMAIL_VALIDATION_ERROR &&
-				emailOrPhone &&
-				!isPhoneNumber(emailOrPhone)
-			) {
-				setFormError(MESSAGES.INVALID_EMAIL_OR_PHONE);
-			} else {
-				setFormError(response.message);
-			}
-		},
-		[authMethod]
 	);
 
 	const createUser = useCallback(
@@ -108,53 +72,29 @@ export function useCreatePasswordlessUser({ tenantId, authMethod, onSuccess }: U
 			try {
 				const payload = buildPayload(formData);
 				if (!payload) {
+					setIsCreating(false);
 					return;
 				}
 
-				const response = await createPasswordlessUser(tenantId, payload);
-
-				// Handle validation errors
-				if (
-					response.status === STATUS.EMAIL_VALIDATION_ERROR ||
-					response.status === STATUS.PHONE_VALIDATION_ERROR
-				) {
-					handleValidationError(response, formData.emailOrPhone);
-					return;
-				}
-
-				// Handle feature not enabled error
-				if (response.status === STATUS.FEATURE_NOT_ENABLED_ERROR) {
-					showErrorToast(MESSAGES.FEATURE_NOT_ENABLED);
-					return;
-				}
-
-				// Handle successful response
-				if (response.status === STATUS.OK) {
-					if (response.createdNewRecipeUser === false) {
-						showErrorToast(getExistingUserErrorMessage(formData.emailOrPhone));
-					} else {
-						showSuccessToast(MESSAGES.SUCCESS);
-						await invalidateQueries();
-						onSuccess?.(response.user.id);
-					}
-				}
+				await Implementation.getInstanceOrThrow().createPasswordlessUser({
+					tenantId,
+					payload,
+					authMethod,
+					emailOrPhone: formData.emailOrPhone,
+					createPasswordlessUserService: createPasswordlessUser,
+					showErrorToast,
+					showSuccessToast,
+					setFormError,
+					invalidateQueries,
+					onSuccess,
+				});
 			} catch (_) {
-				showErrorToast(MESSAGES.GENERIC_ERROR);
+				showErrorToast(USER_CREATE_MESSAGES.GENERIC_ERROR);
 			} finally {
 				setIsCreating(false);
 			}
 		},
-		[
-			buildPayload,
-			createPasswordlessUser,
-			tenantId,
-			handleValidationError,
-			showErrorToast,
-			getExistingUserErrorMessage,
-			showSuccessToast,
-			invalidateQueries,
-			onSuccess,
-		]
+		[buildPayload, createPasswordlessUser, tenantId, showErrorToast, showSuccessToast, invalidateQueries, onSuccess]
 	);
 
 	return {
@@ -165,20 +105,4 @@ export function useCreatePasswordlessUser({ tenantId, authMethod, onSuccess }: U
 		createUser,
 		clearError,
 	};
-}
-
-// Utility functions
-function isPhoneNumber(value: string): boolean {
-	const trimmedString = value.replaceAll(/\s/g, "").trim();
-
-	// added this check since parsing a empty string to a number returns 0.
-	if (trimmedString.length < 1) {
-		return false;
-	}
-
-	return !isNaN(Number(trimmedString));
-}
-
-function normalizePhoneNumber(phoneNumber: string): string {
-	return phoneNumber.startsWith("+") ? phoneNumber : `+${phoneNumber}`;
 }

@@ -14,6 +14,7 @@
  */
 import { getApiUrl, useFetchData } from "@shared/utils";
 import { ProviderConfig, ProviderConfigResponse, Tenant, TenantInfo } from "./types";
+import { Implementation } from "../../implementation";
 
 export const useListTenantsService = () => {
 	const fetchData = useFetchData();
@@ -22,19 +23,7 @@ export const useListTenantsService = () => {
 		status: "OK";
 		tenants: Tenant[];
 	}> => {
-		const response = await fetchData({
-			method: "GET",
-			url: getApiUrl("/api/tenants"),
-		});
-
-		const result = response.ok ? await response.json() : undefined;
-
-		// Ensure the public tenant is the first result, followed by all other tenants in alphabetical order
-		result.tenants.sort((a: Tenant, b: Tenant) =>
-			(a.tenantId === "public" ? "" : a.tenantId).localeCompare(b.tenantId === "public" ? "" : b.tenantId)
-		);
-
-		return result;
+		return await Implementation.getInstanceOrThrow().fetchTenants({ fetchData, getApiUrl });
 	};
 
 	return {
@@ -60,22 +49,7 @@ export const useCreateTenantService = () => {
 				message: string;
 		  }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant"),
-			method: "POST",
-			config: {
-				body: JSON.stringify({
-					tenantId,
-				}),
-			},
-		});
-
-		if (response.ok) {
-			const body = await response.json();
-			return body;
-		}
-
-		throw new Error("Unknown error");
+		return await Implementation.getInstanceOrThrow().createTenant({ tenantId, fetchData, getApiUrl });
 	};
 
 	return createTenant;
@@ -95,17 +69,7 @@ export const useGetTenantInfoService = () => {
 				status: "UNKNOWN_TENANT_ERROR";
 		  }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant", tenantId),
-			method: "GET",
-		});
-
-		if (response.ok) {
-			const body = await response.json();
-			return body;
-		}
-
-		throw new Error("Unknown error");
+		return await Implementation.getInstanceOrThrow().getTenantInfo({ tenantId, fetchData, getApiUrl });
 	};
 
 	return getTenantInfo;
@@ -115,16 +79,7 @@ export const useDeleteTenantService = () => {
 	const fetchData = useFetchData();
 
 	const deleteTenant = async (tenantId: string): Promise<{ status: "OK" }> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant", tenantId),
-			method: "DELETE",
-		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
+		return await Implementation.getInstanceOrThrow().deleteTenant({ tenantId, fetchData, getApiUrl });
 	};
 
 	return deleteTenant;
@@ -142,22 +97,13 @@ export const useUpdateFirstFactorService = () => {
 		| { status: "RECIPE_NOT_CONFIGURED_ON_BACKEND_SDK_ERROR"; message: string }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant/first-factor", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({
-					factorId,
-					enable,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().updateFirstFactor({
+			tenantId,
+			factorId,
+			enable,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return updateFirstFactor;
@@ -176,22 +122,13 @@ export const useUpdateRequiredSecondaryFactorService = () => {
 		| { status: "MFA_NOT_INITIALIZED_ERROR" }
 		| { status: "UNKNOWN_TENANT_ERROR" }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant/required-secondary-factor", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({
-					factorId,
-					enable,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().updateRequiredSecondaryFactor({
+			tenantId,
+			factorId,
+			enable,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return updateRequiredSecondaryFactor;
@@ -207,22 +144,13 @@ export const useUpdateCoreConfigService = () => {
 	): Promise<
 		{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "INVALID_CONFIG_ERROR"; message: string }
 	> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/tenant/core-config", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({
-					name,
-					value,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().updateCoreConfig({
+			tenantId,
+			name,
+			value,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return updateCoreConfig;
@@ -244,23 +172,13 @@ export const useGetThirdPartyProviderInfoService = () => {
 				status: "UNKNOWN_TENANT_ERROR";
 		  }
 	> => {
-		const additionalConfigQueryParams = new URLSearchParams(additionalConfig).toString();
-
-		const response = await fetchData({
-			url: getApiUrl(
-				`/api/thirdparty/config?thirdPartyId=${providerId}${
-					additionalConfigQueryParams ? `&${additionalConfigQueryParams}` : ""
-				}`,
-				tenantId
-			),
-			method: "GET",
+		return await Implementation.getInstanceOrThrow().getThirdPartyProviderInfo({
+			tenantId,
+			providerId,
+			additionalConfig,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return getThirdPartyProviderInfo;
@@ -273,22 +191,12 @@ export const useCreateOrUpdateThirdPartyProviderService = () => {
 		tenantId: string,
 		providerConfig: ProviderConfig
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" } | { status: "BOXY_ERROR"; message: string }> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/thirdparty/config", tenantId),
-			method: "PUT",
-			config: {
-				body: JSON.stringify({
-					providerConfig,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().createOrUpdateThirdPartyProvider({
+			tenantId,
+			providerConfig,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			const body = await response.json();
-			return body;
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return createOrUpdateThirdPartyProvider;
@@ -301,18 +209,12 @@ export const useDeleteThirdPartyProviderService = () => {
 		tenantId: string,
 		providerId: string
 	): Promise<{ status: "OK" } | { status: "UNKNOWN_TENANT_ERROR" }> => {
-		const response = await fetchData({
-			url: getApiUrl(`/api/thirdparty/config?thirdPartyId=${providerId}`, tenantId),
-			method: "DELETE",
+		return await Implementation.getInstanceOrThrow().deleteThirdPartyProvider({
+			tenantId,
+			providerId,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return {
-				status: "OK",
-			};
-		}
-
-		throw new Error("Unknown error");
 	};
 
 	return deleteThirdPartyProvider;

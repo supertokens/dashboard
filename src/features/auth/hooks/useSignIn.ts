@@ -15,9 +15,7 @@
 
 import { useEffect, useState } from "react";
 import useAuthService from "@api";
-import { HTTPStatusCodes, StorageKeys } from "@shared/constants";
-import { localStorageHandler } from "@shared/services/storage";
-import { validateEmail } from "@shared/utils/form";
+import { Implementation } from "../../../implementation";
 
 interface IErrorObject {
 	email: string;
@@ -28,6 +26,7 @@ export const useSignIn = (onSuccess: () => void) => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userTriedToSubmit, setUserTriedToSubmit] = useState(false);
 	const { signIn } = useAuthService();
+	const localStorageHandler = Implementation.getInstanceOrThrow().getLocalStorageHandler();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -39,40 +38,20 @@ export const useSignIn = (onSuccess: () => void) => {
 	const [serverValidationError, setServerValidationError] = useState("");
 
 	const validateCredentials = async () => {
-		const response = await signIn({ email, password });
-		const body = await response.json();
-		if (response.status === HTTPStatusCodes.OK) {
-			switch (body.status) {
-				case "OK":
-					localStorageHandler.setItem(StorageKeys.AUTH_KEY, body.sessionId);
-					localStorageHandler.setItem(StorageKeys.EMAIL, email);
-					onSuccess();
-					break;
-				case "USER_LIMIT_REACHED_ERROR":
-					setServerValidationError(body.message);
-					break;
-				case "USER_SUSPENDED_ERROR":
-					setServerValidationError(
-						"User is currently suspended. Please sign in with another account, or reactivate the SuperTokens core license key."
-					);
-					break;
-				default:
-					setServerValidationError("Incorrect email and password combination");
-					break;
-			}
-		} else {
-			setServerValidationError("Something went wrong");
-		}
+		await Implementation.getInstanceOrThrow().validateSignInCredentials({
+			email,
+			password,
+			signIn,
+			onSuccess,
+			setServerValidationError,
+		});
 	};
 
-	const checkValuesForErrors = () => {
-		const _errors: IErrorObject = {
-			email: "",
-			password: "",
-		};
-		if (!email) _errors.email = "Email cannot be empty";
-		if (!password) _errors.password = "Password cannot be empty";
-		if (!validateEmail(email)) _errors.email = "Email is invalid";
+	const checkValuesForErrors = async () => {
+		const _errors = await Implementation.getInstanceOrThrow().checkSignInValuesForErrors({
+			email,
+			password,
+		});
 		setErrors(_errors);
 		return Object.values(_errors).some((error) => error);
 	};
@@ -95,7 +74,7 @@ export const useSignIn = (onSuccess: () => void) => {
 		setIsLoading(true);
 		setServerValidationError("");
 		setUserTriedToSubmit(true);
-		const hasErrors = checkValuesForErrors();
+		const hasErrors = await checkValuesForErrors();
 		if (hasErrors) {
 			setIsLoading(false);
 			return;

@@ -15,6 +15,7 @@
 
 import { User } from "@features/users/types";
 import { getApiUrl, useFetchData } from "@shared/utils";
+import { Implementation } from "../../../implementation";
 
 export type CreatePasswordlessUserPayload = {
 	email?: string;
@@ -78,22 +79,13 @@ const useCreateUserService = (): ICreateUserService => {
 		email: string,
 		password: string
 	): Promise<CreateEmailPasswordUserResponse> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user/emailpassword", tenantId),
-			method: "POST",
-			config: {
-				body: JSON.stringify({
-					email,
-					password,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().createEmailPasswordUserViaApi({
+			tenantId,
+			email,
+			password,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Something went wrong!");
 	};
 
 	const createPasswordlessUser = async (
@@ -103,21 +95,12 @@ const useCreateUserService = (): ICreateUserService => {
 			phoneNumber?: string;
 		}
 	): Promise<CreatePasswordlessUserResponse> => {
-		const response = await fetchData({
-			url: getApiUrl("/api/user/passwordless", tenantId),
-			method: "POST",
-			config: {
-				body: JSON.stringify({
-					...data,
-				}),
-			},
+		return await Implementation.getInstanceOrThrow().createPasswordlessUserViaApi({
+			tenantId,
+			data,
+			fetchData,
+			getApiUrl,
 		});
-
-		if (response.ok) {
-			return await response.json();
-		}
-
-		throw new Error("Something went wrong!");
 	};
 
 	return { createEmailPasswordUser, createPasswordlessUser };

@@ -18,6 +18,7 @@ import { Flex, Text } from "@radix-ui/themes";
 import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
 import Button from "@shared/components/button";
+import { withOverride } from "@plugins";
 
 import styles from "./DeleteTenantModal.module.scss";
 
@@ -29,49 +30,48 @@ interface DeleteTenantModalProps {
 	isDeleting: boolean;
 }
 
-export default function DeleteTenantModal({
-	open,
-	handleClose,
-	tenantId,
-	onDeleteTenant,
-	isDeleting,
-}: DeleteTenantModalProps) {
-	const handleDelete = async () => {
-		try {
-			await onDeleteTenant();
-			handleClose();
-		} catch (err) {
-			// Error handling is done in the parent component
-		}
-	};
+const DeleteTenantModal = withOverride(
+	"DeleteTenantModal",
+	function DeleteTenantModal({ open, handleClose, tenantId, onDeleteTenant, isDeleting }: DeleteTenantModalProps) {
+		const handleDelete = async () => {
+			try {
+				await onDeleteTenant();
+				handleClose();
+			} catch (err) {
+				// Error handling is done in the parent component
+			}
+		};
 
-	return (
-		<Modal
-			title="Delete Tenant"
-			open={open}
-			handleClose={handleClose}>
-			<Form className={styles["delete-tenant-modal"]}>
-				<Form.Paper>
-					<Text
-						size="2"
-						className={styles["delete-tenant-modal__disclaimer"]}>
-						Are you certain you want to delete tenant{" "}
-						<span className={styles["delete-tenant-modal__tenant-id"]}>"{tenantId}"</span>? This action is
-						irreversible.
-					</Text>
-				</Form.Paper>
-				<Flex
-					justify="end"
-					mt="4">
-					<Button
-						color="red"
-						size="3"
-						onClick={handleDelete}
-						disabled={isDeleting}>
-						{isDeleting ? "Deleting..." : "Delete"}
-					</Button>
-				</Flex>
-			</Form>
-		</Modal>
-	);
-}
+		return (
+			<Modal
+				title="Delete Tenant"
+				open={open}
+				handleClose={handleClose}>
+				<Form className={styles["delete-tenant-modal"]}>
+					<Form.Paper>
+						<Text
+							size="2"
+							className={styles["delete-tenant-modal__disclaimer"]}>
+							Are you certain you want to delete tenant{" "}
+							<span className={styles["delete-tenant-modal__tenant-id"]}>"{tenantId}"</span>? This action
+							is irreversible.
+						</Text>
+					</Form.Paper>
+					<Flex
+						justify="end"
+						mt="4">
+						<Button
+							color="red"
+							size="3"
+							onClick={handleDelete}
+							disabled={isDeleting}>
+							{isDeleting ? "Deleting..." : "Delete"}
+						</Button>
+					</Flex>
+				</Form>
+			</Modal>
+		);
+	}
+);
+
+export default DeleteTenantModal;

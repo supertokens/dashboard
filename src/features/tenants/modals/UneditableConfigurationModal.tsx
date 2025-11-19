@@ -17,6 +17,7 @@ import { Text } from "@radix-ui/themes";
 
 import { Modal } from "@shared/components/modal";
 import Form from "@shared/components/form";
+import { withOverride } from "@plugins";
 
 import styles from "./UneditableConfigurationModal.module.scss";
 
@@ -26,23 +27,28 @@ interface UneditableConfigurationModalProps {
 	reason: React.ReactNode;
 }
 
-export default function UneditableConfigurationModal({ open, handleClose, reason }: UneditableConfigurationModalProps) {
-	return (
-		<Modal
-			size="md"
-			open={open}
-			handleClose={handleClose}
-			title="Property Cannot be Edited">
-			<Form className={styles["uneditable-configuration-modal"]}>
-				<Form.Paper>
-					<Text
-						className={styles["uneditable-configuration-modal__text"]}
-						size="2"
-						weight="regular">
-						{reason}
-					</Text>
-				</Form.Paper>
-			</Form>
-		</Modal>
-	);
-}
+const UneditableConfigurationModal = withOverride(
+	"UneditableConfigurationModal",
+	function UneditableConfigurationModal({ open, handleClose, reason }: UneditableConfigurationModalProps) {
+		return (
+			<Modal
+				size="md"
+				open={open}
+				handleClose={handleClose}
+				title="Property Cannot be Edited">
+				<Form className={styles["uneditable-configuration-modal"]}>
+					<Form.Paper>
+						<Text
+							className={styles["uneditable-configuration-modal__text"]}
+							size="2"
+							weight="regular">
+							{reason}
+						</Text>
+					</Form.Paper>
+				</Form>
+			</Modal>
+		);
+	}
+);
+
+export default UneditableConfigurationModal;

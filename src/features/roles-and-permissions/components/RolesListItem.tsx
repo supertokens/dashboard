@@ -19,13 +19,14 @@ import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { useNavigationHelpers } from "@shared/navigation";
 
 import styles from "./RolesListItem.module.scss";
+import { withOverride } from "@plugins";
 
 interface RolesListItemProps {
 	role: string;
 	permissions: string[] | undefined;
 }
 
-export default function RolesListItem({ role, permissions }: RolesListItemProps) {
+const RolesListItem = withOverride("RolesListItem", function RolesListItem({ role, permissions }: RolesListItemProps) {
 	const { goToRoleDetails } = useNavigationHelpers();
 
 	const handleClick = () => {
@@ -79,4 +80,6 @@ export default function RolesListItem({ role, permissions }: RolesListItemProps)
 			/>
 		</Flex>
 	);
-}
+});
+
+export default RolesListItem;

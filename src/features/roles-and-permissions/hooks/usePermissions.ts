@@ -18,6 +18,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useRolesService from "@api/userroles/role";
 import { usePermissionsService } from "@api/userroles/role/permissions";
 import { QUERY_KEYS, STALE_TIME } from "../constants";
+import { Implementation } from "../../../implementation";
 
 const queryKeys = {
 	rolePermissions: (roleId: string) => [QUERY_KEYS.ROLE_PERMISSIONS, roleId] as const,
@@ -32,24 +33,7 @@ export const usePermissions = (roleId: string) => {
 		queryKey: queryKeys.rolePermissions(roleId),
 		queryFn: async () => {
 			const response = await getPermissionsForRole(roleId);
-
-			if (!response) {
-				throw new Error("Failed to fetch permissions");
-			}
-
-			if (response.status === "OK") {
-				return response.permissions;
-			}
-
-			if (response.status === "UNKNOWN_ROLE_ERROR") {
-				throw new Error("Role not found");
-			}
-
-			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				throw new Error("Feature not enabled");
-			}
-
-			throw new Error("Failed to fetch permissions");
+			return await Implementation.getInstanceOrThrow().processPermissionsResponse({ response });
 		},
 		staleTime: STALE_TIME.ROLE_DETAILS,
 		enabled: !!roleId,
@@ -59,7 +43,10 @@ export const usePermissions = (roleId: string) => {
 	const addPermissionsMutation = useMutation({
 		mutationFn: async (permissions: string[]) => {
 			const currentPermissions = permissionsQuery.data || [];
-			const allPermissions = Array.from(new Set([...currentPermissions, ...permissions]));
+			const allPermissions = Implementation.getInstanceOrThrow().mergePermissionsWithDeduplication({
+				currentPermissions,
+				newPermissions: permissions,
+			});
 			return createRoleOrUpdateARole(roleId, allPermissions);
 		},
 		onSuccess: () => {

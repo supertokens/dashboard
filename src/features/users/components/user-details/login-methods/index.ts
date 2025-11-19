@@ -13,7 +13,7 @@
  * under the License.
  */
 
-export { default as LoginMethods } from "./LoginMethods";
+export { default as LoginMethods } from "./loginMethods";
 export { default as LoginMethodCard } from "./LoginMethodCard";
 export { default as LoginMethodContent } from "./LoginMethodContent";
 export { default as LoginMethodHeader } from "./LoginMethodHeader";

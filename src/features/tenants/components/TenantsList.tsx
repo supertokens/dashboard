@@ -29,8 +29,9 @@ import TenantsListTable from "./TenantsListTable";
 import TenantsListFooter from "./TenantsListFooter";
 import { useNavigationHelpers } from "@shared/navigation";
 import { useToast } from "@shared/components/toast";
+import { withOverride } from "@plugins";
 
-export default function TenantsList() {
+const TenantsList = withOverride("TenantsList", function TenantsList() {
 	const { goToTenantDetail } = useNavigationHelpers();
 	const {
 		tenants,
@@ -121,4 +122,6 @@ export default function TenantsList() {
 			/>
 		</PageContainer>
 	);
-}
+});
+
+export default TenantsList;

@@ -15,10 +15,10 @@
 
 import { useSearchParams } from "react-router-dom";
 
-import { QUERY_PARAMS } from "@shared/navigation";
 import TenantDetails from "@features/tenants/tenant-details/TenantDetails";
 
 import TenantsList from "./components/TenantsList";
+import { Implementation } from "../../implementation";
 
 /**
  * This is the main component for the tenant management page.
@@ -27,6 +27,7 @@ import TenantsList from "./components/TenantsList";
  */
 export default function TenantManagement() {
 	const [searchParams] = useSearchParams();
+	const { QUERY_PARAMS } = Implementation.getInstanceOrThrow().getNavigation();
 	const tenantId = searchParams.get(QUERY_PARAMS.TENANT_ID);
 
 	return tenantId ? <TenantDetails tenantId={tenantId} /> : <TenantsList />;

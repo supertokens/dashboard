@@ -19,10 +19,9 @@ import { SignOutBtn } from "@features/auth";
 import { getImageUrl } from "@shared/utils";
 
 import styles from "./Header.module.scss";
+import { withOverride } from "@plugins";
 
-const LOGO_LIGHT = getImageUrl("ST_icon_light_theme.svg");
-
-export default function Header() {
+const Header = withOverride("Header", function Header() {
 	return (
 		<header className={styles["header"]}>
 			<Flex
@@ -31,7 +30,7 @@ export default function Header() {
 				className={styles["header__content"]}>
 				<img
 					className={styles["header__logo"]}
-					src={LOGO_LIGHT}
+					src={getImageUrl("ST_icon_light_theme.svg")}
 					alt="SuperTokens"
 				/>
 				<div className={styles["header__actions"]}>
@@ -40,4 +39,6 @@ export default function Header() {
 			</Flex>
 		</header>
 	);
-}
+});
+
+export default Header;

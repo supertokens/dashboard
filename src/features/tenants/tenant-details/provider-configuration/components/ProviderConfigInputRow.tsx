@@ -14,6 +14,7 @@
  */
 
 import { Flex, FlexProps } from "@radix-ui/themes";
+import { withOverride } from "@plugins";
 
 import { ProviderConfigInput } from "./ProviderConfigInput";
 import { ProviderConfigInputLabel } from "./ProviderConfigInputLabel";
@@ -30,35 +31,40 @@ interface ProviderConfigInputRowProps {
 	error?: string;
 }
 
-export const ProviderConfigInputRow = ({
-	label,
-	withIcon = true,
-	required,
-	disabled,
-	readonly,
-	value,
-	onChange,
-	tooltip,
-	error,
-	...props
-}: ProviderConfigInputRowProps & Omit<FlexProps, "value" | "onChange">) => (
-	<Flex
-		align="center"
-		gap="2"
-		style={{ width: "100%" }}
-		{...props}>
-		<ProviderConfigInputLabel
-			label={label}
-			withIcon={withIcon}
-			required={required}
-			tooltip={tooltip}
-		/>
-		<ProviderConfigInput
-			disabled={disabled}
-			readonly={readonly}
-			value={value}
-			onChange={onChange}
-			error={error}
-		/>
-	</Flex>
+export const ProviderConfigInputRow = withOverride(
+	"ProviderConfigInputRow",
+	function ProviderConfigInputRow({
+		label,
+		withIcon = true,
+		required,
+		disabled,
+		readonly,
+		value,
+		onChange,
+		tooltip,
+		error,
+		...props
+	}: ProviderConfigInputRowProps & Omit<FlexProps, "value" | "onChange">) {
+		return (
+			<Flex
+				align="center"
+				gap="2"
+				style={{ width: "100%" }}
+				{...props}>
+				<ProviderConfigInputLabel
+					label={label}
+					withIcon={withIcon}
+					required={required}
+					tooltip={tooltip}
+				/>
+				<ProviderConfigInput
+					disabled={disabled}
+					readonly={readonly}
+					value={value}
+					onChange={onChange}
+					error={error}
+				/>
+			</Flex>
+		);
+	}
 );

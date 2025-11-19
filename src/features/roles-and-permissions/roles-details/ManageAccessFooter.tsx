@@ -15,6 +15,7 @@
 
 import { Flex, IconButton, Text } from "@radix-ui/themes";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { withOverride } from "@plugins";
 
 interface ManageAccessFooterProps {
 	currentPage: number;
@@ -26,48 +27,53 @@ interface ManageAccessFooterProps {
 	onPreviousPage: () => void;
 }
 
-export default function ManageAccessFooter({
-	currentPage,
-	totalCount,
-	pageSize,
-	hasNextPage,
-	hasPreviousPage,
-	onNextPage,
-	onPreviousPage,
-}: ManageAccessFooterProps) {
-	const startIndex = (currentPage - 1) * pageSize + 1;
-	const endIndex = Math.min(currentPage * pageSize, totalCount);
+const ManageAccessFooter = withOverride(
+	"ManageAccessFooter",
+	function ManageAccessFooter({
+		currentPage,
+		totalCount,
+		pageSize,
+		hasNextPage,
+		hasPreviousPage,
+		onNextPage,
+		onPreviousPage,
+	}: ManageAccessFooterProps) {
+		const startIndex = (currentPage - 1) * pageSize + 1;
+		const endIndex = Math.min(currentPage * pageSize, totalCount);
 
-	return (
-		<Flex
-			align="center"
-			justify="end"
-			gap="3"
-			px="3"
-			my="4">
-			<Text
-				size="2"
-				weight="medium">
-				{totalCount > 0 ? `${startIndex} - ${endIndex} of ${totalCount}` : "0 of 0"}
-			</Text>
-			<Flex gap="3">
-				<IconButton
+		return (
+			<Flex
+				align="center"
+				justify="end"
+				gap="3"
+				px="3"
+				my="4">
+				<Text
 					size="2"
-					variant="soft"
-					color="gray"
-					disabled={!hasPreviousPage}
-					onClick={onPreviousPage}>
-					<ChevronLeftIcon />
-				</IconButton>
-				<IconButton
-					size="2"
-					variant="soft"
-					color="gray"
-					disabled={!hasNextPage}
-					onClick={onNextPage}>
-					<ChevronRightIcon />
-				</IconButton>
+					weight="medium">
+					{totalCount > 0 ? `${startIndex} - ${endIndex} of ${totalCount}` : "0 of 0"}
+				</Text>
+				<Flex gap="3">
+					<IconButton
+						size="2"
+						variant="soft"
+						color="gray"
+						disabled={!hasPreviousPage}
+						onClick={onPreviousPage}>
+						<ChevronLeftIcon />
+					</IconButton>
+					<IconButton
+						size="2"
+						variant="soft"
+						color="gray"
+						disabled={!hasNextPage}
+						onClick={onNextPage}>
+						<ChevronRightIcon />
+					</IconButton>
+				</Flex>
 			</Flex>
-		</Flex>
-	);
-}
+		);
+	}
+);
+
+export default ManageAccessFooter;

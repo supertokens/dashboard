@@ -22,6 +22,7 @@ import ItemLabel from "@shared/components/itemLabel";
 import TabSelector from "@shared/components/tabSelector";
 import Loader from "@shared/components/loader";
 import DashboardError from "@shared/components/error";
+import { withOverride } from "@plugins";
 
 import CoreConfigurationTable from "./CoreConfigurationTable";
 import PluginPropertiesSection from "./PluginPropertiesSection";
@@ -36,68 +37,71 @@ interface CoreConfigurationProps {
  * Separates regular properties from plugin (database) properties and displays
  * them in different sections.
  */
-function CoreConfiguration({ tenantId, coreConfig }: CoreConfigurationProps) {
-	const [state] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
+const CoreConfiguration = withOverride(
+	"CoreConfiguration",
+	function CoreConfiguration({ tenantId, coreConfig }: CoreConfigurationProps) {
+		const [state] = useState<"LOADING" | "SUCCESS" | "ERROR">("SUCCESS");
 
-	// Filter and detect properties - memoized to avoid recalculation on every render
-	const { regularProperties, pluginProperties, hasPluginProperties, databaseType } = useMemo(() => {
-		const regular = coreConfig.filter((config) => !config.isPluginProperty);
-		const plugin = coreConfig.filter((config) => config.isPluginProperty);
-		const hasPlugin = plugin.length > 0;
+		// Filter and detect properties - memoized to avoid recalculation on every render
+		const { regularProperties, pluginProperties, hasPluginProperties, databaseType } = useMemo(() => {
+			const regular = coreConfig.filter((config) => !config.isPluginProperty);
+			const plugin = coreConfig.filter((config) => config.isPluginProperty);
+			const hasPlugin = plugin.length > 0;
 
-		// Detect database type from plugin properties
-		let dbType: "postgres" | "mysql" | null = null;
-		if (hasPlugin) {
-			if (plugin.some((property) => property.key.startsWith("postgresql_"))) {
-				dbType = "postgres";
-			} else if (plugin.some((property) => property.key.startsWith("mysql_"))) {
-				dbType = "mysql";
+			// Detect database type from plugin properties
+			let dbType: "postgres" | "mysql" | null = null;
+			if (hasPlugin) {
+				if (plugin.some((property) => property.key.startsWith("postgresql_"))) {
+					dbType = "postgres";
+				} else if (plugin.some((property) => property.key.startsWith("mysql_"))) {
+					dbType = "mysql";
+				}
 			}
-		}
 
-		return {
-			regularProperties: regular,
-			pluginProperties: plugin,
-			hasPluginProperties: hasPlugin,
-			databaseType: dbType,
-		};
-	}, [coreConfig]);
+			return {
+				regularProperties: regular,
+				pluginProperties: plugin,
+				hasPluginProperties: hasPlugin,
+				databaseType: dbType,
+			};
+		}, [coreConfig]);
 
-	switch (state) {
-		case "LOADING":
-			return <Loader type="list" />;
-		case "SUCCESS":
-			return (
-				<Flex
-					width="100%"
-					direction="column">
-					<TabSelector.ContentHeading>
-						<ItemLabel>
-							Customize the SuperTokens core settings that you want to use for your tenant.
-						</ItemLabel>
-					</TabSelector.ContentHeading>
+		switch (state) {
+			case "LOADING":
+				return <Loader type="list" />;
+			case "SUCCESS":
+				return (
+					<Flex
+						width="100%"
+						direction="column">
+						<TabSelector.ContentHeading>
+							<ItemLabel>
+								Customize the SuperTokens core settings that you want to use for your tenant.
+							</ItemLabel>
+						</TabSelector.ContentHeading>
 
-					{/* Regular Properties Table */}
-					<CoreConfigurationTable
-						tenantId={tenantId}
-						coreConfig={regularProperties}
-					/>
-
-					{/* Plugin Properties Section */}
-					{hasPluginProperties && (
-						<PluginPropertiesSection
+						{/* Regular Properties Table */}
+						<CoreConfigurationTable
 							tenantId={tenantId}
-							pluginProperties={pluginProperties}
-							databaseType={databaseType}
+							coreConfig={regularProperties}
 						/>
-					)}
-				</Flex>
-			);
-		case "ERROR":
-			return <DashboardError />;
-		default:
-			return assertNever(state);
+
+						{/* Plugin Properties Section */}
+						{hasPluginProperties && (
+							<PluginPropertiesSection
+								tenantId={tenantId}
+								pluginProperties={pluginProperties}
+								databaseType={databaseType}
+							/>
+						)}
+					</Flex>
+				);
+			case "ERROR":
+				return <DashboardError />;
+			default:
+				return assertNever(state);
+		}
 	}
-}
+);
 
 export default CoreConfiguration;

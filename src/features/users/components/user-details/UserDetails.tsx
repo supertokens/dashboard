@@ -35,7 +35,7 @@ import { User } from "@features/users/types";
 import Sessions from "./sessions/Sessions";
 import Roles from "./roles/Roles";
 import MetaData from "./metadata/MetaData";
-import LoginMethods from "./login-methods/LoginMethods";
+import LoginMethods from "./login-methods/loginMethods";
 
 import EditUserModal from "./modals/EditUserNameModal";
 import DeleteUserModal from "./modals/DeleteUserModal";

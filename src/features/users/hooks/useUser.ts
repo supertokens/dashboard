@@ -19,6 +19,7 @@ import useUserService from "@api/user";
 
 import { User } from "@features/users/types";
 import { Tenant } from "@api/tenants/types";
+import { Implementation } from "../../../implementation";
 
 const QUERY_KEY = "user-details";
 const STALE_TIME = 30 * 1000; // 30 seconds
@@ -39,17 +40,14 @@ export const useUser = (userId: string) => {
 	});
 
 	const updateUserMutation = useMutation({
-		mutationFn: (data: { userId: string; user: User; tenants: Tenant[] }) =>
-			updateUserInformation({
+		mutationFn: async (data: { userId: string; user: User; tenants: Tenant[] }) => {
+			const params = await Implementation.getInstanceOrThrow().buildUserUpdateParameters({
 				userId: data.userId,
-				recipeId: data.user.loginMethods[0]?.recipeId || "emailpassword",
-				recipeUserId: data.user.loginMethods[0]?.recipeUserId || data.userId,
-				email: data.user.loginMethods[0]?.email,
-				phone: data.user.loginMethods[0]?.phoneNumber,
-				firstName: data.user.firstName,
-				lastName: data.user.lastName,
-				tenantId: data.tenants[0]?.tenantId || "public",
-			}),
+				user: data.user,
+				tenants: data.tenants,
+			});
+			return updateUserInformation(params);
+		},
 		onSuccess: () => {
 			void queryClient.invalidateQueries({ queryKey: queryKeys.user(userId) });
 		},

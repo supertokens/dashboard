@@ -21,7 +21,7 @@ import { useCreateTenantService, useDeleteTenantService, useListTenantsService }
 import type { Tenant } from "@api/tenants/types";
 
 import { QUERY_KEYS, STALE_TIME } from "../constants";
-import { getSelectedTenantIdFromLocalStorage, setSelectedTenantIdToLocalStorage } from "@shared/utils/storage";
+import { Implementation } from "../../../implementation";
 
 const queryKeys = {
 	tenants: () => [QUERY_KEYS.TENANTS] as const,
@@ -37,12 +37,12 @@ const useTenantStore = create<TenantStore>((set) => ({
 	selectedTenant: undefined,
 
 	setSelectedTenant: (tenantId: string) => {
-		setSelectedTenantIdToLocalStorage(tenantId);
+		Implementation.getInstanceOrThrow().setSelectedTenantIdToLocalStorage(tenantId);
 		set({ selectedTenant: tenantId });
 	},
 
 	initializeTenant: () => {
-		const storedTenant = getSelectedTenantIdFromLocalStorage();
+		const storedTenant = Implementation.getInstanceOrThrow().getSelectedTenantIdFromLocalStorage();
 		if (storedTenant) {
 			set({ selectedTenant: storedTenant });
 		}
@@ -62,16 +62,7 @@ export const useTenants = () => {
 		queryKey: queryKeys.tenants(),
 		queryFn: async () => {
 			const response = await fetchTenants();
-
-			if (!response) {
-				throw new Error("Failed to fetch tenants");
-			}
-
-			if (response.status === "OK") {
-				return response.tenants;
-			}
-
-			throw new Error("Failed to fetch tenants");
+			return await Implementation.getInstanceOrThrow().processFetchTenantsResponse({ response });
 		},
 		staleTime: STALE_TIME.TENANTS,
 		retry: false,
@@ -93,13 +84,7 @@ export const useTenants = () => {
 
 	const filteredTenants = useMemo(() => {
 		const tenants = tenantsQuery.data || [];
-
-		if (!searchQuery.trim()) {
-			return tenants;
-		}
-
-		const query = searchQuery.toLowerCase().trim();
-		return tenants.filter((tenant: Tenant) => tenant.tenantId.toLowerCase().includes(query));
+		return Implementation.getInstanceOrThrow().filterTenantsBySearchQuery({ tenants, searchQuery });
 	}, [tenantsQuery.data, searchQuery]);
 
 	useEffect(() => {

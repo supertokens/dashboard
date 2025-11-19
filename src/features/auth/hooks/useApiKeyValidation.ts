@@ -14,40 +14,24 @@
  */
 
 import { useState } from "react";
-import { HTTPStatusCodes, StorageKeys } from "@shared/constants";
-import { localStorageHandler } from "@shared/services/storage";
-import { getApiUrl, useFetchData } from "@shared/utils";
+import { useFetchData } from "@shared/utils";
+import { Implementation } from "../../../implementation";
 
 export const useApiKeyValidation = (onSuccess: () => void) => {
 	const [apiKeyFieldError, setApiKeyFieldError] = useState("");
 	const [apiKey, setApiKey] = useState("");
 	const [loading, setIsLoading] = useState<boolean>(false);
 	const fetchData = useFetchData();
+	const localStorageHandler = Implementation.getInstanceOrThrow().getLocalStorageHandler();
 
 	const validateKey = async () => {
 		setIsLoading(true);
-		const response = await fetchData({
-			url: getApiUrl("/api/key/validate"),
-			method: "POST",
-			config: {
-				headers: {
-					authorization: `Bearer ${apiKey}`,
-				},
-			},
-			shouldRedirectOnUnauthorised: false,
+		await Implementation.getInstanceOrThrow().validateApiKey({
+			apiKey,
+			fetchData,
+			onSuccess,
+			setApiKeyFieldError,
 		});
-
-		const body = await response.json();
-
-		if (response.status === 200 && body.status === "OK") {
-			localStorageHandler.setItem(StorageKeys.AUTH_KEY, apiKey);
-			onSuccess();
-		} else if (response.status === HTTPStatusCodes.UNAUTHORIZED) {
-			setApiKeyFieldError("Invalid API Key");
-		} else {
-			setApiKeyFieldError("Something went wrong");
-		}
-
 		setIsLoading(false);
 	};
 

@@ -14,6 +14,7 @@
  */
 
 import { Flex } from "@radix-ui/themes";
+import { withOverride } from "@plugins";
 
 import { ProviderConfigInputLabel } from "./ProviderConfigInputLabel";
 import { ProviderConfigInputRow } from "./ProviderConfigInputRow";
@@ -43,49 +44,54 @@ interface UserInfoMapSectionProps {
 
 const OVERRIDE_MESSAGE = "Cannot edit this because you have provided a custom override";
 
-export const UserInfoMapSection = ({
-	label,
-	tooltip,
-	name,
-	value,
-	handleChange,
-	disabled,
-	isOverridden = false,
-}: UserInfoMapSectionProps) => (
-	<Flex
-		direction="column"
-		gap="2"
-		style={{ width: "100%" }}>
-		<ProviderConfigInputLabel
-			label={label}
-			tooltip={tooltip}
-		/>
-		<Flex
-			direction="column"
-			gap="3"
-			p="3"
-			className={styles["provider-config-user-info"]}>
-			<ProviderConfigInputRow
-				label="userId"
-				withIcon={false}
-				disabled={disabled}
-				value={isOverridden ? OVERRIDE_MESSAGE : value.userId}
-				onChange={(e) => handleChange({ name, key: "userId", value: e.target.value })}
-			/>
-			<ProviderConfigInputRow
-				label="email"
-				withIcon={false}
-				disabled={disabled}
-				value={isOverridden ? OVERRIDE_MESSAGE : value.email}
-				onChange={(e) => handleChange({ name, key: "email", value: e.target.value })}
-			/>
-			<ProviderConfigInputRow
-				label="emailVerified"
-				withIcon={false}
-				disabled={disabled}
-				value={isOverridden ? OVERRIDE_MESSAGE : value.emailVerified}
-				onChange={(e) => handleChange({ name, key: "emailVerified", value: e.target.value })}
-			/>
-		</Flex>
-	</Flex>
+export const UserInfoMapSection = withOverride(
+	"UserInfoMapSection",
+	function UserInfoMapSection({
+		label,
+		tooltip,
+		name,
+		value,
+		handleChange,
+		disabled,
+		isOverridden = false,
+	}: UserInfoMapSectionProps) {
+		return (
+			<Flex
+				direction="column"
+				gap="2"
+				style={{ width: "100%" }}>
+				<ProviderConfigInputLabel
+					label={label}
+					tooltip={tooltip}
+				/>
+				<Flex
+					direction="column"
+					gap="3"
+					p="3"
+					className={styles["provider-config-user-info"]}>
+					<ProviderConfigInputRow
+						label="userId"
+						withIcon={false}
+						disabled={disabled}
+						value={isOverridden ? OVERRIDE_MESSAGE : value.userId}
+						onChange={(e) => handleChange({ name, key: "userId", value: e.target.value })}
+					/>
+					<ProviderConfigInputRow
+						label="email"
+						withIcon={false}
+						disabled={disabled}
+						value={isOverridden ? OVERRIDE_MESSAGE : value.email}
+						onChange={(e) => handleChange({ name, key: "email", value: e.target.value })}
+					/>
+					<ProviderConfigInputRow
+						label="emailVerified"
+						withIcon={false}
+						disabled={disabled}
+						value={isOverridden ? OVERRIDE_MESSAGE : value.emailVerified}
+						onChange={(e) => handleChange({ name, key: "emailVerified", value: e.target.value })}
+					/>
+				</Flex>
+			</Flex>
+		);
+	}
 );

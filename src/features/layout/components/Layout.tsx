@@ -20,17 +20,19 @@ import Sidebar from "./sidebar";
 import { useSidebar } from "../hooks";
 
 import styles from "./Layout.module.scss";
+import { withOverride } from "@plugins";
 
 interface LayoutProps {
 	readonly children: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+const Layout = withOverride("Layout", function Layout({ children }: LayoutProps) {
 	const { isCollapsed, toggleSidebar } = useSidebar();
 
 	return (
 		<div className={styles["layout"]}>
 			<Header />
+
 			<Sidebar
 				isCollapsed={isCollapsed}
 				onToggle={toggleSidebar}
@@ -42,4 +44,6 @@ export default function Layout({ children }: LayoutProps) {
 			</Box>
 		</div>
 	);
-}
+});
+
+export default Layout;

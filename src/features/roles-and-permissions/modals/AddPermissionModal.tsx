@@ -22,6 +22,7 @@ import Button from "@shared/components/button";
 import Form from "@shared/components/form";
 
 import { useRolesList } from "../hooks";
+import { withOverride } from "@plugins";
 
 interface AddPermissionModalProps {
 	open: boolean;
@@ -31,59 +32,64 @@ interface AddPermissionModalProps {
 	isAdding: boolean;
 }
 
-export default function AddPermissionModal({
-	open,
-	handleClose,
-	existingPermissions,
-	onAddPermissions,
-	isAdding,
-}: AddPermissionModalProps) {
-	const { allRoles } = useRolesList();
-	const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+const AddPermissionModal = withOverride(
+	"AddPermissionModal",
+	function AddPermissionModal({
+		open,
+		handleClose,
+		existingPermissions,
+		onAddPermissions,
+		isAdding,
+	}: AddPermissionModalProps) {
+		const { allRoles } = useRolesList();
+		const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
-	// Get all permissions from all roles, excluding ones already assigned to this role
-	const allExistingPermissions = Array.from(new Set(allRoles.flatMap((role) => role.permissions || []))).sort();
-	const availablePermissions = allExistingPermissions.filter((p) => !existingPermissions.includes(p));
+		// Get all permissions from all roles, excluding ones already assigned to this role
+		const allExistingPermissions = Array.from(new Set(allRoles.flatMap((role) => role.permissions || []))).sort();
+		const availablePermissions = allExistingPermissions.filter((p) => !existingPermissions.includes(p));
 
-	const handleDone = async () => {
-		if (selectedPermissions.length > 0) {
-			await onAddPermissions(selectedPermissions);
-			setSelectedPermissions([]);
-		} else {
-			handleClose();
-		}
-	};
+		const handleDone = async () => {
+			if (selectedPermissions.length > 0) {
+				await onAddPermissions(selectedPermissions);
+				setSelectedPermissions([]);
+			} else {
+				handleClose();
+			}
+		};
 
-	const handleCloseModal = () => {
-		if (!isAdding) {
-			setSelectedPermissions([]);
-			handleClose();
-		}
-	};
+		const handleCloseModal = () => {
+			if (!isAdding) {
+				setSelectedPermissions([]);
+				handleClose();
+			}
+		};
 
-	return (
-		<Modal
-			title="Add Permission"
-			open={open}
-			handleClose={handleCloseModal}
-			size="lg">
-			<Form>
-				<AssignPermission
-					availablePermissions={availablePermissions}
-					onPermissionsChange={setSelectedPermissions}
-					disabled={isAdding}
-				/>
-				<Flex
-					justify="end"
-					mt="4">
-					<Button
-						size="3"
-						onClick={handleDone}
-						disabled={isAdding || selectedPermissions.length === 0}>
-						{isAdding ? "Adding..." : "Done"}
-					</Button>
-				</Flex>
-			</Form>
-		</Modal>
-	);
-}
+		return (
+			<Modal
+				title="Add Permission"
+				open={open}
+				handleClose={handleCloseModal}
+				size="lg">
+				<Form>
+					<AssignPermission
+						availablePermissions={availablePermissions}
+						onPermissionsChange={setSelectedPermissions}
+						disabled={isAdding}
+					/>
+					<Flex
+						justify="end"
+						mt="4">
+						<Button
+							size="3"
+							onClick={handleDone}
+							disabled={isAdding || selectedPermissions.length === 0}>
+							{isAdding ? "Adding..." : "Done"}
+						</Button>
+					</Flex>
+				</Form>
+			</Modal>
+		);
+	}
+);
+
+export default AddPermissionModal;

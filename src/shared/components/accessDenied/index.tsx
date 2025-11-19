@@ -13,8 +13,57 @@
  * under the License.
  */
 
-import { useAccessDenied } from "@shared/hooks";
 import { Modal } from "../modal";
+
+import { useEffect, useState, useCallback } from "react";
+import { DASHBOARD_ACCESS_DENIED_EVENT } from "@shared/events/accessDenied";
+
+interface UseAccessDeniedReturn {
+	hidePopup: () => void;
+	isPopupVisible: boolean;
+	popupMessage: string;
+}
+
+/**
+ * Custom hook for handling access denied popup state and events
+ */
+export const useAccessDenied = (): UseAccessDeniedReturn => {
+	const [isPopupVisible, setIsPopupVisible] = useState(false);
+	const [popupMessage, setPopupMessage] = useState("");
+
+	const handleAccessDenied = useCallback(
+		(e: CustomEvent) => {
+			if (isPopupVisible) return;
+
+			const message = e.detail.message;
+
+			setPopupMessage(message);
+			setIsPopupVisible(true);
+		},
+		[isPopupVisible]
+	);
+
+	useEffect(() => {
+		window.addEventListener(DASHBOARD_ACCESS_DENIED_EVENT, handleAccessDenied as EventListener);
+
+		return () => {
+			window.removeEventListener(DASHBOARD_ACCESS_DENIED_EVENT, handleAccessDenied as EventListener);
+		};
+	}, [handleAccessDenied]);
+
+	const hidePopup = useCallback(() => {
+		if (!isPopupVisible) return;
+
+		setPopupMessage("");
+		setIsPopupVisible(false);
+	}, [isPopupVisible]);
+
+	return {
+		isPopupVisible,
+		popupMessage,
+		hidePopup,
+	};
+};
 
 export const AccessDeniedModal = () => {
 	const { isPopupVisible, popupMessage, hidePopup } = useAccessDenied();

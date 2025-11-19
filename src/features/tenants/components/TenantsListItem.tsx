@@ -20,12 +20,13 @@ import type { Tenant } from "@api/tenants/types";
 
 import styles from "./TenantsListItem.module.scss";
 import { useNavigationHelpers } from "@shared/navigation";
+import { withOverride } from "@plugins";
 
 interface TenantsListItemProps {
 	tenant: Tenant;
 }
 
-export default function TenantsListItem({ tenant }: TenantsListItemProps) {
+const TenantsListItem = withOverride("TenantsListItem", function TenantsListItem({ tenant }: TenantsListItemProps) {
 	const { goToTenantDetail } = useNavigationHelpers();
 
 	return (
@@ -75,4 +76,6 @@ export default function TenantsListItem({ tenant }: TenantsListItemProps) {
 			</Flex>
 		</Flex>
 	);
-}
+});
+
+export default TenantsListItem;

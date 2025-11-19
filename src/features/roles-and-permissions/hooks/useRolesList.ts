@@ -20,6 +20,7 @@ import useRolesService from "@api/userroles/role";
 import { usePermissionsService } from "@api/userroles/role/permissions";
 import { QUERY_KEYS, STALE_TIME } from "../constants";
 import { Role, RoleListQueryResult } from "../types";
+import { Implementation } from "../../../implementation";
 
 const queryKeys = {
 	roles: () => [QUERY_KEYS.ROLES] as const,
@@ -37,27 +38,7 @@ export const useRolesList = () => {
 		queryKey: queryKeys.roles(),
 		queryFn: async (): Promise<RoleListQueryResult> => {
 			const response = await getRoles();
-
-			if (!response) {
-				throw new Error("Failed to fetch roles");
-			}
-
-			if (response.status === "FEATURE_NOT_ENABLED_ERROR") {
-				return {
-					roles: [],
-					isFeatureEnabled: false,
-				};
-			}
-
-			const rolesWithUndefinedPermissions: Role[] = response.roles.reverse().map((role) => ({
-				role,
-				permissions: undefined,
-			}));
-
-			return {
-				roles: rolesWithUndefinedPermissions,
-				isFeatureEnabled: true,
-			};
+			return await Implementation.getInstanceOrThrow().processFetchRolesResponse({ response });
 		},
 		staleTime: STALE_TIME.ROLES,
 		retry: false,
@@ -114,12 +95,10 @@ export const useRolesList = () => {
 	}, [rolesWithPermissions, fetchPermissionsForRole]);
 
 	const filteredRoles = useMemo(() => {
-		if (!searchQuery.trim()) {
-			return rolesWithPermissions;
-		}
-
-		const query = searchQuery.toLowerCase().trim();
-		return rolesWithPermissions.filter((role) => role.role.toLowerCase().includes(query));
+		return Implementation.getInstanceOrThrow().filterRolesBySearchQuery({
+			roles: rolesWithPermissions,
+			searchQuery,
+		});
 	}, [rolesWithPermissions, searchQuery]);
 
 	return {
